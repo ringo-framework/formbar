@@ -34,6 +34,17 @@ class Config(object):
             log.error(err)
             raise ValueError(err)
 
+    def get_elements(self, name):
+        """Returns a list of all elements found in the tree with the given
+        name. If no elements can be found. Return an empty list.
+
+        :name: name of the elements to be found
+        :returns: list of elements
+
+        """
+        qstr = ".//%s" % (name)
+        return self._tree.findall(qstr)
+
     def get_element(self, name, id):
         """Returns an ``Element`` from the configuration. If the element can
         not be found it returns None. If there are more than one element of
@@ -77,21 +88,30 @@ class Config(object):
             err = 'Form with id "%s" can not be found' % id
             log.error(err)
             raise KeyError(err)
-        return Form(element)
+        return Form(element, self)
 
 
 class Form(Config):
     """Class for accessing the configuration of a specific form. The form
     configuration only provides a subset of available attributes for forms."""
 
-    def __init__(self, tree):
+    def __init__(self, tree, parent):
         """Initialize a form configuration with the DOM tree of a XML form
-        configuration.
+        configuration. On initialisation the form will be configured that means
+        that all included fields will be configured.
 
         :tree: XML DOM tree of the form configuration.
+        :parent: XML DOM tree of the parent configuration.
 
         """
         Config.__init__(self, tree)
+
+        self._parent = parent
+        """Reference to parent configuration"""
+
+        self._fields = None
+        """Dictionary with all fields in the form. The name of the field is the
+        key in the dictionary"""
 
         self.autocomplete = tree.attrib.get('autocomplete', 'on')
         """autocomplete. Configure the form to autocomplete (prefill) the
@@ -109,3 +129,63 @@ class Form(Config):
         """enctype. Encoding type of the subbmitted values. Use
         'multipart/form-data' if you want to upload files. Defaults to an empty
         string."""
+
+    def get_fields(self):
+        """Returns a dictionary of included fields in the form. Fields fetched
+        by searching all field elements in the form or snippets and
+        "subsnippets" in the forms.
+
+        :returns: A dictionary with the configured fields in the form. The name
+        of the field is the key of the dictionary.
+
+        """
+        # Are the fields already initialized?
+        if self._fields is not None:
+            return self._fields
+
+        # Get all fields for the form.
+        fields = {}
+        for f in self.get_elements('field'):
+            ref = f.attrib.get('ref')
+            entity = self._parent.get_element('entity', ref)
+            field = Field(entity)
+            fields[field.name] = field
+        return fields
+
+    def get_field(self, name):
+        """Returns the field with the name from the form. If the field can not
+        be found a KeyError is raised.
+
+        :name: name of the field to get
+        :returns: ``Field``
+
+        """
+        fields = self.get_fields()
+        return fields[name]
+
+
+class Field(Config):
+    """Configuration of a Field"""
+
+    def __init__(self, entity):
+        """Inits a field with the entity DOM element.
+
+        :entity: entity DOM element
+
+        """
+        Config.__init__(self, entity)
+
+        # Attributes of the field
+        self.id = entity.attrib.get('id')
+        self.name = entity.attrib.get('name')
+        self.label = entity.attrib.get('label', self.name.capitalize())
+        self.number = entity.attrib.get('number', '')
+        self.type = entity.attrib.get('type', 'string')
+        self.css = entity.attrib.get('css', '')
+        self.readonly = entity.attrib.get('readonly', 'true') == 'true'
+        self.autocomplete = entity.attrib.get('autocomplete', 'on')
+
+        # Subelements of the fields
+        self.help = None
+        self.renderer = None
+        self.rules = []
