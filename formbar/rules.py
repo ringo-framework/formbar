@@ -1,3 +1,10 @@
+import logging
+from pyparsing import Literal, Word, alphanums, Regex, \
+    oneOf, Forward, Optional, delimitedList, ParseException
+
+log = logging.getLogger(__name__)
+
+
 class Rule(object):
     """Rule class. Rules must evaluate to True or False. If the
     expression does not evaluate to a Boolean value the evaluate
@@ -24,16 +31,75 @@ class Rule(object):
         self.expr = expr
         self.msg = msg
         if msg is None:
-            self.msg = 'Expression "%s" failed' % expr
+            self.msg = 'Expression "%s" failed' % "".join(expr)
         self.mode = mode
 
-    def evaluate(self):
-        """Returns True or False. Evaluates the expression of the rule.
-        If the expression fails because parsing fails or the expression
-        does not evaluate to a boolean values the function returns
-        False.
+    def evaluate(self, values):
+        """Returns True or False. Evaluates the expression of the rule against
+        the provided values.  If the expression fails because parsing fails or
+        the expression does not evaluate to a boolean values the function
+        returns False.
 
+        :values: Dictionary with the values from the submission
         :returns: True or False
 
         """
-        return False
+        rule = []
+        for token in self.expr:
+            if token.startswith('$'):
+                token = values.get(token.strip('$'))
+                if isinstance(token, str):
+                    token = "'%s'" % token
+            else:
+                # Try to convert the value into int or float
+                try:
+                    token = float(token)
+                except:
+                    pass
+            rule.append(str(token))
+        try:
+            rule_str = "".join(rule)
+            result = eval(rule_str)
+            return result
+        except Exception, e:
+            log.error(
+                'Evaluation of "%s" failed with error "%s"' % (rule, e))
+            return False
+
+
+# Syntax definition for the parser.
+LPAR, RPAR = Literal("("), Literal(")")
+functor = Word("len")
+
+fieldname = Word("$" + alphanums + "_")
+integer = Regex(r"-?\d+")
+string = Regex(r"'-?\w+'")
+real = Regex(r"-?\d+\.\d*")
+
+operator = oneOf('== < > <= >= !=')
+
+expr = Forward()
+function_call = functor + LPAR + Optional(delimitedList(expr)) + RPAR
+expr << (function_call | functor | real | integer | string | fieldname)
+
+operand = expr
+rule = operand + operator + operand
+
+
+class Parser(object):
+    """Parser for ``Rule`` instances"""
+
+    def parse(self, expr):
+        """Will parse and check the expr. If parsing fails a ValueError will be
+        raised
+
+        :expr: string of expression
+        :returns: string of expression
+
+        """
+        try:
+            result = rule.parseString(expr)
+            return result
+        except ParseException, e:
+            log.error(e)
+            raise ValueError('Can not parse "%s"' % expr)
