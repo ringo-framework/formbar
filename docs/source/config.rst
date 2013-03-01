@@ -73,7 +73,7 @@ The rule directive is used to define (additional) checks on the submitted
 values. Additional means that there are already some basic checks based on the
 datatype of the entity. So you will not need to define an additional check for
 an integer field to check if the submitted value is actually a integer. This
-check is automatically added.
+check is automatically added. See :ref:`rules` for more informations.
 
 .. _forms:
 
