@@ -7,7 +7,9 @@ XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <entity id="e0" name="default"/>
         <entity id="e1" name="age" type="integer" label="My age"/>
         <entity id="e2" name="birthday" label="My Birthday" type="date"
-            autocomplete="off" css="datefield" number="1" readonly="true" />
+            autocomplete="off" css="datefield" number="1" readonly="true">
+            <help>This is my helptext</help>
+        </entity>
     </source>
     <form id="testform">
     </form>
@@ -166,7 +168,7 @@ class TestFieldConfig(unittest.TestCase):
         self.assertEqual(self.dfield.help, None)
 
     def test_help_custom(self):
-        self.assertEqual(self.cfield.help, None)
+        self.assertEqual(self.cfield.help, 'This is my helptext')
 
     def test_rules_default(self):
         self.assertEqual(len(self.dfield.rules), 0)
