@@ -130,7 +130,7 @@ class Form(Config):
         'multipart/form-data' if you want to upload files. Defaults to an empty
         string."""
 
-    def get_fields(self):
+    def get_fields(self, root=None):
         """Returns a dictionary of included fields in the form. Fields fetched
         by searching all field elements in the form or snippets and
         "subsnippets" in the forms.
@@ -145,11 +145,24 @@ class Form(Config):
 
         # Get all fields for the form.
         fields = {}
-        for f in self.get_elements('field'):
+
+        if root == None:
+            root = self._tree
+
+        # Search for fields
+        for f in root.findall('.//field'):
             ref = f.attrib.get('ref')
             entity = self._parent.get_element('entity', ref)
             field = Field(entity)
             fields[field.name] = field
+
+        # Now search for snippets
+        for s in root.findall('.//snippet'):
+            sref = s.attrib.get('ref')
+            if sref:
+                s = self._parent.get_element('snippet', sref)
+                fields.update(self.get_fields(s))
+
         return fields
 
     def get_field(self, name):
@@ -186,6 +199,12 @@ class Field(Config):
         self.autocomplete = entity.attrib.get('autocomplete', 'on')
 
         # Subelements of the fields
+
+        # Help
         self.help = None
+        help = entity.find('help')
+        if help is not None:
+            self.help = help.text
+
         self.renderer = None
         self.rules = []
