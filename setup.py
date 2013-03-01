@@ -18,7 +18,7 @@ setup(name='formbar',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          # -*- Extra requirements: -*-
+        'pyparsing==1.5.6'
       ],
       entry_points="""
       # -*- Entry points: -*-
