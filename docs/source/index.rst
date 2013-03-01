@@ -11,6 +11,7 @@ Contents:
 .. toctree::
    start
    config
+   rules
    examples
    :maxdepth: 2
 
