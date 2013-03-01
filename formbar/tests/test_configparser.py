@@ -13,18 +13,24 @@ XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     </form>
     <form id="customform" autocomplete="off" method="GET" action="http://"
         enctype="multipart/form-data">
+        <row>
+            <col><field ref="e1"/></col>
+        </row>
+        <snippet ref="s1"/>
+    </form>
+    <form id="ambigous">
+    </form>
+    <form id="ambigous">
+    </form>
+    <snippet id="s1">
         <row><col><field ref="e0"/></col></row>
-        <row><col>
-            <field ref="e1"/>
-        </col></row>
-        <row><col>
-            <field ref="e2"/>
-        </col></row>
-    </form>
-    <form id="ambigous">
-    </form>
-    <form id="ambigous">
-    </form>
+        <snippet ref="s2"/>
+    </snippet>
+    <snippet id="s2">
+        <row>
+            <col><field ref="e2"/></col>
+        </row>
+    </snippet>
 </configuration>
 """
 
