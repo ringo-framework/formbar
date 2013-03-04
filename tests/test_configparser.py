@@ -5,7 +5,9 @@ XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <configuration>
     <source>
         <entity id="e0" name="default"/>
-        <entity id="e1" name="age" type="integer" label="My age"/>
+        <entity id="e1" name="age" type="integer" label="My age">
+            <rule expr="$age>=16" msg="Age must be greated than 15" mode="pre"/>
+        </entity>
         <entity id="e2" name="birthday" label="My Birthday" type="date"
             autocomplete="off" css="datefield" number="1" readonly="true">
             <help>This is my helptext</help>

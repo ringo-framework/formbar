@@ -51,6 +51,11 @@ class Rule(object):
                 if isinstance(token, str):
                     token = "'%s'" % token
             else:
+                #@XXX: Really convert the value here? If the rule is a
+                #post rule the value should be already converted. If it
+                #is a pre rule the rule should work without any type
+                #conversion.
+
                 # Try to convert the value into int or float
                 try:
                     token = float(token)
@@ -59,6 +64,7 @@ class Rule(object):
             rule.append(str(token))
         try:
             rule_str = "".join(rule)
+            print rule_str
             result = eval(rule_str)
             return result
         except Exception, e:
