@@ -1,4 +1,5 @@
 import datetime
+from formbar.fahelpers import get_fieldset
 
 
 class Error(Exception):
@@ -32,16 +33,18 @@ class Form(object):
     attributes of the configured fields in the form.
     """
 
-    def __init__(self, config, item=None):
+    def __init__(self, config, item=None, dbsession=None):
         """Initialize the form with ``Form`` configuration instance and
         optional an SQLAlchemy mapped object.
 
         :config: FormConfiguration.
         :item: SQLAlchemy mapped instance
+        :dbsession: Dbsession
 
         """
         self._config = config
         self._item = item
+        self._dbsession = dbsession
 
         self.data = {}
         """After submission this Dictionary will contain either the
@@ -54,6 +57,8 @@ class Form(object):
         self.validated = False
         """Flag to indicate if the form has been validated. Init value
         is False.  which means no validation has been done."""
+        self.fs = get_fieldset(item, config)
+        """FormAlchemy fieldset"""
 
     def render(self, values={}):
         """@todo: Docstring for render
@@ -62,7 +67,9 @@ class Form(object):
         :returns: Rendered form.
 
         """
-        return ""
+        #@TODO: Move rendering into a seperate renderer.
+        return "Hello world"
+        #return self.fs.render()
 
     def _add_error(self, fieldname, error):
         if fieldname not in self.errors:

@@ -56,5 +56,17 @@ class TestFormValidation(unittest.TestCase):
         self.assertRaises(StateError, self.form.save)
 
 
+class TestFormRenderer(unittest.TestCase):
+
+    def setUp(self):
+        config = Config(parse(XML))
+        form_config = config.get_form('customform')
+        self.form = Form(form_config)
+
+    def test_form_render(self):
+        html = self.form.render()
+        self.assertEqual(html, "Hello world")
+
+
 if __name__ == '__main__':
     unittest.main()
