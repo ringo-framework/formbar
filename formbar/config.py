@@ -1,6 +1,6 @@
 import logging
 import xml.etree.ElementTree as ET
-from formbar.rules import Rule
+from formbar.rules import Rule, Parser
 
 log = logging.getLogger(__name__)
 
@@ -148,7 +148,7 @@ class Form(Config):
         # Get all fields for the form.
         fields = {}
 
-        if root == None:
+        if root is None:
             root = self._tree
 
         # Search for fields
@@ -176,7 +176,12 @@ class Form(Config):
 
         """
         fields = self.get_fields()
-        return fields[name]
+        try:
+            return fields[name]
+        except KeyError, e:
+            log.error('Tried to get field "name"'
+                      'which is not included in the form')
+            raise e
 
 
 class Field(Config):
@@ -211,8 +216,10 @@ class Field(Config):
         self.renderer = None
         # Get rules
         self.rules = []
+        parser = Parser()
         for rule in self._tree.findall('rule'):
             expr = rule.attrib.get('expr')
             msg = rule.attrib.get('msg')
             mode = rule.attrib.get('mode')
+            expr = parser.parse(expr)
             self.rules.append(Rule(expr, msg, mode))

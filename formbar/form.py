@@ -1,3 +1,6 @@
+import datetime
+
+
 class Form(object):
     """Class for forms. The form will take care for rendering the form,
     validating the submitted data and saving the data back to the
@@ -33,10 +36,9 @@ class Form(object):
         """This dictionary will contain the errors if the validation
         fails. The key of the dictionary is the fieldname of the field.
         As a field can have more than one error the value is a list."""
-        self.valid = None
-        """Flag to indicate if the form is valid. Init value is None
-        which means no validation has been done. False if validation
-        fails and True is validation succeeds."""
+        self.validated = False
+        """Flag to indicate if the form has been validated. Init value
+        is False.  which means no validation has been done."""
 
     def render(self, values={}):
         """@todo: Docstring for render
@@ -48,9 +50,45 @@ class Form(object):
         return ""
 
     def _add_error(self, fieldname, error):
-        if not self.errors.has_key(fieldname):
+        if fieldname not in self.errors:
             self.errors[fieldname] = []
         self.errors[fieldname].append(error)
+
+    def _convert(self, field, value):
+        """Returns a converted value depending of the fields datatype
+
+        :field: configuration of the field
+        :value: value to be converted
+        """
+        dtype = field.type
+        if dtype == 'integer':
+            try:
+                return int(value)
+            except ValueError:
+                msg = "%s is not a integer value." % value
+                self._add_error(field.name, msg)
+        elif dtype == 'float':
+            try:
+                return float(value)
+            except ValueError:
+                msg = "%s is not a float value." % value
+                self._add_error(field.name, msg)
+        elif dtype == 'date':
+            try:
+                #@TODO: Support other dateformats that ISO8601
+                y, m, d = value.split('-')
+                y = int(y)
+                m = int(m)
+                d = int(d)
+                try:
+                    return datetime.date(y, m, d)
+                except ValueError, e:
+                    msg = "%s is an invalid date (%s)" % (value, e)
+                    self._add_error(field.name, msg)
+            except:
+                msg = "%s is not a valid date format." % value
+                self._add_error(field.name, msg)
+        return value
 
     def validate(self, values):
         """Returns True if the validation succeeds else False.
@@ -74,29 +112,41 @@ class Form(object):
         :returns: True or False
 
         """
-        self.valid = True
         # 1. Save copy origin submitted data
         origin_data = values
-        # 2. Prevalidation
+
+        # 2. Iterate over all fields and start the validation.
         for fieldname in values.keys():
             field = self._config.get_field(fieldname)
-            print field
+            # 3. Prevalidation
             for rule in field.rules:
                 if rule.mode != 'pre':
                     continue
                 result = rule.evaluate(values)
                 if not result:
-                    self.valid = False
+                    self._add_error(fieldname, rule.msg)
+
+            # 4. Basic type conversations, Defaults to String
+            values[fieldname] = self._convert(field, values[fieldname])
+
+            # 5. Postvalidation
+            for rule in field.rules:
+                if rule.mode != 'post':
+                    continue
+                result = rule.evaluate(values)
+                if not result:
                     self._add_error(fieldname, rule.msg)
 
         # If the form is valid. Save the converted and validated data
         # into the data dictionary. If not, than save the origin
         # submitted data.
-        if not self.valid:
+        has_errors = bool(self.errors)
+        if not has_errors:
             self.data = origin_data
         else:
             self.data = values
-        return self.valid
+        self.validated = True
+        return not has_errors
 
     def save(self):
         """Will save the validated data back into the item. In case of

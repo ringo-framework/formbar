@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration>
+  <source>
+    <entity id="e0" name="default"/>
+    <entity id="e1" name="age" type="integer" label="My age"/>
+    <entity id="e2" name="birthday" label="My Birthday" type="date" autocomplete="off" css="datefield" number="1" readonly="true">
+      <help>This is my helptext</help>
+    </entity>
+  </source>
+  <form id="testform">
+  </form>
+  <form id="customform" autocomplete="off" method="GET" action="http://" enctype="multipart/form-data">
+    <row>
+      <col><field ref="e1"/></col>
+    </row>
+    <snippet ref="s1"/>
+  </form>
+  <form id="ambigous">
+  </form>
+  <form id="ambigous">
+  </form>
+  <snippet id="s1">
+    <row>
+      <col><field ref="e0"/></col>
+    </row>
+    <snippet ref="s2"/>
+  </snippet>
+  <snippet id="s2">
+    <row>
+      <col><field ref="e2"/></col>
+    </row>
+  </snippet>
+</configuration>

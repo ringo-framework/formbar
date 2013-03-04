@@ -6,11 +6,16 @@ XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <source>
         <entity id="e0" name="default"/>
         <entity id="e1" name="age" type="integer" label="My age">
-            <rule expr="$age>=16" msg="Age must be greated than 15" mode="pre"/>
+            <rule expr="$age ge 16" msg="Age must be greated than 15"
+            mode="post"/>
         </entity>
         <entity id="e2" name="birthday" label="My Birthday" type="date"
             autocomplete="off" css="datefield" number="1" readonly="true">
             <help>This is my helptext</help>
+        </entity>
+        <entity id="e3" name="weight" type="float" label="Weight">
+            <rule expr="$weight lt 100" msg="Go! Do some sport"
+            mode="post"/>
         </entity>
     </source>
     <form id="testform">
@@ -33,6 +38,7 @@ XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <snippet id="s2">
         <row>
             <col><field ref="e2"/></col>
+            <col><field ref="e3"/></col>
         </row>
     </snippet>
 </configuration>
@@ -79,7 +85,7 @@ class TestFormParser(unittest.TestCase):
 
     def test_get_fields(self):
         self.assertTrue(isinstance(self.cform.get_fields(), dict))
-        self.assertEqual(len(self.cform.get_fields().items()), 3)
+        self.assertEqual(len(self.cform.get_fields().items()), 4)
 
     def test_autocomplete_default(self):
         self.assertEqual(self.dform.autocomplete, 'on')
