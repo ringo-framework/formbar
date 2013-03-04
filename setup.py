@@ -18,7 +18,8 @@ setup(name='formbar',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-        'pyparsing==1.5.6'
+        'pyparsing==1.5.6',
+        'formalchemy'
       ],
       entry_points="""
       # -*- Entry points: -*-
