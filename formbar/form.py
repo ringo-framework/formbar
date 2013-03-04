@@ -1,6 +1,21 @@
 import datetime
 
 
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+
+class StateError(Error):
+    """Exception raised for state errors while processing the form.
+
+        :msg:  explanation of the error
+    """
+
+    def __init__(self, msg):
+        self.msg = msg
+
+
 class Form(object):
     """Class for forms. The form will take care for rendering the form,
     validating the submitted data and saving the data back to the
@@ -156,4 +171,8 @@ class Form(object):
 
         """
         #@TODO: Only allow saving if the validation succeeded.
-        pass
+        if self.validated:
+            #@TODO: Save item and return
+            return self._item
+        else:
+            raise StateError('Saving is not possible without prior validation')

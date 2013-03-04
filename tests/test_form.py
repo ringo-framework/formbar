@@ -2,7 +2,7 @@ import datetime
 import unittest
 from test_configparser import XML
 from formbar.config import parse, Config
-from formbar.form import Form
+from formbar.form import Form, StateError
 
 
 class TestFormValidation(unittest.TestCase):
@@ -51,6 +51,9 @@ class TestFormValidation(unittest.TestCase):
     def test_form_save(self):
         values = {'default': 'test', 'age': '16', 'birthday': '1998-02-01'}
         self.assertEqual(self.form.validate(values), True)
+
+    def test_form_save_without_validation(self):
+        self.assertRaises(StateError, self.form.save)
 
 
 if __name__ == '__main__':
