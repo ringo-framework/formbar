@@ -1,5 +1,7 @@
 import logging
 import xml.etree.ElementTree as ET
+from formbar.rules import Rule
+
 log = logging.getLogger(__name__)
 
 
@@ -207,4 +209,10 @@ class Field(Config):
             self.help = help.text
 
         self.renderer = None
+        # Get rules
         self.rules = []
+        for rule in self._tree.findall('rule'):
+            expr = rule.attrib.get('expr')
+            msg = rule.attrib.get('msg')
+            mode = rule.attrib.get('mode')
+            self.rules.append(Rule(expr, msg, mode))
