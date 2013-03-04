@@ -50,21 +50,9 @@ class Rule(object):
                 token = values.get(token.strip('$'))
                 if isinstance(token, str):
                     token = "'%s'" % token
-            else:
-                #@XXX: Really convert the value here? If the rule is a
-                #post rule the value should be already converted. If it
-                #is a pre rule the rule should work without any type
-                #conversion.
-
-                # Try to convert the value into int or float
-                try:
-                    token = float(token)
-                except:
-                    pass
             rule.append(str(token))
         try:
             rule_str = "".join(rule)
-            print rule_str
             result = eval(rule_str)
             return result
         except Exception, e:
@@ -75,14 +63,41 @@ class Rule(object):
 
 # Syntax definition for the parser.
 LPAR, RPAR = Literal("("), Literal(")")
-functor = Word("len")
+functor = Literal("len")
 
 fieldname = Word("$" + alphanums + "_")
 integer = Regex(r"-?\d+")
 string = Regex(r"'-?\w+'")
 real = Regex(r"-?\d+\.\d*")
 
-operator = oneOf('== < > <= >= !=')
+
+def convertOperator(op):
+    """Returns operater for a given string. Operators can be expressed
+    as string known from the shell as "<" can not be included in XML"""
+    top = "unknown"
+    op = op[0]
+    if op == "eq":
+        top = "=="
+    elif op == "ne":
+        top = "!="
+    elif op == "gt":
+        top = ">"
+    elif op == "ge":
+        top = ">="
+    elif op == "lt":
+        top = "<"
+    elif op == "le":
+        top = "<="
+    return [top]
+
+op_eq = Literal("eq").setParseAction(convertOperator)
+op_ne = Literal("ne").setParseAction(convertOperator)
+op_gt = Literal("gt").setParseAction(convertOperator)
+op_ge = Literal("ge").setParseAction(convertOperator)
+op_lt = Literal("lt").setParseAction(convertOperator)
+op_le = Literal("le").setParseAction(convertOperator)
+operator = (oneOf('== < > <= >= !=')
+            | op_eq | op_ne | op_gt | op_ge | op_lt | op_le)
 
 expr = Forward()
 function_call = functor + LPAR + Optional(delimitedList(expr)) + RPAR
