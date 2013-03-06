@@ -21,7 +21,7 @@ XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <form id="testform">
     </form>
     <form id="customform" autocomplete="off" method="GET" action="http://"
-        enctype="multipart/form-data">
+        enctype="multipart/form-data" css="testcss">
         <row>
             <col><field ref="e1"/></col>
         </row>
@@ -110,6 +110,18 @@ class TestFormParser(unittest.TestCase):
 
     def test_enctype_custom(self):
         self.assertEqual(self.cform.enctype, 'multipart/form-data')
+
+    def test_css_default(self):
+        self.assertEqual(self.dform.css, '')
+
+    def test_css_custom(self):
+        self.assertEqual(self.cform.css, 'testcss')
+
+    def test_id_default(self):
+        self.assertEqual(self.dform.id, 'testform')
+
+    def test_id_custom(self):
+        self.assertEqual(self.cform.id, 'customform')
 
 
 class TestFieldConfig(unittest.TestCase):

@@ -115,6 +115,12 @@ class Form(Config):
         """Dictionary with all fields in the form. The name of the field is the
         key in the dictionary"""
 
+        self.id = tree.attrib.get('id', '')
+        """id. ID of the form"""
+
+        self.css = tree.attrib.get('css', '')
+        """css. CSS class(es) to be added to the form"""
+
         self.autocomplete = tree.attrib.get('autocomplete', 'on')
         """autocomplete. Configure the form to autocomplete (prefill) the
         fields in the form. Defaults to 'on'"""
