@@ -8,7 +8,6 @@ log = logging.getLogger(__name__)
 def parse(xml):
     """Returns the parsed XML. This is a helper function to be used in
     connection with loading the configuration files.
-
     :xml: XML string to be parsed
     :returns: DOM of the parsed XML
 
@@ -54,7 +53,6 @@ class Config(object):
 
         If the intitail found element refers to another element by the 'ref'
         attribute the function is recalled as long as it can find the element.
-
         :name: Name of the element (e.g entity)
         :id: ID of the element
         :returns: ``Element`` or ``None``.
@@ -111,10 +109,6 @@ class Form(Config):
         self._parent = parent
         """Reference to parent configuration"""
 
-        self._fields = None
-        """Dictionary with all fields in the form. The name of the field is the
-        key in the dictionary"""
-
         self.id = tree.attrib.get('id', '')
         """id. ID of the form"""
 
@@ -138,6 +132,16 @@ class Form(Config):
         'multipart/form-data' if you want to upload files. Defaults to an empty
         string."""
 
+        self._initialized = False
+        """Flag to indicate that the form has been setup"""
+
+        self._id2name = {}
+        """Dictionary with a mapping of id to fieldnames"""
+
+        self._fields = self.get_fields()
+        """Dictionary with all fields in the form. The name of the field is the
+        key in the dictionary"""
+
     def get_fields(self, root=None):
         """Returns a dictionary of included fields in the form. Fields fetched
         by searching all field elements in the form or snippets and
@@ -148,7 +152,7 @@ class Form(Config):
 
         """
         # Are the fields already initialized?
-        if self._fields is not None:
+        if self._initialized:
             return self._fields
 
         # Get all fields for the form.
@@ -163,6 +167,7 @@ class Form(Config):
             entity = self._parent.get_element('entity', ref)
             field = Field(entity)
             fields[field.name] = field
+            self._id2name[ref] = field.name
 
         # Now search for snippets
         for s in root.findall('.//snippet'):
@@ -171,6 +176,7 @@ class Form(Config):
                 s = self._parent.get_element('snippet', sref)
                 fields.update(self.get_fields(s))
 
+        self._initialized = True
         return fields
 
     def get_field(self, name):
