@@ -19,7 +19,8 @@ setup(name='formbar',
       zip_safe=False,
       install_requires=[
         'pyparsing==1.5.6',
-        'formalchemy'
+        'formalchemy',
+        'mako'
       ],
       entry_points="""
       # -*- Entry points: -*-
