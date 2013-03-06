@@ -1,5 +1,6 @@
 import datetime
 from formbar.fahelpers import get_fieldset
+from formbar.renderer import FormRenderer
 
 
 class Error(Exception):
@@ -60,6 +61,15 @@ class Form(object):
         self.fs = get_fieldset(item, config)
         """FormAlchemy fieldset"""
 
+    def get_field(self, name):
+        """Returns a FormAlchemy field instance.
+
+        :name: @todo
+        :returns: @todo
+
+        """
+        return self.fs[name]
+
     def render(self, values={}):
         """@todo: Docstring for render
 
@@ -67,9 +77,8 @@ class Form(object):
         :returns: Rendered form.
 
         """
-        #@TODO: Move rendering into a seperate renderer.
-        return "Hello world"
-        #return self.fs.render()
+        renderer = FormRenderer(self)
+        return renderer.render(values)
 
     def _add_error(self, fieldname, error):
         if fieldname not in self.errors:
