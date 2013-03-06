@@ -87,6 +87,10 @@ class TestFormParser(unittest.TestCase):
         self.assertTrue(isinstance(self.cform.get_fields(), dict))
         self.assertEqual(len(self.cform.get_fields().items()), 4)
 
+    def test_get_field_e1(self):
+        field = self.cform.get_field(self.cform._id2name['e1'])
+        self.assertEqual(field.id, 'e1')
+
     def test_autocomplete_default(self):
         self.assertEqual(self.dform.autocomplete, 'on')
 
