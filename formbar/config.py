@@ -222,7 +222,8 @@ class Field(Config):
         self.number = entity.attrib.get('number', '')
         self.type = entity.attrib.get('type', 'string')
         self.css = entity.attrib.get('css', '')
-        self.readonly = entity.attrib.get('readonly', 'true') == 'true'
+        self.required = entity.attrib.get('required', 'false') == 'true'
+        self.readonly = entity.attrib.get('readonly', 'false') == 'true'
         self.autocomplete = entity.attrib.get('autocomplete', 'on')
 
         # Subelements of the fields

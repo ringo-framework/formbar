@@ -64,39 +64,46 @@ def configure_field(field, config, readonly=False):
 
     """
 
-#    additional_html_options = {}
-#
-#    # Set label
-#    field.label_text = config.label
-#
+    additional_html_options = {}
+    overwrite_html_options = {}
+
+    # Set label
+    field.label_text = config.label
+
 #    # Get the renderer for the field
 #    renderer = get_renderer(config)
 #    if renderer is not None:
 #        field = field.with_renderer(renderer)
 #
-#    # Is the field marked to be readonly?
-#    if config.readonly or readonly:
-#        field = field.readonly()
-#
-#    # Is the field marked to be readonly?
-#    if config.autocomplete == "off":
-#        additional_html_options['autocomplete'] = "off"
-#
-#    # Is the field marked to be readonly?
-#    if config.readonly or readonly:
-#        field = field.readonly()
-#
+    # Is the field marked to be readonly?
+    if config.readonly or readonly:
+        field = field.readonly()
+
+    # Should the field have enabled autocomplete?
+    if config.required:
+        field = field.required()
+
+    # Should the field have enabled autocomplete?
+    if config.autocomplete == "off":
+        additional_html_options['autocomplete'] = "off"
+
 #    # Assign validators to the field for basic datetype checks
 #    if config.type == "integer":
 #        field = field.validate(integer)
 #    elif config.type == "float":
 #        field = field.validate(float_)
 #
-#    # Added custom css classes
-#    additional_html_options['class'] = config.css
-#    field = field.with_html(**additional_html_options)
-#
-#    # Setup metadata
-#    #attr = {}
-#    #field.with_metadata(**attr)
+    # Added custom css classes
+    additional_html_options['class'] = config.css
+    field = field.with_html(**additional_html_options)
+
+    # Overwrite the id attribute to make the label working.
+    # id would usally be [fieldset_prefix-]ModelName-[pk]-fieldname
+    # but we only need the fieldname here
+    overwrite_html_options['id'] = config.name
+    field = field.attrs(**overwrite_html_options)
+
+    # Setup metadata
+    #attr = {}
+    #field.with_metadata(**attr)
     return field
