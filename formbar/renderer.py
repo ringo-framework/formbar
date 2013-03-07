@@ -74,7 +74,7 @@ class FormRenderer(Renderer):
     def _render_form_buttons(self):
         html = []
         html.append('<div class="row-fluid">')
-        html.append('<div class="span12 well-small">')
+        html.append('<div class="span12 button-pane well-small">')
         html.append('<button type="submit" '
                     'class="btn btn-primary">%s</button>' % 'Submit')
         html.append('<button type="reset" '
