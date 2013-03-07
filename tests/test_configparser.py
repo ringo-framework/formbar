@@ -1,54 +1,13 @@
 import unittest
-from formbar.config import parse, Config, Form
-
-XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<configuration>
-    <source>
-        <entity id="e0" name="default"/>
-        <entity id="e1" name="age" type="integer" label="My age">
-            <rule expr="$age ge 16" msg="Age must be greated than 15"
-            mode="post"/>
-        </entity>
-        <entity id="e2" name="birthday" label="My Birthday" type="date"
-            autocomplete="off" css="datefield" number="1" readonly="true">
-            <help>This is my helptext</help>
-        </entity>
-        <entity id="e3" name="weight" type="float" label="Weight">
-            <rule expr="$weight lt 100" msg="Go! Do some sport"
-            mode="post"/>
-        </entity>
-    </source>
-    <form id="testform">
-    </form>
-    <form id="customform" autocomplete="off" method="GET" action="http://"
-        enctype="multipart/form-data" css="testcss">
-        <row>
-            <col><field ref="e1"/></col>
-        </row>
-        <snippet ref="s1"/>
-    </form>
-    <form id="ambigous">
-    </form>
-    <form id="ambigous">
-    </form>
-    <snippet id="s1">
-        <row><col><field ref="e0"/></col></row>
-        <snippet ref="s2"/>
-    </snippet>
-    <snippet id="s2">
-        <row>
-            <col><field ref="e2"/></col>
-            <col><field ref="e3"/></col>
-        </row>
-    </snippet>
-</configuration>
-"""
+import os
+from formbar import test_dir
+from formbar.config import load, Config, Form
 
 
 class TestConfigParser(unittest.TestCase):
 
     def setUp(self):
-        tree = parse(XML)
+        tree = load(os.path.join(test_dir, 'form.xml'))
         self.config = Config(tree)
 
     def test_get_ambigous_element_fail(self):
@@ -78,14 +37,14 @@ class TestConfigParser(unittest.TestCase):
 class TestFormParser(unittest.TestCase):
 
     def setUp(self):
-        tree = parse(XML)
+        tree = load(os.path.join(test_dir, 'form.xml'))
         self.config = Config(tree)
         self.dform = self.config.get_form('testform')
         self.cform = self.config.get_form('customform')
 
     def test_get_fields(self):
         self.assertTrue(isinstance(self.cform.get_fields(), dict))
-        self.assertEqual(len(self.cform.get_fields().items()), 4)
+        self.assertEqual(len(self.cform.get_fields().items()), 5)
 
     def test_get_field_e1(self):
         field = self.cform.get_field(self.cform._id2name['e1'])
@@ -131,11 +90,11 @@ class TestFormParser(unittest.TestCase):
 class TestFieldConfig(unittest.TestCase):
 
     def setUp(self):
-        tree = parse(XML)
+        tree = load(os.path.join(test_dir, 'form.xml'))
         self.config = Config(tree)
         self.form = self.config.get_form('customform')
         self.dfield = self.form.get_field('default')
-        self.cfield = self.form.get_field('birthday')
+        self.cfield = self.form.get_field('date')
 
     def test_get_field_mission(self):
         self.assertRaises(KeyError, self.form.get_field, 'missing')
@@ -156,7 +115,7 @@ class TestFieldConfig(unittest.TestCase):
         self.assertEqual(self.dfield.label, self.dfield.name.capitalize())
 
     def test_label_custom(self):
-        self.assertEqual(self.cfield.label, 'My Birthday')
+        self.assertEqual(self.cfield.label, 'Date field')
 
     def test_number_default(self):
         self.assertEqual(self.dfield.number, '')
@@ -174,13 +133,13 @@ class TestFieldConfig(unittest.TestCase):
         self.assertEqual(self.dfield.id, 'e0')
 
     def test_id_custom(self):
-        self.assertEqual(self.cfield.id, 'e2')
+        self.assertEqual(self.cfield.id, 'e4')
 
     def test_name_default(self):
         self.assertEqual(self.dfield.name, 'default')
 
     def test_name_custom(self):
-        self.assertEqual(self.cfield.name, 'birthday')
+        self.assertEqual(self.cfield.name, 'date')
 
     def test_renderer_default(self):
         self.assertEqual(self.dfield.renderer, None)
@@ -198,7 +157,7 @@ class TestFieldConfig(unittest.TestCase):
         self.assertEqual(len(self.dfield.rules), 0)
 
     def test_rules_custom(self):
-        self.assertEqual(len(self.cfield.rules), 0)
+        self.assertEqual(len(self.cfield.rules), 1)
 
 if __name__ == '__main__':
     unittest.main()

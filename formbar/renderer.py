@@ -1,11 +1,8 @@
 import logging
-import pkg_resources
-import os
 
 from mako.lookup import TemplateLookup
+from formbar import template_dir
 
-base_dir = pkg_resources.get_distribution("formbar").location
-template_dir = os.path.join(base_dir, 'templates')
 template_lookup = TemplateLookup(directories=[template_dir],
                                  module_directory='/tmp/phormular_modules')
 
@@ -78,8 +75,10 @@ class FormRenderer(Renderer):
         html = []
         html.append('<div class="row-fluid">')
         html.append('<div class="span12 well-small">')
-        html.append('<button type="submit" class="btn btn-primary">%s</button>' % 'Submit')
-        html.append('<button type="reset" class="btn btn-warning">%s</button>' % 'Reset')
+        html.append('<button type="submit" '
+                    'class="btn btn-primary">%s</button>' % 'Submit')
+        html.append('<button type="reset" '
+                    'class="btn btn-warning">%s</button>' % 'Reset')
         html.append('</div>')
         html.append('</div>')
         return "".join(html)

@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <configuration>
   <source>
+    <!-- Define different entity types -->
     <entity id="e0" name="default"/>
-    <entity id="e1" name="age" type="integer" label="My age"/>
-    <entity id="e2" name="birthday" label="My Birthday" type="date" autocomplete="off" css="datefield" number="1" readonly="true">
+    <entity id="e1" name="string" label="String field" type="string"/>
+    <entity id="e2" name="integer" label="Integer field" type="integer"/>
+    <entity id="e3" name="float" label="Float field" type="float">
+      <rule expr="$float lt 100" msg="Float must be lower than 100" mode="post"/>
+    </entity>
+    <entity id="e4" name="date" label="Date field" type="date" autocomplete="off" css="datefield" number="1" readonly="true">
+      <rule expr="$integer ge 16" msg="Integer must be greated than 15" mode="post"/>
       <help>This is my helptext</help>
     </entity>
   </source>
   <form id="testform">
   </form>
-  <form id="customform" autocomplete="off" method="GET" action="http://" enctype="multipart/form-data">
+  <form id="customform" css="testcss" autocomplete="off" method="GET" action="http://" enctype="multipart/form-data">
     <row>
       <col><field ref="e1"/></col>
     </row>
@@ -23,10 +29,15 @@
     <row>
       <col><field ref="e0"/></col>
     </row>
+    <row>
+      <col><field ref="e3"/></col>
+      <col><field ref="e4"/></col>
+    </row>
     <snippet ref="s2"/>
   </snippet>
   <snippet id="s2">
     <row>
+      <col><field ref="e1"/></col>
       <col><field ref="e2"/></col>
     </row>
   </snippet>

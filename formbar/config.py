@@ -5,6 +5,14 @@ from formbar.rules import Rule, Parser
 log = logging.getLogger(__name__)
 
 
+def load(path):
+    """Return the parsed XML form the given file. The function will load
+    the file located in path and than returns the parsed content."""
+    with open(path) as f:
+        data = f.read()
+        return parse(data)
+
+
 def parse(xml):
     """Returns the parsed XML. This is a helper function to be used in
     connection with loading the configuration files.
