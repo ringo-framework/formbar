@@ -22,6 +22,10 @@ setup(name='formbar',
         'formalchemy',
         'mako'
       ],
+      # Used for the example server
+      extras_require = {
+        'examples':  ["pyramid"]
+      },
       entry_points="""
       # -*- Entry points: -*-
       """,
