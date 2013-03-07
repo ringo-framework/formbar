@@ -105,6 +105,13 @@ class TestFieldConfig(unittest.TestCase):
     def test_autocomplete_custom(self):
         self.assertEqual(self.cfield.autocomplete, 'off')
 
+    def test_required_default(self):
+        self.assertEqual(self.dfield.required, False)
+
+    def test_requried_custom(self):
+        ifield = self.form.get_field('integer')
+        self.assertEqual(ifield.required, True)
+
     def test_css_default(self):
         self.assertEqual(self.dfield.css, '')
 
