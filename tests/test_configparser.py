@@ -95,6 +95,7 @@ class TestFieldConfig(unittest.TestCase):
         self.form = self.config.get_form('customform')
         self.dfield = self.form.get_field('default')
         self.cfield = self.form.get_field('date')
+        self.ifield = self.form.get_field('integer')
 
     def test_get_field_mission(self):
         self.assertRaises(KeyError, self.form.get_field, 'missing')
@@ -164,7 +165,7 @@ class TestFieldConfig(unittest.TestCase):
         self.assertEqual(len(self.dfield.rules), 0)
 
     def test_rules_custom(self):
-        self.assertEqual(len(self.cfield.rules), 1)
+        self.assertEqual(len(self.ifield.rules), 1)
 
 if __name__ == '__main__':
     unittest.main()
