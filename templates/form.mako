@@ -59,10 +59,12 @@
           ${field.render()}
         % endif
         ## Errors
-        % if len(field.errors) > 0:
-          % for error in field.errors:
-            <i class="icon-exclamation-sign"></i>
-            <div class="text-error">${error}</div>
+        % if len(form.errors.get(field.key, [])) > 0:
+          % for error in form.errors[field.key]:
+            <div class="text-error">
+              <i class="icon-exclamation-sign"></i>
+              ${error}
+            </div>
           % endfor
         % endif
         ## Helptexts
