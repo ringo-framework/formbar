@@ -1,5 +1,6 @@
+from copy import copy
 import datetime
-from formbar.fahelpers import get_fieldset
+from formbar.fahelpers import get_fieldset, normalize_fieldname
 from formbar.renderer import FormRenderer
 
 
@@ -143,12 +144,19 @@ class Form(object):
         :returns: True or False
 
         """
-        # 1. Save copy origin submitted data
-        origin_data = values
+        # 1. Save copy origin submitted data and than transform the
+        # values into a normalized form
+        origin_data = copy(values)
+        values = {}
+        name2faname = {}
+        for fieldname, value in origin_data.iteritems():
+            n_fn = normalize_fieldname(fieldname)
+            values[n_fn] = value
+            name2faname[n_fn] = fieldname
 
         # 2. Iterate over all fields and start the validation.
         for fieldname in values.keys():
-            field = self._config.get_field(fieldname)
+            field = self._config.get_field(normalize_fieldname(fieldname))
             # 3. Prevalidation
             for rule in field.rules:
                 if rule.mode != 'pre':
