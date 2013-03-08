@@ -173,9 +173,9 @@ class Form(object):
         # submitted data.
         has_errors = bool(self.errors)
         if not has_errors:
-            self.data = origin_data
-        else:
             self.data = values
+        else:
+            self.data = origin_data
         self.validated = True
         return not has_errors
 
