@@ -54,6 +54,7 @@ class Rule(object):
         try:
             rule_str = "".join(rule)
             result = eval(rule_str)
+            log.debug("Rule: %s -> %s" % (rule_str, result))
             return result
         except Exception, e:
             log.error(
