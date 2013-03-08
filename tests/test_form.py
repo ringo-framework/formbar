@@ -28,6 +28,12 @@ class TestFormValidation(unittest.TestCase):
         values = {'default': 'test', 'integer': '15', 'date': '1998-02-01'}
         self.assertEqual(self.form.validate(values), False)
 
+    def test_form_validate_fail_checkvalues(self):
+        values = {'default': 'test', 'integer': '15', 'date': '1998-02-01'}
+        self.assertEqual(self.form.validate(values), False)
+        self.assertEqual(self.form.data['integer'], '15')
+        self.assertEqual(self.form.data['date'], '1998-02-01')
+
     def test_form_validate_ok(self):
         values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
         self.assertEqual(self.form.validate(values), True)
@@ -44,7 +50,8 @@ class TestFormValidation(unittest.TestCase):
         self.assertEqual(self.form.data['float'], 87.5)
 
     def test_form_deserialize_date(self):
-        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
+        values = {'default': 'test', 'integer': '16',
+                  'float': '87.5', 'date': '1998-02-01'}
         self.form.validate(values)
         self.assertEqual(self.form.data['date'], datetime.date(1998, 2, 1))
 
