@@ -20,6 +20,7 @@ setup(name='formbar',
       install_requires=[
         'pyparsing==1.5.6',
         'formalchemy',
+        'formencode',
         'mako'
       ],
       # Used for the example server

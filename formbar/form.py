@@ -1,5 +1,6 @@
-from copy import copy
 import datetime
+from formencode import htmlfill
+
 from formbar.fahelpers import get_fieldset, normalize_fieldname
 from formbar.renderer import FormRenderer
 
@@ -79,7 +80,8 @@ class Form(object):
 
         """
         renderer = FormRenderer(self)
-        return renderer.render(values)
+        form = renderer.render(values)
+        return htmlfill.render(form, self.data)
 
     def _add_error(self, fieldname, error):
         if fieldname not in self.errors:
@@ -122,7 +124,7 @@ class Form(object):
                 self._add_error(field.name, msg)
         return value
 
-    def validate(self, values):
+    def validate(self, submitted):
         """Returns True if the validation succeeds else False.
         Validation of the data happens in three stages:
 
@@ -140,19 +142,18 @@ class Form(object):
         are stored in the data dictionary. In case there has been errors
         the dictionary will contain the origin submitted data.
 
-        :values: Dictionary with submitted values.
+        :submitted: Dictionary with submitted values.
         :returns: True or False
 
         """
         # 1. Save copy origin submitted data and than transform the
         # values into a normalized form
-        origin_data = copy(values)
+        origin_values = {}
         values = {}
-        name2faname = {}
-        for fieldname, value in origin_data.iteritems():
+        for fieldname, value in submitted.iteritems():
             n_fn = normalize_fieldname(fieldname)
+            origin_values[n_fn] = value
             values[n_fn] = value
-            name2faname[n_fn] = fieldname
 
         # 2. Iterate over all fields and start the validation.
         for fieldname in values.keys():
@@ -183,7 +184,7 @@ class Form(object):
         if not has_errors:
             self.data = values
         else:
-            self.data = origin_data
+            self.data = origin_values
         self.validated = True
         return not has_errors
 
