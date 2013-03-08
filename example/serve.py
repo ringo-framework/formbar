@@ -9,15 +9,17 @@ from formbar import example_dir
 template_lookup = TemplateLookup(directories=[example_dir],
                                  module_directory='/tmp/phormular_modules')
 
-from formbar import test_dir
 from formbar.config import Config, load
 from formbar.form import Form
 
 
 def index(request):
-    config = Config(load(os.path.join(test_dir, 'form.xml')))
-    form_config = config.get_form('customform')
+    config = Config(load(os.path.join(example_dir, 'example1.xml')))
+    form_config = config.get_form('example1')
     form = Form(form_config)
+
+    if request.POST:
+        valid = form.validate(request.POST.mixed())
 
     template = template_lookup.get_template("index.mako")
     values = {'form': form.render()}
