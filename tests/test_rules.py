@@ -144,6 +144,17 @@ class TestEvaluateRule(unittest.TestCase):
         rule = self.build_rule(expr)
         self.assertEqual(rule.evaluate(values), False)
 
+    def test_required_ok(self):
+        values = {"field": "we have a value"}
+        expr = "bool($field)"
+        rule = self.build_rule(expr)
+        self.assertEqual(rule.evaluate(values), True)
+
+    def test_required_fail(self):
+        values = {"field": ""}
+        expr = "bool($field)"
+        rule = self.build_rule(expr)
+        self.assertEqual(rule.evaluate(values), False)
 
 if __name__ == '__main__':
     unittest.main()

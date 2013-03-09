@@ -4,6 +4,18 @@ from pyparsing import Literal, Word, alphanums, Regex, \
 
 log = logging.getLogger(__name__)
 
+def _bool(value):
+    """Helper function for checking rules. The fuction is used to check
+    if there is a value provided. So it will check if the value is not
+    an emtpy string or None and returns True in this case. Else False.
+
+    :value: value to be checked
+    :returns: True or False
+
+    """
+    if value is not None:
+        value = unicode(value)
+    return bool(value)
 
 class Rule(object):
     """Rule class. Rules must evaluate to True or False. If the
@@ -64,7 +76,10 @@ class Rule(object):
 
 # Syntax definition for the parser.
 LPAR, RPAR = Literal("("), Literal(")")
-functor = Literal("len")
+
+f_len = Literal("len")
+f_bool = Literal("bool").setParseAction(lambda x: ['_bool'])
+functor = f_len | f_bool
 
 fieldname = Word("$" + alphanums + "_")
 integer = Regex(r"-?\d+")
@@ -105,7 +120,7 @@ function_call = functor + LPAR + Optional(delimitedList(expr)) + RPAR
 expr << (function_call | functor | real | integer | string | fieldname)
 
 operand = expr
-rule = operand + operator + operand
+rule = operand + operator + operand | operand
 
 
 class Parser(object):
