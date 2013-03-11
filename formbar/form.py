@@ -1,7 +1,7 @@
 import datetime
 from formencode import htmlfill
 
-from formbar.fahelpers import get_fieldset, normalize_fieldname
+from formbar.fahelpers import get_fieldset
 from formbar.renderer import FormRenderer
 
 
