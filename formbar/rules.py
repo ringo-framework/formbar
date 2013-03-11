@@ -60,7 +60,7 @@ class Rule(object):
         for token in self.expr:
             if token.startswith('$'):
                 token = values.get(token.strip('$'))
-                if isinstance(token, str):
+                if isinstance(token, basestring):
                     token = "'%s'" % token
             rule.append(str(token))
         try:
