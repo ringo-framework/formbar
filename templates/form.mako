@@ -46,6 +46,9 @@
         <% field = form.get_field(form._config._id2name[child.attrib.get('ref')]) %>
         <% fieldconfig = form._config.get_field(field.key) %>
         <label for="${field.name}">
+          % if fieldconfig.number:
+            <sup>(${fieldconfig.number})</sup>
+          % endif
           ${field.label()}
           % if field.is_required():
             <a href="#" data-toggle="tooltip" class="formbar-tooltip" data-original-title="Required field"><i class="icon-asterisk"></i></a>

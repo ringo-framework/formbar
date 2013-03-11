@@ -227,7 +227,6 @@ class Field(Config):
         """Label of the field. If no label is provied the a capitalized
         form of the name is used"""
 
-        # @TODO: Add this to the renderer.
         self.number = entity.attrib.get('number', '')
         """A ordering number for the field. In some form it is helpfull
         to be able to refer to a specific field by its number. The
