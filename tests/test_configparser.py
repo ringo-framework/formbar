@@ -165,7 +165,7 @@ class TestFieldConfig(unittest.TestCase):
         self.assertEqual(len(self.dfield.rules), 0)
 
     def test_rules_custom(self):
-        self.assertEqual(len(self.ifield.rules), 1)
+        self.assertEqual(len(self.ifield.rules), 2)
 
 if __name__ == '__main__':
     unittest.main()
