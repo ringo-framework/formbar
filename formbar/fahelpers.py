@@ -18,32 +18,18 @@ def populate_dummy_item(cls, config):
         setattr(cls, name, formalchemy.Field())
 
 
-def normalize_fieldname(name):
-    """Returns a normalized fieldname of the given formalchemy
-    fieldname. On normalisation the prefix {Model}-{pk} will be removed
-    as there a some places in the application where normalised fielname
-    is needed.
-
-    :name: formalchemy fieldname
-    :returns: fieldname without prefix {Model}-{pk}
-
-    """
-    # @TODO: Write test
-    # Normalize fieldname and remove the FormAlchemy specific
-    # prefix {Model}-{pk}. The fieldname is usally the last element.
-    return name.split('-')[-1]
-
-
 def get_fieldset(item, config, dbsession=None):
     """Returns a FA fieldset. If an item is provied the fieldset is
     based on the items attributes. If no item is provided a
     ``DummyItem`` is created with the entities defined in the config
     file."""
+    # @TODO: Check if it is ok the not include the {Model}-{pk} prefix
+    # to the naming in the fieldnames.
     if item is None:
         populate_dummy_item(DummyItem, config)
-        fs = formalchemy.FieldSet(DummyItem)
+        fs = formalchemy.FieldSet(DummyItem, format="%(name)s")
     else:
-        fs = formalchemy.FieldSet(item, dbsession)
+        fs = formalchemy.FieldSet(item, dbsession, format="%(name)s")
 
     configured_fields = []
     additional_fields = []

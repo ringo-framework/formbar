@@ -151,28 +151,22 @@ class Form(object):
         :returns: True or False
 
         """
-        # 1. Save copy origin submitted data and than transform the
-        # values into a normalized form
-        origin_values = {}
-        values = {}
-        for fieldname, value in submitted.iteritems():
-            n_fn = normalize_fieldname(fieldname)
-            origin_values[n_fn] = value
-            values[n_fn] = value
 
-        # 2. Iterate over all fields and start the validation.
-        for fieldname in values.keys():
-            field = self._config.get_field(normalize_fieldname(fieldname))
+        # This dictionary will contain the converted data
+        values = {}
+        # 1. Iterate over all fields and start the validation.
+        for fieldname in submitted.keys():
+            field = self._config.get_field(fieldname)
             # 3. Prevalidation
             for rule in field.rules:
                 if rule.mode != 'pre':
                     continue
-                result = rule.evaluate(values)
+                result = rule.evaluate(submitted)
                 if not result:
                     self._add_error(fieldname, rule.msg)
 
             # 4. Basic type conversations, Defaults to String
-            values[fieldname] = self._convert(field, values[fieldname])
+            values[fieldname] = self._convert(field, submitted[fieldname])
 
             # 5. Postvalidation
             for rule in field.rules:
@@ -189,7 +183,7 @@ class Form(object):
         if not has_errors:
             self.data = values
         else:
-            self.data = origin_values
+            self.data = submitted
         self.validated = True
         return not has_errors
 
