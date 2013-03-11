@@ -244,3 +244,12 @@ class Field(Config):
             mode = rule.attrib.get('mode')
             expr = parser.parse(expr)
             self.rules.append(Rule(expr, msg, mode))
+
+        # Finally add a required rule if the field is marked as
+        # requiered.
+        if self.required:
+            expr = "bool($%s)" % self.name
+            msg = "This field is required. You need to provide a value"
+            mode = "pre"
+            expr = parser.parse(expr)
+            self.rules.append(Rule(expr, msg, mode))
