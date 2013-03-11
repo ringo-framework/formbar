@@ -49,6 +49,11 @@ class TestParseRule(unittest.TestCase):
         result = self.parser.parse(expr)
         self.assertEqual(expr, "".join(result.asList()))
 
+    def test_function_bool_expr(self):
+        expr = "bool($field)"
+        result = self.parser.parse(expr)
+        self.assertEqual('_bool($field)', "".join(result.asList()))
+
 
 class TestEvaluateRule(unittest.TestCase):
 
