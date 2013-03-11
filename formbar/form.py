@@ -94,6 +94,11 @@ class Form(object):
         :field: configuration of the field
         :value: value to be converted
         """
+        # Handle missing value. Currently we just return None in case
+        # that the provided value is an empty String
+        if value == "":
+            return None
+
         dtype = field.type
         if dtype == 'integer':
             try:
