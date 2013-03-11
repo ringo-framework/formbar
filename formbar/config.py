@@ -230,7 +230,8 @@ class Field(Config):
         # @TODO: Add this to the renderer.
         self.number = entity.attrib.get('number', '')
         """A ordering number for the field. In some form it is helpfull
-        to be able to refer to a specific field by its number"""
+        to be able to refer to a specific field by its number. The
+        number will be rendered next to the label of the field."""
 
         self.type = entity.attrib.get('type', 'string')
         """The datatype for this field. The data type is important for
