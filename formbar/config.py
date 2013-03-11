@@ -217,14 +217,47 @@ class Field(Config):
 
         # Attributes of the field
         self.id = entity.attrib.get('id')
+        """Id of the field. Usally only used to refer to the field.
+        Example labels."""
+
         self.name = entity.attrib.get('name')
+        """Name of the field. values will be submitted using this name"""
+
         self.label = entity.attrib.get('label', self.name.capitalize())
+        """Label of the field. If no label is provied the a capitalized
+        form of the name is used"""
+
+        # @TODO: Add this to the renderer.
         self.number = entity.attrib.get('number', '')
+        """A ordering number for the field. In some form it is helpfull
+        to be able to refer to a specific field by its number"""
+
         self.type = entity.attrib.get('type', 'string')
+        """The datatype for this field. The data type is important for
+        converting the submitted data into a python value. Note that
+        this option is ignored if the form is used to render an
+        SQLAlchemy mapped item."""
+
         self.css = entity.attrib.get('css', '')
+        """A string which will be added to the class tag of the form"""
+
         self.required = entity.attrib.get('required', 'false') == 'true'
+        """Flag to mark the field as a required field. If this tag is
+        set an additional rule will be added to the field and an astrix
+        is rendered at the label of the field. Note that this option
+        might not be needed to be set if the form is used to render a
+        SQLAlchemy mapped item as this. In this case the required flag
+        is already set by the underlying FormAlchemy library by checking
+        if the database field is 'NOT NULL'. Defaults to False"""
+
         self.readonly = entity.attrib.get('readonly', 'false') == 'true'
+        """Flag to set the field as a readonly field. If set the field
+        will be rendered as a simple textfield which does not allow to
+        change or enter any data. Defaults to False"""
+
         self.autocomplete = entity.attrib.get('autocomplete', 'on')
+        """Flag to enable or disable the automcomplete feature for this
+        field. Defaults to enabled autocompletion"""
 
         # Subelements of the fields
 
