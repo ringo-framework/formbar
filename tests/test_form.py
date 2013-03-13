@@ -149,9 +149,9 @@ class TestFormAlchemyForm(unittest.TestCase):
         if form.validate(values):
             saved_item = form.save()
             self.assertEqual(saved_item, item)
-            result = self.session.query(User).all()
-            self.assertEqual(len(result), 1)
-            self.assertEqual(result[0].name, "paul")
+        result = self.session.query(User).all()
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0].name, "paul")
 
     def test_edit_save(self):
         form_config = self.config.get_form('userform2')
@@ -164,10 +164,10 @@ class TestFormAlchemyForm(unittest.TestCase):
                   "password": "1"}
         if form.validate(values):
             form.save()
-            result = self.session.query(User).all()
-            self.assertEqual(len(result), 2)
-            self.assertEqual(result[0].name, "ed")
-            self.assertEqual(result[1].name, "paulpaulpaul")
+        result = self.session.query(User).all()
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0].name, "ed")
+        self.assertEqual(result[1].name, "paulpaulpaul")
 
 
 if __name__ == '__main__':
