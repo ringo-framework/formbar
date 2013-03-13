@@ -157,6 +157,7 @@ class Form(object):
 
         # This dictionary will contain the converted data
         values = {}
+        fa_validated = False
         # 1. Iterate over all fields and start the validation.
         for fieldname in submitted.keys():
             field = self._config.get_field(fieldname)
@@ -169,7 +170,26 @@ class Form(object):
                     self._add_error(fieldname, rule.msg)
 
             # 4. Basic type conversations, Defaults to String
-            values[fieldname] = self._convert(field, submitted[fieldname])
+            # Validation can happen in two variations:
+            #
+            # 4.1 If item is None (No sqlalchemy mapped item is provided),
+            # then convert each field in the Form into its python type.
+            #
+            # 4.2 If an item was provided, than use the FormAlchemy
+            # validation once for the whole fieldset. After validation
+            # was done save the data into the internal data dictionary.
+            if self._item is None:
+                values[fieldname] = self._convert(field, submitted[fieldname])
+            else:
+                if not fa_validated:
+                    self.fs.rebind(self._item, data=submitted)
+                    fa_valid = self.fs.validate()
+                    fa_validated = True
+                    if not fa_valid:
+                        # Collect all errors form formalchemy
+                        for err_field, err_msg in self.fs.errors.iteritems():
+                            self._add_error(err_field.key, err_msg)
+                values[fieldname] = self.fs[fieldname].raw_value
 
             # 5. Postvalidation
             for rule in field.rules:
