@@ -86,7 +86,10 @@ class Form(object):
     def _add_error(self, fieldname, error):
         if fieldname not in self.errors:
             self.errors[fieldname] = []
-        self.errors[fieldname].append(error)
+        if isinstance(error, list):
+            self.errors[fieldname].extend(error)
+        else:
+            self.errors[fieldname].append(error)
 
     def _convert(self, field, value):
         """Returns a converted value depending of the fields datatype
