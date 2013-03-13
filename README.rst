@@ -10,7 +10,7 @@ files to separate the form definition form the implementation and handle it as
 configuration.
 
 Formbar is the German word for "shapeable" and should emphasise the
-that formbar hopefully makes shaping your forms more easy.
+character of formbar which hopefully makes shaping your forms more easy.
 
 Formbar uses a subset of the
 `FormAlchemy <https://pypi.python.org/pypi/FormAlchemy/>`_ as underlying
