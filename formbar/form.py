@@ -60,7 +60,7 @@ class Form(object):
         self.validated = False
         """Flag to indicate if the form has been validated. Init value
         is False.  which means no validation has been done."""
-        self.fs = get_fieldset(item, config)
+        self.fs = get_fieldset(item, config, dbsession)
         """FormAlchemy fieldset"""
 
     def get_field(self, name):
