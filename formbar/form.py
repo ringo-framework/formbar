@@ -217,9 +217,19 @@ class Form(object):
         :returns: Item with validated data.
 
         """
-        #@TODO: Only allow saving if the validation succeeded.
-        if self.validated:
-            #@TODO: Save item and return
-            return self._item
-        else:
+        if not self.validated:
             raise StateError('Saving is not possible without prior validation')
+        if bool(self.errors):
+            raise StateError('Saving is not possible if form has errors')
+
+        # @FIXME: _item is only set when this form is used in connection
+        # with an SQLAlchemy mapped item.If the form is used as normal
+        # form _item is none. This is not consistent. There seems to be
+        # more options to fix this:
+        # 1. Raise exception when calling save if there is no _item.
+        # 2. Make sure there is always an item
+        # 3. Save the item if there is an item, else ignore. Return None
+        # in both cases.
+        if self._item is not None:
+            self.fs.sync()
+            return self._item
