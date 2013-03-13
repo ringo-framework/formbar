@@ -3,7 +3,7 @@
   <source>
     <!-- Define different entity types -->
     <entity id="e1" name="name">
-      <rule expr="len($name) ge 8" mode="pre"></rule>
+      <rule expr="len($name) ge 8"></rule>
     </entity>
     <entity id="e2" name="fullname"/>
     <entity id="e3" name="password"/>
