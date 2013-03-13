@@ -26,7 +26,8 @@
         <a class="brand" href="#">Formbar</a>
         <div class="nav-collapse collapse">
           <ul class="nav">
-            <li class="active"><a href="#">Base</a></li>
+            <li class="active"><a href="example1">Example 1</a></li>
+            <li class=""><a href="example2">Example 2</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
