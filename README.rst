@@ -2,15 +2,15 @@ Formbar
 =======
 
 Formbar is a python library to layout, render and validate HTML forms in web
-applications. Formbar renders forms which are compatible with [Twitter
-Bootstrap](twitter.github.com/bootstrap/) styles.
+applications. Formbar renders forms which are compatible with `Twitter
+Bootstrap <twitter.github.com/bootstrap/>`_ styles.
 
 In contrast to many other form libraries forms with formbar are configured in XML
 files to separate the form definition form the implementation and handle it as
 configuration.
 
 Formbar uses a subset of the
-[FormAlchemy](https://pypi.python.org/pypi/FormAlchemy/>) as underlying
+`FormAlchemy <https://pypi.python.org/pypi/FormAlchemy/>`_ as underlying
 library for rendering and basic validation.
 
 Features
@@ -24,6 +24,24 @@ Features
 * Error messages
 * Help texts
 * Numbering of fields
+
+Getting started
+---------------
+Please refer to formbar documentation for further information how to get
+started using formbar.
+For all the impatient out there here comes a very comprehensive example code
+which should give a glimpse on how things could work for you::
+
+        from formbar.config import Config, load
+        from formbar.form import Form
+
+        # Simple rendering here, no data submission
+        # nor validation or saving.
+        config = Config(load('/path/to/formconfig.xml'))
+        form_config = config.get_form('example')
+        form = Form(form_config)
+        form.render()
+
 
 Documentation
 -------------
