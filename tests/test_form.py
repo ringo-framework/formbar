@@ -145,13 +145,14 @@ class TestFormAlchemyForm(unittest.TestCase):
         # Important! Provide the dbsession if you want to create a new
         # item
         form = Form(form_config, item, self.session)
-        values = {"name": "paul", "fullname": "Paul Wright", "password": "xxx"}
+        values = {"name": "paulpaulpaul", "fullname": "Paul Wright",
+                  "password": "1"}
         if form.validate(values):
             saved_item = form.save()
             self.assertEqual(saved_item, item)
         result = self.session.query(User).all()
         self.assertEqual(len(result), 1)
-        self.assertEqual(result[0].name, "paul")
+        self.assertEqual(result[0].name, "paulpaulpaul")
 
     def test_edit_save(self):
         form_config = self.config.get_form('userform2')
