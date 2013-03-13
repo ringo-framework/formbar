@@ -189,7 +189,10 @@ class Form(object):
                         # Collect all errors form formalchemy
                         for err_field, err_msg in self.fs.errors.iteritems():
                             self._add_error(err_field.key, err_msg)
-                values[fieldname] = self.fs[fieldname].raw_value
+                if not fa_valid:
+                    values[fieldname] = self.fs[fieldname].raw_value
+                else:
+                    values[fieldname] = self.fs[fieldname].value
 
             # 5. Postvalidation
             for rule in field.rules:
