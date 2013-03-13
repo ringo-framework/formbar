@@ -18,6 +18,21 @@ def populate_dummy_item(cls, config):
         setattr(cls, name, formalchemy.Field())
 
 
+def get_data(fs):
+    """Returns a dictionary with the data of the given fieldset.
+
+
+    :fs: Fieldset.
+    :returns: Dictionary with the values of the fieldset.
+
+    """
+    values = {}
+    for field in fs.render_fields.values():
+        values[field.key] = field.value
+    return values
+
+
+
 def get_fieldset(item, config, dbsession=None):
     """Returns a FA fieldset. If an item is provied the fieldset is
     based on the items attributes. If no item is provided a

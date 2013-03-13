@@ -1,7 +1,7 @@
 import datetime
 from formencode import htmlfill
 
-from formbar.fahelpers import get_fieldset
+from formbar.fahelpers import get_fieldset, get_data
 from formbar.renderer import FormRenderer
 
 
@@ -49,7 +49,9 @@ class Form(object):
         self._item = item
         self._dbsession = dbsession
 
-        self.data = {}
+        self.fs = get_fieldset(item, config, dbsession)
+        """FormAlchemy fieldset"""
+        self.data = get_data(self.fs)
         """After submission this Dictionary will contain either the
         validated data on successfull validation or the origin submitted
         data."""
@@ -60,8 +62,6 @@ class Form(object):
         self.validated = False
         """Flag to indicate if the form has been validated. Init value
         is False.  which means no validation has been done."""
-        self.fs = get_fieldset(item, config, dbsession)
-        """FormAlchemy fieldset"""
 
     def get_field(self, name):
         """Returns a FormAlchemy field instance.
