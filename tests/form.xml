@@ -16,7 +16,24 @@
     <entity id="e4" name="date" label="Date field" type="date" autocomplete="off" css="datefield" number="1" readonly="true">
       <help>This is my helptext</help>
     </entity>
+    <!-- Fields for the user object -->
+    <entity id="e5" name="name"/>
+    <entity id="e6" name="fullname"/>
+    <entity id="e7" name="password"/>
   </source>
+  <form id="userform1">
+    <row>
+      <col><field ref="e6"/></col>
+      <col><field ref="e7"/></col>
+    </row>
+  </form>
+  <form id="userform2">
+    <row>
+      <col><field ref="e5"/></col>
+      <col><field ref="e6"/></col>
+      <col><field ref="e7"/></col>
+    </row>
+  </form>
   <form id="testform">
   </form>
   <form id="customform" css="testcss" autocomplete="off" method="GET" action="http://" enctype="multipart/form-data">
