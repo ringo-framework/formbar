@@ -24,9 +24,12 @@ Features
 * Type conversation and validation
 * XML based form definition
 * Row and column based layouts
+* Twitter bootstrap support
+* Custom CSS styling
 * Error messages
 * Help texts
 * Numbering of fields
+* ...
 
 Getting started
 ---------------
