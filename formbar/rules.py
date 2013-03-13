@@ -45,6 +45,8 @@ class Rule(object):
         if msg is None:
             self.msg = 'Expression "%s" failed' % "".join(expr)
         self.mode = mode
+        if mode is None:
+            self.mode = 'pre'
 
     def evaluate(self, values):
         """Returns True or False. Evaluates the expression of the rule against

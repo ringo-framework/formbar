@@ -65,6 +65,12 @@ class TestEvaluateRule(unittest.TestCase):
         rule = Rule(result)
         return rule
 
+    def test_default_mode(self):
+        values = {"field": "string"}
+        expr = "$field=='string'"
+        rule = self.build_rule(expr)
+        self.assertEqual(rule.mode, 'pre')
+
     def test_eq_expr_ok(self):
         values = {"field": "string"}
         expr = "$field=='string'"
