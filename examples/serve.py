@@ -6,21 +6,24 @@ from pyramid.response import Response
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
-engine = create_engine('sqlite:///:memory:', echo=True)
-Session = sessionmaker(bind=engine)
+engine = create_engine('sqlite:///:memory:', echo=False)
+Session = scoped_session(sessionmaker())
+Session.configure(bind=engine)
 Base = declarative_base()
 
 
 from mako.lookup import TemplateLookup
-from formbar import example_dir
+from formbar import example_dir, logging
 from formbar.config import Config, load
 from formbar.form import Form
 
 template_lookup = TemplateLookup(directories=[example_dir],
                                  module_directory='/tmp/phormular_modules')
 Base.metadata.create_all(engine)
+
+log = logging.getLogger(__name__)
 
 
 class User(Base):
@@ -41,12 +44,17 @@ class User(Base):
                                             self.password)
 
 
-def get_item():
+def add_item():
     session = Session()
     ed_user = User('ed', 'Ed Jones', 'edspassword')
     session.add(ed_user)
     session.commit()
     return ed_user
+
+
+def get_items():
+    session = Session()
+    return session.query(User).all()
 
 
 def example_1(request):
@@ -66,10 +74,12 @@ def example_2(request):
     """Testfunction to check if SQL-Alchemy enabled forms to work"""
     config = Config(load(os.path.join(example_dir, 'example2.xml')))
     form_config = config.get_form('form')
-    form = Form(form_config, get_item())
+    items = get_items()
+    form = Form(form_config, items[0])
 
     if request.POST:
-        if form.validate(request.POST.mixed()):
+        values = request.POST.mixed()
+        if form.validate(values):
             form.save()
 
     template = template_lookup.get_template("index.mako")
@@ -78,6 +88,9 @@ def example_2(request):
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
+    add_item()
+    add_item()
+    add_item()
     config = Configurator()
     config.add_route('root', '/')
     config.add_route('ex1', '/example1')
