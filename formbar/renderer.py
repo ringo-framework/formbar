@@ -88,3 +88,25 @@ class FormRenderer(Renderer):
         html.append('</form>')
         html.append('</div>')
         return "".join(html)
+
+
+class FieldRenderer(Renderer):
+    """Renderer for fields. The renderer will build the the HTML for the
+    provided field."""
+
+    def __init__(self, field):
+        """Initialize the Renderer with the field instance.
+
+        :field: Field instance
+
+        """
+        Renderer.__init__(self)
+
+        self._field = field
+        self.template = template_lookup.get_template("field.mako")
+
+    def render(self):
+        # TODO: Split rendering in four parts: label, fieldbody, errors,
+        # help. Each in its own template.
+        values = {'field': self._field}
+        return self.template.render(**values)

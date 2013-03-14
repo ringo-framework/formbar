@@ -2,7 +2,7 @@ import datetime
 from formencode import htmlfill
 
 from formbar.fahelpers import get_fieldset, get_data
-from formbar.renderer import FormRenderer
+from formbar.renderer import FormRenderer, FieldRenderer
 
 
 class Error(Exception):
@@ -55,22 +55,44 @@ class Form(object):
         """After submission this Dictionary will contain either the
         validated data on successfull validation or the origin submitted
         data."""
-        self.errors = {}
-        """This dictionary will contain the errors if the validation
-        fails. The key of the dictionary is the fieldname of the field.
-        As a field can have more than one error the value is a list."""
         self.validated = False
         """Flag to indicate if the form has been validated. Init value
         is False.  which means no validation has been done."""
+        self.fields = self._build_fields()
+        """Dictionary with fields."""
 
-    def get_field(self, name):
-        """Returns a FormAlchemy field instance.
-
-        :name: @todo
-        :returns: @todo
+    def _build_fields(self):
+        """Returns a dictionary with all Field instanced which are
+        configured for this form.
+        :returns: Dictionary with Field instances
 
         """
-        return self.fs[name]
+        fields = {}
+        for name, field in self._config.get_fields().iteritems():
+            fa_field = self.fs[name]
+            fields[name] = Field(field, fa_field)
+        return fields
+
+    def has_errors(self):
+        """Returns True if one of the fields in the form has errors"""
+        for field in self.fields.values():
+            if len(field.get_errors()) > 0:
+                return True
+        return False
+
+    def get_errors(self):
+        """Returns a dictionary of all errors in the form.  This
+        dictionary will contain the errors if the validation fails. The
+        key of the dictionary is the fieldname of the field.  As a field
+        can have more than one error the value is a list."""
+        errors = {}
+        for field in self.fields.values():
+            if len(field.get_errors()) > 0:
+                errors[field.name] = field.get_errors()
+        return errors
+
+    def get_field(self, name):
+        return self.fields[name]
 
     def render(self, values={}):
         """@todo: Docstring for render
@@ -84,12 +106,12 @@ class Form(object):
         return htmlfill.render(form, self.data)
 
     def _add_error(self, fieldname, error):
-        if fieldname not in self.errors:
-            self.errors[fieldname] = []
+        field = self.get_field(fieldname)
         if isinstance(error, list):
-            self.errors[fieldname].extend(error)
+            for err in error:
+                field.add_error(err)
         else:
-            self.errors[fieldname].append(error)
+            field.add_error(error)
 
     def _convert(self, field, value):
         """Returns a converted value depending of the fields datatype
@@ -205,7 +227,7 @@ class Form(object):
         # If the form is valid. Save the converted and validated data
         # into the data dictionary. If not, than save the origin
         # submitted data.
-        has_errors = bool(self.errors)
+        has_errors = self.has_errors()
         if not has_errors:
             self.data = values
         else:
@@ -222,7 +244,7 @@ class Form(object):
         """
         if not self.validated:
             raise StateError('Saving is not possible without prior validation')
-        if bool(self.errors):
+        if self.has_errors():
             raise StateError('Saving is not possible if form has errors')
 
         # @FIXME: _item is only set when this form is used in connection
@@ -236,3 +258,44 @@ class Form(object):
         if self._item is not None:
             self.fs.sync()
             return self._item
+
+
+class Field(object):
+    """Wrapper for fields in the form. The purpose of this class is to
+    provide a common interface for the renderer independent to the
+    underlying implementation detail of the field."""
+
+    def __init__(self, config, fa_field):
+        """Initialize the field with the given field configuration.
+
+        :config: Field configuration
+
+        """
+        self._config = config
+        self._fa_field = fa_field
+        self._errors = []
+
+    def __getattr__(self, name):
+        """Make attributes from the configuration directly available"""
+        return getattr(self._config, name)
+
+    def add_error(self, error):
+        self._errors.append(error)
+
+    def get_errors(self):
+        return self._errors
+
+    def render(self):
+        """Returns the rendererd HTML for the field"""
+        renderer = FieldRenderer(self)
+        return renderer.render()
+
+    def is_required(self):
+        """Returns true if either the required flag of the field
+        configuration is set or the formalchemy field is required."""
+        return self.required or self._fa_field.is_required()
+
+    def is_readonly(self):
+        """Returns true if either the readonly flag of the field
+        configuration is set or the formalchemy field is readonly."""
+        return self.readonly or self._fa_field.is_readonly()

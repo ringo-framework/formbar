@@ -42,41 +42,8 @@
       % endif
     % else:
       % if child.tag == "field":
-
         <% field = form.get_field(form._config._id2name[child.attrib.get('ref')]) %>
-        <% fieldconfig = form._config.get_field(field.key) %>
-        <label for="${field.name}">
-          % if fieldconfig.number:
-            <sup>(${fieldconfig.number})</sup>
-          % endif
-          ${field.label()}
-          % if field.is_required():
-            <a href="#" data-toggle="tooltip" class="formbar-tooltip" data-original-title="Required field"><i class="icon-asterisk"></i></a>
-          % endif
-        </label>
-        % if field.is_readonly():
-          <div class="readonlyfield">
-            ${field.readonly().render() or "&nbsp;"}
-          </div>
-        % else:
-          ${field.render()}
-        % endif
-        ## Errors
-        % if len(form.errors.get(field.key, [])) > 0:
-          % for error in form.errors[field.key]:
-            <div class="text-error">
-              <i class="icon-exclamation-sign"></i>
-              ${error}
-            </div>
-          % endfor
-        % endif
-        ## Helptexts
-        % if fieldconfig.help is not None:
-        <div class="text-help">
-          <i class="icon-info-sign"></i>
-          ${fieldconfig.help}
-        </div>
-        % endif
+        ${field.render()}
       % elif child.tag == "snippet":
         <% ref = child.attrib.get('ref') %>
         % if ref:
