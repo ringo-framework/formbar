@@ -51,7 +51,11 @@ class TestFormValidation(unittest.TestCase):
 
     def test_form_unknown_field(self):
         values = {'unknown': 'test', 'integer': '15', 'date': '1998-02-01'}
-        self.assertRaises(KeyError, self.form.validate, values)
+        # Not raising error anymore, now just take the value in the
+        # unknown field.
+        #self.assertRaises(KeyError, self.form.validate, values)
+        self.form.validate(values)
+        self.assertEqual(self.form.data['unknown'], 'test')
 
     def test_form_validate_fail(self):
         values = {'default': 'test', 'integer': '15', 'date': '1998-02-01'}
