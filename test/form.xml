@@ -36,7 +36,7 @@
   </form>
   <form id="testform">
   </form>
-  <form id="customform" css="testcss" autocomplete="off" method="GET" action="http://" enctype="multipart/form-data">
+  <form id="customform" css="testcss" readonly="true" autocomplete="off" method="GET" action="http://" enctype="multipart/form-data">
     <row>
       <col><field ref="e1"/></col>
     </row>
