@@ -120,6 +120,11 @@ class Form(Config):
         self.id = tree.attrib.get('id', '')
         """id. ID of the form"""
 
+        self.readonly = tree.attrib.get('readonly', 'false') == 'true'
+        """Flag to set the form as a readonly form. If set all fields in
+        the form.  will be rendered as a simple textfield which does not
+        allow to change or enter any data. Defaults to False"""
+
         self.css = tree.attrib.get('css', '')
         """css. CSS class(es) to be added to the form"""
 
