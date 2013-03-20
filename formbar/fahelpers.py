@@ -1,6 +1,12 @@
 #@TODO: Write tests for the formalchemy helpers.
 import logging
 import formalchemy
+from formalchemy.fields import (
+    TextFieldRenderer,
+    IntegerFieldRenderer,
+    PasswordFieldRenderer,
+    TextAreaFieldRenderer,
+)
 
 log = logging.getLogger(__name__)
 
@@ -31,6 +37,28 @@ def get_data(fs):
         values[field.key] = field.value
     return values
 
+
+def get_renderer(datatype):
+    """Returns the correct Renderer depending of the given datatype
+
+    :datatype: datatype as string.
+    :returns: Renderer.
+
+    """
+    if datatype == 'text':
+        return TextFieldRenderer
+    elif datatype == 'integer':
+        return IntegerFieldRenderer
+    elif datatype == 'float':
+        return TextAreaFieldRenderer
+    elif datatype == 'decimal':
+        return TextAreaFieldRenderer
+    elif datatype == 'textarea':
+        return TextAreaFieldRenderer
+    elif datatype == 'password':
+        return PasswordFieldRenderer
+    else:
+        return None
 
 
 def get_fieldset(item, config, dbsession=None):
@@ -87,11 +115,12 @@ def configure_field(field, config, readonly=False):
     # Set label
     field.label_text = config.label
 
-#    # Get the renderer for the field
-#    renderer = get_renderer(config)
-#    if renderer is not None:
-#        field = field.with_renderer(renderer)
-#
+    # Get the renderer for the field
+    datatype = config.type.lower()
+    renderer = get_renderer(datatype)
+    if renderer is not None:
+        field = field.with_renderer(renderer)
+
     # Is the field marked to be readonly?
     if config.readonly or readonly:
         field = field.readonly()
