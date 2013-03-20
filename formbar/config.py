@@ -140,13 +140,14 @@ class Form(Config):
         'multipart/form-data' if you want to upload files. Defaults to an empty
         string."""
 
-        self._initialized = False
-        """Flag to indicate that the form has been setup"""
-
         self._id2name = {}
         """Dictionary with a mapping of id to fieldnames"""
 
+        self._initialized = False
+        """Flag to indicate that the form has been setup"""
+
         self._fields = self.get_fields()
+        self._initialized = True
         """Dictionary with all fields in the form. The name of the field is the
         key in the dictionary"""
 
@@ -159,6 +160,7 @@ class Form(Config):
         of the field is the key of the dictionary.
 
         """
+
         # Are the fields already initialized?
         if self._initialized:
             return self._fields
@@ -183,8 +185,6 @@ class Form(Config):
             if sref:
                 s = self._parent.get_element('snippet', sref)
                 fields.update(self.get_fields(s))
-
-        self._initialized = True
         return fields
 
     def get_field(self, name):
