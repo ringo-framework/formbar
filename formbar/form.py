@@ -98,15 +98,19 @@ class Form(object):
         return self.fields[name]
 
     def render(self, values={}):
-        """@todo: Docstring for render
+        """Returns the rendererd form as an HTML string.
 
-        :values: Dictionary with values to be prefilled in the rendered form.
+        :values: Dictionary with values to be prefilled/overwritten in
+        the rendered form.
         :returns: Rendered form.
 
         """
         renderer = FormRenderer(self)
         form = renderer.render(values)
-        return htmlfill.render(form, self.data)
+        if values:
+            return htmlfill.render(form, values)
+        else:
+            return form
 
     def _add_error(self, fieldname, error):
         field = self.get_field(fieldname)
