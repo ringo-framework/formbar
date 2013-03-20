@@ -181,6 +181,11 @@ class Form(Config):
             ref = f.attrib.get('ref')
             entity = self._parent.get_element('entity', ref)
             field = Field(entity)
+
+            # Inherit readonly flag to all fields in this field.
+            if self.readonly:
+                field.readonly = self.readonly
+
             fields[field.name] = field
             self._id2name[ref] = field.name
 

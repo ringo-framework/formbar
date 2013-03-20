@@ -80,6 +80,12 @@ class TestFormParser(unittest.TestCase):
     def test_css_custom(self):
         self.assertEqual(self.cform.css, 'testcss')
 
+    def test_readonly_default(self):
+        self.assertEqual(self.dform.readonly, False)
+
+    def test_readonly_custom(self):
+        self.assertEqual(self.cform.readonly, True)
+
     def test_id_default(self):
         self.assertEqual(self.dform.id, 'testform')
 
@@ -93,9 +99,11 @@ class TestFieldConfig(unittest.TestCase):
         tree = load(os.path.join(test_dir, 'form.xml'))
         self.config = Config(tree)
         self.form = self.config.get_form('customform')
+        self.form2 = self.config.get_form('userform2')
         self.dfield = self.form.get_field('default')
         self.cfield = self.form.get_field('date')
         self.ifield = self.form.get_field('integer')
+        self.sfield = self.form2.get_field('name')
 
     def test_get_field_mission(self):
         self.assertRaises(KeyError, self.form.get_field, 'missing')
@@ -112,6 +120,12 @@ class TestFieldConfig(unittest.TestCase):
     def test_requried_custom(self):
         ifield = self.form.get_field('integer')
         self.assertEqual(ifield.required, True)
+
+    def test_readonly_default(self):
+        self.assertEqual(self.sfield.readonly, False)
+
+    def test_readonly_custom(self):
+        self.assertEqual(self.dfield.readonly, True)
 
     def test_css_default(self):
         self.assertEqual(self.dfield.css, '')
