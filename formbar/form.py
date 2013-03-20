@@ -1,8 +1,11 @@
+import logging
 import datetime
 from formencode import htmlfill
 
 from formbar.fahelpers import get_fieldset, get_data
 from formbar.renderer import FormRenderer, FieldRenderer
+
+log = logging.getLogger(__name__)
 
 
 class Error(Exception):
@@ -182,7 +185,24 @@ class Form(object):
         fa_validated = False
         # 1. Iterate over all fields and start the validation.
         for fieldname in submitted.keys():
-            field = self._config.get_field(fieldname)
+            try:
+                field = self._config.get_field(fieldname)
+            except KeyError:
+                # @TODO:
+                # For 1:1 relations FA modifies the fieldname on
+                # rendering to the name of the Foreign Key. This leads
+                # to problems on validation when the validation code
+                # tries to access a field based on the submitted data
+                # and raises a KeyError as there is no field with the
+                # name of the FK.
+                # In this case we we just add the subbmitted data to the
+                # validated data, to make the prefilling work after rendering.
+                values[fieldname] = submitted.get(fieldname)
+                log.warning('Found field "%s" in submitted data,'
+                            ' while validating data for "%s" which is'
+                            ' not a configured field'
+                            % (fieldname, self._item))
+                continue
             # 3. Prevalidation
             for rule in field.rules:
                 if rule.mode != 'pre':
