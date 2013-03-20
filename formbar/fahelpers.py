@@ -79,8 +79,7 @@ def get_fieldset(item, config, dbsession=None):
     for name, field in config.get_fields().iteritems():
         try:
             fa_field = configure_field(fs[name],
-                                       config.get_field(name),
-                                       config.readonly)
+                                       config.get_field(name))
             configured_fields.append(fa_field)
         except AttributeError:
             # Field is not included in the origin fieldset. So add an
@@ -95,14 +94,13 @@ def get_fieldset(item, config, dbsession=None):
     # Finally add additional fields
     for field in additional_fields:
         fa_field = configure_field(formalchemy.Field(field.name),
-                                   config.get_field(field.name),
-                                   config.readonly)
+                                   config.get_field(field.name))
         fs.append(fa_field)
 
     return fs
 
 
-def configure_field(field, config, readonly=False):
+def configure_field(field, config):
     """Returns a modified FA field. Function takes a FA field as argument and
     modifies some attributes like the renderer, label and other things dependig
     on the field configuration.
@@ -125,7 +123,7 @@ def configure_field(field, config, readonly=False):
         field = field.with_renderer(renderer)
 
     # Is the field marked to be readonly?
-    if config.readonly or readonly:
+    if config.readonly:
         field = field.readonly()
 
     # Should the field have enabled autocomplete?
