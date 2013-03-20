@@ -6,8 +6,8 @@
       <rule expr="len($name) ge 8"></rule>
     </entity>
     <entity id="e2" name="fullname"/>
-    <entity id="e3" name="password"/>
-    <entity id="e4" name="rpassword"/>
+    <entity id="e3" name="password" type="password"/>
+    <entity id="e4" name="rpassword" type="password"/>
   </source>
   <form id="form">
     <snippet ref="s1"/>
