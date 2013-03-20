@@ -78,7 +78,9 @@ def get_fieldset(item, config, dbsession=None):
     additional_fields = []
     for name, field in config.get_fields().iteritems():
         try:
-            fa_field = configure_field(fs[name], config.get_field(name))
+            fa_field = configure_field(fs[name],
+                                       config.get_field(name),
+                                       config.readonly)
             configured_fields.append(fa_field)
         except AttributeError:
             # Field is not included in the origin fieldset. So add an
@@ -93,7 +95,8 @@ def get_fieldset(item, config, dbsession=None):
     # Finally add additional fields
     for field in additional_fields:
         fa_field = configure_field(formalchemy.Field(field.name),
-                                   config.get_field(field.name))
+                                   config.get_field(field.name),
+                                   config.readonly)
         fs.append(fa_field)
 
     return fs
