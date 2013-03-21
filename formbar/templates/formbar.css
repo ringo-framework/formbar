@@ -11,6 +11,12 @@ input, select, textarea {
   -moz-box-sizing: border-box;
 }
 
+select[multiple], textarea {
+  /* Reset heigt of the field elements which have been modified by the
+   * border-box modell */
+  height: auto !important;
+}
+
 div.readonlyfield {
   border-radius: 3px 3px 3px 3px;
   background-color: #e0e0e0;
