@@ -9,7 +9,9 @@
   % endif
 </label>
 
-## Field
+## field
+## TODO: Add escaping here! "h" for mako escaping is not available here for
+## unknow reasons.
 % if field.is_readonly():
   <div class="readonlyfield">
     ${field._fa_field.render() or "&nbsp;"}
