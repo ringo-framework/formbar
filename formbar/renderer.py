@@ -49,7 +49,8 @@ class FormRenderer(Renderer):
         html = []
         html.append(self._render_form_start())
         html.append(self._render_form_body())
-        html.append(self._render_form_buttons())
+        if not self._form._config.readonly:
+            html.append(self._render_form_buttons())
         html.append(self._render_form_end())
         return "".join(html)
 
