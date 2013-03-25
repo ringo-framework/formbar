@@ -1,5 +1,6 @@
 import logging
 import datetime
+import sqlalchemy as sa
 from formencode import htmlfill
 
 from formbar.fahelpers import get_fieldset, get_data
@@ -281,8 +282,49 @@ class Form(object):
         # 3. Save the item if there is an item, else ignore. Return None
         # in both cases.
         if self._item is not None:
-            self.fs.sync()
+            try:
+                self._save()
+            except:
+                self.fs.sync()
             return self._item
+
+    def _save(self):
+        print repr(self._item)
+        mapper = sa.orm.object_mapper(self._item)
+        relation_properties = filter(
+            lambda p: isinstance(p, sa.orm.properties.RelationshipProperty),
+            mapper.iterate_properties)
+
+        relation_names = {}
+        for prop in relation_properties:
+            relation_names[prop.key] = prop
+
+        # related_classes = [prop.mapper.class_ for prop in relation_properties]
+        # related_tables = [prop.target for prop in relation_properties]
+
+        for key, value in self.data.iteritems():
+            relation = relation_names.get(key)
+            if relation:
+                log.info('Todo: Implement setting relation')
+                li = self._load_relations(relation.mapper.class_, value)
+                try:
+                    setattr(self._item, key, li)
+                except:
+                    log.exception('Error while setting %s with %s' % (key, li))
+            else:
+                setattr(self._item, key, value)
+
+            print key, getattr(self._item, key)
+        self._dbsession.add(self._item)
+
+    def _load_relations(self, relation, values):
+        loaded = []
+        for value in values:
+            r = self._dbsession.query(relation).filter(relation.id == value).one()
+            loaded.append(r)
+        return loaded
+
+
 
 
 class Field(object):
