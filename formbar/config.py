@@ -209,8 +209,8 @@ class Form(Config):
         try:
             return fields[name]
         except KeyError, e:
-            log.error('Tried to get field "name"'
-                      'which is not included in the form')
+            log.error('Tried to get field "%s"'
+                      ' which is not included in the form' % name)
             raise e
 
 

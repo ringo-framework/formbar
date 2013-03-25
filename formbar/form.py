@@ -188,6 +188,7 @@ class Form(object):
         values = {}
         fa_validated = False
         # 1. Iterate over all fields and start the validation.
+        log.debug('Submitted values: %s' % submitted)
         for fieldname in submitted.keys():
             try:
                 field = self._config.get_field(fieldname)
@@ -205,7 +206,7 @@ class Form(object):
                 log.warning('Found field "%s" in submitted data,'
                             ' while validating data for "%s" which is'
                             ' not a configured field'
-                            % (fieldname, self._item))
+                            % (fieldname, repr(self._item)))
                 continue
             # 3. Prevalidation
             for rule in field.rules:
