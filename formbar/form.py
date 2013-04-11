@@ -24,6 +24,25 @@ class StateError(Error):
         self.msg = msg
 
 
+class Validator(object):
+    """Docstring for Validator """
+
+    def __init__(self, field, error, callback):
+        """@todo: to be defined
+
+        :field: @todo
+        :error: @todo
+        :callback: @todo
+
+        """
+        self._field = field
+        self._error = error
+        self._callback = callback
+
+    def check(self, data):
+        return self._callback(self._field, data)
+
+
 class Form(object):
     """Class for forms. The form will take care for rendering the form,
     validating the submitted data and saving the data back to the
@@ -64,6 +83,8 @@ class Form(object):
         is False.  which means no validation has been done."""
         self.fields = self._build_fields()
         """Dictionary with fields."""
+        self.external_validators = []
+        """List with external validators. Will be called an form validation."""
 
     def _build_fields(self):
         """Returns a dictionary with all Field instanced which are
@@ -97,6 +118,9 @@ class Form(object):
 
     def get_field(self, name):
         return self.fields[name]
+
+    def add_validator(self, validator):
+        return self.external_validators.append(validator)
 
     def render(self, values={}):
         """Returns the rendererd form as an HTML string.
@@ -246,6 +270,11 @@ class Form(object):
                 result = rule.evaluate(values)
                 if not result:
                     self._add_error(fieldname, rule.msg)
+
+        # 6. Custom validation. User defined external validators.
+        for validator in self.external_validators:
+            if not validator.check(values):
+                self._add_error(validator._field, validator._error)
 
         # If the form is valid. Save the converted and validated data
         # into the data dictionary. If not, than save the origin
