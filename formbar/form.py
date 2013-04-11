@@ -108,10 +108,7 @@ class Form(object):
         """
         renderer = FormRenderer(self)
         form = renderer.render(values)
-        if values:
-            return htmlfill.render(form, values)
-        else:
-            return form
+        return htmlfill.render(form, values or self.data)
 
     def _add_error(self, fieldname, error):
         field = self.get_field(fieldname)
