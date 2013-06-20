@@ -315,7 +315,6 @@ class Form(object):
             return self._item
 
     def _save(self):
-        print repr(self._item)
         mapper = sa.orm.object_mapper(self._item)
         relation_properties = filter(
             lambda p: isinstance(p, sa.orm.properties.RelationshipProperty),
@@ -340,7 +339,6 @@ class Form(object):
             else:
                 setattr(self._item, key, value)
 
-            print key, getattr(self._item, key)
         self._dbsession.add(self._item)
 
     def _load_relations(self, relation, values):
