@@ -121,7 +121,7 @@ class TestFormValidation(unittest.TestCase):
         self.assertRaises(StateError, self.form.save)
 
     def test_form_fields(self):
-        self.assertEqual(len(self.form.fields.values()), 5)
+        self.assertEqual(len(self.form.fields.values()), 6)
 
 
 class TestFormRenderer(unittest.TestCase):
