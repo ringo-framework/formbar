@@ -1,0 +1,10 @@
+Development
+===========
+
+- Changed initialisation of field.
+- Implemented dropdonw field
+
+0.1
+===
+
+- First simple release.
