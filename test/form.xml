@@ -16,6 +16,13 @@
     <entity id="e4" name="date" label="Date field" type="date" autocomplete="off" css="datefield" number="1" readonly="true">
       <help>This is my helptext</help>
     </entity>
+    <entity id="e8" name="select">
+      <options>
+        <option value="1">Value 1</option>
+        <option value="2">Value 2</option>
+        <option value="3">Value 3</option>
+      </options>
+    </entity>
     <!-- Fields for the user object -->
     <entity id="e5" name="name"/>
     <entity id="e6" name="fullname"/>
@@ -49,6 +56,7 @@
   <snippet id="s1">
     <row>
       <col><field ref="e0"/></col>
+      <col><field ref="e8"/></col>
     </row>
     <row>
       <col><field ref="e3"/></col>

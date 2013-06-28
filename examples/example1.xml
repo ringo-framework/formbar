@@ -14,6 +14,15 @@
       <rule expr="$integer ge 16" msg="Integer must be greated than 15" mode="post"/>
       <help>This is my helptext</help>
     </entity>
+    <entity id="e5" name="select" label="Select field" type="string">
+      <help>This is my helptext</help>
+      <options>
+        <option value="1">Option 1</option>
+        <option value="2">Option 2</option>
+        <option value="3">Option 3</option>
+        <option value="4">Option 4</option>
+      </options>
+    </entity>
   </source>
   <form id="example1" css="testcss" autocomplete="off" method="POST" action="" enctype="multipart/form-data">
     <snippet ref="s1"/>
@@ -22,6 +31,9 @@
     <row>
       <col><field ref="e3"/></col>
       <col><field ref="e4"/></col>
+    </row>
+    <row>
+      <col><field ref="e5"/></col>
     </row>
     <snippet ref="s2"/>
   </snippet>
