@@ -6,6 +6,7 @@ from formalchemy.fields import (
     IntegerFieldRenderer,
     PasswordFieldRenderer,
     TextAreaFieldRenderer,
+    EmailFieldRenderer,
 )
 
 log = logging.getLogger(__name__)
@@ -21,7 +22,8 @@ def populate_dummy_item(cls, config):
     function."""
     fields = config.get_fields()
     for name, field in fields.iteritems():
-        setattr(cls, name, formalchemy.Field())
+        fa_field = formalchemy.Field()
+        setattr(cls, name, fa_field)
 
 
 def get_data(fs):
@@ -38,27 +40,42 @@ def get_data(fs):
     return values
 
 
-def get_renderer(datatype):
-    """Returns the correct Renderer depending of the given datatype
+def set_renderer(field, config):
+    """Returns the field with optionally changed renderer. The Renderer
+    is depending of the given field
 
-    :datatype: datatype as string.
+    :field: Configured FA field.
+    :config: configuration of the field.
     :returns: Renderer.
 
     """
-    if datatype == 'text':
-        return TextFieldRenderer
+    datatype = config.type.lower()
+    # If there are any options configured for the field user a
+    # dropdown field on default.
+    if len(config.options) > 0:
+        if config.options_display == 'dropdown':
+            field = field.dropdown(options=config.options)
+        # TODO: Radio and Checkbox fields causes and error. See
+        # issue #2
+        elif config.options_display == 'radio':
+            field = field.radio(options=config.options)
+        elif field.options_display == 'checkbox':
+            field = field.checkbox(options=config.options)
+    elif datatype == 'text':
+        field = field.with_renderer(TextFieldRenderer)
+    elif datatype == 'email':
+        field = field.with_renderer(EmailFieldRenderer)
     elif datatype == 'integer':
-        return IntegerFieldRenderer
+        field = field.with_renderer(IntegerFieldRenderer)
     elif datatype == 'float':
-        return TextAreaFieldRenderer
+        field = field.with_renderer(TextFieldRenderer)
     elif datatype == 'decimal':
-        return TextAreaFieldRenderer
+        field = field.with_renderer(TextFieldRenderer)
     elif datatype == 'textarea':
-        return TextAreaFieldRenderer
+        field = field.with_renderer(TextAreaFieldRenderer)
     elif datatype == 'password':
-        return PasswordFieldRenderer
-    else:
-        return None
+        field = field.with_renderer(PasswordFieldRenderer)
+    return field
 
 
 def get_fieldset(item, config, dbsession=None):
@@ -116,11 +133,8 @@ def configure_field(field, config):
     # Set label
     field.label_text = config.label
 
-    # Get the renderer for the field
-    datatype = config.type.lower()
-    renderer = get_renderer(datatype)
-    if renderer is not None:
-        field = field.with_renderer(renderer)
+    # Set the renderer for the field
+    field = set_renderer(field, config)
 
     # Is the field marked to be readonly?
     if config.readonly:

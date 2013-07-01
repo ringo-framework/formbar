@@ -1,9 +1,11 @@
 0.2
 ===
 
-* Added support for dropdown lists
+- Changed initialisation of field.
+- Implemented dropdonw field
+- Layout Change. Field height is now 30px to match the Ringo form layout.
 
 0.1
 ===
 
-* First working version.
+- First working version.

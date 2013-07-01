@@ -271,6 +271,14 @@ class Field(Config):
 
         # Subelements of the fields
 
+        # Options (For dropdown, checkbox and radio fields)
+        self.options = []
+        options = entity.find('options')
+        if options is not None:
+            for option in options:
+                self.options.append((option.text, option.attrib.get('value')))
+            self.options_display = options.attrib.get('display', 'dropdown')
+
         # Help
         self.help = None
         help = entity.find('help')
