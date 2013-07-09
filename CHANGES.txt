@@ -1,5 +1,5 @@
-Development
-===========
+0.2
+===
 
 - Changed initialisation of field.
 - Implemented dropdonw field
@@ -8,4 +8,4 @@ Development
 0.1
 ===
 
-- First simple release.
+- First working version.
