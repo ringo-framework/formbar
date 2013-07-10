@@ -163,7 +163,6 @@ class Form(Config):
 
         :returns: A dictionary with the configured fields in the form. The name
         of the field is the key of the dictionary.
-
         """
 
         # Are the fields already initialized?
@@ -203,8 +202,8 @@ class Form(Config):
 
         :name: name of the field to get
         :returns: ``Field``
-
         """
+
         fields = self.get_fields()
         try:
             return fields[name]
