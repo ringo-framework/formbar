@@ -25,15 +25,18 @@ class FormRenderer(Renderer):
     """Renderer for forms. The renderer will build the the HTML for the
     provided form instance."""
 
-    def __init__(self, form):
+    def __init__(self, form, translate):
         """@todo: to be defined
 
         :form: @todo
+        :translate: Function which return a translated string for a
+        given msgid.
 
         """
         Renderer.__init__(self)
 
         self._form = form
+        self.translate = translate
         self.template = template_lookup.get_template("form.mako")
 
     def render(self, values={}):
@@ -62,14 +65,16 @@ class FormRenderer(Renderer):
                 'action': self._form._config.action,
                 'method': self._form._config.method,
                 'autocomplete': self._form._config.autocomplete,
-                'enctype': self._form._config.enctype}
+                'enctype': self._form._config.enctype,
+                '_': self.translate}
         html.append('<form id="%(id)s" class="%(css)s" '
                     'method="%(method)s" action="%(action)s" '
                     'autocomplete="%(autocomplete)s" >' % attr)
         return "".join(html)
 
     def _render_form_body(self):
-        values = {'form': self._form}
+        values = {'form': self._form,
+                  '_': self.translate}
         return self.template.render(**values)
 
     def _render_form_buttons(self):
@@ -95,7 +100,7 @@ class FieldRenderer(Renderer):
     """Renderer for fields. The renderer will build the the HTML for the
     provided field."""
 
-    def __init__(self, field):
+    def __init__(self, field, translate):
         """Initialize the Renderer with the field instance.
 
         :field: Field instance
@@ -104,10 +109,12 @@ class FieldRenderer(Renderer):
         Renderer.__init__(self)
 
         self._field = field
+        self.translate = translate
         self.template = template_lookup.get_template("field.mako")
 
     def render(self):
         # TODO: Split rendering in four parts: label, fieldbody, errors,
         # help. Each in its own template.
-        values = {'field': self._field}
+        values = {'field': self._field,
+                  '_': self.translate}
         return self.template.render(**values)

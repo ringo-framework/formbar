@@ -59,18 +59,24 @@ class Form(object):
     attributes of the configured fields in the form.
     """
 
-    def __init__(self, config, item=None, dbsession=None):
+    def __init__(self, config, item=None, dbsession=None, translate=None):
         """Initialize the form with ``Form`` configuration instance and
         optional an SQLAlchemy mapped object.
 
         :config: FormConfiguration.
         :item: SQLAlchemy mapped instance
-        :dbsession: Dbsession
+        :dbsession: dbsession
+        :translate: Translation function which returns a translated
+        string for a given msgid
 
         """
         self._config = config
         self._item = item
         self._dbsession = dbsession
+        if translate:
+            self._translate = translate
+        else:
+            self._translate = lambda msgid: msgid
 
         self.fs = get_fieldset(item, config, dbsession)
         """FormAlchemy fieldset"""
@@ -95,7 +101,7 @@ class Form(object):
         fields = {}
         for name, field in self._config.get_fields().iteritems():
             fa_field = self.fs[name]
-            fields[name] = Field(field, fa_field)
+            fields[name] = Field(field, fa_field, self._translate)
         return fields
 
     def has_errors(self):
@@ -130,7 +136,7 @@ class Form(object):
         :returns: Rendered form.
 
         """
-        renderer = FormRenderer(self)
+        renderer = FormRenderer(self, self._translate)
         form = renderer.render(values)
         return htmlfill.render(form, values or self.data)
 
@@ -356,7 +362,7 @@ class Field(object):
     provide a common interface for the renderer independent to the
     underlying implementation detail of the field."""
 
-    def __init__(self, config, fa_field):
+    def __init__(self, config, fa_field, translate):
         """Initialize the field with the given field configuration.
 
         :config: Field configuration
@@ -364,6 +370,7 @@ class Field(object):
         """
         self._config = config
         self._fa_field = fa_field
+        self._translate = translate
         self._errors = []
 
     def __getattr__(self, name):
@@ -378,7 +385,7 @@ class Field(object):
 
     def render(self):
         """Returns the rendererd HTML for the field"""
-        renderer = FieldRenderer(self)
+        renderer = FieldRenderer(self, self._translate)
         return renderer.render()
 
     def is_required(self):
