@@ -1,9 +1,11 @@
 TODO
 ====
+
 - Added Testcases for i18n.
 
-Development
-===========
+0.2.1
+=====
+
 - Added support for i18n. A translation function like gettext can now be
   injected on initialisation of a form.
 
