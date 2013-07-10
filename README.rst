@@ -24,6 +24,7 @@ Features
 * Type conversation and validation
 * XML based form definition
 * Row and column based layouts
+* Different form layouts for the same model (Create, Edit, Read...)
 * Twitter bootstrap support
 * Custom CSS styling
 * Error messages
@@ -40,13 +41,49 @@ which should give a glimpse on how things could work for you::
 
         from formbar.config import Config, load
         from formbar.form import Form
-
         # Simple rendering here, no data submission
         # nor validation or saving.
         config = Config(load('/path/to/formconfig.xml'))
         form_config = config.get_form('example')
         form = Form(form_config)
         form.render()
+
+The corresponding configuration file might look like this one.::
+
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <configuration>
+          <source>
+            <!-- Define different entity types -->
+            <entity id="e1" name="float" label="Float field" type="float">
+              <rule expr="$float lt 100" msg="Float must be lower than 100" mode="post"/>
+              <help>This is is a very long helptext which should span over
+              multiple rows. Further the will check if there are further html
+              tags allowed.</help>
+            </entity>
+            <entity id="e2" name="select" label="Select field" type="string">
+              <help>This is my helptext</help>
+              <options>
+                <option value="1">Option 1</option>
+                <option value="2">Option 2</option>
+                <option value="3">Option 3</option>
+                <option value="4">Option 4</option>
+              </options>
+            </entity>
+          </source>
+          <!-- The entities are finally only referenced to layout the form -->
+          <form id="example1" css="testcss" autocomplete="off" method="POST" action="" enctype="multipart/form-data">
+            <row>
+              <col><field ref="e1"/></col>
+            </row>
+            <row>
+              <col><field ref="e2"/></col>
+            </row>
+          </form>
+        </configuration>
+
+This is a very simple example just to get an impression. There are many more
+configuration options. See the examples folder for more information on the
+configuration or how the validation works.
 
 
 Documentation
