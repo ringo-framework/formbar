@@ -23,6 +23,7 @@ Features
 * Expression bases rules
 * Type conversation and validation
 * XML based form definition
+* i18n Support
 * Row and column based layouts
 * Different form layouts for the same model (Create, Edit, Read...)
 * Twitter bootstrap support
