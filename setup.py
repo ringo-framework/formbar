@@ -31,6 +31,8 @@ setup(name='formbar',
       extras_require={'examples':  ["pyramid"]},
       entry_points="""
       # -*- Entry points: -*-
+      [babel.extractors]
+      formconfig = formbar.i18n:extract_i18n_formconfig
       """,
 
       message_extractors = {'formbar': [
