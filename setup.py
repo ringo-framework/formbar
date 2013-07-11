@@ -25,10 +25,16 @@ setup(name='formbar',
       install_requires=['pyparsing==1.5.6',
                         'formalchemy',
                         'formencode',
+                        'babel',
                         'mako'],
       # Used for the example server
       extras_require={'examples':  ["pyramid"]},
       entry_points="""
       # -*- Entry points: -*-
       """,
+
+      message_extractors = {'formbar': [
+            ('**.py', 'python', None),
+            ('templates/**.mako', 'mako', None),
+            ('**.xml', 'formconfig', None)]},
       )
