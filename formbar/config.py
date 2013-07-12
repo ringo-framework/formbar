@@ -51,6 +51,7 @@ class Config(object):
         :returns: list of elements
 
         """
+        print self._tree, name
         qstr = ".//%s" % (name)
         return self._tree.findall(qstr)
 
@@ -155,6 +156,25 @@ class Form(Config):
         self._initialized = True
         """Dictionary with all fields in the form. The name of the field is the
         key in the dictionary"""
+
+    def get_pages(self, root=None):
+        # Get all fields for the form.
+        pages = []
+
+        if root is None:
+            root = self._tree
+
+        # Search for fields
+        for p in root.findall('.//page'):
+            pages.append(p)
+
+        # Now search for snippets
+        for s in root.findall('.//snippet'):
+            sref = s.attrib.get('ref')
+            if sref:
+                s = self._parent.get_element('snippet', sref)
+                pages.extend(self.get_pages(s))
+        return pages
 
     def get_fields(self, root=None):
         """Returns a dictionary of included fields in the form. Fields fetched
