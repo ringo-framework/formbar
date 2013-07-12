@@ -7,10 +7,24 @@ from formalchemy.fields import (
     PasswordFieldRenderer,
     TextAreaFieldRenderer,
     EmailFieldRenderer,
+    FieldRenderer
 )
+from formalchemy import helpers
 
 log = logging.getLogger(__name__)
 
+
+class DateFieldRenderer(FieldRenderer):
+    '''A modified FieldRenderer to edit Datefields.'''
+
+    def render(self, **kwargs):
+        value = self.raw_value
+        kwargs = {'class': 'formbar-datepicker'}
+        return helpers.text_field(self.name, value=value, **kwargs)
+
+    def render_readonly(self, **kwargs):
+        value = self.raw_value
+        return str(value)
 
 class DummyItem(object):
     pass
@@ -71,6 +85,10 @@ def set_renderer(field, config):
         field = field.with_renderer(TextFieldRenderer)
     elif datatype == 'decimal':
         field = field.with_renderer(TextFieldRenderer)
+    elif datatype == 'date':
+        field = field.with_renderer(DateFieldRenderer)
+    # FIXME: textarea is not a datatype but a rendering style for field.
+    # (torsten) <2013-07-12 16:03> 
     elif datatype == 'textarea':
         field = field.with_renderer(TextAreaFieldRenderer)
     elif datatype == 'password':
