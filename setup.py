@@ -17,9 +17,7 @@ setup(name='formbar',
       author_email='torsten@irlaender.de',
       url='https://bitbucket.org/ti/formbar',
       license='GPL',
-      packages=['formbar'],
-      package_dir={'formbar': 'formbar'},
-      package_data={'formbar': ['templates/*.mako']},
+      packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
       install_requires=['pyparsing==1.5.6',
@@ -29,6 +27,7 @@ setup(name='formbar',
                         'mako'],
       # Used for the example server
       extras_require={'examples':  ["pyramid"]},
+      setup_requires=["hgtools"],
       entry_points="""
       # -*- Entry points: -*-
       [babel.extractors]

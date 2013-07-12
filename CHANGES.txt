@@ -3,6 +3,11 @@ TODO
 
 - Added Testcases for i18n.
 
+0.2.2
+=====
+
+- Fix in setup.py. Use hgtools to build package.
+
 0.2.1
 =====
 
