@@ -1,15 +1,15 @@
 ## Render pages
-% if len(form._config.get_elements('page')) > 0:
+% if len(form._config.get_pages()) > 0:
   ## Render tabs
   <div class="tabbable tabs-right">
     <ul class="nav nav-tabs">
-    % for num, page in enumerate(form._config.get_elements('page')):
+    % for num, page in enumerate(form._config.get_pages()):
       <li class="${num==0 and 'active'}"><a href="#${page.attrib.get('id')}" data-toggle="tab">${page.attrib.get('label')}</a></li>
     % endfor
     </ul>
     ## Render tabs-content 
     <div class="tab-content">
-    % for num, page in enumerate(form._config.get_elements('page')):
+    % for num, page in enumerate(form._config.get_pages()):
       <div class="tab-pane ${num==0 and 'active'}" id="${page.attrib.get('id')}">
         ${self.render_recursive(page)}
       </div>
