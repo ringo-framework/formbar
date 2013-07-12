@@ -6,6 +6,11 @@ TODO
 0.2.2
 =====
 
+- Added a new DatefieldRenderer which uses a bootstrap specific datepicker
+  widget. Needs JS. Currently this widget is used if the datetype "date" is
+  provided.
+- Added helper method to get the needed JS code for formbar. Needed in other
+  libraries.
 - Fix in setup.py. Use hgtools to build package.
 
 0.2.1
