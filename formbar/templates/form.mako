@@ -54,6 +54,3 @@
     % endif
   % endfor
 </%def>
-<script>
-  $('.formbar-tooltip').tooltip();
-</script>
