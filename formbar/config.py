@@ -276,7 +276,6 @@ class Field(Config):
         if options is not None:
             for option in options:
                 self.options.append((option.text, option.attrib.get('value')))
-            self.options_display = options.attrib.get('display', 'dropdown')
 
         # Help
         self.help = None
@@ -284,7 +283,12 @@ class Field(Config):
         if help is not None:
             self.help = help.text
 
+        # Renderer
         self.renderer = None
+        renderer_config = entity.find('renderer')
+        if renderer_config is not None:
+            self.renderer = Renderer(renderer_config)
+
         # Get rules
         self.rules = []
         parser = Parser()
@@ -303,3 +307,20 @@ class Field(Config):
             mode = "pre"
             expr = parser.parse(expr)
             self.rules.append(Rule(expr, msg, mode))
+
+class Renderer(Config):
+    """Configuration class for FieldRenderers. This class gives an
+    interface to the Renderer configuration for fields if the field
+    should be rendererd differently than the standard way."""
+
+    def __init__(self, entity):
+        """@todo: to be defined """
+        Config.__init__(self, entity)
+
+        # Attributes of the Renderer
+        self.render_type = entity.attrib.get('type')
+        """
+        Type of the Renderer. Known Renderers:
+        - Datepicker
+        - Textarea
+        """

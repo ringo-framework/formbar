@@ -11,6 +11,9 @@ TODO
   provided.
 - Added helper method to get the needed JS code for formbar. Needed in other
   libraries.
+- Renderer is not set depending on the datatype anymore. Default renderer is
+  a TextfieldRenderer or the Renderer set by Formencode.
+- Renderer is only set by the renderer attribute for an entity
 - Fix in setup.py. Use hgtools to build package.
 
 0.2.1

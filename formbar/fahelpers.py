@@ -55,8 +55,12 @@ def get_data(fs):
 
 
 def set_renderer(field, config):
-    """Returns the field with optionally changed renderer. The Renderer
-    is depending of the given field
+    """Returns the field with optionally changed renderer. The default
+    Renderer is a TextFieldRenderer, or the default renderer is the
+    default FormAlchemy renderer for the underlying datatype in case of
+    an SQLAlchemy mapped field. The Renderer is changed if the field
+    configuration das set a custom renderer. The all prior defined
+    renderer will be replaced by the configured renderer.
 
     :field: Configured FA field.
     :config: configuration of the field.
@@ -64,37 +68,26 @@ def set_renderer(field, config):
 
     """
     datatype = config.type.lower()
-    # If there are any options configured for the field user a
-    # dropdown field on default.
-    if len(config.options) > 0:
-        if config.options_display == 'dropdown':
-            field = field.dropdown(options=config.options)
-        # TODO: Radio and Checkbox fields causes and error. See
-        # issue #2
-        elif config.options_display == 'radio':
-            field = field.radio(options=config.options)
-        elif field.options_display == 'checkbox':
-            field = field.checkbox(options=config.options)
-    elif datatype == 'text':
-        field = field.with_renderer(TextFieldRenderer)
-    elif datatype == 'email':
-        field = field.with_renderer(EmailFieldRenderer)
-    elif datatype == 'integer':
-        field = field.with_renderer(IntegerFieldRenderer)
-    elif datatype == 'float':
-        field = field.with_renderer(TextFieldRenderer)
-    elif datatype == 'decimal':
-        field = field.with_renderer(TextFieldRenderer)
-    elif datatype == 'date':
-        field = field.with_renderer(DateFieldRenderer)
-    # FIXME: textarea is not a datatype but a rendering style for field.
-    # (torsten) <2013-07-12 16:03> 
-    elif datatype == 'textarea':
-        field = field.with_renderer(TextAreaFieldRenderer)
-    elif datatype == 'password':
-        field = field.with_renderer(PasswordFieldRenderer)
-    return field
+    renderer = config.renderer
 
+    if renderer is not None:
+        if renderer.render_type == "datepicker":
+            field = field.with_renderer(DateFieldRenderer)
+        elif renderer.render_type == "textarea":
+            field = field.with_renderer(TextAreaFieldRenderer)
+        elif (renderer.render_type in ["dropdown", "radio", "checkbox"]):
+            # TODO: Radio and Checkbox fields causes and error. See
+            # issue #2
+            if render_type == "dropdown":
+                if len(config.options) > 0:
+                    field = field.dropdown(options=config.options)
+                else:
+                    field = field.dropdown()
+            else:
+                log.warning('%s renderer unsupported' % render_type)
+        elif (renderer.render_type == 'password'):
+            field = field.with_renderer(PasswordFieldRenderer)
+    return field
 
 def get_fieldset(item, config, dbsession=None):
     """Returns a FA fieldset. If an item is provied the fieldset is
