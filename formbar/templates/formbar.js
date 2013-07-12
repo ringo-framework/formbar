@@ -1,4 +1,4 @@
 $('.formbar-tooltip').tooltip();
-$('.datepicker').datepicker({
+$('.formbar-datepicker').datepicker({
     format: 'yyyy-mm-dd'
 });
