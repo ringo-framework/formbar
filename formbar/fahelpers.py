@@ -78,7 +78,7 @@ def set_renderer(field, config):
         elif (renderer.render_type in ["dropdown", "radio", "checkbox"]):
             # TODO: Radio and Checkbox fields causes and error. See
             # issue #2
-            if render_type == "dropdown":
+            if renderer.render_type == "dropdown":
                 if len(config.options) > 0:
                     field = field.dropdown(options=config.options)
                 else:
