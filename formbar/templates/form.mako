@@ -4,13 +4,13 @@
   <div class="tabbable tabs-right">
     <ul class="nav nav-tabs">
     % for num, page in enumerate(form._config.get_pages()):
-      <li class="${num==0 and 'active'}"><a href="#${page.attrib.get('id')}" data-toggle="tab">${page.attrib.get('label')}</a></li>
+      <li class="${num==form.current_page-1 and 'active'}"><a href="#${page.attrib.get('id')}" data-toggle="tab" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${page.attrib.get('label')}</a></li>
     % endfor
     </ul>
     ## Render tabs-content 
     <div class="tab-content">
     % for num, page in enumerate(form._config.get_pages()):
-      <div class="tab-pane ${num==0 and 'active'}" id="${page.attrib.get('id')}">
+      <div class="tab-pane ${num==form.current_page-1 and 'active'}" id="${page.attrib.get('id')}">
         ${self.render_recursive(page)}
       </div>
     % endfor
