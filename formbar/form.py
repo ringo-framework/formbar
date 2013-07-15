@@ -59,7 +59,8 @@ class Form(object):
     attributes of the configured fields in the form.
     """
 
-    def __init__(self, config, item=None, dbsession=None, translate=None):
+    def __init__(self, config, item=None, dbsession=None, translate=None, 
+                 change_page_callback={}):
         """Initialize the form with ``Form`` configuration instance and
         optional an SQLAlchemy mapped object.
 
@@ -67,6 +68,8 @@ class Form(object):
         :item: SQLAlchemy mapped instance
         :dbsession: dbsession
         :translate: Translation function which returns a translated
+        :set_page_callback: Url which will be called when the user
+        changes the currently selected page.
         string for a given msgid
 
         """
@@ -91,6 +94,17 @@ class Form(object):
         """Dictionary with fields."""
         self.external_validators = []
         """List with external validators. Will be called an form validation."""
+        self.change_page_callback = change_page_callback
+        """Dictionary with some parameters used to call an URL when the
+        user changes the currently selected page. The dictionary has the
+        following keys:
+         * url: Name of the URL which will be called
+         * item (optional): A string which is send to the URL as GET
+           paramenter. Often this is the name of the element (clazzname)
+         * itemid (optional): The id of the currently editied element.
+        The url will have the additional parameter "page" which holds
+        the currently selected page.
+        """
 
     def _build_fields(self):
         """Returns a dictionary with all Field instanced which are
