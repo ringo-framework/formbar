@@ -94,6 +94,8 @@ class Form(object):
         """Dictionary with fields."""
         self.external_validators = []
         """List with external validators. Will be called an form validation."""
+        self.current_page = 0
+        """Number of the currently selected page"""
         self.change_page_callback = change_page_callback
         """Dictionary with some parameters used to call an URL when the
         user changes the currently selected page. The dictionary has the
@@ -142,7 +144,7 @@ class Form(object):
     def add_validator(self, validator):
         return self.external_validators.append(validator)
 
-    def render(self, values={}):
+    def render(self, values={}, page=0):
         """Returns the rendererd form as an HTML string.
 
         :values: Dictionary with values to be prefilled/overwritten in
@@ -150,6 +152,7 @@ class Form(object):
         :returns: Rendered form.
 
         """
+        self.current_page = page
         renderer = FormRenderer(self, self._translate)
         form = renderer.render(values)
         return htmlfill.render(form, values or self.data)
