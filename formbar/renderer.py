@@ -9,6 +9,25 @@ template_lookup = TemplateLookup(directories=[template_dir],
 log = logging.getLogger(__name__)
 
 
+def get_renderer(field, translate):
+    """Returns a Renderer. The renderer is choosen based on the
+    configured renderer in the field configuration. If no renderer is
+    configured the default FormAlchemy-Renderer is returned.
+
+    :field: Field
+    :translate: translation function
+    :returns: Renderer
+
+    """
+    renderer = field._config.renderer
+    if renderer is not None:
+        if renderer.render_type == "textarea":
+            return TextareaFieldRenderer(field, translate)
+        elif renderer.render_type == "dropdown":
+            return DropdownFieldRenderer(field, translate)
+    return FAFieldRenderer(field, translate)
+
+
 class Renderer(object):
     """Basic renderer to render Form objects."""
 
