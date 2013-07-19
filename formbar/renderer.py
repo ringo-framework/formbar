@@ -160,3 +160,67 @@ class FieldRenderer(Renderer):
         html.append(self._render_errors())
         html.append(self._render_help())
         return "".join(html)
+
+
+class FAFieldRenderer(FieldRenderer):
+    """A Renderer which uses the FormAlchemy renderer configured for the
+    FA field in for this field."""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("fa_field.mako")
+
+
+class TextFieldRenderer(FieldRenderer):
+    """A Renderer to render simple fa_field elements"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("fa_field.mako")
+
+class TextareaFieldRenderer(FieldRenderer):
+    """A Renderer to render simple fa_field elements"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("textarea.mako")
+
+
+class PasswordFieldRenderer(FieldRenderer):
+    """A Renderer to render passwordfield elements"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("fa_field.mako")
+
+
+class DropdownFieldRenderer(FieldRenderer):
+    """A Renderer to render dropdown list"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("dropdown.mako")
+
+
+class ListFieldRenderer(FieldRenderer):
+    """A Renderer to render selection list"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("fa_field.mako")
+
+
+class CheckboxFieldRenderer(FieldRenderer):
+    """A Renderer to render checkboxes"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("fa_field.mako")
+
+
+class RadioFieldRenderer(FieldRenderer):
+    """A Renderer to render radio boxes"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("fa_field.mako")
