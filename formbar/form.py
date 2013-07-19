@@ -4,7 +4,7 @@ import sqlalchemy as sa
 from formencode import htmlfill
 
 from formbar.fahelpers import get_fieldset, get_data
-from formbar.renderer import FormRenderer, FieldRenderer
+from formbar.renderer import FormRenderer, FieldRenderer, get_renderer
 
 log = logging.getLogger(__name__)
 
@@ -388,6 +388,7 @@ class Field(object):
         self._config = config
         self._fa_field = fa_field
         self._translate = translate
+        self.renderer = get_renderer(self, translate)
         self._errors = []
 
     def __getattr__(self, name):
@@ -408,8 +409,7 @@ class Field(object):
 
     def render(self):
         """Returns the rendererd HTML for the field"""
-        renderer = FieldRenderer(self, self._translate)
-        return renderer.render()
+        return self.renderer.render()
 
     def is_required(self):
         """Returns true if either the required flag of the field
