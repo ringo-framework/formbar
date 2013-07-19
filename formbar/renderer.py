@@ -112,9 +112,32 @@ class FieldRenderer(Renderer):
         self.translate = translate
         self.template = template_lookup.get_template("field.mako")
 
+    def _render_label(self):
+        template = template_lookup.get_template("label.mako")
+        values = {'field': self._field,
+                  '_': self.translate}
+        return template.render(**values)
+
+    def _render_errors(self):
+        template = template_lookup.get_template("errors.mako")
+        values = {'field': self._field,
+                  '_': self.translate}
+        return template.render(**values)
+
+    def _render_help(self):
+        template = template_lookup.get_template("help.mako")
+        values = {'field': self._field,
+                  '_': self.translate}
+        return template.render(**values)
+
     def render(self):
         # TODO: Split rendering in four parts: label, fieldbody, errors,
         # help. Each in its own template.
+        html = []
+        html.append(self._render_label())
         values = {'field': self._field,
                   '_': self.translate}
-        return self.template.render(**values)
+        html.append(self.template.render(**values))
+        html.append(self._render_errors())
+        html.append(self._render_help())
+        return "".join(html)

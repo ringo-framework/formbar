@@ -7,6 +7,8 @@ TODO
   (selected page, item, itemid) to a configurable URL. The server behind the
   URL can save these values in a session and reuse it to preselect the page on
   the next form rendering.
+- Splitted up rendering of forms. The Fieldrenderer now renders label, field,
+  help and errors seperately for each field.
 
 0.2.2
 =====
