@@ -129,7 +129,7 @@ class FieldRenderer(Renderer):
 
         self._field = field
         self.translate = translate
-        self.template = template_lookup.get_template("field.mako")
+        self.template = None
 
     def _render_label(self):
         template = template_lookup.get_template("label.mako")
