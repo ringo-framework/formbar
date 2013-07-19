@@ -394,6 +394,12 @@ class Field(object):
         """Make attributes from the configuration directly available"""
         return getattr(self._config, name)
 
+    def get_value(self):
+        return self._fa_field.raw_value
+
+    def get_options(self):
+        return self._config.options
+
     def add_error(self, error):
         self._errors.append(error)
 
