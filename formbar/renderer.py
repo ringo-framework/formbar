@@ -21,6 +21,10 @@ def get_renderer(field, translate):
     """
     renderer = field._config.renderer
     if renderer is not None:
+        # if there is a external Renderer defined for the given renderer
+        # type then use this one.
+        if field._form.external_renderers.has_key(renderer.render_type):
+            return field._form.external_renderers.get(renderer.render_type)(field, translate)
         if renderer.render_type == "textarea":
             return TextareaFieldRenderer(field, translate)
         elif renderer.render_type == "dropdown":
