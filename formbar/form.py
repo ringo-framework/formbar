@@ -123,7 +123,7 @@ class Form(object):
         fields = {}
         for name, field in self._config.get_fields().iteritems():
             fa_field = self.fs[name]
-            fields[name] = Field(field, fa_field, self._translate)
+            fields[name] = Field(self, field, fa_field, self._translate)
         return fields
 
     def has_errors(self):
@@ -378,19 +378,18 @@ class Form(object):
         return loaded
 
 
-
-
 class Field(object):
     """Wrapper for fields in the form. The purpose of this class is to
     provide a common interface for the renderer independent to the
     underlying implementation detail of the field."""
 
-    def __init__(self, config, fa_field, translate):
+    def __init__(self, form, config, fa_field, translate):
         """Initialize the field with the given field configuration.
 
         :config: Field configuration
 
         """
+        self._form = form
         self._config = config
         self._fa_field = fa_field
         self._translate = translate
