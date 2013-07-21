@@ -31,6 +31,7 @@ Features
 * Error messages
 * Help texts
 * Numbering of fields
+* Extern defined renderers.
 * ...
 
 Getting started
