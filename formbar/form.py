@@ -94,8 +94,6 @@ class Form(object):
         self.validated = False
         """Flag to indicate if the form has been validated. Init value
         is False.  which means no validation has been done."""
-        self.fields = self._build_fields()
-        """Dictionary with fields."""
         self.external_validators = []
         """List with external validators. Will be called an form validation."""
         self.current_page = 0
@@ -113,6 +111,8 @@ class Form(object):
         """
         self.external_renderers = renderers
         """Dictionary with external provided custom renderers."""
+        self.fields = self._build_fields()
+        """Dictionary with fields."""
 
     def _build_fields(self):
         """Returns a dictionary with all Field instanced which are
