@@ -59,8 +59,8 @@ class Form(object):
     attributes of the configured fields in the form.
     """
 
-    def __init__(self, config, item=None, dbsession=None, translate=None, 
-                 change_page_callback={}):
+    def __init__(self, config, item=None, dbsession=None, translate=None,
+                 change_page_callback={}, renderers={}):
         """Initialize the form with ``Form`` configuration instance and
         optional an SQLAlchemy mapped object.
 
@@ -68,9 +68,13 @@ class Form(object):
         :item: SQLAlchemy mapped instance
         :dbsession: dbsession
         :translate: Translation function which returns a translated
+        string for a given msgid
         :set_page_callback: Url which will be called when the user
         changes the currently selected page.
-        string for a given msgid
+        :renderers: A optional dictionary of custom renderers which are
+        provided to the form to render specific form elements. The key
+        is the type of the renderer as named in the formular
+        configuration.
 
         """
         self._config = config
@@ -107,6 +111,8 @@ class Form(object):
         The url will have the additional parameter "page" which holds
         the currently selected page.
         """
+        self.external_renderers = renderers
+        """Dictionary with external provided custom renderers."""
 
     def _build_fields(self):
         """Returns a dictionary with all Field instanced which are
