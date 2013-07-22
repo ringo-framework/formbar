@@ -78,6 +78,8 @@ class Rule(object):
 
 # Syntax definition for the parser.
 LPAR, RPAR = Literal("("), Literal(")")
+LSBR, RSBR = Literal("["), Literal("]")
+
 
 f_len = Literal("len")
 f_bool = Literal("bool").setParseAction(lambda x: ['_bool'])
@@ -106,6 +108,8 @@ def convertOperator(op):
         top = "<"
     elif op == "le":
         top = "<="
+    elif op == "in":
+        top = "in"
     return [top]
 
 op_eq = Literal("eq").setParseAction(convertOperator)
@@ -114,12 +118,14 @@ op_gt = Literal("gt").setParseAction(convertOperator)
 op_ge = Literal("ge").setParseAction(convertOperator)
 op_lt = Literal("lt").setParseAction(convertOperator)
 op_le = Literal("le").setParseAction(convertOperator)
-operator = (oneOf('== < > <= >= !=')
-            | op_eq | op_ne | op_gt | op_ge | op_lt | op_le)
+op_in = Literal("in").setParseAction(convertOperator)
+operator = (oneOf('== < > <= >= != in')
+            | op_eq | op_ne | op_gt | op_ge | op_lt | op_le | op_in)
 
 expr = Forward()
 function_call = functor + LPAR + Optional(delimitedList(expr)) + RPAR
-expr << (function_call | functor | real | integer | string | fieldname)
+option_list = LSBR + Optional(delimitedList(expr, combine=True)) + RSBR
+expr << (option_list | function_call | functor | real | integer | string | fieldname)
 
 operand = expr
 rule = operand + operator + operand | operand
