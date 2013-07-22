@@ -43,7 +43,7 @@ class Rule(object):
         self.expr = expr
         self.msg = msg
         if msg is None:
-            self.msg = 'Expression "%s" failed' % "".join(expr)
+            self.msg = 'Expression "%s" failed' % " ".join(expr)
         self.mode = mode
         if mode is None:
             self.mode = 'pre'
@@ -66,7 +66,7 @@ class Rule(object):
                     token = "'%s'" % token
             rule.append(str(token))
         try:
-            rule_str = "".join(rule)
+            rule_str = " ".join(rule)
             result = eval(rule_str)
             log.debug("Rule: %s -> %s" % (rule_str, result))
             return result
