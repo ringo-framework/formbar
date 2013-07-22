@@ -122,12 +122,10 @@ op_in = Literal("in").setParseAction(convertOperator)
 operator = (oneOf('== < > <= >= != in')
             | op_eq | op_ne | op_gt | op_ge | op_lt | op_le | op_in)
 
-expr = Forward()
-function_call = functor + LPAR + Optional(delimitedList(expr)) + RPAR
-option_list = LSBR + Optional(delimitedList(expr, combine=True)) + RSBR
-expr << (option_list | function_call | functor | real | integer | string | fieldname)
-
-operand = expr
+operand = Forward()
+function_call = functor + LPAR + Optional(delimitedList(operand)) + RPAR
+option_list = LSBR + Optional(delimitedList(operand, combine=True)) + RSBR
+operand << (option_list | function_call | functor | real | integer | string | fieldname)
 rule = operand + operator + operand | operand
 
 
