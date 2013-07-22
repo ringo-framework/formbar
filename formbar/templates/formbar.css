@@ -11,6 +11,10 @@ input, select, textarea {
   -moz-box-sizing: border-box;
 }
 
+label {
+    display: inline;
+}
+
 select[multiple], textarea {
   /* Reset heigt of the field elements which have been modified by the
    * border-box modell */
