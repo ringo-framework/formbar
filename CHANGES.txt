@@ -8,6 +8,7 @@ TODO
 =====
 
 - Fixed readonly view for textarea. Replace \n with <br>
+- Added "in" rule operand. ($field in ['1','2','3'])
 
 0.3
 ===
