@@ -4,7 +4,7 @@ import sqlalchemy as sa
 from formencode import htmlfill
 
 from formbar.fahelpers import get_fieldset, get_data
-from formbar.renderer import FormRenderer, FieldRenderer, get_renderer
+from formbar.renderer import FormRenderer, get_renderer
 
 log = logging.getLogger(__name__)
 
@@ -353,8 +353,8 @@ class Form(object):
         for prop in relation_properties:
             relation_names[prop.key] = prop
 
-        # related_classes = [prop.mapper.class_ for prop in relation_properties]
-        # related_tables = [prop.target for prop in relation_properties]
+        #related_classes = [prop.mapper.class_ for prop in relation_properties]
+        #related_tables = [prop.target for prop in relation_properties]
 
         for key, value in self.data.iteritems():
             relation = relation_names.get(key)
@@ -373,7 +373,8 @@ class Form(object):
     def _load_relations(self, relation, values):
         loaded = []
         for value in values:
-            r = self._dbsession.query(relation).filter(relation.id == value).one()
+            db = self._dbsession
+            r = db.query(relation).filter(relation.id == value).one()
             loaded.append(r)
         return loaded
 
@@ -411,7 +412,7 @@ class Field(object):
         user_defined_options = self._config.options
         if user_defined_options:
             return user_defined_options
-        else:
+        elif self._form._dbsession:
             # Get mapped clazz for the field
             options = []
             mapper = sa.orm.object_mapper(self._form._item)
@@ -421,8 +422,12 @@ class Field(object):
                     items = self._form._dbsession.query(clazz)
                     options = [(item.id, item) for item in items]
                     break
+        else:
+            # TODO: Try to get the session from the item. Ther must be
+            # somewhere the already bound session. (torsten) <2013-07-23 00:27>
+            log.warning('No db connection configured for this form. Can '
+                        'not load options')
         return options
-
 
     def add_error(self, error):
         self._errors.append(error)
