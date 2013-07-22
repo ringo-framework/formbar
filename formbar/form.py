@@ -400,8 +400,12 @@ class Field(object):
         """Make attributes from the configuration directly available"""
         return getattr(self._config, name)
 
-    def get_value(self):
-        return self._fa_field.raw_value
+    def get_value(self, default=None):
+        value = self._fa_field.raw_value
+        if value:
+            return value
+        else:
+            return default
 
     def get_options(self):
         return self._config.options
