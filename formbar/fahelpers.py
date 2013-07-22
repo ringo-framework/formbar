@@ -100,7 +100,17 @@ def get_fieldset(item, config, dbsession=None):
         populate_dummy_item(DummyItem, config)
         fs = formalchemy.FieldSet(DummyItem, format="%(name)s")
     else:
-        fs = formalchemy.FieldSet(item, dbsession, format="%(name)s")
+        try:
+            fs = formalchemy.FieldSet(item, dbsession, format="%(name)s")
+        except:
+            # TODO: Workaround for exception form sqla: "You may not
+            # explicitly bind to a session when your model already
+            # belongs to a different one'" This happens if the fs is
+            # initiated with a existing session on updated when the item
+            # already is mapped. As it is planned to remove the
+            # formalchemy dependeny This one might not get fixed.
+            # (torsten) <2013-07-23 00:04> 
+            fs = formalchemy.FieldSet(item, None, format="%(name)s")
 
     configured_fields = []
     additional_fields = []
