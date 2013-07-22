@@ -42,6 +42,11 @@ class TestParseRule(unittest.TestCase):
         result = self.parser.parse(expr)
         self.assertEqual(expr, "".join(result.asList()))
 
+    def test_in_expr(self):
+        expr = "$field in [ 1,2,3 ]"
+        result = self.parser.parse(expr)
+        self.assertEqual(expr, " ".join(result.asList()))
+
     # Test function
 
     def test_function_len_expr(self):
