@@ -408,7 +408,21 @@ class Field(object):
             return default
 
     def get_options(self):
-        return self._config.options
+        user_defined_options = self._config.options
+        if user_defined_options:
+            return user_defined_options
+        else:
+            # Get mapped clazz for the field
+            options = []
+            mapper = sa.orm.object_mapper(self._form._item)
+            for prop in mapper.iterate_properties:
+                if prop.key == self.name:
+                    clazz = prop.mapper.class_
+                    items = self._form._dbsession.query(clazz)
+                    options = [(item.id, item) for item in items]
+                    break
+        return options
+
 
     def add_error(self, error):
         self._errors.append(error)
