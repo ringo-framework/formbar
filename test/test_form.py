@@ -134,7 +134,9 @@ class TestFormRenderer(unittest.TestCase):
 
     def test_form_render(self):
         html = self.form.render()
-        self.assertEqual(html, RESULT)
+        html = " ".join(html.replace('\n','').split())
+        check = " ".join(RESULT.replace('\n','').split())
+        self.assertEqual(html, check)
 
 
 class TestFormAlchemyForm(unittest.TestCase):
