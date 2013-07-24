@@ -2,11 +2,15 @@ import logging
 import datetime
 import sqlalchemy as sa
 from formencode import htmlfill
-
-from formbar.fahelpers import get_fieldset, get_data
 from formbar.renderer import FormRenderer, get_renderer
 
 log = logging.getLogger(__name__)
+
+
+def get_attributes(cls):
+    return [prop.key for prop in sa.orm.class_mapper(cls).iterate_properties
+            if isinstance(prop, sa.orm.ColumnProperty)
+            or isinstance(prop, sa.orm.RelationshipProperty)]
 
 
 class Error(Exception):
@@ -25,7 +29,7 @@ class StateError(Error):
 
 
 class Validator(object):
-    """Docstring for Validator """
+    """Docstring for Validator"""
 
     def __init__(self, field, error, callback):
         """@todo: to be defined
@@ -85,9 +89,11 @@ class Form(object):
         else:
             self._translate = lambda msgid: msgid
 
-        self.fs = get_fieldset(item, config, dbsession)
-        """FormAlchemy fieldset"""
-        self.data = get_data(self.fs)
+        #self.fs = get_fieldset(item, config, dbsession)
+        #"""FormAlchemy fieldset"""
+        #self.data = get_data(self.fs)
+
+        self.data = self._get_values_from_item(item)
         """After submission this Dictionary will contain either the
         validated data on successfull validation or the origin submitted
         data."""
@@ -114,6 +120,21 @@ class Form(object):
         self.fields = self._build_fields()
         """Dictionary with fields."""
 
+    def _get_values_from_item(self, item):
+        """@todo: Docstring for _get_data_from_item
+
+        :item: @todo
+        :returns: @todo
+
+        """
+        values = {}
+        if not item:
+            return values
+        for key in get_attributes(item.__class__):
+            values[key] = getattr(item, key)
+        print "Initial values: ", values
+        return values
+
     def _build_fields(self):
         """Returns a dictionary with all Field instanced which are
         configured for this form.
@@ -122,8 +143,7 @@ class Form(object):
         """
         fields = {}
         for name, field in self._config.get_fields().iteritems():
-            fa_field = self.fs[name]
-            fields[name] = Field(self, field, fa_field, self._translate)
+            fields[name] = Field(self, field, self._translate)
         return fields
 
     def has_errors(self):
@@ -237,7 +257,6 @@ class Form(object):
 
         # This dictionary will contain the converted data
         values = {}
-        fa_validated = False
         # 1. Iterate over all fields and start the validation.
         log.debug('Submitted values: %s' % submitted)
         for fieldname in submitted.keys():
@@ -269,28 +288,27 @@ class Form(object):
 
             # 4. Basic type conversations, Defaults to String
             # Validation can happen in two variations:
-            #
+            values[fieldname] = self._convert(field, submitted[fieldname])
+
             # 4.1 If item is None (No sqlalchemy mapped item is provided),
             # then convert each field in the Form into its python type.
             #
             # 4.2 If an item was provided, than use the FormAlchemy
             # validation once for the whole fieldset. After validation
             # was done save the data into the internal data dictionary.
-            if self._item is None:
-                values[fieldname] = self._convert(field, submitted[fieldname])
-            else:
-                if not fa_validated:
-                    self.fs.rebind(self._item, data=submitted)
-                    fa_valid = self.fs.validate()
-                    fa_validated = True
-                    if not fa_valid:
-                        # Collect all errors form formalchemy
-                        for err_field, err_msg in self.fs.errors.iteritems():
-                            self._add_error(err_field.key, err_msg)
-                if not fa_valid:
-                    values[fieldname] = self.fs[fieldname].raw_value
-                else:
-                    values[fieldname] = self.fs[fieldname].value
+            #else:
+            #    if not fa_validated:
+            #        self.fs.rebind(self._item, data=submitted)
+            #        fa_valid = self.fs.validate()
+            #        fa_validated = True
+            #        if not fa_valid:
+            #            # Collect all errors form formalchemy
+            #            for err_field, err_msg in self.fs.errors.iteritems():
+            #                self._add_error(err_field.key, err_msg)
+            #    if not fa_valid:
+            #        values[fieldname] = self.fs[fieldname].raw_value
+            #    else:
+            #        values[fieldname] = self.fs[fieldname].value
 
             # 5. Postvalidation
             for rule in field.rules:
@@ -336,12 +354,12 @@ class Form(object):
         # 2. Make sure there is always an item
         # 3. Save the item if there is an item, else ignore. Return None
         # in both cases.
-        if self._item is not None:
-            try:
-                self._save()
-            except:
-                self.fs.sync()
-            return self._item
+        #if self._item is not None:
+        #    try:
+        #        self._save()
+        #    except:
+        #        self.fs.sync()
+        #    return self._item
 
     def _save(self):
         mapper = sa.orm.object_mapper(self._item)
@@ -384,7 +402,7 @@ class Field(object):
     provide a common interface for the renderer independent to the
     underlying implementation detail of the field."""
 
-    def __init__(self, form, config, fa_field, translate):
+    def __init__(self, form, config, translate):
         """Initialize the field with the given field configuration.
 
         :config: Field configuration
@@ -392,7 +410,6 @@ class Field(object):
         """
         self._form = form
         self._config = config
-        self._fa_field = fa_field
         self._translate = translate
         self.renderer = get_renderer(self, translate)
         self._errors = []
@@ -402,11 +419,7 @@ class Field(object):
         return getattr(self._config, name)
 
     def get_value(self, default=None):
-        value = self._fa_field.raw_value
-        if value:
-            return value
-        else:
-            return default
+        return self._form.data.get(self._config.name, default)
 
     def get_options(self):
         user_defined_options = self._config.options
@@ -442,9 +455,15 @@ class Field(object):
     def is_required(self):
         """Returns true if either the required flag of the field
         configuration is set or the formalchemy field is required."""
-        return self.required or self._fa_field.is_required()
+        # TODO: Try to get the required flag from the underlying
+        # datamodel (None) <2013-07-24 21:48>
+        #return self.required or self._fa_field.is_required()
+        return self.required or False
 
     def is_readonly(self):
         """Returns true if either the readonly flag of the field
         configuration is set or the formalchemy field is readonly."""
-        return self.readonly or self._fa_field.is_readonly()
+        # TODO: Try to get the required flag from the underlying
+        # datamodel (None) <2013-07-24 21:48>
+        #return self.readonly or self._fa_field.is_readonly()
+        return self.readonly or False
