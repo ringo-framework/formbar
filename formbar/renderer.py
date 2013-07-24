@@ -180,7 +180,8 @@ class TextFieldRenderer(FieldRenderer):
 
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
-        self.template = template_lookup.get_template("fa_field.mako")
+        self.template = template_lookup.get_template("textfield.mako")
+
 
 class TextareaFieldRenderer(FieldRenderer):
     """A Renderer to render simple fa_field elements"""
