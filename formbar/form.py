@@ -13,6 +13,11 @@ def get_attributes(cls):
             or isinstance(prop, sa.orm.RelationshipProperty)]
 
 
+def get_relations(cls):
+    return [prop.key for prop in sa.orm.class_mapper(cls).iterate_properties
+            if isinstance(prop, sa.orm.RelationshipProperty)]
+
+
 class Error(Exception):
     """Base class for exceptions in this module."""
     pass
@@ -89,11 +94,7 @@ class Form(object):
         else:
             self._translate = lambda msgid: msgid
 
-        #self.fs = get_fieldset(item, config, dbsession)
-        #"""FormAlchemy fieldset"""
-        #self.data = get_data(self.fs)
-
-        self.data = self._get_values_from_item(item)
+        self.data = self._serialize(item)
         """After submission this Dictionary will contain either the
         validated data on successfull validation or the origin submitted
         data."""
@@ -120,19 +121,43 @@ class Form(object):
         self.fields = self._build_fields()
         """Dictionary with fields."""
 
-    def _get_values_from_item(self, item):
-        """@todo: Docstring for _get_data_from_item
+    def _get_data_from_item(self, item):
+        """Returns a dictionary with the values of all attributes and
+        relations of the item. The key of the dictionary is the name of
+        the attribute/relation.
 
-        :item: @todo
-        :returns: @todo
-
+        :item: Item to get the data from
+        :returns: Dictionary with values of the item
         """
         values = {}
         if not item:
             return values
         for key in get_attributes(item.__class__):
-            values[key] = getattr(item, key)
-        print "Initial values: ", values
+            value = getattr(item, key)
+            values[key] = value
+        return values
+
+    def _serialize(self, item):
+        """Returns a dictionary with serialized data from the given
+        item. The dictionary will include all attributes and relations
+        values of the items. The key in the dictionary is the name of
+        the relation/attribute. In case of relations the value in the
+        dictionary is the "id" value of the related item.
+
+        :item: Item to serialize
+        :returns: Dictionary with serialized values of the item.
+
+        """
+        values = self._get_data_from_item(item)
+        for key, value in values.iteritems():
+            print key, value
+            if value is None:
+                values[key] = ""
+            else:
+                try:
+                    values[key] = value.id
+                except AttributeError:
+                    pass
         return values
 
     def _build_fields(self):
@@ -230,6 +255,8 @@ class Form(object):
             except:
                 msg = "%s is not a valid date format." % value
                 self._add_error(field.name, msg)
+
+        print "Converted value %s (%s)" % (value, type(value))
         return value
 
     def validate(self, submitted):
@@ -260,24 +287,7 @@ class Form(object):
         # 1. Iterate over all fields and start the validation.
         log.debug('Submitted values: %s' % submitted)
         for fieldname in submitted.keys():
-            try:
-                field = self._config.get_field(fieldname)
-            except KeyError:
-                # @TODO:
-                # For 1:1 relations FA modifies the fieldname on
-                # rendering to the name of the Foreign Key. This leads
-                # to problems on validation when the validation code
-                # tries to access a field based on the submitted data
-                # and raises a KeyError as there is no field with the
-                # name of the FK.
-                # In this case we we just add the subbmitted data to the
-                # validated data, to make the prefilling work after rendering.
-                values[fieldname] = submitted.get(fieldname)
-                log.warning('Found field "%s" in submitted data,'
-                            ' while validating data for "%s" which is'
-                            ' not a configured field'
-                            % (fieldname, repr(self._item)))
-                continue
+            field = self._config.get_field(fieldname)
             # 3. Prevalidation
             for rule in field.rules:
                 if rule.mode != 'pre':
@@ -289,26 +299,6 @@ class Form(object):
             # 4. Basic type conversations, Defaults to String
             # Validation can happen in two variations:
             values[fieldname] = self._convert(field, submitted[fieldname])
-
-            # 4.1 If item is None (No sqlalchemy mapped item is provided),
-            # then convert each field in the Form into its python type.
-            #
-            # 4.2 If an item was provided, than use the FormAlchemy
-            # validation once for the whole fieldset. After validation
-            # was done save the data into the internal data dictionary.
-            #else:
-            #    if not fa_validated:
-            #        self.fs.rebind(self._item, data=submitted)
-            #        fa_valid = self.fs.validate()
-            #        fa_validated = True
-            #        if not fa_valid:
-            #            # Collect all errors form formalchemy
-            #            for err_field, err_msg in self.fs.errors.iteritems():
-            #                self._add_error(err_field.key, err_msg)
-            #    if not fa_valid:
-            #        values[fieldname] = self.fs[fieldname].raw_value
-            #    else:
-            #        values[fieldname] = self.fs[fieldname].value
 
             # 5. Postvalidation
             for rule in field.rules:
@@ -346,55 +336,43 @@ class Form(object):
         if self.has_errors():
             raise StateError('Saving is not possible if form has errors')
 
-        # @FIXME: _item is only set when this form is used in connection
-        # with an SQLAlchemy mapped item.If the form is used as normal
-        # form _item is none. This is not consistent. There seems to be
-        # more options to fix this:
-        # 1. Raise exception when calling save if there is no _item.
-        # 2. Make sure there is always an item
-        # 3. Save the item if there is an item, else ignore. Return None
-        # in both cases.
-        #if self._item is not None:
-        #    try:
-        #        self._save()
-        #    except:
-        #        self.fs.sync()
-        #    return self._item
+        # Only save if there is actually an item.
+        if self._item is not None:
+            self._save()
 
     def _save(self):
+        # TODO: Iterate over fields here. Fields should know their value
+        # and if they are a relation or not (torsten) <2013-07-24 23:24>
+
         mapper = sa.orm.object_mapper(self._item)
         relation_properties = filter(
             lambda p: isinstance(p, sa.orm.properties.RelationshipProperty),
             mapper.iterate_properties)
-
         relation_names = {}
         for prop in relation_properties:
             relation_names[prop.key] = prop
 
-        #related_classes = [prop.mapper.class_ for prop in relation_properties]
-        #related_tables = [prop.target for prop in relation_properties]
-
         for key, value in self.data.iteritems():
-            relation = relation_names.get(key)
-            if relation:
-                log.info('Todo: Implement setting relation')
-                li = self._load_relations(relation.mapper.class_, value)
-                try:
-                    setattr(self._item, key, li)
-                except:
-                    log.exception('Error while setting %s with %s' % (key, li))
-            else:
+            if key not in [prop.key for prop in relation_properties]:
                 setattr(self._item, key, value)
+            else:
+                print "relation %s with %s (%s)" % (key, value, type(value))
+                db = self._dbsession
+                relation = relation_names[key].mapper.class_
 
-        self._dbsession.add(self._item)
-
-    def _load_relations(self, relation, values):
-        loaded = []
-        for value in values:
-            db = self._dbsession
-            r = db.query(relation).filter(relation.id == value).one()
-            loaded.append(r)
-        return loaded
+                if isinstance(value, list):
+                    li = []
+                    for val in value:
+                        li.append(db.query(relation).filter(relation.id == val.id).one())
+                    setattr(self._item, key, li)
+                else:
+                    if value not in ["[]", None, "None"]:
+                        value = db.query(relation).filter(relation.id == value).one()
+                    if value == "[]":
+                        value = []
+                    elif value == "None":
+                        value = None
+                    setattr(self._item, key, value)
 
 
 class Field(object):
@@ -433,7 +411,8 @@ class Field(object):
                 if prop.key == self.name:
                     clazz = prop.mapper.class_
                     items = self._form._dbsession.query(clazz)
-                    options = [(item.id, item) for item in items]
+                    options.append(("None", ""))
+                    options.extend([(item, item.id) for item in items])
                     break
         else:
             # TODO: Try to get the session from the item. Ther must be
