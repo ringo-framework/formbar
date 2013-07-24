@@ -24,7 +24,7 @@
   % for child in elem:
     % if len(child) > 0:
       % if child.tag == "row":
-        <div class="row-fluid"><tr>
+        <div class="row-fluid">
       % elif child.tag == "col":
         <% width = child.attrib.get('width', (12/len(elem))) %>
         <div class="span${width}">

@@ -20,7 +20,7 @@ from formbar.form import Form, StateError, Validator
 RESULT = """<div class="formbar-form"><form id="customform" class="testcss" method="GET" action="http://" autocomplete="off" >    \n        <div class="row-fluid"><tr>\n      \n        \n        <div class="span12">\n      \n        \n        <label for="string">\n  String field\n</label>\n\n  <div class="readonlyfield">\n    &nbsp;\n  </div>\n\n\n\n\n        </div>\n\n        </div>\n        \n          \n        \n        <div class="row-fluid"><tr>\n      \n        \n        <div class="span12">\n      \n        \n        <label for="default">\n  Default\n</label>\n\n  <div class="readonlyfield">\n    &nbsp;\n  </div>\n\n\n\n\n        </div>\n\n        </div>\n        <div class="row-fluid"><tr>\n      \n        \n        <div class="span6">\n      \n        \n        <label for="float">\n  Float field\n</label>\n\n  <div class="readonlyfield">\n    &nbsp;\n  </div>\n\n\n<div class="text-help">\n  <i class="icon-info-sign"></i>\n  This is is a very long helptext which should span over\n      multiple rows. Further the will check if there are further html\n      tags allowed.\n</div>\n\n\n        </div>\n        \n        <div class="span6">\n      \n        \n        <label for="date">\n    <sup>(1)</sup>\n  Date field\n</label>\n\n  <div class="readonlyfield">\n    &nbsp;\n  </div>\n\n\n<div class="text-help">\n  <i class="icon-info-sign"></i>\n  This is my helptext\n</div>\n\n\n        </div>\n\n        </div>\n        \n          \n        \n        <div class="row-fluid"><tr>\n      \n        \n        <div class="span6">\n      \n        \n        <label for="string">\n  String field\n</label>\n\n  <div class="readonlyfield">\n    &nbsp;\n  </div>\n\n\n\n\n        </div>\n        \n        <div class="span6">\n      \n        \n        <label for="integer">\n  Integer field\n    <a href="#" data-toggle="tooltip" class="formbar-tooltip" data-original-title="Required fa_field"><i class="icon-asterisk"></i></a>\n</label>\n\n  <div class="readonlyfield">\n    &nbsp;\n  </div>\n\n\n\n\n        </div>\n\n        </div>\n\n\n\n\n\n<script>\n  $(\'.formbar-tooltip\').tooltip();\n</script>\n<div class="row-fluid"><div class="span12 button-pane well-small"><button type="submit" class="btn btn-primary">Submit</button><button type="reset" class="btn btn-warning">Reset</button></div></div></form></div>"""
 
 
-def external_test_validator(field, data):
+def external_validator(field, data):
     return 16 == data[field]
 
 
@@ -75,7 +75,7 @@ class TestFormValidation(unittest.TestCase):
         values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
         validator = Validator('integer',
                               'Error message',
-                              external_test_validator)
+                              external_validator)
         self.form.external_validators.append(validator)
         self.assertEqual(self.form.validate(values), True)
 
@@ -83,7 +83,7 @@ class TestFormValidation(unittest.TestCase):
         values = {'default': 'test', 'integer': '15', 'date': '1998-02-01'}
         validator = Validator('integer',
                               'Error message',
-                              external_test_validator)
+                              external_validator)
         self.form.external_validators.append(validator)
         self.assertEqual(self.form.validate(values), False)
 
@@ -134,7 +134,9 @@ class TestFormRenderer(unittest.TestCase):
 
     def test_form_render(self):
         html = self.form.render()
-        self.assertEqual(html, RESULT)
+        html = " ".join(html.replace('\n','').split())
+        check = " ".join(RESULT.replace('\n','').split())
+        self.assertEqual(html, check)
 
 
 class TestFormAlchemyForm(unittest.TestCase):
