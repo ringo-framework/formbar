@@ -29,7 +29,7 @@ def get_renderer(field, translate):
             return TextareaFieldRenderer(field, translate)
         elif renderer.render_type == "dropdown":
             return DropdownFieldRenderer(field, translate)
-    return FAFieldRenderer(field, translate)
+    return TextFieldRenderer(field, translate)
 
 
 class Renderer(object):
