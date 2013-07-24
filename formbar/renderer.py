@@ -166,15 +166,6 @@ class FieldRenderer(Renderer):
         return "".join(html)
 
 
-class FAFieldRenderer(FieldRenderer):
-    """A Renderer which uses the FormAlchemy renderer configured for the
-    FA field in for this field."""
-
-    def __init__(self, field, translate):
-        FieldRenderer.__init__(self, field, translate)
-        self.template = template_lookup.get_template("fa_field.mako")
-
-
 class TextFieldRenderer(FieldRenderer):
     """A Renderer to render simple fa_field elements"""
 
