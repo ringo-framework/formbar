@@ -402,6 +402,7 @@ class Field(object):
         return self.sa_property.mapper.class_
 
     def _get_sa_property(self):
+        if not self._form._item: return None
         mapper = sa.orm.object_mapper(self._form._item)
         for prop in mapper.iterate_properties:
             if prop.key == self.name:
