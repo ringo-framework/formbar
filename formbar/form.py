@@ -372,7 +372,15 @@ class Form(object):
                         value = []
                     elif value == "None":
                         value = None
-                    setattr(self._item, key, value)
+                    # TODO: If the value needs to be in List for or not
+                    # seems to depend on the type of relation. In case
+                    # of MANYTOONE it seems to be a single value in
+                    # other cases it must be a list. (None) <2013-07-25 08:32>
+                    try:
+                        setattr(self._item, key, value)
+                    except TypeError:
+                        print value, type(value)
+                        setattr(self._item, key, [value])
 
 
 class Field(object):
