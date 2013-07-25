@@ -197,6 +197,13 @@ class DropdownFieldRenderer(FieldRenderer):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("dropdown.mako")
 
+class SelectionFieldRenderer(FieldRenderer):
+    """A Renderer to render selection field"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("selection.mako")
+
 
 class ListFieldRenderer(FieldRenderer):
     """A Renderer to render selection list"""
