@@ -29,6 +29,17 @@ def get_renderer(field, translate):
             return TextareaFieldRenderer(field, translate)
         elif renderer.render_type == "dropdown":
             return DropdownFieldRenderer(field, translate)
+    else:
+        # Try to determine the datatype of the field and set approriate
+        # renderer.
+        if field.is_relation():
+            if field.sa_property.direction.name == "MANYTOONE":
+                return DropdownFieldRenderer(field, translate)
+            else:
+                # MANYTOONE, MANYTOMANY, multiple selection is possible
+                return SelectionFieldRenderer(field, translate)
+        else:
+            return TextFieldRenderer(field, translate)
     return TextFieldRenderer(field, translate)
 
 
