@@ -396,6 +396,19 @@ class Field(object):
         """Make attributes from the configuration directly available"""
         return getattr(self._config, name)
 
+    def _get_sa_mapped_class(self):
+        # TODO: Raise Exception if this field is not a relation. (None)
+        # <2013-07-25 07:44>
+        return self.sa_property.mapper.class_
+
+    def _get_sa_property(self):
+        mapper = sa.orm.object_mapper(self._form._item)
+        for prop in mapper.iterate_properties:
+            if prop.key == self.name:
+                #print prop.key
+                #print prop.__dict__
+                return prop
+
     def get_value(self, default=None):
         return self._form.data.get(self._config.name, default)
 
@@ -430,6 +443,10 @@ class Field(object):
     def render(self):
         """Returns the rendererd HTML for the field"""
         return self.renderer.render()
+
+    def is_relation(self):
+        return isinstance(self.sa_property,
+                          sa.orm.RelationshipProperty)
 
     def is_required(self):
         """Returns true if either the required flag of the field
