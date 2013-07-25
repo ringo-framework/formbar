@@ -388,6 +388,7 @@ class Field(object):
         """
         self._form = form
         self._config = config
+        self.sa_property = self._get_sa_property()
         self._translate = translate
         self.renderer = get_renderer(self, translate)
         self._errors = []
@@ -420,20 +421,17 @@ class Field(object):
         elif self._form._dbsession:
             # Get mapped clazz for the field
             options = []
-            mapper = sa.orm.object_mapper(self._form._item)
-            for prop in mapper.iterate_properties:
-                if prop.key == self.name:
-                    clazz = prop.mapper.class_
-                    items = self._form._dbsession.query(clazz)
-                    options.append(("None", ""))
-                    options.extend([(item, item.id) for item in items])
-                    break
+            clazz = self._get_sa_mapped_class()
+            items = self._form._dbsession.query(clazz)
+            options.append(("None", ""))
+            options.extend([(item, item.id) for item in items])
+            return options
         else:
             # TODO: Try to get the session from the item. Ther must be
             # somewhere the already bound session. (torsten) <2013-07-23 00:27>
             log.warning('No db connection configured for this form. Can '
                         'not load options')
-        return options
+            return []
 
     def add_error(self, error):
         self._errors.append(error)
