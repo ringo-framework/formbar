@@ -339,6 +339,11 @@ class Form(object):
         # Only save if there is actually an item.
         if self._item is not None:
             self._save()
+            # If the item has no id, then we assume it is a new item. So
+            # add it to the database session.
+            if not self._item.id:
+                self._dbsession.add(self._item)
+        return self._item
 
     def _save(self):
         # TODO: Iterate over fields here. Fields should know their value
