@@ -94,10 +94,15 @@ class Form(object):
         else:
             self._translate = lambda msgid: msgid
 
-        self.data = self._serialize(item)
-        """After submission this Dictionary will contain either the
-        validated data on successfull validation or the origin submitted
-        data."""
+        self.data = {}
+        #"""After submission this Dictionary will contain either the
+        #validated data on successfull validation or the origin submitted
+        #data."""
+        ## First try to initialize the data with the origin data from the item
+        #if item:
+        #    self.data = self.serialize(self._get_data_from_item(item))
+
+        self.submitted = None
         self.validated = False
         """Flag to indicate if the form has been validated. Init value
         is False.  which means no validation has been done."""
@@ -121,44 +126,44 @@ class Form(object):
         self.fields = self._build_fields()
         """Dictionary with fields."""
 
-    def _get_data_from_item(self, item):
-        """Returns a dictionary with the values of all attributes and
-        relations of the item. The key of the dictionary is the name of
-        the attribute/relation.
+    def serialize(self):
+        """Returns a dictionary with serialized data from the forms
+        item.  The return dictionary is suitable for htmlfill to prefill
+        the rendered form. The dictionary will include all attributes
+        and relations values of the items. The key in the dictionary is
+        the name of the relation/attribute. In case of relations the
+        value in the dictionary is the "id" value of the related item.
+        If no item is present then return a empty dict.
 
-        :item: Item to get the data from
-        :returns: Dictionary with values of the item
-        """
-        values = {}
-        if not item:
-            return values
-        for key in get_attributes(item.__class__):
-            value = getattr(item, key)
-            values[key] = value
-        return values
-
-    def _serialize(self, item):
-        """Returns a dictionary with serialized data from the given
-        item. The dictionary will include all attributes and relations
-        values of the items. The key in the dictionary is the name of
-        the relation/attribute. In case of relations the value in the
-        dictionary is the "id" value of the related item.
-
-        :item: Item to serialize
         :returns: Dictionary with serialized values of the item.
 
         """
-        values = self._get_data_from_item(item)
-        for key, value in values.iteritems():
-            print key, value
-            if value is None:
-                values[key] = ""
-            else:
-                try:
-                    values[key] = value.id
-                except AttributeError:
-                    pass
-        return values
+        serialized = {}
+        if not self._item:
+            return serialized
+        for name, field in self._config.get_fields().iteritems():
+            try:
+                value = getattr(self._item, name)
+                if value is None:
+                    serialized[name] = ""
+                elif isinstance(value, list):
+                    vl = []
+                    for v in value:
+                        try:
+                            vl.append(v.id)
+                        except AttributeError:
+                            vl.append(v)
+                    serialized[name] = vl
+                else:
+                    try:
+                        serialized[name] = value.id
+                    except AttributeError:
+                        serialized[name] = value
+            except AttributeError:
+                log.warning('Can not get value for field "%s". The field is no attribute of the item' % name)
+                serialized[name] = ""
+        return serialized
+
 
     def _build_fields(self):
         """Returns a dictionary with all Field instanced which are
@@ -206,7 +211,8 @@ class Form(object):
         self.current_page = page
         renderer = FormRenderer(self, self._translate)
         form = renderer.render(values)
-        return htmlfill.render(form, values or self.data)
+
+        return htmlfill.render(form, values or self.serialize())
 
     def _add_error(self, fieldname, error):
         field = self.get_field(fieldname)
@@ -224,6 +230,7 @@ class Form(object):
         """
         # Handle missing value. Currently we just return None in case
         # that the provided value is an empty String
+        print field, self.fields[field.name].get_type()
         if value == "":
             return None
 
@@ -420,9 +427,24 @@ class Field(object):
         mapper = sa.orm.object_mapper(self._form._item)
         for prop in mapper.iterate_properties:
             if prop.key == self.name:
-                #print prop.key
-                #print prop.__dict__
                 return prop
+
+    def get_type(self):
+        """Returns the datatype of the field."""
+        if self._config.type:
+            return self._config.type
+        elif self.sa_property:
+            try:
+                column = self.sa_property.columns[0]
+                if column.type in ["VARCHAR", "TEXT"]:
+                    return "string"
+                elif column.type == "DATE":
+                    return "date"
+                elif column.type == "INTEGER":
+                    return "integer"
+            except AttributeError:
+                return "relation"
+        return "string"
 
     def get_value(self, default=None):
         return self._form.data.get(self._config.name, default)
