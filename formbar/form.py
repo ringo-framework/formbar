@@ -228,13 +228,19 @@ class Form(object):
         #if value == "":
         #    return None
 
-        mapper = sa.orm.object_mapper(self._item)
-        relation_properties = filter(
-            lambda p: isinstance(p, sa.orm.properties.RelationshipProperty),
-            mapper.iterate_properties)
         relation_names = {}
-        for prop in relation_properties:
-            relation_names[prop.key] = prop
+        try:
+            mapper = sa.orm.object_mapper(self._item)
+            relation_properties = filter(
+                lambda p: isinstance(p, sa.orm.properties.RelationshipProperty),
+                mapper.iterate_properties)
+            for prop in relation_properties:
+                relation_names[prop.key] = prop
+        except sa.orm.exc.UnmappedInstanceError:
+            if not self._item:
+                pass # The form is not mapped to an item.
+            else:
+                raise
 
         converted = ""
         dtype = field.get_type()
