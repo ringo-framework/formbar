@@ -4,6 +4,13 @@ TODO
 - Added Testcases for i18n.
 - Added Testcases Custom renderers.
 
+0.4.0
+=====
+
+- Removed FormAlchemy dependency. This includes some internal refactoring as
+  the rendering and converting of values (especially relations) must now be
+  done by formbar.
+
 0.3.1
 =====
 
