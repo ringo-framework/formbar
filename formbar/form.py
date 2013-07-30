@@ -94,10 +94,6 @@ class Form(object):
         else:
             self._translate = lambda msgid: msgid
 
-        self.data = {}
-        """After submission this Dictionary will contain either the
-        validated data on successfull validation or the origin submitted
-        data."""
         self.validated = False
         """Flag to indicate if the form has been validated. Init value
         is False.  which means no validation has been done."""
@@ -120,8 +116,24 @@ class Form(object):
         """Dictionary with external provided custom renderers."""
         self.fields = self._build_fields()
         """Dictionary with fields."""
+        self.data = self.serialize(self._get_data_from_item())
+        """After submission this Dictionary will contain either the
+        validated data on successfull validation or the origin submitted
+        data."""
 
-    def serialize(self):
+    def _get_data_from_item(self):
+        values = {}
+        if not self._item:
+            return values
+        for name, field in self._config.get_fields().iteritems():
+            try:
+                values[name] = getattr(self._item, name)
+            except AttributeError:
+                values[name] = None
+        return values
+
+
+    def serialize(self, data):
         """Returns a dictionary with serialized data from the forms
         item.  The return dictionary is suitable for htmlfill to prefill
         the rendered form. The dictionary will include all attributes
@@ -134,11 +146,11 @@ class Form(object):
 
         """
         serialized = {}
-        if not self._item:
+        if not data:
             return serialized
         for name, field in self._config.get_fields().iteritems():
             try:
-                value = getattr(self._item, name)
+                value = data[name]
                 if value is None:
                     serialized[name] = ""
                 elif isinstance(value, list):
@@ -206,8 +218,7 @@ class Form(object):
         self.current_page = page
         renderer = FormRenderer(self, self._translate)
         form = renderer.render(values)
-
-        return htmlfill.render(form, values or self.serialize())
+        return htmlfill.render(form, values or self.serialize(self.data))
 
     def _add_error(self, fieldname, error):
         field = self.get_field(fieldname)
@@ -263,6 +274,8 @@ class Form(object):
                 msg = "%s is not a float value." % value
                 self._add_error(field.name, msg)
         elif dtype == 'date':
+            if not value:
+                return None
             try:
                 #@TODO: Support other dateformats that ISO8601
                 y, m, d = value.split('-')
@@ -455,8 +468,20 @@ class Field(object):
                 return self.sa_property.direction.name.lower()
         return "string"
 
-    def get_value(self, default=None):
-        return self._form.data.get(self._config.name, default)
+    def get_value(self, default=None, expand=False):
+        value = self._form.data.get(self._config.name, default)
+        if expand:
+            if not isinstance(value, list):
+                value = [value]
+            ex_values = []
+            options = self.get_options()
+            for opt in options:
+                for v in value:
+                    if v == opt[1]:
+                        ex_values.append("%s" % opt[0])
+            return ", ".join(ex_values)
+        else:
+            return value
 
     def get_options(self):
         user_defined_options = self._config.options
@@ -465,6 +490,8 @@ class Field(object):
         elif self._form._dbsession:
             # Get mapped clazz for the field
             options = []
+            if self.get_type() == 'manytoone':
+                options.append(("None", ""))
             clazz = self._get_sa_mapped_class()
             items = self._form._dbsession.query(clazz)
             options.extend([(item, item.id) for item in items])
