@@ -261,7 +261,7 @@ class Field(Config):
         to be able to refer to a specific field by its number. The
         number will be rendered next to the label of the field."""
 
-        self.type = entity.attrib.get('type', 'string')
+        self.type = entity.attrib.get('type')
         """The datatype for this field. The data type is important for
         converting the submitted data into a python value. Note that
         this option is ignored if the form is used to render an
