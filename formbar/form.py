@@ -285,6 +285,8 @@ class Form(object):
                 msg = "Reference value '%s' must be of type integer" % value
                 self._add_error(field.name, msg)
         elif dtype in ['onetomany', 'manytomany']:
+            if not value:
+                return []
             try:
                 values = []
                 db = self._dbsession
@@ -327,8 +329,12 @@ class Form(object):
         values = {}
         # 1. Iterate over all fields and start the validation.
         log.debug('Submitted values: %s' % submitted)
-        for fieldname in submitted.keys():
+        for fieldname, field in self.fields.iteritems():
             field = self.fields[fieldname]
+            # TODO: clean the submitted data. Only use values for fields
+            # which are actually configured in the field (torsten)
+            # <2013-07-30 09:02>
+
             # 3. Prevalidation
             for rule in field.rules:
                 if rule.mode != 'pre':
@@ -339,7 +345,7 @@ class Form(object):
 
             # 4. Basic type conversations, Defaults to String
             # Validation can happen in two variations:
-            values[fieldname] = self._convert(field, submitted[fieldname])
+            values[fieldname] = self._convert(field, submitted.get(fieldname))
 
             # 5. Postvalidation
             for rule in field.rules:
