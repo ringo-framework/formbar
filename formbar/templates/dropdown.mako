@@ -4,6 +4,7 @@
   </div>
 % else:
   <select name="${field.name}">
+    <option value="">${_('None')}</option>
     % for option in field.get_options():
       <option value="${option[1]}">${option[0]}</option>
     % endfor

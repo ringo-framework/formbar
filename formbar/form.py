@@ -461,7 +461,6 @@ class Field(object):
             options = []
             clazz = self._get_sa_mapped_class()
             items = self._form._dbsession.query(clazz)
-            options.append(("None", ""))
             options.extend([(item, item.id) for item in items])
             return options
         else:
