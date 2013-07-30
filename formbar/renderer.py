@@ -29,17 +29,18 @@ def get_renderer(field, translate):
             return TextareaFieldRenderer(field, translate)
         elif renderer.render_type == "dropdown":
             return DropdownFieldRenderer(field, translate)
+        elif renderer.render_type == "datepicker":
+            return DateFieldRenderer(field, translate)
     else:
         # Try to determine the datatype of the field and set approriate
         # renderer.
-        if field.is_relation():
-            if field.sa_property.direction.name == "MANYTOONE":
-                return DropdownFieldRenderer(field, translate)
-            else:
-                # MANYTOONE, MANYTOMANY, multiple selection is possible
-                return SelectionFieldRenderer(field, translate)
-        else:
-            return TextFieldRenderer(field, translate)
+        dtype = field.get_type()
+        if dtype == "manytoone":
+            return DropdownFieldRenderer(field, translate)
+        elif dtype in ['manytomany', 'onetomany']:
+            return SelectionFieldRenderer(field, translate)
+        elif dtype == "date":
+            return DateFieldRenderer(field, translate)
     return TextFieldRenderer(field, translate)
 
 
@@ -191,6 +192,14 @@ class TextareaFieldRenderer(FieldRenderer):
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("textarea.mako")
+
+
+class DateFieldRenderer(FieldRenderer):
+    """A Renderer to render simple fa_field elements"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("datefield.mako")
 
 
 class PasswordFieldRenderer(FieldRenderer):
