@@ -1,7 +1,7 @@
 import logging
 import datetime
 import sqlalchemy as sa
-from formencode import htmlfill
+from formencode import htmlfill, variabledecode
 from formbar.renderer import FormRenderer, get_renderer
 
 log = logging.getLogger(__name__)
@@ -95,14 +95,9 @@ class Form(object):
             self._translate = lambda msgid: msgid
 
         self.data = {}
-        #"""After submission this Dictionary will contain either the
-        #validated data on successfull validation or the origin submitted
-        #data."""
-        ## First try to initialize the data with the origin data from the item
-        #if item:
-        #    self.data = self.serialize(self._get_data_from_item(item))
-
-        self.submitted = None
+        """After submission this Dictionary will contain either the
+        validated data on successfull validation or the origin submitted
+        data."""
         self.validated = False
         """Flag to indicate if the form has been validated. Init value
         is False.  which means no validation has been done."""
@@ -160,10 +155,10 @@ class Form(object):
                     except AttributeError:
                         serialized[name] = value
             except AttributeError:
-                log.warning('Can not get value for field "%s". The field is no attribute of the item' % name)
+                log.warning('Can not get value for field "%s". '
+                            'The field is no attribute of the item' % name)
                 serialized[name] = ""
         return serialized
-
 
     def _build_fields(self):
         """Returns a dictionary with all Field instanced which are
@@ -230,20 +225,34 @@ class Form(object):
         """
         # Handle missing value. Currently we just return None in case
         # that the provided value is an empty String
-        print field, self.fields[field.name].get_type()
-        if value == "":
-            return None
+        #if value == "":
+        #    return None
 
-        dtype = field.type
-        if dtype == 'integer':
+        mapper = sa.orm.object_mapper(self._item)
+        relation_properties = filter(
+            lambda p: isinstance(p, sa.orm.properties.RelationshipProperty),
+            mapper.iterate_properties)
+        relation_names = {}
+        for prop in relation_properties:
+            relation_names[prop.key] = prop
+
+        converted = ""
+        dtype = field.get_type()
+        if dtype == 'string':
             try:
-                return int(value)
+                converted = value
+            except ValueError:
+                msg = "%s is not a string value." % value
+                self._add_error(field.name, msg)
+        elif dtype == 'integer':
+            try:
+                converted = int(value)
             except ValueError:
                 msg = "%s is not a integer value." % value
                 self._add_error(field.name, msg)
         elif dtype == 'float':
             try:
-                return float(value)
+                converted = float(value)
             except ValueError:
                 msg = "%s is not a float value." % value
                 self._add_error(field.name, msg)
@@ -255,16 +264,40 @@ class Form(object):
                 m = int(m)
                 d = int(d)
                 try:
-                    return datetime.date(y, m, d)
+                    converted = datetime.date(y, m, d)
                 except ValueError, e:
                     msg = "%s is an invalid date (%s)" % (value, e)
                     self._add_error(field.name, msg)
             except:
                 msg = "%s is not a valid date format." % value
                 self._add_error(field.name, msg)
-
-        print "Converted value %s (%s)" % (value, type(value))
-        return value
+        # Reltation handling
+        elif dtype == 'manytoone':
+            try:
+                db = self._dbsession
+                rel = relation_names[field.name].mapper.class_
+                if value == "":
+                    converted = None
+                else:
+                    value = db.query(rel).filter(rel.id == int(value)).one()
+                    converted = value
+            except ValueError:
+                msg = "Reference value '%s' must be of type integer" % value
+                self._add_error(field.name, msg)
+        elif dtype in ['onetomany', 'manytomany']:
+            try:
+                values = []
+                db = self._dbsession
+                rel = relation_names[field.name].mapper.class_
+                for v in value:
+                    values.append(db.query(rel).filter(rel.id == int(v)).one())
+                converted = values
+            except ValueError:
+                msg = "Reference value '%s' must be of type integer" % value
+                self._add_error(field.name, msg)
+        print ("Converted value '%s' (%s) of field '%s' (%s)"
+               % (converted, type(converted), field.name, dtype))
+        return converted
 
     def validate(self, submitted):
         """Returns True if the validation succeeds else False.
@@ -289,12 +322,13 @@ class Form(object):
 
         """
 
+        submitted = variabledecode.variable_decode(submitted)
         # This dictionary will contain the converted data
         values = {}
         # 1. Iterate over all fields and start the validation.
         log.debug('Submitted values: %s' % submitted)
         for fieldname in submitted.keys():
-            field = self._config.get_field(fieldname)
+            field = self.fields[fieldname]
             # 3. Prevalidation
             for rule in field.rules:
                 if rule.mode != 'pre':
@@ -345,54 +379,15 @@ class Form(object):
 
         # Only save if there is actually an item.
         if self._item is not None:
-            self._save()
+            # TODO: Iterate over fields here. Fields should know their value
+            # and if they are a relation or not (torsten) <2013-07-24 23:24>
+            for key, value in self.data.iteritems():
+                setattr(self._item, key, value)
             # If the item has no id, then we assume it is a new item. So
             # add it to the database session.
             if not self._item.id:
                 self._dbsession.add(self._item)
         return self._item
-
-    def _save(self):
-        # TODO: Iterate over fields here. Fields should know their value
-        # and if they are a relation or not (torsten) <2013-07-24 23:24>
-
-        mapper = sa.orm.object_mapper(self._item)
-        relation_properties = filter(
-            lambda p: isinstance(p, sa.orm.properties.RelationshipProperty),
-            mapper.iterate_properties)
-        relation_names = {}
-        for prop in relation_properties:
-            relation_names[prop.key] = prop
-
-        for key, value in self.data.iteritems():
-            if key not in [prop.key for prop in relation_properties]:
-                setattr(self._item, key, value)
-            else:
-                print "relation %s with %s (%s)" % (key, value, type(value))
-                db = self._dbsession
-                relation = relation_names[key].mapper.class_
-
-                if isinstance(value, list):
-                    li = []
-                    for val in value:
-                        li.append(db.query(relation).filter(relation.id == val.id).one())
-                    setattr(self._item, key, li)
-                else:
-                    if value not in ["[]", None, "None"]:
-                        value = db.query(relation).filter(relation.id == value).one()
-                    if value == "[]":
-                        value = []
-                    elif value == "None":
-                        value = None
-                    # TODO: If the value needs to be in List for or not
-                    # seems to depend on the type of relation. In case
-                    # of MANYTOONE it seems to be a single value in
-                    # other cases it must be a list. (None) <2013-07-25 08:32>
-                    try:
-                        setattr(self._item, key, value)
-                    except TypeError:
-                        print value, type(value)
-                        setattr(self._item, key, [value])
 
 
 class Field(object):
@@ -423,7 +418,8 @@ class Field(object):
         return self.sa_property.mapper.class_
 
     def _get_sa_property(self):
-        if not self._form._item: return None
+        if not self._form._item:
+            return None
         mapper = sa.orm.object_mapper(self._form._item)
         for prop in mapper.iterate_properties:
             if prop.key == self.name:
@@ -433,17 +429,18 @@ class Field(object):
         """Returns the datatype of the field."""
         if self._config.type:
             return self._config.type
-        elif self.sa_property:
+        if self.sa_property:
             try:
                 column = self.sa_property.columns[0]
-                if column.type in ["VARCHAR", "TEXT"]:
+                dtype = str(column.type)
+                if dtype in ["VARCHAR", "TEXT"]:
                     return "string"
-                elif column.type == "DATE":
+                elif dtype == "DATE":
                     return "date"
-                elif column.type == "INTEGER":
+                elif dtype == "INTEGER":
                     return "integer"
             except AttributeError:
-                return "relation"
+                return self.sa_property.direction.name.lower()
         return "string"
 
     def get_value(self, default=None):
