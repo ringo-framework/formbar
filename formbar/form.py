@@ -316,8 +316,8 @@ class Form(object):
             except ValueError:
                 msg = "Reference value '%s' must be of type integer" % value
                 self._add_error(field.name, msg)
-        print ("Converted value '%s' (%s) of field '%s' (%s)"
-               % (converted, type(converted), field.name, dtype))
+        log.debug("Converted value '%s' (%s) of field '%s' (%s)"
+                  % (converted, type(converted), field.name, dtype))
         return converted
 
     def validate(self, submitted):

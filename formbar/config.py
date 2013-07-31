@@ -51,7 +51,6 @@ class Config(object):
         :returns: list of elements
 
         """
-        print self._tree, name
         qstr = ".//%s" % (name)
         return self._tree.findall(qstr)
 
