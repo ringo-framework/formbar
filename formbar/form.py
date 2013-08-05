@@ -277,6 +277,14 @@ class Form(object):
             except ValueError:
                 msg = "%s is not a float value." % value
                 self._add_error(field.name, msg)
+        elif dtype == 'boolean':
+            if not value:
+                return None
+            try:
+                converted = value in ['True', '1', 't']
+            except ValueError:
+                msg = "%s is not a boolean value." % value
+                self._add_error(field.name, msg)
         elif dtype == 'date':
             if not value:
                 return None
