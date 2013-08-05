@@ -159,13 +159,13 @@ class TestFormAlchemyForm(unittest.TestCase):
         form_config = self.config.get_form('userform1')
         item = self._insert_item()
         form = Form(form_config, item)
-        self.assertEqual(len(form.fs.render_fields), 2)
+        self.assertEqual(len(form.fields), 2)
 
     def test_create(self):
         form_config = self.config.get_form('userform2')
         item = User()
         form = Form(form_config, item)
-        self.assertEqual(len(form.fs.render_fields), 3)
+        self.assertEqual(len(form.fields), 3)
 
     def test_create_save(self):
         form_config = self.config.get_form('userform2')
