@@ -542,7 +542,4 @@ class Field(object):
     def is_readonly(self):
         """Returns true if either the readonly flag of the field
         configuration is set or the whole form is marked as readonly"""
-        # TODO: Try to get the required flag from the underlying
-        # datamodel (None) <2013-07-24 21:48>
-        #return self.readonly or self._fa_field.is_readonly()
         return self.readonly or False
