@@ -3,6 +3,7 @@ import datetime
 import sqlalchemy as sa
 from formencode import htmlfill, variabledecode
 from formbar.renderer import FormRenderer, get_renderer
+from formbar.rules import Rule, Parser
 
 log = logging.getLogger(__name__)
 
@@ -362,12 +363,13 @@ class Form(object):
         log.debug('Submitted values: %s' % submitted)
         for fieldname, field in self.fields.iteritems():
             field = self.fields[fieldname]
+            rules = field.get_rules()
             # TODO: clean the submitted data. Only use values for fields
             # which are actually configured in the field (torsten)
             # <2013-07-30 09:02>
 
             # 3. Prevalidation
-            for rule in field.rules:
+            for rule in rules:
                 if rule.mode != 'pre':
                     continue
                 result = rule.evaluate(submitted)
@@ -379,7 +381,7 @@ class Form(object):
             values[fieldname] = self._convert(field, submitted.get(fieldname))
 
             # 5. Postvalidation
-            for rule in field.rules:
+            for rule in rules:
                 if rule.mode != 'post':
                     continue
                 result = rule.evaluate(values)
@@ -483,6 +485,18 @@ class Field(object):
             except AttributeError:
                 return self.sa_property.direction.name.lower()
         return "string"
+
+    def get_rules(self):
+        """Returns a list of configured rules for the field"""
+        rules = self.rules
+        if self.is_required():
+            parser = Parser()
+            expr = "bool($%s)" % self.name
+            msg = "This field is required. You need to provide a value"
+            mode = "pre"
+            expr = parser.parse(expr)
+            rules.append(Rule(expr, msg, mode))
+        return rules
 
     def get_value(self, default=None, expand=False):
         value = self._form.data.get(self._config.name, default)
