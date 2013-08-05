@@ -533,10 +533,11 @@ class Field(object):
         """Returns true if either the required flag of the field
         configuration is set or the field is required in the underlying
         datamodel"""
-        # TODO: Try to get the required flag from the underlying
-        # datamodel (None) <2013-07-24 21:48>
-        #return self.required or self._fa_field.is_required()
-        return self.required or False
+        req = False
+        if isinstance(self.sa_property, sa.orm.RelationshipProperty) is False \
+           and self.sa_property:
+            req = (self.sa_property.columns[0].nullable is False)
+        return self.required or req
 
     def is_readonly(self):
         """Returns true if either the readonly flag of the field
