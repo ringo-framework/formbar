@@ -476,6 +476,10 @@ class Field(object):
                     return "date"
                 elif dtype == "INTEGER":
                     return "integer"
+                elif dtype == "BOOLEAN":
+                    return "boolean"
+                else:
+                    log.warning('Unhandled datatype: %s' % dtype)
             except AttributeError:
                 return self.sa_property.direction.name.lower()
         return "string"
