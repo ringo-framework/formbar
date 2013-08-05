@@ -151,7 +151,7 @@ class Form(object):
             return serialized
         for name, field in self._config.get_fields().iteritems():
             try:
-                value = data[name]
+                value = data.get(name)
                 if value is None:
                     serialized[name] = ""
                 elif isinstance(value, list):
@@ -235,11 +235,6 @@ class Form(object):
         :field: configuration of the field
         :value: value to be converted
         """
-        # Handle missing value. Currently we just return None in case
-        # that the provided value is an empty String
-        #if value == "":
-        #    return None
-
         relation_names = {}
         try:
             mapper = sa.orm.object_mapper(self._item)
@@ -377,7 +372,6 @@ class Form(object):
                     self._add_error(fieldname, rule.msg)
 
             # 4. Basic type conversations, Defaults to String
-            # Validation can happen in two variations:
             values[fieldname] = self._convert(field, submitted.get(fieldname))
 
             # 5. Postvalidation
