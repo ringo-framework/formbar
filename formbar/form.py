@@ -262,12 +262,16 @@ class Form(object):
                 msg = "%s is not a string value." % value
                 self._add_error(field.name, msg)
         elif dtype == 'integer':
+            if not value:
+                return None
             try:
                 converted = int(value)
             except ValueError:
                 msg = "%s is not a integer value." % value
                 self._add_error(field.name, msg)
         elif dtype == 'float':
+            if not value:
+                return None
             try:
                 converted = float(value)
             except ValueError:
@@ -295,7 +299,7 @@ class Form(object):
             try:
                 db = self._dbsession
                 rel = relation_names[field.name].mapper.class_
-                if value == "":
+                if value in ("", None):
                     converted = None
                 else:
                     value = db.query(rel).filter(rel.id == int(value)).one()
