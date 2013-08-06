@@ -3,6 +3,7 @@ import datetime
 import sqlalchemy as sa
 from formencode import htmlfill, variabledecode
 from formbar.renderer import FormRenderer, get_renderer
+from formbar.rules import Rule, Parser
 
 log = logging.getLogger(__name__)
 
@@ -150,7 +151,7 @@ class Form(object):
             return serialized
         for name, field in self._config.get_fields().iteritems():
             try:
-                value = data[name]
+                value = data.get(name)
                 if value is None:
                     serialized[name] = ""
                 elif isinstance(value, list):
@@ -234,11 +235,6 @@ class Form(object):
         :field: configuration of the field
         :value: value to be converted
         """
-        # Handle missing value. Currently we just return None in case
-        # that the provided value is an empty String
-        #if value == "":
-        #    return None
-
         relation_names = {}
         try:
             mapper = sa.orm.object_mapper(self._item)
@@ -276,6 +272,14 @@ class Form(object):
                 converted = float(value)
             except ValueError:
                 msg = "%s is not a float value." % value
+                self._add_error(field.name, msg)
+        elif dtype == 'boolean':
+            if not value:
+                return None
+            try:
+                converted = value in ['True', '1', 't']
+            except ValueError:
+                msg = "%s is not a boolean value." % value
                 self._add_error(field.name, msg)
         elif dtype == 'date':
             if not value:
@@ -354,12 +358,13 @@ class Form(object):
         log.debug('Submitted values: %s' % submitted)
         for fieldname, field in self.fields.iteritems():
             field = self.fields[fieldname]
+            rules = field.get_rules()
             # TODO: clean the submitted data. Only use values for fields
             # which are actually configured in the field (torsten)
             # <2013-07-30 09:02>
 
             # 3. Prevalidation
-            for rule in field.rules:
+            for rule in rules:
                 if rule.mode != 'pre':
                     continue
                 result = rule.evaluate(submitted)
@@ -367,11 +372,10 @@ class Form(object):
                     self._add_error(fieldname, rule.msg)
 
             # 4. Basic type conversations, Defaults to String
-            # Validation can happen in two variations:
             values[fieldname] = self._convert(field, submitted.get(fieldname))
 
             # 5. Postvalidation
-            for rule in field.rules:
+            for rule in rules:
                 if rule.mode != 'post':
                     continue
                 result = rule.evaluate(values)
@@ -468,9 +472,25 @@ class Field(object):
                     return "date"
                 elif dtype == "INTEGER":
                     return "integer"
+                elif dtype == "BOOLEAN":
+                    return "boolean"
+                else:
+                    log.warning('Unhandled datatype: %s' % dtype)
             except AttributeError:
                 return self.sa_property.direction.name.lower()
         return "string"
+
+    def get_rules(self):
+        """Returns a list of configured rules for the field"""
+        rules = self.rules
+        if self.is_required():
+            parser = Parser()
+            expr = "bool($%s)" % self.name
+            msg = "This field is required. You need to provide a value"
+            mode = "pre"
+            expr = parser.parse(expr)
+            rules.append(Rule(expr, msg, mode))
+        return rules
 
     def get_value(self, default=None, expand=False):
         value = self._form.data.get(self._config.name, default)
@@ -525,15 +545,13 @@ class Field(object):
         """Returns true if either the required flag of the field
         configuration is set or the field is required in the underlying
         datamodel"""
-        # TODO: Try to get the required flag from the underlying
-        # datamodel (None) <2013-07-24 21:48>
-        #return self.required or self._fa_field.is_required()
-        return self.required or False
+        req = False
+        if isinstance(self.sa_property, sa.orm.RelationshipProperty) is False \
+           and self.sa_property:
+            req = (self.sa_property.columns[0].nullable is False)
+        return self.required or req
 
     def is_readonly(self):
         """Returns true if either the readonly flag of the field
         configuration is set or the whole form is marked as readonly"""
-        # TODO: Try to get the required flag from the underlying
-        # datamodel (None) <2013-07-24 21:48>
-        #return self.readonly or self._fa_field.is_readonly()
         return self.readonly or False
