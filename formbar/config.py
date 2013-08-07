@@ -253,7 +253,8 @@ class Field(Config):
 
         self.label = entity.attrib.get('label', self.name.capitalize())
         """Label of the field. If no label is provied the a capitalized
-        form of the name is used"""
+        form of the name is used. To not render a label at all define a
+        label with an empty string."""
 
         self.number = entity.attrib.get('number', '')
         """A ordering number for the field. In some form it is helpfull
