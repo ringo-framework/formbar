@@ -31,6 +31,15 @@
       % elif child.tag == "fieldset":
         <fieldset>
         <legend>${child.attrib.get('label')}</legend>
+      ## Table rendering
+      % elif child.tag == "table":
+        <table class="table table-condensed table-bordered table-striped">
+      % elif child.tag == "tr":
+        <tr>
+      % elif child.tag == "th":
+        <th>
+      % elif child.tag == "td":
+        <td width="${child.attrib.get('width', '')}">
       % endif
       ${self.render_recursive(child)}
       % if child.tag == "fieldset":
@@ -39,6 +48,16 @@
         </div>
       % elif child.tag == "row":
         </div>
+
+      ## Table rendering
+      % elif child.tag == "table":
+        </table>
+      % elif child.tag == "tr":
+        </tr>
+      % elif child.tag == "th":
+        </th>
+      % elif child.tag == "td":
+        </td>
       % endif
     % else:
       % if child.tag == "field":
@@ -50,7 +69,15 @@
           <% child = form._config._parent.get_element('snippet', ref) %>
         % endif
         ${self.render_recursive(child)}
+      ## Table rendering
+      % elif child.tag == "th":
+        <th>${child.text}</th>
+      % elif child.tag == "td":
+        <td>${child.text}</td>
       % endif
+
+<%def name="render_table(elem)">
+</%def>
     % endif
   % endfor
 </%def>

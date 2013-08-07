@@ -4,6 +4,12 @@ TODO
 - Added Testcases for i18n.
 - Added Testcases Custom renderers.
 
+0.4.1
+=====
+
+- Added support for table rendering as additional layout element. Follows
+  basically the html syntax (table, tr, th, td).
+
 0.4.0
 =====
 
