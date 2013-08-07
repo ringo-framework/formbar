@@ -6,8 +6,13 @@
       <rule expr="len($name) ge 8"></rule>
     </entity>
     <entity id="e2" name="fullname"/>
-    <entity id="e3" name="password" type="password"/>
-    <entity id="e4" name="rpassword" type="password"/>
+    <entity id="e3" name="password">
+      <renderer type="password"/>
+    </entity>
+    <entity id="e4" name="rpassword">
+      <renderer type="password"/>
+      <rule expr="$password == $rpassword"></rule>
+    </entity>
   </source>
   <form id="form">
     <snippet ref="s1"/>
