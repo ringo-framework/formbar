@@ -15,6 +15,14 @@ label {
     display: inline;
 }
 
+.formbar-form table td {
+  vertical-align: middle;
+}
+
+.formbar-form table td input {
+  margin-bottom: 0px;
+}
+
 select[multiple], textarea {
   /* Reset heigt of the field elements which have been modified by the
    * border-box modell */

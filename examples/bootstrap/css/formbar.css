@@ -5,10 +5,22 @@ input, select, textarea {
   width: 100%;
   /* Fix width and height of the fields by setting it to the border-box modell
    * (CSS3) Does not work in IE */
-  height: 32px !important;
+  height: 30px !important;
   box-sizing: border-box;
   -webkit-box-sizing:border-box;
   -moz-box-sizing: border-box;
+}
+
+label {
+    display: inline;
+}
+
+.formbar-form table td {
+  vertical-align: middle;
+}
+
+.formbar-form table td input {
+  margin-bottom: 0px;
 }
 
 select[multiple], textarea {
@@ -20,8 +32,9 @@ select[multiple], textarea {
 div.readonlyfield {
   border-radius: 3px 3px 3px 3px;
   background-color: #e0e0e0;
-  height: 32px;
+  padding: 8px;
   margin-bottom: 10px;
+  min-height: 18px;
 }
 
 /* Helptexts */
