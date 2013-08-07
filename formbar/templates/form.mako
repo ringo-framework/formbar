@@ -73,7 +73,7 @@
       % elif child.tag == "th":
         <th>${child.text}</th>
       % elif child.tag == "td":
-        <td>${child.text}</td>
+        <td width="${child.attrib.get('width', '')}">${child.text}</td>
       % endif
 
 <%def name="render_table(elem)">
