@@ -23,6 +23,10 @@ label {
   margin-bottom: 0px;
 }
 
+.formbar-form table td div.readonlyfield {
+  margin-bottom: 0px;
+}
+
 select[multiple], textarea {
   /* Reset heigt of the field elements which have been modified by the
    * border-box modell */
@@ -34,7 +38,7 @@ div.readonlyfield {
   background-color: #e0e0e0;
   padding: 8px;
   margin-bottom: 10px;
-  min-height: 18px;
+  min-height: 14px;
 }
 
 /* Helptexts */
