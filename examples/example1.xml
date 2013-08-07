@@ -2,15 +2,16 @@
 <configuration>
   <source>
     <!-- Define different entity types -->
-    <entity id="e2" name="integer" label="Integer field" type="integer" required="true"/>
     <entity id="e1" name="string" label="String field" type="string" readonly="true"/>
+    <entity id="e2" name="integer" label="Integer field" type="integer" required="true">
+      <rule expr="$integer ge 16" msg="Integer must be greater than 15" mode="post"/>
+    </entity>
     <entity id="e3" name="float" label="Float field" type="float">
       <rule expr="$float lt 100" msg="Float must be lower than 100" mode="post"/>
       <help>This is is a very long helptext which should span over
       multiple rows. Further the will check if there are further html
       tags allowed.</help>
     </entity>
-      <rule expr="$integer ge 16" msg="Integer must be greated than 15" mode="post"/>
     <entity id="e4" name="date" label="Date field" type="date" autocomplete="off" number="1">
       <renderer type="datepicker"/>
       <help>This is my helptext</help>
