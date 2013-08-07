@@ -6,8 +6,6 @@
   <!-- Bootstrap -->
   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <link href="bootstrap/css/formbar.css" rel="stylesheet" media="screen">
-  <script src="http://code.jquery.com/jquery.js"></script>
-  <script src="bootstrap/js/bootstrap.min.js"></script>
   <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -41,5 +39,9 @@
   <h2>Example 1</h2>
   ${form}
   </div> <!-- /container -->
+  <script src="bootstrap/js/jquery.js"></script>
+  <script src="bootstrap/js/bootstrap.min.js"></script>
+  <script src="bootstrap/js/bootstrap-datepicker.js"></script>
+  <script src="bootstrap/js/formbar.js"></script>
 </body>
 </html>
