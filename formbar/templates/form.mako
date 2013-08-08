@@ -39,7 +39,7 @@
       % elif child.tag == "th":
         <th>
       % elif child.tag == "td":
-        <td width="${child.attrib.get('width', '')}">
+        <td class="${child.attrib.get('class', '')}" width="${child.attrib.get('width', '')}">
       % endif
       ${self.render_recursive(child)}
       % if child.tag == "fieldset":
@@ -73,7 +73,8 @@
       % elif child.tag == "th":
         <th>${child.text}</th>
       % elif child.tag == "td":
-        <td width="${child.attrib.get('width', '')}">${child.text}</td>
+        <td class="${child.attrib.get('class', '')}"
+        width="${child.attrib.get('width', '')}">${child.text or ""}</td>
       % endif
     % endif
   % endfor
