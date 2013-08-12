@@ -27,8 +27,8 @@ def print_model(config):
             continue # ignore this type
         else:
             dtype = "sa.Text"
-        out.append("sa.Column('%s', %s, nullable=%s, default=%r)" %
-                   (name, dtype, nullable, default))
+        out.append("%s = sa.Column('%s', %s, nullable=%s, default=%r)" %
+                   (name, name, dtype, nullable, default))
     print "\n".join(out)
 
 def main (config, action):
