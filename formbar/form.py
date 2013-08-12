@@ -501,7 +501,7 @@ class Field(object):
             options = self.get_options()
             for opt in options:
                 for v in value:
-                    if v == opt[1]:
+                    if str(v) == str(opt[1]):
                         ex_values.append("%s" % opt[0])
             return ", ".join(ex_values)
         else:
@@ -509,6 +509,7 @@ class Field(object):
 
     def get_options(self):
         user_defined_options = self._config.options
+        print user_defined_options
         if user_defined_options:
             return user_defined_options
         elif self._form._dbsession:
