@@ -9,6 +9,8 @@ TODO
 
 - Added support for table rendering as additional layout element. Follows
   basically the html syntax (table, tr, th, td).
+- Added support InfoFields. Infofields are not part of the datamodel. The are
+  used to display dynamic calculated values.
 
 0.4.0
 =====
