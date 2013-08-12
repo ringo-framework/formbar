@@ -27,6 +27,8 @@ def get_renderer(field, translate):
             return field._form.external_renderers.get(renderer.render_type)(field, translate)
         if renderer.render_type == "textarea":
             return TextareaFieldRenderer(field, translate)
+        elif renderer.render_type == "info":
+            return InfoFieldRenderer(field, translate)
         elif renderer.render_type == "dropdown":
             return DropdownFieldRenderer(field, translate)
         elif renderer.render_type == "datepicker":
@@ -179,6 +181,12 @@ class FieldRenderer(Renderer):
         html.append(self._render_help())
         return "".join(html)
 
+class InfoFieldRenderer(FieldRenderer):
+    """A Renderer to render simple fa_field elements"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("infofield.mako")
 
 class TextFieldRenderer(FieldRenderer):
     """A Renderer to render simple fa_field elements"""
