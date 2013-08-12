@@ -1,3 +1,3 @@
-<div class="readonlyfield formbar-evaluate" id="${field.id}" expr="$anzahl_f1_m + $anzahl_f1_w">
+<div class="readonlyfield formbar-evaluate" id="${field.id}" expr="${field._tree.attrib.get('expr')}">
   ${field.get_value("")}
 </div>
