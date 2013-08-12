@@ -11,6 +11,8 @@ TODO
   basically the html syntax (table, tr, th, td).
 - Added support InfoFields. Infofields are not part of the datamodel. The are
   used to display dynamic calculated values.
+- Added helper script "generate.py" to generate various information about the
+  form configuration. E.g generate the SQLAlchemy model.
 
 0.4.0
 =====
