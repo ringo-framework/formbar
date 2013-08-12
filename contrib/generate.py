@@ -15,7 +15,7 @@ def print_model(config):
     out = []
     for field in _get_fields(config):
         name = field.name
-        nullable = field.required == "true"
+        nullable = field.required is False
         default = None
         if field.type == "string":
             dtype = "sa.Text"
