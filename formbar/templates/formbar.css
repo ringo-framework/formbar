@@ -1,7 +1,7 @@
 /* Formbar Style */
 
 /* Make all field elements expand to 100% on default */
-input, select, textarea {
+.formbar-form input, select, textarea {
   width: 100%;
   /* Fix width and height of the fields by setting it to the border-box modell
    * (CSS3) Does not work in IE */
