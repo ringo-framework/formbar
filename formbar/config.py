@@ -336,3 +336,5 @@ class Renderer(Config):
         - Datepicker
         - Textarea
         """
+    def __getattr__(self, name):
+        return self._tree.attrib.get(name)
