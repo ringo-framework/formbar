@@ -13,6 +13,9 @@ TODO
   used to display dynamic calculated values.
 - Added helper script "generate.py" to generate various information about the
   form configuration. E.g generate the SQLAlchemy model.
+- Added optional request param for form initialisation. The current request
+  from a wenframeform can no be provided to the form. This might be usefull
+  while rendering with external renderers.
 
 0.4.0
 =====

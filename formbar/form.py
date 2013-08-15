@@ -70,7 +70,7 @@ class Form(object):
     """
 
     def __init__(self, config, item=None, dbsession=None, translate=None,
-                 change_page_callback={}, renderers={}):
+                 change_page_callback={}, renderers={}, request=None):
         """Initialize the form with ``Form`` configuration instance and
         optional an SQLAlchemy mapped object.
 
@@ -85,11 +85,15 @@ class Form(object):
         provided to the form to render specific form elements. The key
         is the type of the renderer as named in the formular
         configuration.
+        :request: Current request (See
+        http://docs.pylonsproject.org/projects/pyramid/en/latest/api/request.html
+        when using in connection with ringo)
 
         """
         self._config = config
         self._item = item
         self._dbsession = dbsession
+        self._request = request
         if translate:
             self._translate = translate
         else:
