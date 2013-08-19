@@ -285,6 +285,15 @@ class Form(object):
             except ValueError:
                 msg = "%s is not a boolean value." % value
                 self._add_error(field.name, msg)
+        elif dtype == 'file':
+            try:
+                # filename = value.filename
+                converted = value.file.read()
+            except AttributeError:
+                return None
+            except ValueError:
+                msg = "%s is not a file value." % value
+                self._add_error(field.name, msg)
         elif dtype == 'date':
             if not value:
                 return None
