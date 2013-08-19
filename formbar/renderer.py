@@ -108,7 +108,7 @@ class FormRenderer(Renderer):
                 '_': self.translate}
         html.append('<form id="%(id)s" class="%(css)s" '
                     'method="%(method)s" action="%(action)s" '
-                    'autocomplete="%(autocomplete)s" >' % attr)
+                    'autocomplete="%(autocomplete)s" enctype="%(enctype)s">' % attr)
         return "".join(html)
 
     def _render_form_body(self):
