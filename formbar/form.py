@@ -385,7 +385,9 @@ class Form(object):
                     self._add_error(fieldname, rule.msg)
 
             # 4. Basic type conversations, Defaults to String
-            values[fieldname] = self._convert(field, submitted.get(fieldname))
+            if not field.is_readonly():
+                # Only add the value if the field is not marked as readonly
+                values[fieldname] = self._convert(field, submitted.get(fieldname))
 
             # 5. Postvalidation
             for rule in rules:
