@@ -45,6 +45,8 @@ def get_renderer(field, translate):
             return SelectionFieldRenderer(field, translate)
         elif dtype == "date":
             return DateFieldRenderer(field, translate)
+        elif dtype == "file":
+            return FileFieldRenderer(field, translate)
     return TextFieldRenderer(field, translate)
 
 
@@ -194,6 +196,14 @@ class TextFieldRenderer(FieldRenderer):
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("textfield.mako")
+
+
+class FileFieldRenderer(FieldRenderer):
+    """A Renderer to render simple fa_field elements"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("filefield.mako")
 
 
 class TextareaFieldRenderer(FieldRenderer):
