@@ -150,8 +150,13 @@ class FieldRenderer(Renderer):
         Renderer.__init__(self)
 
         self._field = field
+        self._config = field._config.renderer
         self.translate = translate
         self.template = None
+
+    def __getattr__(self, name):
+        """Give access to the config values of the renderer"""
+        return getattr(self._config, name)
 
     def _render_label(self):
         template = template_lookup.get_template("label.mako")
