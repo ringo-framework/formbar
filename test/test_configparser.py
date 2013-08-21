@@ -84,7 +84,7 @@ class TestFormParser(unittest.TestCase):
         self.assertEqual(self.dform.readonly, False)
 
     def test_readonly_custom(self):
-        self.assertEqual(self.cform.readonly, True)
+        self.assertEqual(self.cform.readonly, False)
 
     def test_id_default(self):
         self.assertEqual(self.dform.id, 'testform')
@@ -125,7 +125,7 @@ class TestFieldConfig(unittest.TestCase):
         self.assertEqual(self.sfield.readonly, False)
 
     def test_readonly_custom(self):
-        self.assertEqual(self.dfield.readonly, True)
+        self.assertEqual(self.dfield.readonly, False)
 
     def test_css_default(self):
         self.assertEqual(self.dfield.css, '')
@@ -146,7 +146,7 @@ class TestFieldConfig(unittest.TestCase):
         self.assertEqual(self.cfield.number, '1')
 
     def test_type_default(self):
-        self.assertEqual(self.dfield.type, 'string')
+        self.assertEqual(self.dfield.type, None)
 
     def test_type_custom(self):
         self.assertEqual(self.cfield.type, 'date')
@@ -179,7 +179,7 @@ class TestFieldConfig(unittest.TestCase):
         self.assertEqual(len(self.dfield.rules), 0)
 
     def test_rules_custom(self):
-        self.assertEqual(len(self.ifield.rules), 2)
+        self.assertEqual(len(self.ifield.rules), 1)
 
 if __name__ == '__main__':
     unittest.main()

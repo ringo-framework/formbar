@@ -13,7 +13,7 @@
       multiple rows. Further the will check if there are further html
       tags allowed.</help>
     </entity>
-    <entity id="e4" name="date" label="Date field" type="date" autocomplete="off" css="datefield" number="1" readonly="true">
+    <entity id="e4" name="date" label="Date field" type="date" autocomplete="off" css="datefield" number="1">
       <help>This is my helptext</help>
     </entity>
     <entity id="e8" name="select">
@@ -43,7 +43,7 @@
   </form>
   <form id="testform">
   </form>
-  <form id="customform" css="testcss" readonly="true" autocomplete="off" method="GET" action="http://" enctype="multipart/form-data">
+  <form id="customform" css="testcss" readonly="false" autocomplete="off" method="GET" action="http://" enctype="multipart/form-data">
     <row>
       <col><field ref="e1"/></col>
     </row>
@@ -70,4 +70,10 @@
       <col><field ref="e2"/></col>
     </row>
   </snippet>
+  <form id="customform-readonly" css="testcss" readonly="false" autocomplete="off" method="GET" action="http://" enctype="multipart/form-data">
+    <row>
+      <col><field ref="e1"/></col>
+    </row>
+    <snippet ref="s1"/>
+  </form>
 </configuration>
