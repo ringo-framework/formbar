@@ -42,6 +42,11 @@ function evaluateFields() {
             if (tokens[j].contains("$")) {
                 tfield = tokens[j].replace('$', '');
                 value = $('input[name='+tfield+']').val();
+                // If we can not get a value from an input fields the field my
+                // be readonly. So get the value from the readonly element.
+                if (!value) {
+                    value = $('div[name='+tfield+']').text();
+                }
                 console.log(tokens[j].replace('$', ''));
                 eval_expr += value;
             } else {
