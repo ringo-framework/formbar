@@ -4,6 +4,12 @@ TODO
 - Added Testcases for i18n.
 - Added Testcases Custom renderers.
 
+0.4.3
+=====
+- Fixed error in rule evaluation with non ascii values. The values are now
+  converted to ascii (non ascii values are replace with '?') before
+  evaluating.
+
 0.4.2
 =====
 
