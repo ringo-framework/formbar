@@ -64,15 +64,21 @@ class Rule(object):
                 token = values.get(token.strip('$'))
                 if isinstance(token, basestring):
                     token = "'%s'" % token
-            rule.append(str(token))
+            try:
+                rule.append(str(token))
+            except UnicodeEncodeError:
+                # eval only seems to like ascii strings. Convert
+                # it to ascii before actually evaluate it. Replace non
+                # ascii chars
+                rule.append(token.encode("ascii","replace"))
         try:
-            rule_str = " ".join(rule)
+            rule_str = u" ".join(rule)
             result = eval(rule_str)
             log.debug("Rule: %s -> %s" % (rule_str, result))
             return result
         except Exception, e:
             log.error(
-                'Evaluation of "%s" failed with error "%s"' % (rule, e))
+                'Evaluation of "%s" failed with error "%s"' % (rule_str, e))
             return False
 
 
