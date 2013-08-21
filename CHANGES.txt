@@ -4,6 +4,11 @@ TODO
 - Added Testcases for i18n.
 - Added Testcases Custom renderers.
 
+0.4.2
+=====
+
+- Added support for File Fields.
+
 0.4.1
 =====
 

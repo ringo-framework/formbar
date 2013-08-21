@@ -285,6 +285,15 @@ class Form(object):
             except ValueError:
                 msg = "%s is not a boolean value." % value
                 self._add_error(field.name, msg)
+        elif dtype == 'file':
+            try:
+                # filename = value.filename
+                converted = value.file.read()
+            except AttributeError:
+                return None
+            except ValueError:
+                msg = "%s is not a file value." % value
+                self._add_error(field.name, msg)
         elif dtype == 'date':
             if not value:
                 return None
@@ -376,7 +385,9 @@ class Form(object):
                     self._add_error(fieldname, rule.msg)
 
             # 4. Basic type conversations, Defaults to String
-            values[fieldname] = self._convert(field, submitted.get(fieldname))
+            if not field.is_readonly():
+                # Only add the value if the field is not marked as readonly
+                values[fieldname] = self._convert(field, submitted.get(fieldname))
 
             # 5. Postvalidation
             for rule in rules:

@@ -23,6 +23,18 @@ def print_model(config):
             dtype = "sa.Integer"
         elif field.type == "date":
             dtype = "sa.Date"
+        elif field.type == "datetime":
+            dtype = "sa.DateTime"
+        elif field.type == "float":
+            dtype = "sa.Float"
+        elif field.type == "number":
+            dtype = "sa.Numeric"
+        elif field.type == "decimal":
+            dtype = "sa.Decimal"
+        elif field.type == "boolean":
+            dtype = "sa.Boolean"
+        elif field.type == "blob":
+            dtype = "sa.LargeBinary"
         elif field.type == "info":
             continue # ignore this type
         else:

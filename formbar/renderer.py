@@ -45,6 +45,8 @@ def get_renderer(field, translate):
             return SelectionFieldRenderer(field, translate)
         elif dtype == "date":
             return DateFieldRenderer(field, translate)
+        elif dtype == "file":
+            return FileFieldRenderer(field, translate)
     return TextFieldRenderer(field, translate)
 
 
@@ -108,7 +110,7 @@ class FormRenderer(Renderer):
                 '_': self.translate}
         html.append('<form id="%(id)s" class="%(css)s" '
                     'method="%(method)s" action="%(action)s" '
-                    'autocomplete="%(autocomplete)s" >' % attr)
+                    'autocomplete="%(autocomplete)s" enctype="%(enctype)s">' % attr)
         return "".join(html)
 
     def _render_form_body(self):
@@ -148,8 +150,13 @@ class FieldRenderer(Renderer):
         Renderer.__init__(self)
 
         self._field = field
+        self._config = field._config.renderer
         self.translate = translate
         self.template = None
+
+    def __getattr__(self, name):
+        """Give access to the config values of the renderer"""
+        return getattr(self._config, name)
 
     def _render_label(self):
         template = template_lookup.get_template("label.mako")
@@ -194,6 +201,14 @@ class TextFieldRenderer(FieldRenderer):
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("textfield.mako")
+
+
+class FileFieldRenderer(FieldRenderer):
+    """A Renderer to render simple fa_field elements"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("filefield.mako")
 
 
 class TextareaFieldRenderer(FieldRenderer):
