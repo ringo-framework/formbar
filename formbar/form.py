@@ -311,6 +311,16 @@ class Form(object):
             except:
                 msg = "%s is not a valid date format." % value
                 self._add_error(field.name, msg)
+        elif dtype == 'time':
+            try:
+                h, m, s = value.split(':')
+                h = int(h)
+                m = int(m)
+                s = int(s)
+                converted = datetime.timedelta(hours=h, minutes=m, seconds=s).total_seconds()
+            except ValueError:
+                msg = "Value '%s' must be in format 'HH:MM:SS'" % value
+                self._add_error(field.name, msg)
         # Reltation handling
         elif dtype == 'manytoone':
             try:
