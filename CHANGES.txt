@@ -8,6 +8,9 @@ TODO
 =====
 - Added "time" fields. Will take the time in the form "HH:MM:SS" and converts
   it into the total amount of seconds.
+- Fixed error in rule evaluation with non ascii values. The values are now
+  converted to ascii (non ascii values are replace with '?') before
+  evaluating.
 
 0.4.2
 =====

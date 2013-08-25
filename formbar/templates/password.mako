@@ -1,7 +1,7 @@
 % if field.is_readonly():
-  <div class="readonlyfield">
+  <div class="readonlyfield" name="${field.name}">
     ${field.get_value("")}
   </div>
 % else:
-  <input type="password" name="${field.name}" value="${field.get_value()}"/>
+  <input type="password" id="${field.id}" name="${field.name}" value="${field.get_value()}"/>
 % endif

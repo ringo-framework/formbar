@@ -24,7 +24,10 @@ $('div.formbar-form form div.tabbable ul.nav li a').click(function() {
 /*
  * Evaluate when values in the form changes 
 */
-$('div.formbar-form form input').change(function() {
+evaluateFields();
+$('div.formbar-form form input').change(evaluateFields);
+
+function evaluateFields() {
     var fieldsToEvaluate = $('.formbar-evaluate');
     for (var i = fieldsToEvaluate.length - 1; i >= 0; i--){
         var field = fieldsToEvaluate[i];
@@ -34,17 +37,22 @@ $('div.formbar-form form input').change(function() {
         var tokens = expr.split(" ");
         var eval_expr = "";
         for (var j = tokens.length - 1; j >= 0; j--){
-            var tfield = null
-            var value = null
+            var tfield = null;
+            var value = null;
             if (tokens[j].contains("$")) {
                 tfield = tokens[j].replace('$', '');
                 value = $('input[name='+tfield+']').val();
+                // If we can not get a value from an input fields the field my
+                // be readonly. So get the value from the readonly element.
+                if (!value) {
+                    value = $('div[name='+tfield+']').text();
+                }
                 console.log(tokens[j].replace('$', ''));
                 eval_expr += value;
             } else {
                 eval_expr += tokens[j];
             }
-        };
+        }
         try {
             var eval_value = eval(eval_expr);
             $('#'+id).text(eval_value);
@@ -52,5 +60,5 @@ $('div.formbar-form form input').change(function() {
             console.log(e);
             $('#'+id).text("");
         }
-    };
-});
+    }
+}

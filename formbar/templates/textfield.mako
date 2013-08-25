@@ -1,7 +1,7 @@
 % if field.is_readonly():
-  <div class="readonlyfield">
+  <div class="readonlyfield" name="${field.name}">
     ${field.get_value("")}
   </div>
 % else:
-  <input type="text" name="${field.name}" value="${field.get_value()}"/>
+  <input type="text" id="${field.id}" name="${field.name}" value="${field.get_value()}"/>
 % endif
