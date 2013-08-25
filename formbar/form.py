@@ -171,7 +171,12 @@ class Form(object):
                     try:
                         serialized[name] = value.id
                     except AttributeError:
-                        serialized[name] = value
+                        if ftype == "time":
+                            td = datetime.timedelta(seconds=int(value))
+                            d = datetime.datetime(1, 1, 1) + td
+                            serialized[name] = "%02d:%02d:%02d" % (d.hour, d.minute, d.second)
+                        else:
+                            serialized[name] = value
             except AttributeError:
                 log.warning('Can not get value for field "%s". '
                             'The field is no attribute of the item' % name)
