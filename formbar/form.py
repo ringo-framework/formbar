@@ -153,7 +153,8 @@ class Form(object):
         serialized = {}
         if not data:
             return serialized
-        for name, field in self._config.get_fields().iteritems():
+        for name, field in self.fields.iteritems():
+            ftype = field.get_type()
             try:
                 value = data.get(name)
                 if value is None:
