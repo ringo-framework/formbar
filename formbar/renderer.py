@@ -47,6 +47,8 @@ def get_renderer(field, translate):
             return DateFieldRenderer(field, translate)
         elif dtype == "file":
             return FileFieldRenderer(field, translate)
+        elif dtype == "time":
+            return TimeFieldRenderer(field, translate)
     return TextFieldRenderer(field, translate)
 
 
@@ -201,6 +203,13 @@ class TextFieldRenderer(FieldRenderer):
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("textfield.mako")
+
+class TimeFieldRenderer(FieldRenderer):
+    """A Renderer to render simple fa_field elements"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("timefield.mako")
 
 
 class FileFieldRenderer(FieldRenderer):
