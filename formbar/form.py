@@ -224,7 +224,16 @@ class Form(object):
         self.current_page = page
         renderer = FormRenderer(self, self._translate)
         form = renderer.render(values)
-        return htmlfill.render(form, values or self.serialize(self.data))
+
+        # If the form is validated (POST) and the form contains no erros
+        # than we use the serialized values of self.data which includes
+        # the converted values.
+        # In all other cases return the self.data attribute which either
+        # has the serialized data of the loaded item (GET) or the
+        # submitted error data on POST.
+        if self.validated and not self.has_errors():
+            return htmlfill.render(form, values or self.serialize(self.data))
+        return htmlfill.render(form, values or self.data)
 
     def _add_error(self, fieldname, error):
         field = self.get_field(fieldname)
