@@ -11,6 +11,8 @@ TODO
 - Fixed error in rule evaluation with non ascii values. The values are now
   converted to ascii (non ascii values are replace with '?') before
   evaluating.
+- Improved "tabbing" in forms. Markers for required fields aren't links
+  anymore which are tabable.
 
 0.4.2
 =====
