@@ -6,6 +6,6 @@
     ${_(field.label)}
   % endif
   % if field.is_required():
-    <a href="#" data-toggle="tooltip" class="formbar-tooltip" data-original-title="Required fa_field"><i class="icon-asterisk"></i></a>
+    <i data-toggle="tooltip" data-original-title="Required fa_field" class="formbar-tooltip icon-asterisk"></i>
   % endif
 </label>
