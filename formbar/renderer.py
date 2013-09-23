@@ -113,6 +113,10 @@ class FormRenderer(Renderer):
         html.append('<form id="%(id)s" class="%(css)s" '
                     'method="%(method)s" action="%(action)s" '
                     'autocomplete="%(autocomplete)s" enctype="%(enctype)s">' % attr)
+        # Add hidden field with csrf_token if this is not None.
+        if self._form._csrf_token:
+            html.append('<input type="hidden" name="csrf_token" value="%s"/>'
+                        % self._form._csrf_token)
         return "".join(html)
 
     def _render_form_body(self):

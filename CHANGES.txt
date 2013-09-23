@@ -13,6 +13,8 @@ TODO
   evaluating.
 - Improved "tabbing" in forms. Markers for required fields aren't links
   anymore which are tabable.
+- Added support for CSRF protection. The form can now be initialised with a
+  token for CSRF protection which is rendered as hidden field in the forms.
 
 0.4.2
 =====

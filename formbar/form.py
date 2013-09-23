@@ -70,7 +70,8 @@ class Form(object):
     """
 
     def __init__(self, config, item=None, dbsession=None, translate=None,
-                 change_page_callback={}, renderers={}, request=None):
+                 change_page_callback={}, renderers={}, request=None,
+                 csrf_token=None):
         """Initialize the form with ``Form`` configuration instance and
         optional an SQLAlchemy mapped object.
 
@@ -88,12 +89,15 @@ class Form(object):
         :request: Current request (See
         http://docs.pylonsproject.org/projects/pyramid/en/latest/api/request.html
         when using in connection with ringo)
+        :csrf_token: Token to which will be included as hidden field in
+        the form to prevent CSRF attacks.
 
         """
         self._config = config
         self._item = item
         self._dbsession = dbsession
         self._request = request
+        self._csrf_token = csrf_token
         if translate:
             self._translate = translate
         else:
@@ -237,8 +241,12 @@ class Form(object):
         # has the serialized data of the loaded item (GET) or the
         # submitted error data on POST.
         if self.validated and not self.has_errors():
-            return htmlfill.render(form, values or self.serialize(self.data))
-        return htmlfill.render(form, values or self.data)
+            values = values or self.serialize(self.data)
+        else:
+            values = values or self.data
+        # Add csrf_token to the values dictionary
+        values['csrf_token'] = self._csrf_token
+        return htmlfill.render(form, values)
 
     def _add_error(self, fieldname, error):
         field = self.get_field(fieldname)
