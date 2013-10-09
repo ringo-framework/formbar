@@ -557,7 +557,6 @@ class Field(object):
 
     def get_options(self):
         user_defined_options = self._config.options
-        print user_defined_options
         if user_defined_options:
             return user_defined_options
         elif self._form._dbsession:
