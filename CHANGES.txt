@@ -4,6 +4,12 @@ TODO
 - Added Testcases for i18n.
 - Added Testcases Custom renderers.
 
+0.4.4
+=====
+- Added datetime conversion. Converts submitted strings in with format
+  "2013-10-10 22:42:31" into a datetime.
+
+
 0.4.3
 =====
 - Added "time" fields. Will take the time in the form "HH:MM:SS" and converts

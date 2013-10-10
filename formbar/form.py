@@ -344,6 +344,22 @@ class Form(object):
             except ValueError:
                 msg = "Value '%s' must be in format 'HH:MM:SS'" % value
                 self._add_error(field.name, msg)
+        elif dtype == 'datetime':
+            try:
+                date, time = value.split(' ')
+                y, m, d = date.split('-')
+                y = int(y)
+                m = int(m)
+                d = int(d)
+                h, M, s = time.split(':')
+                h = int(h)
+                M = int(M)
+                s = int(s)
+                converted = datetime.datetime(y, m, d, h, M, s)
+            except:
+                log.exception("e")
+                msg = "%s is not a valid datetime format." % value
+                self._add_error(field.name, msg)
         # Reltation handling
         elif dtype == 'manytoone':
             try:
