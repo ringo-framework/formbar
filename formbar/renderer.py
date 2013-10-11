@@ -246,6 +246,11 @@ class PasswordFieldRenderer(FieldRenderer):
         self.template = template_lookup.get_template("password.mako")
 
 
+# TODO: Use a new superclass for the following two renderers as they
+# deal not only with one single value but with multiple selectable
+# values. Implement filtering of items here if possible. See Plorma
+# implementation of the ListingFieldRenderer to see how this ignoring is
+# implemented. (ti) <2013-10-11 22:39>
 class DropdownFieldRenderer(FieldRenderer):
     """A Renderer to render dropdown list"""
 
@@ -266,6 +271,9 @@ class SelectionFieldRenderer(FieldRenderer):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("selection.mako")
 
+# TODO: Check which of the following Renderers are needed (ti). It looks
+# like they are outdated as they are using old FormAlchemy fa_*.mako
+# templates <2013-10-11 22:31>
 
 class ListFieldRenderer(FieldRenderer):
     """A Renderer to render selection list"""
