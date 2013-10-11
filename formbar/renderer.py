@@ -159,6 +159,7 @@ class FieldRenderer(Renderer):
         self._config = field._config.renderer
         self.translate = translate
         self.template = None
+        self.values = self._get_template_values()
 
     def __getattr__(self, name):
         """Give access to the config values of the renderer"""
@@ -166,18 +167,15 @@ class FieldRenderer(Renderer):
 
     def _render_label(self):
         template = template_lookup.get_template("label.mako")
-        values = self._get_template_values()
-        return template.render(**values)
+        return template.render(**self.values)
 
     def _render_errors(self):
         template = template_lookup.get_template("errors.mako")
-        values = self._get_template_values()
-        return template.render(**values)
+        return template.render(**self.values)
 
     def _render_help(self):
         template = template_lookup.get_template("help.mako")
-        values = self._get_template_values()
-        return template.render(**values)
+        return template.render(**self.values)
 
     def _get_template_values(self):
         values = {'field': self._field,
@@ -188,9 +186,8 @@ class FieldRenderer(Renderer):
         # TODO: Split rendering in four parts: label, fieldbody, errors,
         # help. Each in its own template.
         html = []
-        values = self._get_template_values()
         html.append(self._render_label())
-        html.append(self.template.render(**values))
+        html.append(self.template.render(**self.values))
         html.append(self._render_errors())
         html.append(self._render_help())
         return "".join(html)
