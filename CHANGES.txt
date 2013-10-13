@@ -8,6 +8,7 @@ TODO
 =====
 - Added datetime conversion. Converts submitted strings in with format
   "2013-10-10 22:42:31" into a datetime.
+- Change Layout of the buttonpane. Removed margin and padding. No background.
 
 
 0.4.3
