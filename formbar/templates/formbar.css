@@ -38,7 +38,7 @@ div.readonlyfield {
   background-color: #e0e0e0;
   padding: 8px;
   margin-bottom: 10px;
-  min-height: 14px;
+  min-height: 36px;
 }
 
 /* Helptexts */
@@ -62,7 +62,6 @@ button {
 
 .button-pane {
   margin-top: 20px;
-  background-color: #e0e0e0;
 }
 
 .formbar-outline {
