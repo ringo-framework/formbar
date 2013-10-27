@@ -1,6 +1,6 @@
 % if field.help is not None:
-<div class="text-help">
+<p class="help-block">
   <i class="icon-info-sign"></i>
   ${_(field.help)}
-</div>
+</p>
 % endif

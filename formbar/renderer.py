@@ -110,7 +110,7 @@ class FormRenderer(Renderer):
                 'autocomplete': self._form._config.autocomplete,
                 'enctype': self._form._config.enctype,
                 '_': self.translate}
-        html.append('<form id="%(id)s" class="%(css)s" '
+        html.append('<form id="%(id)s" class="%(css)s" role="form" '
                     'method="%(method)s" action="%(action)s" '
                     'autocomplete="%(autocomplete)s" enctype="%(enctype)s">' % attr)
         # Add hidden field with csrf_token if this is not None.
@@ -189,11 +189,13 @@ class FieldRenderer(Renderer):
         # TODO: Split rendering in four parts: label, fieldbody, errors,
         # help. Each in its own template.
         html = []
+        html.append('<div class="form-group">')
         html.append(self._render_label())
         values = self._get_template_values()
         html.append(self.template.render(**values))
         html.append(self._render_errors())
         html.append(self._render_help())
+        html.append('</div>')
         return "".join(html)
 
 class InfoFieldRenderer(FieldRenderer):

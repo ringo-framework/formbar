@@ -3,7 +3,7 @@
     ${field.get_value(expand=True) or "&nbsp;"}
   </div>
 % else:
-  <select id="${field.id}" name="${field.name}">
+  <select class="form-control" id="${field.id}" name="${field.name}">
     % for option in options:
       <option value="${option[1]}">${option[0]}</option>
     % endfor

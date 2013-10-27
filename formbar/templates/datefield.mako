@@ -3,5 +3,5 @@
     ${field.get_value("")}
   </div>
 % else:
-  <input class="formbar-datepicker" type="text" name="${field.name}" value="${field.get_value()}"/>
+  <input class="formbar-datepicker form-control" type="text" name="${field.name}" value="${field.get_value()}"/>
 % endif
