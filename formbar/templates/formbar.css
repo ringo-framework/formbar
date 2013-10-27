@@ -65,11 +65,15 @@ button {
 }
 
 .formbar-outline {
-  margin-top: 25px;
+  margin-top: 10px;
 }
 
 .formbar-page {
   display: none;
+}
+
+.formbar-page h2 {
+  margin-top: 5px;
 }
 
 .active {
@@ -79,7 +83,7 @@ button {
 // Media depended affix CSS.
 @media(max-width:767px){
   .formbar-outline.affix {
-    position: relative;
+    position: static;
     width: 100%;
     top: 0;
     z-index:10;
