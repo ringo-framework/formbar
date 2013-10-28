@@ -3,7 +3,7 @@
     ${field.get_value("")}
   </div>
 % else:
-  <input id="${field.id}" type="text" name="${field.name}" value="${field.get_value()}" placeholder="HH:MM:SS"/>
+  <input class="form-control" id="${field.id}" type="text" name="${field.name}" value="${field.get_value()}" placeholder="HH:MM:SS"/>
 % endif
 <script>
 $('#${field.id}').keyup(function() {

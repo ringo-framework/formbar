@@ -21,6 +21,20 @@ $('div.formbar-form form div.tabbable ul.nav li a').click(function() {
         function(data, status) {});
 });
 
+$('div.formbar-outline a').click(function() {
+  var page = $(this).attr('href').split('#p')[1];
+  var item = $(this).attr('formbar-item');
+  var itemid = $(this).attr('formbar-itemid');
+  $.get('/set_current_form_page', 
+        {
+            page: page,
+            item: item,
+            itemid: itemid
+        },
+        function(data, status) {});
+  $('.formbar-page').hide();
+  $('#formbar-page-'+page).show();
+});
 /*
  * Evaluate when values in the form changes 
 */

@@ -1,33 +1,43 @@
 ## Render pages
+<div class="row">
 % if len(form._config.get_pages()) > 0:
-  ## Render tabs
-  <div class="tabbable tabs-right">
-    <ul class="nav nav-tabs">
-    % for num, page in enumerate(form._config.get_pages()):
-      <li class="${num==form.current_page-1 and 'active'}"><a href="#${page.attrib.get('id')}" data-toggle="tab" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${page.attrib.get('label')}</a></li>
-    % endfor
-    </ul>
-    ## Render tabs-content 
-    <div class="tab-content">
-    % for num, page in enumerate(form._config.get_pages()):
-      <div class="tab-pane ${num==form.current_page-1 and 'active'}" id="${page.attrib.get('id')}">
-        ${self.render_recursive(page)}
+  <div class="col-sm-3">
+    <div>
+      <div class="panel panel-default formbar-outline">
+        <!-- Default panel contents -->
+        <div class="panel-heading">${_('Outline')}</div>
+        <!-- List group -->
+        <ul class="list-group">
+          % for num, page in enumerate(form._config.get_pages()):
+            <a href="#${page.attrib.get('id')}" class="list-group-item" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${page.attrib.get('label')}</a>
+          % endfor
+        </ul>
       </div>
-    % endfor
     </div>
   </div>
+  <div class="col-sm-9">
+  % for num, page in enumerate(form._config.get_pages()):
+    <div class="formbar-page ${num==form.current_page-1 and 'active'}" id="formbar-page-${num+1}">
+      <h2>${page.attrib.get('label')}</h2>
+      ${self.render_recursive(page)}
+    </div>
+  % endfor
+  </div>
 % else:
+  <div class="col-sm-12">
     ${self.render_recursive(form._config._tree)}
+  </div>
 % endif
+</div>
 
 <%def name="render_recursive(elem)">
   % for child in elem:
     % if len(child) > 0:
       % if child.tag == "row":
-        <div class="row-fluid">
+        <div class="row row-fluid">
       % elif child.tag == "col":
         <% width = child.attrib.get('width', (12/len(elem))) %>
-        <div class="span${width}">
+        <div class="col-md-${width} span${width}">
       % elif child.tag == "fieldset":
         <fieldset>
         <legend>${child.attrib.get('label')}</legend>

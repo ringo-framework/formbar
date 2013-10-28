@@ -63,3 +63,44 @@ button {
 .button-pane {
   padding: 0px;
 }
+.formbar-outline {
+  margin-top: 10px;
+}
+
+.formbar-page {
+  display: none;
+}
+
+.formbar-page h2 {
+  margin-top: 5px;
+}
+
+.active {
+  display: block;
+}
+
+// Media depended affix CSS.
+@media(max-width:767px){
+  .formbar-outline.affix {
+    position: static;
+    width: 100%;
+    top: 0;
+    z-index:10;
+  }
+}
+@media(min-width:768px){
+  .formbar-outline.affix {
+    position: fixed;
+    top: 0;
+    z-index:10;
+    width: 126px;
+  }
+}
+@media(min-width:992px){
+  .formbar-outline.affix {
+    width: 213px;
+}
+@media(min-width:1200px){
+  .formbar-outline.affix {
+    width: 290px;
+}

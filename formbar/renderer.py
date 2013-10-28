@@ -110,7 +110,7 @@ class FormRenderer(Renderer):
                 'autocomplete': self._form._config.autocomplete,
                 'enctype': self._form._config.enctype,
                 '_': self.translate}
-        html.append('<form id="%(id)s" class="%(css)s" '
+        html.append('<form id="%(id)s" class="%(css)s" role="form" '
                     'method="%(method)s" action="%(action)s" '
                     'autocomplete="%(autocomplete)s" enctype="%(enctype)s">' % attr)
         # Add hidden field with csrf_token if this is not None.
@@ -126,12 +126,15 @@ class FormRenderer(Renderer):
 
     def _render_form_buttons(self):
         html = []
-        html.append('<div class="row-fluid">')
-        html.append('<div class="span12 button-pane well-small">')
+        html.append('<div class="row row-fluid">')
+        if len(self._form._config.get_pages()) > 0:
+            html.append('<div class="col-md-9 col-md-offset-3 offset3 span9 button-pane well-small">')
+        else:
+            html.append('<div class="col-md-12 span12 button-pane well-small">')
         html.append('<button type="submit" '
-                    'class="btn btn-primary">%s</button>' % 'Submit')
+                    'class="btn btn-default">%s</button>' % 'Submit')
         html.append('<button type="reset" '
-                    'class="btn btn-warning">%s</button>' % 'Reset')
+                    'class="btn btn-default">%s</button>' % 'Reset')
         html.append('</div>')
         html.append('</div>')
         return "".join(html)
@@ -189,11 +192,13 @@ class FieldRenderer(Renderer):
         # TODO: Split rendering in four parts: label, fieldbody, errors,
         # help. Each in its own template.
         html = []
+        html.append('<div class="form-group">')
         html.append(self._render_label())
         values = self._get_template_values()
         html.append(self.template.render(**values))
         html.append(self._render_errors())
         html.append(self._render_help())
+        html.append('</div>')
         return "".join(html)
 
 class InfoFieldRenderer(FieldRenderer):

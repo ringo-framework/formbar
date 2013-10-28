@@ -3,5 +3,5 @@
     ${field.get_value("").replace('\n', '<br>')}
   </div>
 % else:
-  <textarea id="${field.id}" name="${field.name}">${field.get_value()}</textarea>
+  <textarea class="form-control" id="${field.id}" name="${field.name}">${field.get_value()}</textarea>
 % endif

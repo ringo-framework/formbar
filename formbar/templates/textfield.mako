@@ -3,5 +3,5 @@
     ${field.get_value("")}
   </div>
 % else:
-  <input type="text" id="${field.id}" name="${field.name}" value="${field.get_value()}"/>
+  <input class="form-control" type="text" id="${field.id}" name="${field.name}" value="${field.get_value()}"/>
 % endif
