@@ -4,7 +4,7 @@ TODO
 - Added Testcases for i18n.
 - Added Testcases Custom renderers.
 
-0.5.0
+0.4.5
 =====
 - Make formbar compatible with Bootstrap 3
 
