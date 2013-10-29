@@ -128,9 +128,10 @@ class FormRenderer(Renderer):
         html = []
         html.append('<div class="row row-fluid">')
         if len(self._form._config.get_pages()) > 0:
-            html.append('<div class="col-md-9 col-md-offset-3 offset3 span9 button-pane well-small">')
+            html.append('<div class="col-sm-3 span3 button-pane"></div>')
+            html.append('<div class="col-sm-9 span9 button-pane">')
         else:
-            html.append('<div class="col-md-12 span12 button-pane well-small">')
+            html.append('<div class="col-sm-12 span12 button-pane well-small">')
         html.append('<button type="submit" '
                     'class="btn btn-default">%s</button>' % 'Submit')
         html.append('<button type="reset" '
