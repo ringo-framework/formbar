@@ -195,7 +195,8 @@ class FieldRenderer(Renderer):
         # TODO: Split rendering in four parts: label, fieldbody, errors,
         # help. Each in its own template.
         html = []
-        html.append('<div class="form-group">')
+        has_errors = len(self._field.get_errors())
+        html.append('<div class="form-group %s">' % (has_errors and 'has-error'))
         html.append(self._render_label())
         values = self._get_template_values()
         html.append(self.template.render(**values))

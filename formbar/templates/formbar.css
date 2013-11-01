@@ -44,7 +44,7 @@ div.readonlyfield {
 /* Helptexts */
 .text-help {
   position: relative;
-  top: -5px;
+  top: 3px;
   font-size: 0.8em;
   color: #707070;
 }

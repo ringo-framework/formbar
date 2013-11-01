@@ -1,4 +1,4 @@
-<label for="${field.name}">
+<label class="control-label" for="${field.name}">
   % if field.number:
     <sup>(${field.number})</sup>
   % endif
@@ -6,6 +6,6 @@
     ${_(field.label)}
   % endif
   % if field.is_required():
-    <i data-toggle="tooltip" data-original-title="Required fa_field" class="formbar-tooltip icon-asterisk"></i>
+    <span data-toggle="tooltip" data-original-title="Required fa_field" class="formbar-tooltip glyphicon glyphicon-asterisk"></span>
   % endif
 </label>
