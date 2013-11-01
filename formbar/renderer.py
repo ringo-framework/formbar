@@ -35,6 +35,8 @@ def get_renderer(field, translate):
             return DateFieldRenderer(field, translate)
         elif renderer.render_type == "password":
             return PasswordFieldRenderer(field, translate)
+        elif renderer.render_type == "hidden":
+            return HiddenFieldRenderer(field, translate)
     else:
         # Try to determine the datatype of the field and set approriate
         # renderer.
@@ -254,6 +256,19 @@ class PasswordFieldRenderer(FieldRenderer):
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("password.mako")
+
+class HiddenFieldRenderer(FieldRenderer):
+    """A Renderer to render hidden elements"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("hidden.mako")
+
+    def render(self):
+        html = []
+        values = self._get_template_values()
+        html.append(self.template.render(**values))
+        return "".join(html)
 
 
 # TODO: Use a new superclass for the following two renderers as they
