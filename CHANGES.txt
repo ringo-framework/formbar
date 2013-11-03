@@ -3,6 +3,13 @@ TODO
 
 - Added Testcases for i18n.
 - Added Testcases Custom renderers.
+- Allow to redefine some attribute of the source fields in the fields
+  references. So the source fields are the default and can be modified by the
+  reference.
+
+0.4.6
+=====
+- Added Renderer for hidden fields.
 
 0.4.5
 =====
