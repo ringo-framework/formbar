@@ -13,7 +13,11 @@
       <renderer type="password"/>
       <rule expr="$password == $rpassword"></rule>
     </entity>
-    <entity id="e5" name="test" label=""/>
+    <entity id="e5" name="anzahl_f2_m" label="" type="integer"/>
+    <entity id="e6" name="anzahl_f2_w" label="" type="integer"/>
+    <entity id="e7" name="anzahl_f2_g" label="" type="info" expr="$anzahl_f2_m + $anzahl_f2_w">
+      <renderer type="info"/>
+    </entity>
   </source>
   <form id="form">
     <snippet ref="s1"/>
@@ -44,7 +48,8 @@
           <tr>
             <td width="70%">Number of humans in the world</td>
             <td><field ref="e5"/></td>
-            <td><field ref="e5"/></td>
+            <td><field ref="e6"/></td>
+            <td><field ref="e7"/></td>
           </tr>
         </table>
       </col>
