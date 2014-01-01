@@ -36,43 +36,56 @@ $('div.formbar-outline a').click(function() {
   $('#formbar-page-'+page).show();
 });
 /*
- * Evaluate when values in the form changes 
+ * Evaluate when values in the form changes
 */
 evaluateFields();
 $('div.formbar-form form input').change(evaluateFields);
+function evaluate(element) {
+    var expr = element['attributes'][0].value;
+    var tokens = expr.split(" ");
+
+    var eval_expr = "";
+    // Build evaluation string
+    for (var j = tokens.length - 1; j >= 0; j--) {
+        var tfield = null;
+        var value = null;
+        if (tokens[j].contains("$")) {
+            tfield = tokens[j].replace('$', '');
+            // Select field
+            var field = $('input[name='+tfield+'], '
+                          + 'select[name='+tfield+'], '
+                          + 'textarea[name='+tfield+']');
+            value = field.val();
+            // If we can not get a value from an input fields the field my
+            // be readonly. So get the value from the readonly element.
+            if (!value) {
+                value = $('div[name='+tfield+']').text();
+            }
+            console.log(tokens[j].replace('$', ''));
+            eval_expr += value;
+        } else {
+            eval_expr += tokens[j];
+        }
+    }
+    try {
+        return eval(eval_expr);
+    } catch (e) {
+        console.log(e);
+        return undefined;
+    }
+}
 
 function evaluateFields() {
     var fieldsToEvaluate = $('.formbar-evaluate');
     for (var i = fieldsToEvaluate.length - 1; i >= 0; i--){
         var field = fieldsToEvaluate[i];
-        var expr = field['attributes'][0].value;
         var id = field['attributes'][1].value;
-        // Now get all $fieldnames
-        var tokens = expr.split(" ");
-        var eval_expr = "";
-        for (var j = tokens.length - 1; j >= 0; j--){
-            var tfield = null;
-            var value = null;
-            if (tokens[j].contains("$")) {
-                tfield = tokens[j].replace('$', '');
-                value = $('input[name='+tfield+']').val();
-                // If we can not get a value from an input fields the field my
-                // be readonly. So get the value from the readonly element.
-                if (!value) {
-                    value = $('div[name='+tfield+']').text();
-                }
-                console.log(tokens[j].replace('$', ''));
-                eval_expr += value;
-            } else {
-                eval_expr += tokens[j];
-            }
+        var result = evaluate(field)
+        if (result) {
+            $('#'+id).text(result);
         }
-        try {
-            var eval_value = eval(eval_expr);
-            $('#'+id).text(eval_value);
-        } catch (e) {
-            console.log(e);
-            $('#'+id).text("");
+        else {
+            $('#'+id).text('NaN');
         }
     }
 }
