@@ -26,6 +26,9 @@
         <option value="4">Option 4</option>
       </options>
     </entity>
+    <entity id="e6" name="optional" label="Optional field">
+      <help>This field is only shown if the Dropdown has selected option 4</help>
+    </entity>
   </source>
   <form id="example1" css="testcss" autocomplete="off" method="POST" action="" enctype="multipart/form-data">
     <snippet ref="s1"/>
@@ -44,6 +47,11 @@
     <row>
       <col><field ref="e1"/></col>
       <col><field ref="e2"/></col>
+    </row>
+    <row>
+      <if type="readonly" expr="$select == 4">
+        <col><field ref="e6"/></col>
+      </if>
     </row>
   </snippet>
 </configuration>
