@@ -50,6 +50,9 @@
         <th>
       % elif child.tag == "td":
         <td class="${child.attrib.get('class', '')}" width="${child.attrib.get('width', '')}">
+      ## Conditionals
+      % elif child.tag == "if":
+        <div class="formbar-conditional ${child.attrib.get('type')}" expr="${child.attrib.get('expr')}">
       % endif
       ${self.render_recursive(child)}
       % if child.tag == "fieldset":
@@ -68,6 +71,8 @@
         </th>
       % elif child.tag == "td":
         </td>
+      % elif child.tag == "if":
+        </div>
       % endif
     % else:
       % if child.tag == "field":
