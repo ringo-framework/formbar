@@ -121,7 +121,11 @@ This is what a typical snippet might look like::
         </page>
         <page label="Page 2">
             <row>
-                <col><field ref="f3"></col>
+                <col>
+                     <if type="readonly" expr="$fieldname == 0">
+                         <field ref="f3">
+                     </if>
+                </col>
             </row>
             <snippet ref="s2"/>
         </page>
@@ -146,6 +150,30 @@ Field
 -----
 The field is the field which will be rendered. It refers to an entity.
 
+If (Conditional)
+---------------
+Conditional can be used to hide, or rendered form elements like fields,
+tables, fieldsets and text elements within the conditional as readonly
+elements.
+
+If the condition must evaluate to true or false. If true, the elements are
+rendered normal. If the condition is false the effect is determined by the
+type of the conditional. On default the elements will be hidden completely. As
+alternative you can set the type of the conditional to "readonly". Currently
+only the types "hide" (default) and "readonly" are supported. Expample::
+
+        <if type="readonly" expr="$fieldname == 4">
+            <field ref="r1"/>
+        </if>
+
+In the example above the referenced field will be shown if the field in the
+form with the name "fieldname" has the value of 4. Else the element will
+be set to readonly and the element will have a lowered opacity.
+
+Conditionals are evaluated using JavaScript on the client side. Formbar also
+needs to evaluate the conditional internal on validation to determine which
+values will be taken into account while validating. As result validation rules
+will not be applied for "hidden" fields.
 
 Api
 ===
