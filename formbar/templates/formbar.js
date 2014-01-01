@@ -39,7 +39,10 @@ $('div.formbar-outline a').click(function() {
  * Evaluate when values in the form changes
 */
 evaluateFields();
-$('div.formbar-form form input').change(evaluateFields);
+evaluateConditionals();
+$('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateFields);
+$('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateConditionals);
+
 function evaluate(element) {
     var expr = element['attributes'][0].value;
     var tokens = expr.split(" ");
@@ -72,6 +75,33 @@ function evaluate(element) {
     } catch (e) {
         console.log(e);
         return undefined;
+    }
+}
+
+function evaluateConditionals() {
+    var fieldsToEvaluate = $('.formbar-conditional');
+    for (var i = fieldsToEvaluate.length - 1; i >= 0; i--) {
+        var conditional = fieldsToEvaluate[i];
+        var readonly = $(conditional).attr('class').contains('readonly');
+        var result = evaluate(conditional);
+        if (result) {
+            if (readonly) {
+                $(conditional).animate({opacity:'1.0'}, 1500);
+                $(conditional).find('input, select, textarea').attr('readonly', false);
+            }
+            else {
+                $(conditional).show();
+            }
+        }
+        else {
+            if (readonly) {
+                $(conditional).animate({opacity:'0.4'}, 1500);
+                $(conditional).find('input, select, textarea').attr('readonly', true);
+            }
+            else {
+                $(conditional).hide();
+            }
+        }
     }
 }
 
