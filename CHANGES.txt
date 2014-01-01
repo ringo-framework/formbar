@@ -7,6 +7,11 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.5.0
+=====
+- Refactored code for evaluating expressions.
+- Added support for conditionals.
+
 0.4.6
 =====
 - Added Renderer for hidden fields.
