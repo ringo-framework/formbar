@@ -216,12 +216,12 @@ class Form(object):
         :page: Dictionary with errors
         :returns: Dictionary with errors
         """
-        if page:
+        if page is not None:
             fields_on_page = self._config.get_fields(page)
 
         errors = {}
         for field in self.fields.values():
-            if page and field.name not in fields_on_page: continue
+            if page is not None and field.name not in fields_on_page: continue
             if len(field.get_errors()) > 0:
                 errors[field.name] = field.get_errors()
         return errors
