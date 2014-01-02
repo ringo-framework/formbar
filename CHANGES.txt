@@ -11,6 +11,7 @@ TODO
 =====
 - Refactored code for evaluating expressions.
 - Added support for conditionals.
+- Show number of errors in the form outline for every page.
 
 0.4.6
 =====

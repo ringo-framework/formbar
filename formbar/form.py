@@ -205,13 +205,24 @@ class Form(object):
                 return True
         return False
 
-    def get_errors(self):
-        """Returns a dictionary of all errors in the form.  This
-        dictionary will contain the errors if the validation fails. The
-        key of the dictionary is the fieldname of the field.  As a field
-        can have more than one error the value is a list."""
+    def get_errors(self, page=None):
+        """Returns a dictionary of all errors in the form. If page
+        parameter is given, then only the errors for fields on the given
+        page are returned. This dictionary will contain the errors if
+        the validation fails. The key of the dictionary is the fieldname
+        of the field.  As a field can have more than one error the value
+        is a list.
+
+        :page: Dictionary with errors
+        :returns: Dictionary with errors
+        """
+        if page:
+            fields_on_page = self._config.get_fields(page)
+            print len(fields_on_page), page
+
         errors = {}
         for field in self.fields.values():
+            if page and field.name not in fields_on_page: continue
             if len(field.get_errors()) > 0:
                 errors[field.name] = field.get_errors()
         return errors

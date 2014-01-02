@@ -184,8 +184,9 @@ class Form(Config):
         of the field is the key of the dictionary.
         """
 
-        # Are the fields already initialized?
-        if self._initialized:
+        # Are the fields already initialized? Ignore cache if we get
+        # fields for a particular page
+        if self._initialized and root is None:
             return self._fields
 
         # Get all fields for the form.
