@@ -218,7 +218,6 @@ class Form(object):
         """
         if page:
             fields_on_page = self._config.get_fields(page)
-            print len(fields_on_page), page
 
         errors = {}
         for field in self.fields.values():
