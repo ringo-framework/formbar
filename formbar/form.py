@@ -345,6 +345,8 @@ class Form(object):
                 msg = "%s is not a valid date format." % value
                 self._add_error(field.name, msg)
         elif dtype == 'time':
+            if not value:
+                return None
             try:
                 h, m, s = value.split(':')
                 h = int(h)
@@ -355,8 +357,16 @@ class Form(object):
                 msg = "Value '%s' must be in format 'HH:MM:SS'" % value
                 self._add_error(field.name, msg)
         elif dtype == 'datetime':
+            if not value:
+                return None
             try:
-                date, time = value.split(' ')
+                tmpdate = value.split(' ')
+                # Time is optional. If not provided set time to 00:00:00
+                if len(tmpdate) == 2:
+                    date, time = value.split(' ')
+                else:
+                    date = tmpdate[0]
+                    time = "00:00:00"
                 y, m, d = date.split('-')
                 y = int(y)
                 m = int(m)
