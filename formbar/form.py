@@ -242,18 +242,28 @@ class Form(object):
         """
         self.current_page = page
         renderer = FormRenderer(self, self._translate)
-        form = renderer.render(values)
+        form = renderer.render()
 
-        # If the form is validated (POST) and the form contains no erros
+        # If we have a POST request than the user has sent modfied data.
+        # The content of self.values depends on the validation.
+        # If the form is validated and the form contains no erros
         # than we use the serialized values of self.data which includes
         # the converted values.
-        # In all other cases return the self.data attribute which either
-        # has the serialized data of the loaded item (GET) or the
+        # In the other cases return the self.data attribute which the
         # submitted error data on POST.
-        if self.validated and not self.has_errors():
-            values = values or self.serialize(self.data)
+        if self._request and self._request.POST:
+            if self.validated and not self.has_errors():
+                values = self.serialize(self.data)
+            else:
+                values = self.data
+        # If we have a GET request than the user has loaded a exising
+        # item (or wants to create a new one). In this case we will need
+        # to get the initial data of the item an merge it with the
+        # provided values.
         else:
-            values = values or self.data
+            item_values = self.serialize(self.data)
+            values.update(item_values)
+
         # Add csrf_token to the values dictionary
         values['csrf_token'] = self._csrf_token
         return htmlfill.render(form, values)
