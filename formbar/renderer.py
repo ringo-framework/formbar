@@ -84,13 +84,9 @@ class FormRenderer(Renderer):
         self.translate = translate
         self.template = template_lookup.get_template("form.mako")
 
-    def render(self, values={}):
-        """Returns the rendered form as string. If values are provided
-        these values are used to prefill the form and eventually
-        overwrite values in the form.
+    def render(self):
+        """Returns the rendered form as string.
 
-        :values: dictionary with values which should be used to prefill
-        the form.
         :returns: rendered form.
 
         """
