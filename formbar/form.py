@@ -266,7 +266,6 @@ class Form(object):
 
         # Add csrf_token to the values dictionary
         values['csrf_token'] = self._csrf_token
-        print "c:", values
         return htmlfill.render(form, values)
 
     def _add_error(self, fieldname, error):
