@@ -53,9 +53,9 @@ div.readonlyfield {
   color: #707070;
 }
 
-.text-error {
+.text-error, .help-block {
   position: relative;
-  top: -5px;
+  top: -3px;
   font-size: 0.8em;
 }
 
