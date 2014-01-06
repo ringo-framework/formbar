@@ -13,6 +13,8 @@ TODO
 - Fixed preloading values on form rendering.
 - Added support for conditionals.
 - Show number of errors in the form outline for every page.
+- Rendering of buttons can not be disabled on rendering the form using
+  (buttons=false) as paramenter.
 
 0.4.6
 =====
