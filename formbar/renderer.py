@@ -84,16 +84,18 @@ class FormRenderer(Renderer):
         self.translate = translate
         self.template = template_lookup.get_template("form.mako")
 
-    def render(self):
+    def render(self, buttons=True):
         """Returns the rendered form as string.
 
+        :buttons: Boolean flag to indicate if the form buttons should be
+        rendererd. Defaults to true.
         :returns: rendered form.
 
         """
         html = []
         html.append(self._render_form_start())
         html.append(self._render_form_body())
-        if not self._form._config.readonly:
+        if not self._form._config.readonly and buttons:
             html.append(self._render_form_buttons())
         html.append(self._render_form_end())
         return "".join(html)

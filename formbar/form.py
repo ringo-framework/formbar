@@ -232,7 +232,7 @@ class Form(object):
     def add_validator(self, validator):
         return self.external_validators.append(validator)
 
-    def render(self, values={}, page=0):
+    def render(self, values={}, page=0, buttons=True):
         """Returns the rendererd form as an HTML string.
 
         :values: Dictionary with values to be prefilled/overwritten in
@@ -242,7 +242,7 @@ class Form(object):
         """
         self.current_page = page
         renderer = FormRenderer(self, self._translate)
-        form = renderer.render()
+        form = renderer.render(buttons)
 
         # If we have a POST request than the user has sent modfied data.
         # The content of self.values depends on the validation.
