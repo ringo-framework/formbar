@@ -119,6 +119,8 @@ def convertOperator(op):
         top = "<="
     elif op == "in":
         top = "in"
+    elif op == "==":
+        top = "=="
     return [top]
 
 op_eq = Literal("eq").setParseAction(convertOperator)
