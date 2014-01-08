@@ -188,7 +188,7 @@ class Form(object):
         return serialized
 
     def _build_fields(self):
-        """Returns a dictionary with all Field instanced which are
+        """Returns a dictionary with all Field instances which are
         configured for this form.
         :returns: Dictionary with Field instances
 
