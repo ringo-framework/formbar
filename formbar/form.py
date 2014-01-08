@@ -458,24 +458,29 @@ class Form(object):
             if dirty_submitted.has_key(fieldname):
                 submitted[fieldname] = dirty_submitted[fieldname]
 
-            # 3. Prevalidation
-            for rule in rules:
-                if rule.mode != 'pre':
-                    continue
-                result = rule.evaluate(submitted)
-                if not result:
-                    self._add_error(fieldname, rule.msg)
-
-            # 4. Basic type conversations, Defaults to String
+        # 2. Convert all values
+        for fieldname, field in fields_all:
+            # Basic type conversations, Defaults to String
             if not field.is_readonly():
                 # Only add the value if the field is not marked as readonly
                 values[fieldname] = self._convert(field, submitted.get(fieldname))
 
-            # 5. Postvalidation
+        # 3. Validate the fields. Ignore fields which are disabled in
+        # conditionals
+        # First get list of fields which are still in the form after
+        # conditionals has be evaluated
+        fields_to_check = self._config.get_fields(values=values,
+                                                  reload_fields=True,
+                                                  evaluate=True)
+        for fieldname, field in fields_all:
+            if fieldname not in fields_to_check:
+                continue
+            rules = field.get_rules()
             for rule in rules:
-                if rule.mode != 'post':
-                    continue
-                result = rule.evaluate(values)
+                if rule.mode == "pre":
+                    result = rule.evaluate(submitted)
+                else:
+                    result = rule.evaluate(values)
                 if not result:
                     self._add_error(fieldname, rule.msg)
 
