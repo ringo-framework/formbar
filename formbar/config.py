@@ -175,7 +175,43 @@ class Form(Config):
                 pages.extend(self.get_pages(s))
         return pages
 
-    def get_fields(self, root=None):
+    def walk(self, root, values, evaluate=False):
+        """Will walk the tree recursivley and yields every field node.
+        If evaluate parameter is true, then the function will only
+        return fields which are relevant after the conditionals in the
+        form has been evaluated.
+
+        :root: Root node
+        :values: Dictionary with values which are used for evaluating
+        conditionals.
+        :evaluate: Flag to indicate if evaluation should be done on
+        conditionals
+        :returns: yields field elements
+
+        """
+        parser = Parser()
+        for child in root:
+            if len(child) > 0:
+                if child.tag == "if":
+                    rule = Rule(parser.parse(child.attrib.get('expr')))
+                    if evaluate and not rule.evaluate(values):
+                        continue
+                    for elem in self.walk(child, values, evaluate):
+                        yield elem
+                else:
+                    for elem in self.walk(child, values, evaluate):
+                        yield elem
+            elif child.tag == "snippet":
+                sref = child.attrib.get('ref')
+                if sref:
+                    snippet = self._parent.get_element('snippet', sref)
+                    for elem in self.walk(snippet, values, evaluate):
+                        yield elem
+            elif child.tag == "field":
+                yield child
+
+    def get_fields(self, root=None, values={},
+                   reload_fields=False, evaluate=False):
         """Returns a dictionary of included fields in the form. Fields fetched
         by searching all field elements in the form or snippets and
         "subsnippets" in the forms.
