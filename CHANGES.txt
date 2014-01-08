@@ -9,12 +9,22 @@ TODO
 
 0.5.0
 =====
-- Refactored code for evaluating expressions.
-- Fixed preloading values on form rendering.
 - Added support for conditionals.
+	- Conditionals are evaluated based on JavaScript on the client side
+	- Conditionals are evaluated with Formed-Rules on Server side
+	- Rules for fields which are with in a disabled conditional are now
+	  exluded from validation.
+- Rules are now checked after the basic type conversation is done. Pre rules
+  will still validate on the raw submitted (unconverted) data.
+- Changed default mode of rules from "pre" to "post"
+- Clean submitted data. The submitted data will be cleaned on validation.
+  Values for fields which are not actually configured in the form are erased
+  from the submitted data.
 - Show number of errors in the form outline for every page.
-- Rendering of buttons can not be disabled on rendering the form using
+- Rendering of buttons can now be disabled on rendering the form using
   (buttons=false) as paramenter.
+- Fixed preloading values on form rendering.
+- Refactored code for evaluating expressions.
 
 0.4.6
 =====
