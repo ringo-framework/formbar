@@ -443,17 +443,20 @@ class Form(object):
 
         """
 
-        submitted = variabledecode.variable_decode(submitted)
+        dirty_submitted = variabledecode.variable_decode(submitted)
         # This dictionary will contain the converted data
         values = {}
-        # 1. Iterate over all fields and start the validation.
-        log.debug('Submitted values: %s' % submitted)
+
+        # 1. Collect all configured fields from form configuration and
+        # remove out values from the submitted data which are not part
+        # of the form.
+        fields_all = []
+        submitted = {}
+        log.debug('Submitted values: %s' % dirty_submitted)
         for fieldname, field in self.fields.iteritems():
-            field = self.fields[fieldname]
-            rules = field.get_rules()
-            # TODO: clean the submitted data. Only use values for fields
-            # which are actually configured in the field (torsten)
-            # <2013-07-30 09:02>
+            fields_all.append((fieldname, self.fields[fieldname]))
+            if dirty_submitted.has_key(fieldname):
+                submitted[fieldname] = dirty_submitted[fieldname]
 
             # 3. Prevalidation
             for rule in rules:
