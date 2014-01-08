@@ -222,7 +222,7 @@ class Form(Config):
 
         # Are the fields already initialized? Ignore cache if we get
         # fields for a particular page
-        if self._initialized and root is None:
+        if self._initialized and root is None and reload_fields is False:
             return self._fields
 
         # Get all fields for the form.
@@ -231,25 +231,15 @@ class Form(Config):
         if root is None:
             root = self._tree
 
-        # Search for fields
-        for f in root.findall('.//field'):
-            ref = f.attrib.get('ref')
+        for node in self.walk(root, values, evaluate):
+            ref = node.attrib.get('ref')
             entity = self._parent.get_element('entity', ref)
             field = Field(entity)
-
             # Inherit readonly flag to all fields in this field.
             if self.readonly:
                 field.readonly = self.readonly
-
             fields[field.name] = field
             self._id2name[ref] = field.name
-
-        # Now search for snippets
-        for s in root.findall('.//snippet'):
-            sref = s.attrib.get('ref')
-            if sref:
-                s = self._parent.get_element('snippet', sref)
-                fields.update(self.get_fields(s))
         return fields
 
     def get_field(self, name):
