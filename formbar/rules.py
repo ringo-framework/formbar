@@ -30,7 +30,7 @@ class Rule(object):
     from the forms but also an the converted datatypes.
     """
 
-    def __init__(self, expr, msg=None, mode='pre'):
+    def __init__(self, expr, msg=None, mode='post'):
         """Initialize the rule with the expression and mode.
 
         :expr: string represention of the expression which will be
@@ -38,7 +38,7 @@ class Rule(object):
         :msg: string error msg for the rule. If not provied use the
         string represention of the provided expression.
         :mode: string of the mode when to evaluate this rule. Defaults
-        to 'pre'
+        to 'post'
         """
         self.expr = expr
         self.msg = msg
@@ -46,7 +46,7 @@ class Rule(object):
             self.msg = 'Expression "%s" failed' % " ".join(expr)
         self.mode = mode
         if mode is None:
-            self.mode = 'pre'
+            self.mode = 'post'
 
     def evaluate(self, values):
         """Returns True or False. Evaluates the expression of the rule against
