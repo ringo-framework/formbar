@@ -10,6 +10,7 @@ TODO
 0.5.1
 =====
 - Fix serialisation on GET requests.
+- Implement serialisation of datetimes.
 
 0.5.0
 =====
