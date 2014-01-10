@@ -7,6 +7,10 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.5.1
+=====
+- Fix serialisation on GET requests.
+
 0.5.0
 =====
 - Added support for conditionals.
