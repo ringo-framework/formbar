@@ -179,6 +179,8 @@ class Form(object):
                             td = datetime.timedelta(seconds=int(value))
                             d = datetime.datetime(1, 1, 1) + td
                             serialized[name] = "%02d:%02d:%02d" % (d.hour, d.minute, d.second)
+                        elif ftype == "datetime":
+                            serialized[name] = value.strftime("%Y-%m-%d %H:%M:%S")
                         else:
                             serialized[name] = value
             except AttributeError:
