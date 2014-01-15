@@ -409,6 +409,16 @@ class Form(object):
         elif dtype in ['onetomany', 'manytomany']:
             if not value:
                 return []
+
+            # In case the there is only one linked item, the value
+            # is a string value und not a list. In this case we
+            # need to put the value into a list to make the loading
+            # and reasinging of items work. Otherwise a item with id
+            # 670 will be converted into a list containing 6, 7, 0
+            # which will relink different items!
+            if not isinstance(value, list):
+                value = [value]
+
             try:
                 values = []
                 db = self._dbsession

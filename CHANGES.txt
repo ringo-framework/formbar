@@ -7,6 +7,11 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.5.2
+=====
+- Fix error on saving manytomany or onetomany relations. If there was only on
+  item linked. The saving fails and other items are linked.
+
 0.5.1
 =====
 - Fix serialisation on GET requests.
