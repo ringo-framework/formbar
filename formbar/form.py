@@ -255,9 +255,9 @@ class Form(object):
         # submitted error data on POST.
         if self._request and self._request.POST:
             if self.validated and not self.has_errors():
-                values = self.serialize(self.data)
+                item_values = self.serialize(self.data)
             else:
-                values = self.data
+                item_values = self.data
         # If we have a GET request than the user has loaded a exising
         # item (or wants to create a new one). In this case we will need
         # to get the initial data of the item an merge it with the
@@ -265,7 +265,10 @@ class Form(object):
         # self.data attribute.
         else:
             item_values = self.data
-            values.update(item_values)
+
+        # Merge the items_values with the extra provided values. Extra
+        # values will overwrite the item_values.
+        values = dict(item_values.items() + values.items())
 
         # Add csrf_token to the values dictionary
         values['csrf_token'] = self._csrf_token

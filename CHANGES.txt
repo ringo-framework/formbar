@@ -11,6 +11,8 @@ TODO
 =====
 - Fix error on saving manytomany or onetomany relations. If there was only on
   item linked. The saving fails and other items are linked.
+- Fix providing external values while rendering the form through the render
+  function. Changed values merge mechanism.
 
 0.5.1
 =====
