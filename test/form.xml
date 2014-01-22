@@ -7,7 +7,7 @@
     <entity id="e2" name="integer" label="Integer field" type="integer" required="true">
       <rule expr="$integer ge 16" msg="Integer must be greated than 15" mode="post"/>
     </entity>
-    <entity id="e3" name="float" label="Float field" type="float">
+    <entity id="e3" name="float" label="Float field" type="float" desired="true">
       <rule expr="$float lt 100" msg="Float must be lower than 100" mode="post"/>
       <help>This is is a very long helptext which should span over
       multiple rows. Further the will check if there are further html
@@ -22,6 +22,7 @@
         <option value="2">Value 2</option>
         <option value="3">Value 3</option>
       </options>
+      <rule expr="$select ne 2" msg="Select field is not 1" mode="post" triggers="warning"/>
     </entity>
     <!-- Fields for the user object -->
     <entity id="e5" name="name"/>
