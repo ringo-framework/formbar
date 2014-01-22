@@ -495,7 +495,10 @@ class Form(object):
 
         """
 
-        dirty_submitted = variabledecode.variable_decode(submitted)
+        if not submitted:
+            dirty_submitted = self.serialize(self.data)
+        else:
+            dirty_submitted = variabledecode.variable_decode(submitted)
         # This dictionary will contain the converted data
         values = {}
 
