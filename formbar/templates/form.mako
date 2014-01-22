@@ -11,9 +11,8 @@
           % for num, page in enumerate(form._config.get_pages()):
             <a href="#${page.attrib.get('id')}" class="list-group-item" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${page.attrib.get('label')}
             <span class="label label-danger pull-right">${len(form.get_errors(page)) or ""}</span>
-            ##<span class="label label-warning pull-right"></span>
+            <span class="label label-warning pull-right">${len(form.get_warnings(page)) or ""}</span>
             </a>
-            ## Render badges to show number of errors on the page
           % endfor
         </ul>
       </div>
