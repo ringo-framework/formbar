@@ -349,8 +349,9 @@ class Field(Config):
             expr = rule.attrib.get('expr')
             msg = rule.attrib.get('msg')
             mode = rule.attrib.get('mode')
+            triggers = rule.attrib.get('triggers')
             expr = parser.parse(expr)
-            self.rules.append(Rule(expr, msg, mode))
+            self.rules.append(Rule(expr, msg, mode, triggers))
 
 
 class Renderer(Config):
