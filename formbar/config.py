@@ -306,6 +306,12 @@ class Field(Config):
         is already set by the underlying FormAlchemy library by checking
         if the database field is 'NOT NULL'. Defaults to False"""
 
+        self.desired= entity.attrib.get('desired', 'false') == 'true'
+        """Flag to mark the field as a desired field. If this tag is
+        set an additional rule will be added to the field and an star
+        symbol is rendered at the label of the field. Defaults to
+        False"""
+
         self.readonly = entity.attrib.get('readonly', 'false') == 'true'
         """Flag to set the field as a readonly field. If set the field
         will be rendered as a simple textfield which does not allow to
