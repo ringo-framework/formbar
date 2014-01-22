@@ -101,4 +101,5 @@ if __name__ == '__main__':
     config.add_static_view('bootstrap', 'bootstrap', cache_max_age=3600)
     app = config.make_wsgi_app()
     server = make_server('0.0.0.0', 8080, app)
+    print "Server is available on http://0.0.0.0:8080"
     server.serve_forever()
