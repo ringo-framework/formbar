@@ -55,8 +55,8 @@ div.readonlyfield {
 
 .text-error, .help-block {
   position: relative;
-  top: -3px;
   font-size: 0.8em;
+  margin-bottom: 0px;
 }
 
 /* Button */
