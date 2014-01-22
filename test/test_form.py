@@ -115,11 +115,42 @@ class TestFormValidation(unittest.TestCase):
         values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
         self.assertEqual(self.form.validate(values), True)
 
+    def test_form_warnings(self):
+        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
+        self.form.validate(values)
+        warnings = self.form.get_warnings()
+        self.assertEqual(len(warnings), 1)
+
     def test_form_save_without_validation(self):
         self.assertRaises(StateError, self.form.save)
 
     def test_form_fields(self):
         self.assertEqual(len(self.form.fields.values()), 6)
+
+    def test_generated_rules(self):
+        num_rules = 0
+        fields = self.form.fields
+        for field in fields:
+            num_rules += len(self.form.get_field(field).get_rules())
+        self.assertEqual(num_rules, 5)
+
+    def test_generated_warning_rules(self):
+        num_rules = 0
+        fields = self.form.fields
+        for fieldname in fields:
+            field = self.form.get_field(fieldname)
+            rules = [r for r in field.get_rules() if r.triggers=="warning"]
+            num_rules += len(rules)
+        self.assertEqual(num_rules, 2)
+
+    def test_generated_error_rules(self):
+        num_rules = 0
+        fields = self.form.fields
+        for fieldname in fields:
+            field = self.form.get_field(fieldname)
+            rules = [r for r in field.get_rules() if r.triggers=="error"]
+            num_rules += len(rules)
+        self.assertEqual(num_rules, 3)
 
 
 class TestFormRenderer(unittest.TestCase):

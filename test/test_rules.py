@@ -65,9 +65,13 @@ class TestEvaluateRule(unittest.TestCase):
     def setUp(self):
         self.parser = Parser()
 
-    def build_rule(self, expr):
+    def build_rule(self, expr, desired=False):
         result = self.parser.parse(expr)
-        rule = Rule(result)
+        if desired:
+            triggers="warning"
+        else:
+            triggers="error"
+        rule = Rule(result, triggers=triggers)
         return rule
 
     def test_default_mode(self):
@@ -170,6 +174,18 @@ class TestEvaluateRule(unittest.TestCase):
         values = {"field": ""}
         expr = "bool($field)"
         rule = self.build_rule(expr)
+        self.assertEqual(rule.evaluate(values), False)
+
+    def test_desired_ok(self):
+        values = {"field": "we have a value"}
+        expr = "bool($field)"
+        rule = self.build_rule(expr, desired=True)
+        self.assertEqual(rule.evaluate(values), True)
+
+    def test_desired_fail(self):
+        values = {"field": ""}
+        expr = "bool($field)"
+        rule = self.build_rule(expr, desired=True)
         self.assertEqual(rule.evaluate(values), False)
 
 if __name__ == '__main__':

@@ -121,6 +121,13 @@ class TestFieldConfig(unittest.TestCase):
         ifield = self.form.get_field('integer')
         self.assertEqual(ifield.required, True)
 
+    def test_desired_default(self):
+        self.assertEqual(self.dfield.desired, False)
+
+    def test_desired_custom(self):
+        ifield = self.form.get_field('float')
+        self.assertEqual(ifield.desired, True)
+
     def test_readonly_default(self):
         self.assertEqual(self.sfield.readonly, False)
 
