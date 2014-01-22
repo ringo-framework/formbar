@@ -30,7 +30,7 @@ class Rule(object):
     from the forms but also an the converted datatypes.
     """
 
-    def __init__(self, expr, msg=None, mode='post'):
+    def __init__(self, expr, msg=None, mode='post', triggers='error'):
         """Initialize the rule with the expression and mode.
 
         :expr: string represention of the expression which will be
@@ -39,6 +39,11 @@ class Rule(object):
         string represention of the provided expression.
         :mode: string of the mode when to evaluate this rule. Defaults
         to 'post'
+        :triggers: string of the type of "effect" this rule should
+        generate if the evaluation fails. Can either be a error message
+        or a warning. In case of a warning the validation of the form
+        will fail. In case of a warning only a warning message will be
+        displayer. Defaults to 'error'
         """
         self.expr = expr
         self.msg = msg
@@ -47,6 +52,9 @@ class Rule(object):
         self.mode = mode
         if mode is None:
             self.mode = 'post'
+        self.triggers = triggers
+        if triggers is None:
+            self.triggers = 'error'
 
     def evaluate(self, values):
         """Returns True or False. Evaluates the expression of the rule against
