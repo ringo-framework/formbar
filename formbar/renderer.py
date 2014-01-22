@@ -194,7 +194,9 @@ class FieldRenderer(Renderer):
         # help. Each in its own template.
         html = []
         has_errors = len(self._field.get_errors())
-        html.append('<div class="form-group %s">' % (has_errors and 'has-error'))
+        has_warnings = len(self._field.get_warnings())
+        html.append('<div class="form-group %s %s">' % ((has_errors and 'has-error'),
+                                                       (has_warnings and 'has-warning')))
         html.append(self._render_label())
         values = self._get_template_values()
         html.append(self.template.render(**values))
