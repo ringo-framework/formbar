@@ -207,6 +207,13 @@ class Form(object):
                 return True
         return False
 
+    def has_warnings(self):
+        """Returns True if one of the fields in the form has warnings"""
+        for field in self.fields.values():
+            if len(field.get_warnings()) > 0:
+                return True
+        return False
+
     def get_errors(self, page=None):
         """Returns a dictionary of all errors in the form. If page
         parameter is given, then only the errors for fields on the given
@@ -227,6 +234,27 @@ class Form(object):
             if len(field.get_errors()) > 0:
                 errors[field.name] = field.get_errors()
         return errors
+
+    def get_warnings(self, page=None):
+        """Returns a dictionary of all warnings in the form. If page
+        parameter is given, then only the warnings for fields on the given
+        page are returned. This dictionary will contain the warnings if
+        the validation fails. The key of the dictionary is the fieldname
+        of the field.  As a field can have more than one warning the value
+        is a list.
+
+        :page: Name of the page
+        :returns: Dictionary with warnings
+        """
+        if page is not None:
+            fields_on_page = self._config.get_fields(page)
+
+        warnings = {}
+        for field in self.fields.values():
+            if page is not None and field.name not in fields_on_page: continue
+            if len(field.get_warnings()) > 0:
+                warnings[field.name] = field.get_warnings()
+        return warnings
 
     def get_field(self, name):
         return self.fields[name]
@@ -281,6 +309,14 @@ class Form(object):
                 field.add_error(err)
         else:
             field.add_error(error)
+
+    def _add_warning(self, fieldname, warning):
+        field = self.get_field(fieldname)
+        if isinstance(warning, list):
+            for war in warning:
+                field.add_warning(war)
+        else:
+            field.add_warning(warning)
 
     def _convert(self, field, value):
         """Returns a converted value depending of the fields datatype
@@ -498,7 +534,10 @@ class Form(object):
                 else:
                     result = rule.evaluate(values)
                 if not result:
-                    self._add_error(fieldname, rule.msg)
+                    if rule.triggers == "warning":
+                        self._add_warning(fieldname, rule.msg)
+                    else:
+                        self._add_error(fieldname, rule.msg)
 
         # 6. Custom validation. User defined external validators.
         for validator in self.external_validators:
@@ -558,6 +597,7 @@ class Field(object):
         self._translate = translate
         self.renderer = get_renderer(self, translate)
         self._errors = []
+        self._warnings = []
 
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
@@ -600,14 +640,21 @@ class Field(object):
 
     def get_rules(self):
         """Returns a list of configured rules for the field"""
+        parser = Parser()
         rules = self.rules
         if self.is_required():
-            parser = Parser()
             expr = "bool($%s)" % self.name
             msg = "This field is required. You need to provide a value"
             mode = "pre"
             expr = parser.parse(expr)
             rules.append(Rule(expr, msg, mode))
+        if self.is_desired():
+            expr = "bool($%s)" % self.name
+            msg = "This field is desired. Pleas provide a value"
+            mode = "pre"
+            triggers = "warning"
+            expr = parser.parse(expr)
+            rules.append(Rule(expr, msg, mode, triggers))
         return rules
 
     def get_value(self, default=None, expand=False):
@@ -648,8 +695,14 @@ class Field(object):
     def add_error(self, error):
         self._errors.append(error)
 
+    def add_warning(self, warning):
+        self._warnings.append(warning)
+
     def get_errors(self):
         return self._errors
+
+    def get_warnings(self):
+        return self._warnings
 
     def render(self):
         """Returns the rendererd HTML for the field"""
@@ -658,6 +711,10 @@ class Field(object):
     def is_relation(self):
         return isinstance(self.sa_property,
                           sa.orm.RelationshipProperty)
+
+    def is_desired(self):
+        """Returns true if field is set as desired in field configuration"""
+        return self.desired
 
     def is_required(self):
         """Returns true if either the required flag of the field
