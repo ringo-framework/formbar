@@ -20,6 +20,8 @@ def parse(xml):
     :returns: DOM of the parsed XML
 
     """
+    if isinstance(xml, unicode):
+        xml = xml.encode("utf-8")
     return ET.fromstring(xml)
 
 
