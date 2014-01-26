@@ -140,6 +140,20 @@ class Form(object):
                 values[name] = None
         return values
 
+    def _filter_values(self, values):
+        """Will return a filtered dictionary of the given values
+        dictionary which only contains values which are actually part of
+        the current form.
+
+        :values: Dicionary with unfilterd values
+        :returns: Dicionary with filtered values
+
+        """
+        filtered = {}
+        for fieldname, field in self.fields.iteritems():
+            if values.has_key(fieldname):
+                filtered[fieldname] = values[fieldname]
+        return filtered
 
     def serialize(self, data):
         """Returns a dictionary with serialized data from the forms
