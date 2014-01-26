@@ -642,23 +642,8 @@ class Field(object):
         return "string"
 
     def get_rules(self):
-        """Returns a list of configured rules for the field"""
-        parser = Parser()
-        rules = self.rules
-        if self.is_required():
-            expr = "bool($%s)" % self.name
-            msg = "This field is required. You need to provide a value"
-            mode = "pre"
-            expr = parser.parse(expr)
-            rules.append(Rule(expr, msg, mode))
-        if self.is_desired():
-            expr = "bool($%s)" % self.name
-            msg = "This field is desired. Pleas provide a value"
-            mode = "pre"
-            triggers = "warning"
-            expr = parser.parse(expr)
-            rules.append(Rule(expr, msg, mode, triggers))
-        return rules
+        """Returns a list of configured rules for the field."""
+        return self.rules
 
     def get_value(self, default=None, expand=False):
         value = self._form.data.get(self._config.name, default)

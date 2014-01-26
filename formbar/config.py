@@ -347,6 +347,22 @@ class Field(Config):
         # Get rules
         self.rules = []
         parser = Parser()
+        # Add automatic genertated rules based on the required or
+        # desired flag
+        if self.required:
+            expr = "bool($%s)" % self.name
+            msg = "This field is required. You need to provide a value"
+            mode = "pre"
+            expr = parser.parse(expr)
+            self.rules.append(Rule(expr, msg, mode))
+        if self.desired:
+            expr = "bool($%s)" % self.name
+            msg = "This field is desired. Pleas provide a value"
+            mode = "pre"
+            triggers = "warning"
+            expr = parser.parse(expr)
+            self.rules.append(Rule(expr, msg, mode, triggers))
+        # Add rules added the the field.
         for rule in self._tree.findall('rule'):
             expr = rule.attrib.get('expr')
             msg = rule.attrib.get('msg')
@@ -354,6 +370,7 @@ class Field(Config):
             triggers = rule.attrib.get('triggers')
             expr = parser.parse(expr)
             self.rules.append(Rule(expr, msg, mode, triggers))
+
 
 
 class Renderer(Config):
