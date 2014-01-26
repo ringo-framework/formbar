@@ -3,7 +3,6 @@ import datetime
 import sqlalchemy as sa
 from formencode import htmlfill, variabledecode
 from formbar.renderer import FormRenderer, get_renderer
-from formbar.rules import Rule, Parser
 
 log = logging.getLogger(__name__)
 
