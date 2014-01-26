@@ -485,6 +485,44 @@ class Form(object):
                   % (converted, type(converted), field.name, dtype))
         return converted
 
+    def _from_python(self, field, value):
+        """@todo: Docstring for _from_python.
+
+        :field: @todo
+        :value: @todo
+        :returns: @todo
+
+        """
+        serialized = ""
+        ftype = field.get_type()
+        try:
+            if isinstance(value, basestring):
+                serialized = value
+            elif isinstance(value, list):
+                vl = []
+                for v in value:
+                    try:
+                        vl.append(v.id)
+                    except AttributeError:
+                        vl.append(v)
+                serialized = vl
+            else:
+                try:
+                    serialized = value.id
+                except AttributeError:
+                    if ftype == "time":
+                        td = datetime.timedelta(seconds=int(value))
+                        d = datetime.datetime(1, 1, 1) + td
+                        serialized = "%02d:%02d:%02d" % (d.hour, d.minute, d.second)
+                    elif ftype == "datetime":
+                        serialized = value.strftime("%Y-%m-%d %H:%M:%S")
+                    else:
+                        serialized = value
+        except AttributeError:
+            log.warning('Can not get value for field "%s". '
+                        'The field is no attribute of the item' % field.name)
+        return serialized
+
     def validate(self, submitted):
         """Returns True if the validation succeeds else False.
         Validation of the data happens in three stages:
