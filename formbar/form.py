@@ -124,10 +124,16 @@ class Form(object):
         """Dictionary with external provided custom renderers."""
         self.fields = self._build_fields()
         """Dictionary with fields."""
-        self.data = self.serialize(self._get_data_from_item())
-        """After submission this Dictionary will contain either the
-        validated data on successfull validation or the origin submitted
-        data."""
+        self.data = {}
+        """After submission this Dictionary will contain the
+        validated data on successfull validation. Else this Dictionary
+        will be empty"""
+        self.submitted_data = {}
+        """The submitted data from the user. If validation fails, then
+        this values are used to rerender the form."""
+        self.loaded_data = self.serialize(self._get_data_from_item())
+        """This is the initial data loaded from the given item. Used to
+        render the readonly forms"""
 
     def _get_data_from_item(self):
         values = {}
