@@ -168,38 +168,13 @@ class Form(object):
 
         """
         serialized = {}
-        if not data:
-            return serialized
-        for name, field in self.fields.iteritems():
-            ftype = field.get_type()
-            try:
-                value = data.get(name)
-                if value is None:
-                    serialized[name] = ""
-                elif isinstance(value, list):
-                    vl = []
-                    for v in value:
-                        try:
-                            vl.append(v.id)
-                        except AttributeError:
-                            vl.append(v)
-                    serialized[name] = vl
-                else:
-                    try:
-                        serialized[name] = value.id
-                    except AttributeError:
-                        if ftype == "time":
-                            td = datetime.timedelta(seconds=int(value))
-                            d = datetime.datetime(1, 1, 1) + td
-                            serialized[name] = "%02d:%02d:%02d" % (d.hour, d.minute, d.second)
-                        elif ftype == "datetime":
-                            serialized[name] = value.strftime("%Y-%m-%d %H:%M:%S")
-                        else:
-                            serialized[name] = value
-            except AttributeError:
-                log.warning('Can not get value for field "%s". '
-                            'The field is no attribute of the item' % name)
-                serialized[name] = ""
+        for fieldname, value in self._filter_values(data).iteritems():
+            field = self.fields.get(fieldname)
+            #if field and not field.is_readonly():
+            #    # Only add the value if the field is not marked as readonly
+            #    serialized[fieldname] = self._from_python(field, value)
+            serialized[fieldname] = self._from_python(field, value)
+        log.debug("Serialized values: %s" % serialized)
         return serialized
 
     def _build_fields(self):
