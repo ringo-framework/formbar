@@ -155,6 +155,25 @@ class Form(object):
                 filtered[fieldname] = values[fieldname]
         return filtered
 
+    def deserialize(self, data):
+        """Returns a dictionary with pythonized data data. Usually this
+        is the submitted data coming from a form. The dictionary will
+        include all values provided in the initial data dictionary
+        converted into python datatype.
+
+        :data: Dictionary with serialized data
+        :returns: Dictionary with deserialized data
+
+        """
+        deserialized = {}
+        for fieldname, value in self._filter_values(data).iteritems():
+            field = self.fields.get(fieldname)
+            if field and not field.is_readonly():
+                # Only add the value if the field is not marked as readonly
+                deserialized[fieldname] = self._to_python(field, data.get(field.name))
+        log.debug("Deserialized values: %s" % deserialized)
+        return deserialized
+
     def serialize(self, data):
         """Returns a dictionary with serialized data from the forms
         item.  The return dictionary is suitable for htmlfill to prefill
