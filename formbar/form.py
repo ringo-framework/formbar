@@ -284,8 +284,6 @@ class Form(object):
 
         """
         self.current_page = page
-        renderer = FormRenderer(self, self._translate)
-        form = renderer.render(buttons)
 
         # If we have a POST request than the user has sent modfied data.
         # The content of self.values depends on the validation.
@@ -313,6 +311,9 @@ class Form(object):
 
         # Add csrf_token to the values dictionary
         values['csrf_token'] = self._csrf_token
+
+        renderer = FormRenderer(self, self._translate)
+        form = renderer.render(values=values, buttons=buttons)
         return htmlfill.render(form, values)
 
     def _add_error(self, fieldname, error):
