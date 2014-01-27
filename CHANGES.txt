@@ -11,6 +11,11 @@ TODO
 =====
 - Added support for warning rules.
 
+0.5.3
+=====
+- Refactored serialisation, deserialisation, validation and rendering of the
+  form. Splitted up the code to make it more readable.
+
 0.5.2
 =====
 - Fix error on saving manytomany or onetomany relations. If there was only on
