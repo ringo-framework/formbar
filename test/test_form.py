@@ -66,8 +66,8 @@ class TestFormValidation(unittest.TestCase):
     def test_form_validate_fail_checkvalues(self):
         values = {'default': 'test', 'integer': '15', 'date': '1998-02-01'}
         self.assertEqual(self.form.validate(values), False)
-        self.assertEqual(self.form.data['integer'], '15')
-        self.assertEqual(self.form.data['date'], '1998-02-01')
+        self.assertEqual(self.form.submitted_data['integer'], '15')
+        self.assertEqual(self.form.submitted_data['date'], '1998-02-01')
 
     def test_form_validate_ok(self):
         values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
