@@ -316,8 +316,9 @@ class Form(object):
         else:
             field.add_warning(warning)
 
-    def _convert(self, field, value):
-        """Returns a converted value depending of the fields datatype
+    def _to_python(self, field, value):
+        """Returns a value of python datatype converted from the
+        stringvalue depending of the fields datatype
 
         :field: configuration of the field
         :value: value to be converted
@@ -532,55 +533,34 @@ class Form(object):
         """
 
         if not submitted:
-            dirty_submitted = self.serialize(self.data)
+            unvalidated = self.loaded_data
         else:
-            dirty_submitted = variabledecode.variable_decode(submitted)
-        # This dictionary will contain the converted data
-        values = {}
+            self.submitted_data = variabledecode.variable_decode(submitted)
+            unvalidated = self.submitted_data
+        converted = self.deserialize(unvalidated)
 
-        # 1. Collect all configured fields from form configuration and
-        # remove out values from the submitted data which are not part
-        # of the form.
-        fields_all = []
-        submitted = {}
-        log.debug('Submitted values: %s' % dirty_submitted)
-        for fieldname, field in self.fields.iteritems():
-            fields_all.append((fieldname, self.fields[fieldname]))
-            if dirty_submitted.has_key(fieldname):
-                submitted[fieldname] = dirty_submitted[fieldname]
-
-        # 2. Convert all values
-        for fieldname, field in fields_all:
-            # Basic type conversations, Defaults to String
-            if not field.is_readonly():
-                # Only add the value if the field is not marked as readonly
-                values[fieldname] = self._convert(field, submitted.get(fieldname))
-
-        # 3. Validate the fields. Ignore fields which are disabled in
-        # conditionals
-        # First get list of fields which are still in the form after
-        # conditionals has be evaluated
-        fields_to_check = self._config.get_fields(values=values,
+        # Validate the fields. Ignore fields which are disabled in
+        # conditionals First get list of fields which are still in the
+        # form after conditionals has be evaluated
+        fields_to_check = self._config.get_fields(values=converted,
                                                   reload_fields=True,
                                                   evaluate=True)
-        for fieldname, field in fields_all:
-            if fieldname not in fields_to_check:
-                continue
-            rules = field.get_rules()
-            for rule in rules:
+        for fieldname, field in fields_to_check.iteritems():
+            field = self.fields[fieldname]
+            for rule in field.get_rules():
                 if rule.mode == "pre":
-                    result = rule.evaluate(submitted)
+                    result = rule.evaluate(unvalidated)
                 else:
-                    result = rule.evaluate(values)
+                    result = rule.evaluate(converted)
                 if not result:
                     if rule.triggers == "warning":
                         self._add_warning(fieldname, rule.msg)
                     else:
                         self._add_error(fieldname, rule.msg)
 
-        # 6. Custom validation. User defined external validators.
+        # Custom validation. User defined external validators.
         for validator in self.external_validators:
-            if not validator.check(values):
+            if not validator.check(converted):
                 self._add_error(validator._field, validator._error)
 
         # If the form is valid. Save the converted and validated data
@@ -588,9 +568,7 @@ class Form(object):
         # submitted data.
         has_errors = self.has_errors()
         if not has_errors:
-            self.data = values
-        else:
-            self.data = submitted
+            self.data = converted
         self.validated = True
         return not has_errors
 
