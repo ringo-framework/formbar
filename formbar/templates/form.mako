@@ -79,7 +79,10 @@
       % endif
     % else:
       % if child.tag == "field":
-        <% field = form.get_field(form._config._id2name[child.attrib.get('ref')]) %>
+        <%
+          field = form.get_field(form._config._id2name[child.attrib.get('ref')])
+          field.set_value(values.get(field.name))
+        %>
         ${field.render()}
       % elif child.tag == "snippet":
         <% ref = child.attrib.get('ref') %>

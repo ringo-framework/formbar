@@ -615,6 +615,9 @@ class Field(object):
         self.renderer = get_renderer(self, translate)
         self._errors = []
         self._warnings = []
+        self.value = ""
+        """Value as string of the field. Will be set on rendering the
+        form"""
 
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
@@ -659,8 +662,11 @@ class Field(object):
         """Returns a list of configured rules for the field."""
         return self.rules
 
+    def set_value(self, value):
+        self.value = value
+
     def get_value(self, default=None, expand=False):
-        value = self._form.data.get(self._config.name, default)
+        value = self.value
         if expand:
             if not isinstance(value, list):
                 value = [value]
