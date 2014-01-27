@@ -285,26 +285,10 @@ class Form(object):
         """
         self.current_page = page
 
-        # If we have a POST request than the user has sent modfied data.
-        # The content of self.values depends on the validation.
-        # If the form is validated and the form contains no erros
-        # than we use the serialized values of self.data which includes
-        # the converted values.
-        # In the other cases return the self.data attribute which the
-        # submitted error data on POST.
-        if self._request and self._request.POST:
-            if self.validated and not self.has_errors():
-                item_values = self.serialize(self.data)
-            else:
-                item_values = self.data
-        # If we have a GET request than the user has loaded a exising
-        # item (or wants to create a new one). In this case we will need
-        # to get the initial data of the item an merge it with the
-        # provided values. This data is already serialized in the
-        # self.data attribute.
+        if self.submitted_data:
+            item_values = self.submitted_data
         else:
-            item_values = self.data
-
+            item_values = self.loaded_data
         # Merge the items_values with the extra provided values. Extra
         # values will overwrite the item_values.
         values = dict(item_values.items() + values.items())
