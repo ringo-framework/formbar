@@ -482,7 +482,9 @@ class Form(object):
         serialized = ""
         ftype = field.get_type()
         try:
-            if isinstance(value, basestring):
+            if value is None:
+                serialized = ""
+            elif isinstance(value, basestring):
                 serialized = value
             elif isinstance(value, list):
                 vl = []
