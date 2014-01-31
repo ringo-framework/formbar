@@ -8,12 +8,12 @@ in web applications.
 
 Installation
 ============
-Formbar is availble on `Github <https://github.com/toirl/formbar>`_.
+Formbar is availble on `Bitbucket <https://bitbucket.org/ti/formbar>`_.
 You can check of the source and install the library with the following
 command::
         
-        (venv)> git clone https://github.com/toirl/formbar.git
-        (venv)> cd phormular
+        (venv)> hg clone https://bitbucket.org/ti/formbar
+        (venv)> cd formbar
         (venv)> python setup.py develop # use develop for development install
 
 .. tip::
