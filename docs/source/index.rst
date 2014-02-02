@@ -6,13 +6,8 @@
 Welcome to formbar's documentation!
 ===================================
 
-Contents:
-
 .. toctree::
    start
-   config
-   rules
-   examples
    :maxdepth: 2
 
 
