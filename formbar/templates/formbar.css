@@ -59,6 +59,15 @@ div.readonlyfield {
   margin-bottom: 0px;
 }
 
+.formbar-new-value {
+    background: #468847;
+}
+
+.formbar-del-value {
+    background: #C09853;
+    text-decoration: line-through;
+}
+
 /* Button */
 button {
   margin-right: 15px;
