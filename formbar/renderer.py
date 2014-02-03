@@ -130,6 +130,7 @@ class FormRenderer(Renderer):
     def _render_form_body(self, values, previous_values):
         values = {'form': self._form,
                   '_': self.translate,
+                  'previous_values': previous_values,
                   'values': values}
         return self.template.render(**values)
 
