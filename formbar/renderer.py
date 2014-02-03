@@ -85,19 +85,24 @@ class FormRenderer(Renderer):
         self.translate = translate
         self.template = template_lookup.get_template("form.mako")
 
-    def render(self, buttons=True, values=None):
+    def render(self, buttons=True, values=None, previous_values=None):
         """Returns the rendered form as string.
 
         :buttons: Boolean flag to indicate if the form buttons should be
         rendererd. Defaults to true.
+        :previous_values: Dictionary of values of the last saved state
+        of the item. If provided a diff between the current and previous
+        values will be renderered in readonly mode.
         :returns: rendered form.
 
         """
         if not values:
             values = {}
+        if not previous_values:
+            previous_values = {}
         html = []
         html.append(self._render_form_start())
-        html.append(self._render_form_body(values))
+        html.append(self._render_form_body(values, previous_values))
         if not self._form._config.readonly and buttons:
             html.append(self._render_form_buttons())
         html.append(self._render_form_end())
@@ -122,7 +127,7 @@ class FormRenderer(Renderer):
                         % self._form._csrf_token)
         return "".join(html)
 
-    def _render_form_body(self, values):
+    def _render_form_body(self, values, previous_values):
         values = {'form': self._form,
                   '_': self.translate,
                   'values': values}
