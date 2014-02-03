@@ -241,6 +241,7 @@ class FieldRenderer(Renderer):
 
     def _get_template_values(self):
         values = {'field': self._field,
+                  'renderer': self,
                   '_': self.translate}
         return values
 
