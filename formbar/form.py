@@ -618,6 +618,7 @@ class Field(object):
         self._errors = []
         self._warnings = []
         self.value = ""
+        self.previous_value = ""
         """Value as string of the field. Will be set on rendering the
         form"""
 
@@ -667,8 +668,16 @@ class Field(object):
     def set_value(self, value):
         self.value = value
 
+    def set_previous_value(self, value):
+        self.previous_value = value
+
     def get_value(self, default=None, expand=False):
-        value = self.value
+        return self._get_value(self.value, expand)
+
+    def get_previous_value(self, default=None, expand=False):
+        return self._get_value(self.previous_value, expand)
+
+    def _get_value(self, value, expand):
         if expand:
             if not isinstance(value, list):
                 value = [value]
