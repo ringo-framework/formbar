@@ -7,6 +7,11 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.6.1
+=====
+- Fixed bug in deserialisation. Do not ignore readonly fields on
+  deserialisation.
+
 0.6.0
 =====
 - Added support for warning rules.
