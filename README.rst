@@ -12,15 +12,11 @@ configuration.
 Formbar is the German word for "shapeable" and should emphasise the
 character of formbar which hopefully makes shaping your forms more easy.
 
-Formbar uses a subset of the
-`FormAlchemy <https://pypi.python.org/pypi/FormAlchemy/>`_ as underlying
-library for rendering and basic validation.
-
 Features
 --------
 
-* Support for SQLAlchemy mapped items and plain forms.
-* Expression bases rules
+* Support for SQLAlchemy mapped items and plain forms
+* Expression bases rules and elements
 * Type conversation and validation
 * XML based form definition
 * i18n Support
@@ -28,10 +24,10 @@ Features
 * Different form layouts for the same model (Create, Edit, Read...)
 * Twitter bootstrap support
 * Custom CSS styling
-* Error messages
+* Error and warning messages
 * Help texts
 * Numbering of fields
-* Extern defined renderers.
+* Extern defined renderers
 * ...
 
 Getting started
