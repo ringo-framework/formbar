@@ -1,158 +1,324 @@
-Configuration
-#############
-Configuration of your forms is done in XML files. These files configure
+Form configuration
+******************
+The form will be configured using a XML definition. The configuration is
+basically splitted into two parts:
 
-1. Which fields are available. Further you can configure various aspects of
-   the fields.
+1. The definition of the datamodel in the *source* directive.
+2. Definition and Layout of forms in *forms*.
 
-2. The layout of the form.
+The basic form configuration looks like this::
 
-.. important::
-
-   When rendering SQLAlchemy mapped instances the configuration is
-   **optional**. For basic form rendering you will not need any configuration
-   at all. In this case the rendering will fall back in the default mode
-   provided my the underlying form library. See :ref:`examples` for more
-   information.
-
-The configuration is divided into three parts::
-
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <configuration>
-          <source>
-            ...
-          </source>
-          <form>
-            ...
-          </form>
-          <snippets>
-            ...
-          </snippets>
+           <source>
+           <!-- Define different entity types -->
+           </source>
+           <form>
+           <!-- Define and layout a form -->
+           </form>
+           <snippet>
+           <!-- Container holdig parts of a form definition -->
+           </snippet>
         </configuration>
 
-We will now discuss the different parts of the form.
+The :ref:`snippet` element is optional and just a helper.
 
-Source and Entities
-===================
-The ``source`` directive defines which entities are available in your forms.
-A entity is a field definition. You can define various attributes for each
-entity. The entities are later referenced in the form layouting and the
-entities attributes are used for rendering and validating the form data.
+Source
+======
+The ``source`` directive defines the :ref:`entity` are available in your
+forms.  An entity is defined only once in the source section. It will get
+referenced in the :ref:`form` directive later to build the forms.
 
-So the entities are the source fields and the base for which is called Schema
-in frameworks like colander, formencode etc.  However the schema is actually
-defined within the form configuration.
+.. _entity:
 
 Entity
 ------
+A :ref:`entity` is a field definition.
+The entity is used to configure aspects of the *datamodel* the *layout*
+and *behaviour* of the field in the form.
+
 Here is an example of an entity definition::
 
-    <entity id="f1" name="age" label="Age" type="integer" css="field">
+    <entity id="f1" name="age" label="Age" type="integer" css="field" required="true">
         <renderer type="text"/>
         <help>This is a help text</help>
-        <rule expr="$age >= 21" msg="Age must be greater than 21"/> 
+        <rule expr="$age ge 21" msg="Age must be greater than 21"/> 
     </entity>
 
-For a complete list of supported attributes please refer to the ``FieldConfig`` documentation.
-As you can the entity definition embeds three further elements which are all
-optional:
+Entities can be marked as *required* or *desired*. Formed will generate
+automatically a :ref:`rule`  for this field. Missing required fields will
+trigger an error on form validation. Desired fields will trigger a warning.
 
-Renderer
-^^^^^^^^
-The renderer directive is used to configure an alternative
-renderer for the field. If no renderer is defined. Than the default renderer
-depending on the entity data type will be chosen.
+Entities can be marked as *readonly*. Readonly fields are renderer as simple
+text in the form displaying the current value of the field. Note, that
+readonly fields are not sent on submission! If you need the value if the form
+you will need to add an additional entity and render is with the hidden field
+renderer.
 
-Help
-^^^^
-A entity can have a help directive. The content of the help directive can be a
-normal string and will be placed below the rendered field element.
+Each entity can optional have a :ref:`renderer`, :ref:`rule` or :ref:`help`
+element.
+
+=========   ===========
+Attribute   Description
+=========   ===========
+id          Used to refer to this entity in the form. Requiered. Must be unique.
+name        Used as name attribute in the rendered field. Defines the 
+            name of this attribute in the model.
+label       The field will be rendered with this label.
+number      A small number which is rendered in front of the label.
+type        Defines the python datatype which will be used on deserialisation of the submitted value. Defines the datatype of the model. Possible values are ``string`` (default), ``integer``, ``float``, ``date``, ``datetime``.
+css         Value will be rendered as class attribute in the rendered field.
+expr        Expression which is used to calculate the value of the field.
+readonly    Flag to indicate that the field should be rendered as readonly field. Default is ``false``.
+required    Flag to indicate that the is a required field. Default is ``false``.
+desired     Flag to indicate that the is a desired field. Default is ``false``.
+=========   ===========
+
+.. _rule:
 
 Rule
-^^^^
-The rule directive is used to define (additional) checks on the submitted
-values. Additional means that there are already some basic checks based on the
-datatype of the entity. So you will not need to define an additional check for
-an integer field to check if the submitted value is actually a integer. This
-check is automatically added. See :ref:`rules` for more informations.
+----
+Rules are used to validate data in the form. Formed does already some basic
+validated on the submitted data depending on the configured data type in the
+:ref:`entity`. These checks are often already sufficient for most basic forms.
 
-.. _forms:
+If you need more validation rules can be used to define additional checks.
+There are two types of rules. Rules which triggers errors, and rules which
+trigger a warning if the evaluation of the rule fails.
+
+Rules are evaluated in the process of validation the submitted data. On
+validation formed will collect warning and errors and will rerender the form
+displaying them. If the form has errors the validation fails. Warnings are ok
+for validation.
+
+Validation of rules can be done in differen modes. Rules with the mode ``pre``
+are evaluation before the deserialisation of the submitted value occurs into
+the python data type of the field. In contrast rules with mode ``post`` are
+evaluation after the deserialisation happened.
+
+Here is a example rule::
+
+        <rule expr="$age ge 21" msg="Age must be greater than 21" mode="post" triggers="warning"/>
+
+Here you can see a example rule. The rule will check the value of field "age"
+($age) is greater or equal that the value 21. The rule is evaluated in post
+mode. And will trigger a warning if the evaluation fails.
+
+=========   ===========
+Attribute   Description
+=========   ===========
+expr        Expression which is used to validate the value if the field.
+msg         The message which is displayed if the evaluation of the rule fails.
+mode        Point in validation when this rules gets evaluations. ``post`` (default) means after the deserialisation of the value and ``pre`` is before deserialisation.
+triggers    Flag which defines which type of message a the rule will trigger if the evaluation fails. Be be ``error`` (default) or ``warning``.
+=========   ===========
+
+.. _help:
+
+Help
+----
+The help block can be used to add some information to the field for the user.
+The help will be rendererd below the field in the form.
+
+.. _renderer:
+
+Renderer
+--------
+The renderer directive can be used to configure an alternative renderer to be
+used to render the field.
+
+The default renderer is chosen depending on the datatype of the field and is a
+textfield for almost all normal datatypes. On relations (in SQLAlchemy mapped
+items) a selection field is used for the relations.
+
+There are different types of renderers available coming with formed. But it
+is very easy to provide formed with your own custom renderer.
+
+Textarea
+````````
+Use this renderer if you want to render the field as a textfield::
+
+        <renderer type="textarea">
+
+Infofield
+`````````
+The info field renderer is used to render the value of the entity as
+textual information. This renderer is usually used to display calculated
+values of the entity. See the ``expr`` attribute of the :ref:`Entity`.
+Appearance is same as a readonly field::
+
+        <renderer type="infofield">
+
+Dropdown
+````````
+The dropdown renderer is used to render dropdown fields. The renderer defines
+also the options which should be available in the dropdown menu. For
+SQLAlchemy mapped items the options are automatically determined from the
+underlying data model::
+
+        <renderer type="dropdown">
+           <option value="1">Option 1</option>
+           <option value="2">Option 2</option>
+           <option value="3">Option 3</option>
+        </renderer>
+
+
+Datepicker
+``````````
+The datepicker renderer has some Javascript functionality which lets the used
+pick the date from a calender. It also only allows valid date entries per
+keyboard::
+
+        <renderer type="datepicker">
+
+Password
+````````
+The password renderer renderes a password field which hides the users input::
+
+        <renderer type="password">
+
+
+Hidden
+``````
+The hidden field renderer is used to render a hidden field for the entity. No
+labels, helptexts or error messages will be renderer. The hidden field will
+also take care on relations for SQLAlchemy mapped items::
+
+        <renderer type="hidden">
+
+.. _form:
 
 Form
 ====
-The form configuration is used to define a form. The form definition will 
+The form directive is the place where the form definition and layout happens.
 
-1. Define the layout of the form, and
-2. Configure which ``Entities`` will be included in the form.
+.. hint::
+   You can define more than one form in one configuration. This gets very
+   handy if you want to define different forms for differen purposes. Example:
+   You have a form to create a new item with a reduced set of fields. Another
+   form which has all fields included can be used to edit the item.
 
-A typical form configuration might look like this::
+Forms are built by using references to the defined entities packed in some
+layout directives::
 
-    <form id="myform" autocomplete="off" enctype="multipart/form-data">
-        <snippet ref="s1"/>
-        <snippet ref="s2"/>
-    </form>
+        <form id="create" css="fooish" autocomplete="off" method="POST" action="" enctype="multipart/form-data">
+        ...
+        </form>
 
-The form directive can have some attributes which are all optional beside the
-`id` attribute. See ``Form`` API for a full description of available attributes.
 
-Within the form directive the layout of the form will be defined. In this case
-we reference two ``Snippet`` directives which will hold the layout. This way
-we can define some common used layout only once and refer to them in different
-forms.
 
-We will describe the layouting possibilities in detail in  the :ref:`snippets` chapter.
-
-.. _snippets:
-
-Snippets
-========
-Snippets are containers for you layout. As you see in the :ref:`forms` chapter
-the can be referenced in multiple forms. Further a snippet include and refer to
-another snippets. This way you can build quite complex layouts without
-repeating yourself.
-
-This is what a typical snippet might look like::
-
-    <snippet id="s1">
-        <page label="Page 1">
-            <row>
-                <col><field ref="f1"></col>
-                <col><field ref="f2"></col>
-            </row>
-        </page>
-        <page label="Page 2">
-            <row>
-                <col>
-                     <if type="readonly" expr="$fieldname == 0">
-                         <field ref="f3">
-                     </if>
-                </col>
-            </row>
-            <snippet ref="s2"/>
-        </page>
-    </snippet>
+============   ===========
+Attribute      Description
+============   ===========
+id             Unique id of the field.
+css            The attribute will be added to the *class* attribute of the form.
+autocomplete   Flag to indicate if the form should be autocompleted by the browser. Defaults to ``on``.
+method         HTTP method used to submit the data. Defaults to POST.
+action         URL where is submitted data is sent to. Default to the current URL.
+enctype        Encrytion used while sending the data. Defaults to ``application/x-www-form-urlencoded``. Use ``multipart/form-data`` if you plan to submit file uploads.
+============   ===========
 
 Page
 ----
 Use pages if you want to divide your form into multiple pages. Pages are
-rendered as tabs in the form.
+rendered as a separate outline of the form on the left site to navigate
+through the form pages.
 
-Row
----
-A form or pages can be divided in rows. Each row can have 1,2,3,4,6 or 12
-cols elements.
+Row, Col
+--------
+Used to layout the form::
 
-Col
----
-A row can be divided into columns. Each column can have either a field or
-another row.
+        <row>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col with=8></col>
+          <col with=2></col>
+          <col with=2></col>
+        </row>
+
+The form is divided into 12 virtual cols. The width of each col is calculated
+automatically. A single in a row will have the full width of 12. For 2 cols in
+a row each col will have a width of 6 cols. If you define 3 cols each col will
+have a width of 4 and so on.
+
+You can alternatively define the *width* of the col. If you provide the width of
+the col you need to take care that the sum of all cols in the row is 12 to not
+mess up the layout.
+
+Rows and cols can be mixed. So rows can be in cols again.
+
+============   ===========
+Attribute      Description
+============   ===========
+width          Width of the col (1-12).
+============   ===========
+
+Fieldset
+--------
+A fieldset can be used to group fields into a logical unit a fieldset will
+have a label which is rendered as a heading above the first field of the fieldset::
+
+        <fieldset label="Bar">
+          <row>
+            <col></col>
+            <col></col>
+          </row>
+        <fieldset>
+
+A fieldset can include almost all other directives.
+
+============   ===========
+Attribute      Description
+============   ===========
+label          Label of the fieldset rendered as header.
+============   ===========
+
+Table
+-----
+.. important::
+   Tables should not be used to layout the form!
+
+Tables can be used to arrange your fields in a tabuluar form. This becomes
+handy in some situations e.g to build your own widget::
+
+        <table>
+          <tr>
+            <th>Criteria</th>
+            <th>Male</th>
+            <th>Female</th>
+          </tr>
+          <tr>
+            <td width="70%">Number of humans in the world</td>
+            <td><field ref="men"/></td>
+            <td><field ref="women"/></td>
+            <td><field ref="total"/></td>
+          </tr>
+        </table>
+
+Tables are usually used in the same way as :ref:`field` is used. Tables will
+take 100% of the available space. You can set the ``width`` attribute of the
+<td> field to configure the width of the columns.
+
+.. _field:
 
 Field
 -----
-The field is the field which will be rendered. It refers to an entity.
+A field in the form. The field only references an :ref:`Entity`::
 
-If (Conditional)
----------------
-Conditional can be used to hide, or rendered form elements like fields,
+        <field ref="f1"/>
+
+============   ===========
+Attribute      Description
+============   ===========
+ref            id if the referenced :ref:`Entity`.
+============   ===========
+
+
+Conditional
+-----------
+Conditional can be used to hide, or render form elements like fields,
 tables, fieldsets and text elements within the conditional as readonly
 elements.
 
@@ -170,12 +336,54 @@ In the example above the referenced field will be shown if the field in the
 form with the name "fieldname" has the value of 4. Else the element will
 be set to readonly and the element will have a lowered opacity.
 
+============   ===========
+Attribute      Description
+============   ===========
+type           Effect of the conditional if the condition evaluates to false.  Defaults to ``hide``.
+expr           The expression which will be evaluated.
+============   ===========
+
 Conditionals are evaluated using JavaScript on the client side. Formbar also
 needs to evaluate the conditional internal on validation to determine which
 values will be taken into account while validating. As result validation rules
 will not be applied for "hidden" fields.
 
-Api
-===
-.. automodule:: formbar.config
-   :members:
+.. _snippet:
+
+Snippet
+-------
+Snippets are reusable parts of your form definiton. Snippets allow you to
+define parts of the form only once and use them in multiple forms.
+Example: If you want to use the same form to create and edit than you can
+define the form in a snippet and use it in the create and edit form::
+
+        <form id="foo">
+          <snippet ref="s1"/>
+        </form>
+        <form id="bar">
+          <snippet ref="s1"/>
+        </form>
+        <snippet id="s1">
+          <row>...</row>
+        </snippet>
+
+Snippet needs to be in a form to get rendered. Snippets can reference other
+snippets using the ``ref`` attribute. Snippets are of great help if you want
+to reduced the effort of rearranging groups of elements in the form. But on
+the other side the can make the form quite complicated if you use them too
+much. Use them with care.
+
+============   ===========
+Attribute      Description
+============   ===========
+id             Unique id of the snippet
+ref            References the snippet with id.
+============   ===========
+
+Custom renderes
+===============
+Write me!
+
+External validators
+===================
+Write me!

@@ -8,9 +8,11 @@ Welcome to formbar's documentation!
 
 .. toctree::
    start
+   usage
+   config
+   examples
+   api
    :maxdepth: 2
-
-
 
 Indices and tables
 ==================
