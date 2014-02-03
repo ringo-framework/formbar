@@ -174,9 +174,7 @@ class Form(object):
         deserialized = {}
         for fieldname, value in self._filter_values(data).iteritems():
             field = self.fields.get(fieldname)
-            if field and not field.is_readonly():
-                # Only add the value if the field is not marked as readonly
-                deserialized[fieldname] = self._to_python(field, data.get(field.name))
+            deserialized[fieldname] = self._to_python(field, data.get(field.name))
         log.debug("Deserialized values: %s" % deserialized)
         return deserialized
 
