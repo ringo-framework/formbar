@@ -1,4 +1,5 @@
 import logging
+import difflib
 
 from mako.lookup import TemplateLookup
 from formbar import template_dir
@@ -186,6 +187,52 @@ class FieldRenderer(Renderer):
         template = template_lookup.get_template("help.mako")
         values = self._get_template_values()
         return template.render(**values)
+
+    def _render_diff(self, newvalue, oldvalue):
+        """Will return a HTML string showing the differences between the old and
+        the new string.
+
+        The new string will have some markup to show the differences between
+        the given strings. Words which has been deleted in the new string
+        are marked with a *span* tag with the class *formed-deleted-value*.
+        Elements which are new in the new string are marked with a span tag
+        having the class *formed-new-value*.
+
+        :old: Old string
+        :new: New string
+        :returns: A HTML string showing the differences.
+
+        """
+        out = []
+        mode = None
+        d = difflib.Differ()
+        old = newvalue.split(" ")
+        new = oldvalue.split(" ")
+        diff = d.compare(old, new)
+        for x in diff:
+            if x[0:2] == "+ " and mode != "new":
+                if mode:
+                    out.append("</span>")
+                    mode = None
+                out.append('<span class="formbar-new-value">')
+                mode = "new"
+            elif x[0:2] == "- " and mode != "del":
+                if mode:
+                    out.append("</span>")
+                    mode = None
+                out.append('<span class="formbar-del-value">')
+                mode = "del"
+            elif x[0:2] == "  ":
+                if mode:
+                    out.append("</span>")
+                    mode = None
+            elif x[0:2] == "? ":
+                continue
+            out.append("%s " % "".join(x[2::]))
+        if mode:
+            out.append("</span>")
+        return "".join(out)
+
 
     def _get_template_values(self):
         values = {'field': self._field,
