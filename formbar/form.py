@@ -275,11 +275,14 @@ class Form(object):
     def add_validator(self, validator):
         return self.external_validators.append(validator)
 
-    def render(self, values={}, page=0, buttons=True):
+    def render(self, values={}, page=0, buttons=True, previous_values=None):
         """Returns the rendererd form as an HTML string.
 
         :values: Dictionary with values to be prefilled/overwritten in
         the rendered form.
+        :previous_values: Dictionary of values of the last saved state
+        of the item. If provided a diff between the current and previous
+        values will be renderered in readonly mode.
         :returns: Rendered form.
 
         """
@@ -297,7 +300,8 @@ class Form(object):
         values['csrf_token'] = self._csrf_token
 
         renderer = FormRenderer(self, self._translate)
-        form = renderer.render(values=values, buttons=buttons)
+        form = renderer.render(values=values, buttons=buttons,
+                               previous_values = previous_values)
         return htmlfill.render(form, values)
 
     def _add_error(self, fieldname, error):
