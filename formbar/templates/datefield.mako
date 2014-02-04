@@ -1,6 +1,10 @@
 % if field.is_readonly():
   <div class="readonlyfield" name="${field.name}">
-    ${field.get_value("")}
+    % if field.get_previous_value() is not None:
+      ${renderer._render_diff(field.get_previous_value(""), field.get_value(""))}
+    % else:
+      ${field.get_value("")}
+    % endif
   </div>
 % else:
   <input class="formbar-datepicker form-control" type="text" name="${field.name}" value="${field.get_value()}"/>
