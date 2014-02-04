@@ -676,12 +676,12 @@ class Field(object):
         self.previous_value = value
 
     def get_value(self, default=None, expand=False):
-        return self._get_value(self.value, expand)
+        return self._get_value(self.value, default, expand)
 
     def get_previous_value(self, default=None, expand=False):
-        return self._get_value(self.previous_value, expand)
+        return self._get_value(self.previous_value, default, expand)
 
-    def _get_value(self, value, expand):
+    def _get_value(self, value, default, expand):
         if expand:
             if not isinstance(value, list):
                 value = [value]
