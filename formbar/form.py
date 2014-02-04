@@ -693,7 +693,12 @@ class Field(object):
                         ex_values.append("%s" % opt[0])
             return ", ".join(ex_values)
         else:
-            return value
+            if value:
+                return value
+            elif default:
+                return default
+            else:
+                return value
 
     def get_options(self):
         user_defined_options = self._config.options
