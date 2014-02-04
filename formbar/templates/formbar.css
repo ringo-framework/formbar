@@ -60,11 +60,10 @@ div.readonlyfield {
 }
 
 .formbar-new-value {
-    background: #468847;
+    background: #edff76;
 }
 
 .formbar-del-value {
-    background: #C09853;
     text-decoration: line-through;
 }
 
