@@ -301,7 +301,7 @@ class Form(object):
 
         renderer = FormRenderer(self, self._translate)
         form = renderer.render(values=values, buttons=buttons,
-                               previous_values = previous_values)
+                               previous_values=previous_values)
         return htmlfill.render(form, values)
 
     def _add_error(self, fieldname, error):
