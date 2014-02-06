@@ -622,7 +622,7 @@ class Field(object):
         self._errors = []
         self._warnings = []
         self.value = ""
-        self.previous_value = ""
+        self.previous_value = None
         """Value as string of the field. Will be set on rendering the
         form"""
 
