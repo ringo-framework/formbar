@@ -4,7 +4,7 @@
   </div>
 % else:
   <select class="form-control" id="${field.id}" name="${field.name}">
-    % for option in options:
+    % for option in field.get_options():
       <option value="${option[1]}">${option[0]}</option>
     % endfor
   </select>
