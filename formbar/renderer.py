@@ -340,6 +340,15 @@ class DropdownFieldRenderer(FieldRenderer):
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("dropdown.mako")
+        self._cache_options = None
+
+    def _get_template_values(self):
+        values = FieldRenderer._get_template_values(self)
+        # Add the options to the values dictionary
+        if self._cache_options is None:
+            self._cache_options = self._field.get_options()
+        values['options'] = self._cache_options
+        return values
 
 class SelectionFieldRenderer(FieldRenderer):
     """A Renderer to render selection field"""
