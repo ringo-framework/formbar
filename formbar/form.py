@@ -538,10 +538,13 @@ class Form(object):
 
         if not submitted:
             unvalidated = self.loaded_data
+            # No need to convert the values here as the values are
+            # already pythonic when loaded from the item.
+            converted = unvalidated
         else:
             self.submitted_data = variabledecode.variable_decode(submitted)
             unvalidated = self.submitted_data
-        converted = self.deserialize(unvalidated)
+            converted = self.deserialize(unvalidated)
 
         # Validate the fields. Ignore fields which are disabled in
         # conditionals First get list of fields which are still in the
