@@ -1,5 +1,5 @@
 % if field.is_readonly():
-  <div class="readonlyfield" name="${field.name}">
+  <div class="readonlyfield" name="${field.name}" value="${field.get_value()}">
     ${field.get_value(expand=True) or "&nbsp;"}
   </div>
 % else:

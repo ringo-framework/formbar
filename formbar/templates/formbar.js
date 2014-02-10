@@ -57,12 +57,19 @@ function evaluate(element) {
             // Select field
             var field = $('input[name='+tfield+'], '
                           + 'select[name='+tfield+'], '
+                          + 'div[name='+tfield+'], '
                           + 'textarea[name='+tfield+']');
             value = field.val();
             // If we can not get a value from an input fields the field my
             // be readonly. So get the value from the readonly element.
+            // First try to get the unexpaned value, if there is no
+            // value get the textvalue of the field. (Which is usually
+            // the expanded value).
             if (!value) {
-                value = $('div[name='+tfield+']').text();
+                value = field[0]['attributes'][0].value;
+            }
+            if (!value) {
+                value = field.text();
             }
             console.log(tokens[j].replace('$', ''));
             eval_expr += value;
