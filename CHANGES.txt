@@ -9,6 +9,10 @@ TODO
 
 0.6.2
 =====
+- Add "History" feature. You can now optionally provide a dictionary with old
+  values and the form will renderer the differences to these values in a nice
+  visual way in read only mode. This is very similar to the change history
+  known from other office products.
 - Fixed bug in evaluating expressions in JS when rendering read only mode. Add
   value attribute for readonly dropdown fields holding the unexpanded value.
 
