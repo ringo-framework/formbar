@@ -7,6 +7,10 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.6.3
+=====
+- Workaroud for https://github.com/formencode/formencode/pull/58
+
 0.6.2
 =====
 - Add "History" feature. You can now optionally provide a dictionary with old

@@ -300,7 +300,13 @@ class Form(object):
         renderer = FormRenderer(self, self._translate)
         form = renderer.render(values=values, buttons=buttons,
                                previous_values=previous_values)
-        return htmlfill.render(form, values)
+        # FIXME: Workaround for
+        # https://github.com/formencode/formencode/pull/58 (ti)
+        # <2014-02-12 10:31>
+        try:
+            return htmlfill.render(form, values)
+        except AssertionError, e:
+            log.error("Error while parsing form in htmlfill: %s" % e.message)
 
     def _add_error(self, fieldname, error):
         field = self.get_field(fieldname)
