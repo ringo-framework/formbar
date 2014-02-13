@@ -66,7 +66,7 @@ function evaluate(element) {
             // value get the textvalue of the field. (Which is usually
             // the expanded value).
             if (!value) {
-                value = field[0]['attributes'][0].value;
+                value = field.attr("value");
             }
             if (!value) {
                 value = field.text();
