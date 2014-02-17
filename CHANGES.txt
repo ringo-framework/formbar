@@ -10,6 +10,7 @@ TODO
 0.6.3
 =====
 - Workaroud for https://github.com/formencode/formencode/pull/58
+- Added "rows" attribute for textarea. (Renderer attribute)
 
 0.6.2
 =====
