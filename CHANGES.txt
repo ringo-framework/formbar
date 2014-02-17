@@ -11,6 +11,10 @@ TODO
 =====
 - Workaroud for https://github.com/formencode/formencode/pull/58
 - Added "rows" attribute for textarea. (Renderer attribute)
+- Add option to provide a external service to evaluate rules.
+- If external service for rule evaluation is defined use this service for
+  client side evaluation.
+- Add support for nested fieldset elements up to three levels.
 
 0.6.2
 =====
