@@ -27,6 +27,21 @@ label {
   margin-bottom: 0px;
 }
 
+.formbar-form fieldset fieldset fieldset legend {
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.formbar-form fieldset fieldset legend {
+  font-size: 17px;
+  margin-bottom: 17px;
+}
+
+.formbar-form fieldset legend {
+  font-size: 21px;
+  margin-bottom: 20px;
+}
+
 .formbar-form table td div.readonlyfield {
   margin-bottom: 0px;
 }
