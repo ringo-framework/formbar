@@ -7,5 +7,5 @@
     % endif
   </div>
 % else:
-  <textarea class="form-control" id="${field.id}" name="${field.name}">${field.get_value()}</textarea>
+  <textarea class="form-control" id="${field.id}" name="${field.name}" rows="${field.renderer.rows}">${field.get_value()}</textarea>
 % endif

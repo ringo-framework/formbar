@@ -18,6 +18,9 @@
     <entity id="e7" name="anzahl_f2_g" label="" type="info" expr="$anzahl_f2_m + $anzahl_f2_w">
       <renderer type="info"/>
     </entity>
+    <entity id="e8" name="texarea" label="Meine Textarea">
+      <renderer type="textarea" rows="10"/>
+    </entity>
   </source>
   <form id="form">
     <snippet ref="s1"/>
@@ -53,6 +56,9 @@
           </tr>
         </table>
       </col>
+    </row>
+    <row>
+      <col><field ref="e8"/></col>
     </row>
   </snippet>
 </configuration>

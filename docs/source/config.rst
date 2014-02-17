@@ -138,7 +138,13 @@ Textarea
 ````````
 Use this renderer if you want to render the field as a textfield::
 
-        <renderer type="textarea">
+        <renderer type="textarea" rows="20">
+
+=========   ===========
+Attribute   Description
+=========   ===========
+rows        Number of rows of the texteare. Default is 3.
+=========   ===========
 
 Infofield
 `````````
