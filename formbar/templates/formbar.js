@@ -53,7 +53,7 @@ function evaluate(element) {
 
     var eval_expr = "";
     // Build evaluation string
-    for (var j = 0; j <= tokens.length -1; j++) {
+    for (var j = 0; j <= tokens.length - 1; j++) {
         var tfield = null;
         var value = null;
         if (tokens[j].contains("$")) {
