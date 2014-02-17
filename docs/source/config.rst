@@ -239,9 +239,9 @@ Used to layout the form::
           <col></col>
         </row>
         <row>
-          <col with=8></col>
-          <col with=2></col>
-          <col with=2></col>
+          <col width="8"></col>
+          <col width="2"></col>
+          <col width="2"></col>
         </row>
 
 The form is divided into 12 virtual cols. The width of each col is calculated
