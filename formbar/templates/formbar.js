@@ -1,3 +1,6 @@
+/* ATTENTION: This file is created with mako and includes some attribute which
+ * are inserted dynamically */
+
 $('.formbar-tooltip').tooltip();
 $('.formbar-datepicker').datepicker({
     format: 'yyyy-mm-dd'
@@ -46,10 +49,11 @@ $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form 
 function evaluate(element) {
     var expr = element['attributes'][0].value;
     var tokens = expr.split(" ");
+    var eval_url = ${eval_url};
 
     var eval_expr = "";
     // Build evaluation string
-    for (var j = tokens.length - 1; j >= 0; j--) {
+    for (var j = 0; j <= tokens.length -1; j++) {
         var tfield = null;
         var value = null;
         if (tokens[j].contains("$")) {
@@ -72,13 +76,36 @@ function evaluate(element) {
                 value = field.text();
             }
             console.log(tokens[j].replace('$', ''));
-            eval_expr += value;
+            eval_expr += " "+value;
         } else {
-            eval_expr += tokens[j];
+            eval_expr += " "+tokens[j];
         }
     }
     try {
-        return eval(eval_expr);
+        if (eval_url) {
+            var result = false;
+            $.ajax({
+                type: "GET",
+                async: false,
+                url: eval_url,
+                data: {rule: eval_expr},
+                success: function (data) {
+                    if (data.success) {
+                        result = true;
+                    } else {
+                        console.log(data.data);
+                        result = false;
+                    }
+                },
+                error: function (data) {
+                    console.log("Request to eval server fails!");
+                    result = false;
+                }
+            });
+            return result;
+        } else {
+            return eval(eval_expr);
+        }
     } catch (e) {
         console.log(e);
         return undefined;
