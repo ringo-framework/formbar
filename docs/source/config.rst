@@ -264,16 +264,24 @@ width          Width of the col (1-12).
 Fieldset
 --------
 A fieldset can be used to group fields into a logical unit a fieldset will
-have a label which is rendered as a heading above the first field of the fieldset::
+have a label which is rendered as a heading above the first field of the
+fieldset.  Fieldsets can be nested to model some kind of hierarchy. Formbar
+supports up to three levels. The size of the font in the fieldset legend will
+be reduced a littlebit on every level.::
 
-        <fieldset label="Bar">
-          <row>
-            <col></col>
-            <col></col>
-          </row>
+        
+        <fieldset label="1. Foo">
+        ...
+          <fieldset label="1.1 Bar">
+            <row>
+              <col></col>
+              <col></col>
+            </row>
+          <fieldset>
         <fieldset>
 
 A fieldset can include almost all other directives.
+
 
 ============   ===========
 Attribute      Description
