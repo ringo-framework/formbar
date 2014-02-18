@@ -277,7 +277,7 @@ class Field(Config):
         """Id of the field. Usally only used to refer to the field.
         Example labels."""
 
-        self.name = entity.attrib.get('name')
+        self.name = entity.attrib.get('name', "")
         """Name of the field. values will be submitted using this name"""
 
         self.label = entity.attrib.get('label', self.name.capitalize())
