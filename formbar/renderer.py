@@ -38,6 +38,8 @@ def get_renderer(field, translate):
             return PasswordFieldRenderer(field, translate)
         elif renderer.render_type == "hidden":
             return HiddenFieldRenderer(field, translate)
+        elif renderer.render_type == "html":
+            return HTMLRenderer(field, translate)
     else:
         # Try to determine the datatype of the field and set approriate
         # renderer.
@@ -325,6 +327,20 @@ class HiddenFieldRenderer(FieldRenderer):
     def render(self):
         html = []
         values = self._get_template_values()
+        html.append(self.template.render(**values))
+        return "".join(html)
+
+class HTMLRenderer(FieldRenderer):
+    """A Renderer to render generic HTML"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("html.mako")
+
+    def render(self):
+        html = []
+        values = self._get_template_values()
+        html.append(self._render_label())
         html.append(self.template.render(**values))
         return "".join(html)
 
