@@ -138,7 +138,7 @@ Textarea
 ````````
 Use this renderer if you want to render the field as a textfield::
 
-        <renderer type="textarea" rows="20">
+        <renderer type="textarea" rows="20"/>
 
 =========   ===========
 Attribute   Description
@@ -153,7 +153,7 @@ textual information. This renderer is usually used to display calculated
 values of the entity. See the ``expr`` attribute of the :ref:`Entity`.
 Appearance is same as a readonly field::
 
-        <renderer type="infofield">
+        <renderer type="infofield"/>
 
 Dropdown
 ````````
@@ -175,13 +175,13 @@ The datepicker renderer has some Javascript functionality which lets the used
 pick the date from a calender. It also only allows valid date entries per
 keyboard::
 
-        <renderer type="datepicker">
+        <renderer type="datepicker"/>
 
 Password
 ````````
 The password renderer renderes a password field which hides the users input::
 
-        <renderer type="password">
+        <renderer type="password"/>
 
 
 Hidden
@@ -190,7 +190,30 @@ The hidden field renderer is used to render a hidden field for the entity. No
 labels, helptexts or error messages will be renderer. The hidden field will
 also take care on relations for SQLAlchemy mapped items::
 
-        <renderer type="hidden">
+        <renderer type="hidden"/>
+
+Html
+````
+The html renderer is used to render custom html code. This is usefull if you
+want to render generic text sections or insert images. Images will need a
+external source for the image file. The html renderer will render Javascript
+, Stylesheets and HTML code::
+
+        <renderer type="html">
+         <div>
+           <p>You can include all valid html including images, lists etc.</p>
+           <p><strong>Warning:</strong>Also JS can be included.</p>
+         </div>
+        </renderer>
+
+Your custom code should be wrapped into a empty div node. Otherwise only the
+first child node of the renderer will be rendererd.
+The entity only needs the id attribute. If a label is provided, the label
+will be uses as some kind of header to the html part.
+
+.. warning::
+   Use this renderer with caution as it may introduce a large security hole if
+   users inject malicious javascript code into the form using the html renderer.
 
 .. _form:
 
