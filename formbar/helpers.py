@@ -9,9 +9,13 @@ def get_css():
     """Returns the content of the formbar CSS file
     :returns: String with css
     """
-    template = template_lookup.get_template("formbar.css")
+    files = ['datepicker3.css', 'formbar.css']
+    css = []
     values = {}
-    return template.render(**values)
+    for filename in files:
+        template = template_lookup.get_template(filename)
+        css.append(template.render(**values))
+    return "".join(css)
 
 
 def get_js(eval_url="undefined"):

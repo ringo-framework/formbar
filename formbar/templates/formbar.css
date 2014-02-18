@@ -4,8 +4,8 @@
 .formbar-form input, .formbar-form select,.formbar-form textarea {
   width: 100%;
   /* Fix width and height of the fields by setting it to the border-box modell
-   * (CSS3) Does not work in IE */
-  height: 30px !important;
+   * (CSS3) Does not work in IE
+  height: 30px !important; */
   box-sizing: border-box;
   -webkit-box-sizing:border-box;
   -moz-box-sizing: border-box;

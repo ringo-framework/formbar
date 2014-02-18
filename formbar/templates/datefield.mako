@@ -7,5 +7,7 @@
     % endif
   </div>
 % else:
-  <input class="formbar-datepicker form-control" type="text" name="${field.name}" value="${field.get_value()}"/>
+  <div class="input-group date date formbar-datepicker">
+    <input type="text"  name="${field.name}" value="${field.get_value()}" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+  </div>
 % endif

@@ -3,7 +3,8 @@
 
 $('.formbar-tooltip').tooltip();
 $('.formbar-datepicker').datepicker({
-    format: 'yyyy-mm-dd'
+    format: 'yyyy-mm-dd',
+    todayBtn: "linked",
 });
 
 /*
