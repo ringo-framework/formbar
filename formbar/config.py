@@ -388,16 +388,18 @@ class Renderer(Config):
         Type of the Renderer. Known Renderers:
         - Datepicker
         - Textarea
+        - HTML
         """
 
         # Warning! The body of the renderer may include all valid and
         # invalid html data including scripting. Use with caution here as
         # this may become a large security hole if some users inject
         # malicious code!
+        self.body = None
+        """The body attribute is currently only used by the HTML
+        Renderer and has the content to be rendererd."""
         if len(entity) > 0:
             self.body = ET.tostring(entity[0], method="html")
-        else:
-            self.body = None
 
     def __getattr__(self, name):
         return self._tree.attrib.get(name)
