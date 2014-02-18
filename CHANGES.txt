@@ -16,6 +16,7 @@ TODO
   client side evaluation.
 - Add support for nested fieldset elements up to three levels.
 - Replaced bootstrap-datepicker. Now using: https://github.com/eternicode/bootstrap-datepicker
+- Add HTML-Renderer. Can be used to include custom HTML in the form.
 
 0.6.2
 =====
