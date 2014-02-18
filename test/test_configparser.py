@@ -44,7 +44,7 @@ class TestFormParser(unittest.TestCase):
 
     def test_get_fields(self):
         self.assertTrue(isinstance(self.cform.get_fields(), dict))
-        self.assertEqual(len(self.cform.get_fields().items()), 6)
+        self.assertEqual(len(self.cform.get_fields().items()), 7)
 
     def test_get_field_e1(self):
         field = self.cform.get_field(self.cform._id2name['e1'])
@@ -104,6 +104,7 @@ class TestFieldConfig(unittest.TestCase):
         self.cfield = self.form.get_field('date')
         self.ifield = self.form.get_field('integer')
         self.sfield = self.form2.get_field('name')
+        self.hfield = self.form.get_field('html')
 
     def test_get_field_mission(self):
         self.assertRaises(KeyError, self.form.get_field, 'missing')
@@ -174,7 +175,7 @@ class TestFieldConfig(unittest.TestCase):
         self.assertEqual(self.dfield.renderer, None)
 
     def test_renderer_custom(self):
-        self.assertEqual(self.cfield.renderer, None)
+        self.assertNotEqual(self.cfield.renderer, None)
 
     def test_help_default(self):
         self.assertEqual(self.dfield.help, None)
@@ -187,6 +188,13 @@ class TestFieldConfig(unittest.TestCase):
 
     def test_rules_custom(self):
         self.assertEqual(len(self.ifield.rules), 2)
+
+    def test_html_renderer_fails(self):
+        """Only html renderer have the body attribute set"""
+        self.assertEqual(self.cfield.renderer.body, None)
+
+    def test_html_renderer(self):
+        self.assertEqual(self.hfield.renderer.body.strip(), "<div>Test</div>")
 
 if __name__ == '__main__':
     unittest.main()

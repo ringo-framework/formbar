@@ -14,6 +14,7 @@
       tags allowed.</help>
     </entity>
     <entity id="e4" name="date" label="Date field" type="date" autocomplete="off" css="datefield" number="1">
+      <renderer type="datepicker"/>
       <help>This is my helptext</help>
     </entity>
     <entity id="e8" name="select">
@@ -28,6 +29,11 @@
     <entity id="e5" name="name"/>
     <entity id="e6" name="fullname"/>
     <entity id="e7" name="password"/>
+    <entity id="e9" name="html">
+      <renderer type="html">
+        <div>Test</div>
+      </renderer>
+    </entity>
   </source>
   <form id="userform1">
     <row>
@@ -58,6 +64,7 @@
     <row>
       <col><field ref="e0"/></col>
       <col><field ref="e8"/></col>
+      <col><field ref="e9"/></col>
     </row>
     <row>
       <col><field ref="e3"/></col>
