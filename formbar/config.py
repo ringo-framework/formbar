@@ -389,5 +389,15 @@ class Renderer(Config):
         - Datepicker
         - Textarea
         """
+
+        # Warning! The body of the renderer may include all valid and
+        # invalid html data including scripting. Use with caution here as
+        # this may become a large security hole if some users inject
+        # malicious code!
+        if len(entity) > 0:
+            self.body = ET.tostring(entity[0], method="html")
+        else:
+            self.body = None
+
     def __getattr__(self, name):
         return self._tree.attrib.get(name)
