@@ -21,6 +21,14 @@
     <entity id="e8" name="texarea" label="Meine Textarea">
       <renderer type="textarea" rows="10"/>
     </entity>
+    <entity id="e9">
+      <renderer type="html">
+      <div>
+      <p>Das hier ist ein kleiner Test mit <strong>fetten</strong> Text</p>
+      <img src="http://intevation.de/images/graphics/intevation_logo_120.png"/>
+      </div>
+      </renderer>
+    </entity>
   </source>
   <form id="form">
     <snippet ref="s1"/>
@@ -59,6 +67,7 @@
     </row>
     <row>
       <col><field ref="e8"/></col>
+      <col><field ref="e9"/></col>
     </row>
   </snippet>
 </configuration>
