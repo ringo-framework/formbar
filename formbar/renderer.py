@@ -32,6 +32,8 @@ def get_renderer(field, translate):
             return InfoFieldRenderer(field, translate)
         elif renderer.render_type == "dropdown":
             return DropdownFieldRenderer(field, translate)
+        elif renderer.render_type == "selection":
+            return SelectionFieldRenderer(field, translate)
         elif renderer.render_type == "datepicker":
             return DateFieldRenderer(field, translate)
         elif renderer.render_type == "password":
