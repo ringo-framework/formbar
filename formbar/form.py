@@ -721,7 +721,7 @@ class Field(object):
         # Get mapped clazz for the field
         options = []
         if self.get_type() == 'manytoone':
-            options.append(("None", ""))
+            options.append(("None", "", True))
         clazz = self._get_sa_mapped_class()
         items = self._form._dbsession.query(clazz)
         for item in items:
@@ -733,6 +733,8 @@ class Field(object):
                     options.append((item, item.id, True))
                 else:
                     options.append((item, item.id, False))
+            else:
+                options.append((item, item.id, True))
         return options
 
     def get_options(self):
