@@ -3,6 +3,7 @@ import datetime
 import sqlalchemy as sa
 from formencode import htmlfill, variabledecode
 from formbar.renderer import FormRenderer, get_renderer
+from formbar.rules import Rule, Parser
 
 log = logging.getLogger(__name__)
 
@@ -704,25 +705,69 @@ class Field(object):
             else:
                 return value
 
+    def _build_filter_expr(self, expr_str, item):
+        t = expr_str.split(" ")
+        for x in t:
+            if x.startswith("%"):
+                key =  x.strip("%")
+                value = getattr(item, key)
+                if isinstance(value, list):
+                    value = "[%s]" % ", ".join("'%s'" % unicode(v) for v in value)
+                    expr_str = expr_str.replace(x, value)
+        p = Parser()
+        return p.parse(expr_str)
+
+    def _load_options_from_db(self):
+        # Get mapped clazz for the field
+        options = []
+        if self.get_type() == 'manytoone':
+            options.append(("None", ""))
+        clazz = self._get_sa_mapped_class()
+        items = self._form._dbsession.query(clazz)
+        for item in items:
+            if self._config.renderer and self._config.renderer.filter:
+                expr = self._build_filter_expr(
+                    self._config.renderer.filter, item)
+                rule = Rule(expr)
+                if rule.evaluate({}):
+                    options.append((item, item.id, True))
+                else:
+                    options.append((item, item.id, False))
+        return options
+
     def get_options(self):
+        """Will return a list of tuples containing the options of the
+        field. The tuple contains in the following order:
+
+        1. the display value of the option,
+        2. its value and
+        3. a boolean flag if the options is a filtered one and
+        should not be visible in the selection.
+
+        Options can be filtered by defining the filter attribute of the
+        renderer. The expression will be applied on every option in the
+        selection. Keyword beginning with % are handled as variable. On
+        rule evaluation the keyword in the expression will be replaced
+        with the value of the item with the name of the variable.
+
+        Filtering is currently actually only done for selection based on
+        the SQLAlchemy model and which are loaded from the database.
+        """
+        options = []
         user_defined_options = self._config.options
         if user_defined_options:
-            return user_defined_options
+            for option in user_defined_options:
+                # TODO: Filter user defined options too (ti) <2014-02-19 23:46>
+                options.append(option[0], option[1], True)
         elif self._form._dbsession:
-            # Get mapped clazz for the field
-            options = []
-            if self.get_type() == 'manytoone':
-                options.append(("None", ""))
-            clazz = self._get_sa_mapped_class()
-            items = self._form._dbsession.query(clazz)
-            options.extend([(item, item.id) for item in items])
-            return options
+            return self._load_options_from_db()
         else:
             # TODO: Try to get the session from the item. Ther must be
             # somewhere the already bound session. (torsten) <2013-07-23 00:27>
             log.warning('No db connection configured for this form. Can '
                         'not load options')
             return []
+        return options
 
     def add_error(self, error):
         self._errors.append(error)
