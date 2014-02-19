@@ -71,7 +71,8 @@ class Rule(object):
             if token.startswith('$'):
                 token = values.get(token.strip('$'))
                 if isinstance(token, basestring):
-                    token = "'%s'" % token
+                    # Allow " and ' in the token
+                    token = '"""%s"""' % token
             try:
                 rule.append(str(token))
             except UnicodeEncodeError:
