@@ -760,7 +760,7 @@ class Field(object):
         if user_defined_options:
             for option in user_defined_options:
                 # TODO: Filter user defined options too (ti) <2014-02-19 23:46>
-                options.append(option[0], option[1], True)
+                options.append((option[0], option[1], True))
         elif self._form._dbsession:
             return self._load_options_from_db()
         else:
