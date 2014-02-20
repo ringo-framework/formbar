@@ -10,7 +10,7 @@ TODO
 0.6.4
 =====
 - Fixed rule evaluation. Allow " and ' in rules.
-- Added basic filtering on selections. Currently only works on SQLAlchemy relations.
+- #5. Added basic filtering on selections. Currently only works on SQLAlchemy relations.
 
 0.6.3
 =====
