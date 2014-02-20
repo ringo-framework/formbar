@@ -155,6 +155,44 @@ Appearance is same as a readonly field::
 
         <renderer type="infofield"/>
 
+Selection
+`````````
+The selection renderer is used to render a selection list fields. Such a field
+is capable to select multiple optiones. The renderer defines also the options
+which should be available in the dropdown menu. For SQLAlchemy mapped items
+the options are automatically determined from the underlying data model::
+
+        <renderer type="selection">
+           <option value="1">Option 1</option>
+           <option value="2">Option 2</option>
+           <option value="3">Option 3</option>
+        </renderer>
+
+=========   ===========
+Attribute   Description
+=========   ===========
+filter      Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+ignore      Another way to filter options. (Deprecated)
+=========   ===========
+
+.. note::
+   Filtering is only possible for SQLAlchemy mapped items.
+
+Filtering can be done by defining a expression in the filter attribute. This
+expression is later evaluated by the rule system of formbar. The expression
+must evaluate to true and is evaluated for every option. The expression uses a
+special variable begining with ``%``.  Variables begining with % marks the
+name of an attribute of the current options item. The variable will be
+replaced by the value of the attribute of the current item in the option for
+every option before evaluating::
+        
+        <renderer type="selection" filter="'foo' in %bar">
+
+The ignore attribute offers another but deprecated way to filter options. It
+syntax differs from the filter expression. See source for more information.
+
+.. _dropdown:
+
 Dropdown
 ````````
 The dropdown renderer is used to render dropdown fields. The renderer defines
@@ -168,6 +206,17 @@ underlying data model::
            <option value="3">Option 3</option>
         </renderer>
 
+=========   ===========
+Attribute   Description
+=========   ===========
+filter      Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+ignore      Another way to filter options. (Deprecated)
+=========   ===========
+
+.. note::
+   Filtering is only possible for SQLAlchemy mapped items.
+
+See filtering section of the :ref:`dropdown` renderer.
 
 Datepicker
 ``````````
