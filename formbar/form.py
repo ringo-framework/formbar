@@ -301,10 +301,10 @@ class Form(object):
         renderer = FormRenderer(self, self._translate)
         form = renderer.render(values=values, buttons=buttons,
                                previous_values=previous_values)
-        try:
-            return htmlfill.render(form, values)
-        except AssertionError, e:
-            log.error("Error while parsing form in htmlfill: %s. Hint See 'https://github.com/formencode/formencode/issues/57'" % e.message)
+        # TODO: Can happen: Error while parsing form in htmlfill: %s. Hint See
+        # 'https://github.com/formencode/formencode/issues/57desc (ti)
+        # <2014-03-21 10:29> 
+        return htmlfill.render(form, values)
 
     def _add_error(self, fieldname, error):
         field = self.get_field(fieldname)
