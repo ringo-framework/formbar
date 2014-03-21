@@ -92,10 +92,10 @@ function evaluate(element) {
                 data: {rule: eval_expr},
                 success: function (data) {
                     if (data.success) {
-                        result = true;
+                        result = data.data;
                     } else {
-                        console.log(data.data);
-                        result = false;
+                        console.log(data.params.msg);
+                        result = data.data;
                     }
                 },
                 error: function (data) {
