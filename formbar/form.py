@@ -626,7 +626,19 @@ class Field(object):
         self.renderer = get_renderer(self, translate)
         self._errors = []
         self._warnings = []
-        self.value = ""
+        # Set default value
+        value = getattr(self._config, "value")
+        if value and value.startswith("$"):
+            # value is a field. Try to get the value of the field.
+            try:
+                value = getattr(self._form._item, value.strip("$"))
+            except IndexError, e:
+                log.error("Error while accessing attribute '%s': %s" % (value, e))
+                value = None
+            except AttributeError, e:
+                log.error("Error while accessing attribute '%s': %s" % (value, e))
+                value = None
+        self.value = value
         self.previous_value = None
         """Value as string of the field. Will be set on rendering the
         form"""
