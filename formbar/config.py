@@ -323,6 +323,12 @@ class Field(Config):
         """Flag to enable or disable the automcomplete feature for this
         field. Defaults to enabled autocompletion"""
 
+        self.value = entity.attrib.get('value', "")
+        """Default value of the field. Note that this value might be
+        overwritten while rendering the form if the field is within the
+        submitted values on a form submission. Defaults to empty
+        string. This attribute is also used for Infofields to define the
+        value which should be displayed (If no expression is defined)"""
         # Subelements of the fields
 
         # Options (For dropdown, checkbox and radio fields)
