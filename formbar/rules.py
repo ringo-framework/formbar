@@ -130,6 +130,10 @@ def convertOperator(op):
         top = "in"
     elif op == "==":
         top = "=="
+    elif op == "and":
+        top = "and"
+    elif op == "or":
+        top = "or"
     return [top]
 
 op_eq = Literal("eq").setParseAction(convertOperator)
@@ -139,14 +143,17 @@ op_ge = Literal("ge").setParseAction(convertOperator)
 op_lt = Literal("lt").setParseAction(convertOperator)
 op_le = Literal("le").setParseAction(convertOperator)
 op_in = Literal("in").setParseAction(convertOperator)
-operator = (oneOf('== < > <= >= != in')
-            | op_eq | op_ne | op_gt | op_ge | op_lt | op_le | op_in)
+op_and = Literal("and").setParseAction(convertOperator)
+op_or = Literal("or").setParseAction(convertOperator)
+operator = (oneOf('== < > <= >= != in and or')
+            | op_eq | op_ne | op_gt | op_ge | op_lt | op_le | op_in | op_and | op_or)
 
 operand = Forward()
 function_call = functor + LPAR + Optional(delimitedList(operand)) + RPAR
 option_list = LSBR + Optional(delimitedList(operand, combine=True)) + RSBR
 operand << (option_list | function_call | functor | real | integer | string | fieldname)
-rule = operand + operator + operand | operand
+term = operand + operator + operand | operand
+rule = term + operator + term | term
 
 
 class Parser(object):
