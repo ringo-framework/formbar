@@ -1,6 +1,6 @@
 import logging
 from pyparsing import Literal, Word, alphanums, Regex, \
-    oneOf, Forward, Optional, delimitedList, ParseException
+    oneOf, Forward, Optional, delimitedList, ParseException, OneOrMore
 
 log = logging.getLogger(__name__)
 
@@ -85,6 +85,7 @@ class Rule(object):
             # Replace all linebreaks as eval can not handle strings with
             # linebreaks. This is only relevant for textareas.
             rule_str = rule_str.replace('\n', ' ').replace('\r', '')
+            print rule_str
             result = eval(rule_str)
             log.debug("Rule: %s -> %s" % (rule_str, result))
             return result
@@ -153,7 +154,7 @@ function_call = functor + LPAR + Optional(delimitedList(operand)) + RPAR
 option_list = LSBR + Optional(delimitedList(operand, combine=True)) + RSBR
 operand << (option_list | function_call | functor | real | integer | string | fieldname)
 term = operand + operator + operand | operand
-rule = term + operator + term | term
+rule = term + Optional(OneOrMore( operator + term))
 
 
 class Parser(object):
