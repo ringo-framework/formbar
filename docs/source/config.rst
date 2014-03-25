@@ -181,12 +181,18 @@ ignore      Another way to filter options. (Deprecated)
 Filtering can be done by defining a expression in the filter attribute. This
 expression is later evaluated by the rule system of formbar. The expression
 must evaluate to true and is evaluated for every option. The expression uses a
-special variable begining with ``%``.  Variables begining with % marks the
+two special variables begining with 
+
+1. ``%``.  Variables begining with % marks the
 name of an attribute of the current options item. The variable will be
 replaced by the value of the attribute of the current item in the option for
-every option before evaluating::
+every option before evaluating.
+2. ``@``. Varaible beginning with @ marks the name of an attribute of
+the parents form item.
+
+Both variables support accessing related items through the dot-syntax:: 
         
-        <renderer type="selection" filter="'foo' in %bar">
+        <renderer type="selection" filter="%foo eq @bar.baz">
 
 The ignore attribute offers another but deprecated way to filter options. It
 syntax differs from the filter expression. See source for more information.

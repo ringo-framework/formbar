@@ -720,12 +720,24 @@ class Field(object):
     def _build_filter_expr(self, expr_str, item):
         t = expr_str.split(" ")
         for x in t:
+            # % marks attributes of the current fields item in case of
+            # selections. Is used to iterate over the items in the selection.
             if x.startswith("%"):
                 key =  x.strip("%")
                 value = getattr(item, key)
+            # @ marks the item of the current fields form item.
+            elif x.startswith("@"):
+                key =  x.strip("@")
+                value = getattr(self._form._item, key)
+            else:
+                value = None
+
+            if value:
                 if isinstance(value, list):
                     value = "[%s]" % ", ".join("'%s'" % unicode(v) for v in value)
                     expr_str = expr_str.replace(x, value)
+                else:
+                    expr_str = expr_str.replace(x, "'%s'" % str(value))
         p = Parser()
         return p.parse(expr_str)
 
