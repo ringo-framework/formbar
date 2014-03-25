@@ -729,6 +729,20 @@ class Field(object):
             elif x.startswith("@"):
                 key =  x.strip("@")
                 value = getattr(self._form._item, key)
+            # $ special attributes of the current form.
+            elif x.startswith("$"):
+                tmpitem = None
+                value = None
+                tokens = x.split(".")
+                if len(tokens) > 1:
+                    key = tokens[0].strip("$")
+                    attribute = ".".join(tokens[1:])
+                    if key == "user":
+                        tmpitem = self._form._request.user
+                if tmpitem and not value:
+                    value = getattr(tmpitem, attribute)
+                    if hasattr(value, '__call__'):
+                        value = value()
             else:
                 value = None
 
@@ -739,6 +753,7 @@ class Field(object):
                 else:
                     expr_str = expr_str.replace(x, "'%s'" % str(value))
         p = Parser()
+        print expr_str
         return p.parse(expr_str)
 
     def _load_options_from_db(self):
