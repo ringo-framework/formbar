@@ -7,6 +7,14 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.6.5
+=====
+- Added support for the "value" attribute in the form configuration to define
+  a default value of the field. This attribute is also used for Infofields.
+- Added support for the "and" and "or" operators in rules.
+- Added another variable identifier "@" in filter definitons of selection
+  renderers. Variables beginning with "@" indicate a attribute in the forms item.
+
 0.6.4
 =====
 - Fixed rule evaluation. Allow " and ' in rules.
