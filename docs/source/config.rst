@@ -168,12 +168,13 @@ the options are automatically determined from the underlying data model::
            <option value="3">Option 3</option>
         </renderer>
 
-=========   ===========
-Attribute   Description
-=========   ===========
-filter      Expression which must evaluate to True if the option shoul be shown in the Dropdown.
-ignore      Another way to filter options. (Deprecated)
-=========   ===========
+=============== ===========
+Attribute       Description
+=============== ===========
+filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+ignore          Another way to filter options. (Deprecated)
+=============== ===========
 
 .. note::
    Filtering is only possible for SQLAlchemy mapped items.
