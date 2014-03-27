@@ -753,7 +753,6 @@ class Field(object):
                 else:
                     expr_str = expr_str.replace(x, "'%s'" % str(value))
         p = Parser()
-        print expr_str
         return p.parse(expr_str)
 
     def _load_options_from_db(self):

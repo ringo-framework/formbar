@@ -85,7 +85,6 @@ class Rule(object):
             # Replace all linebreaks as eval can not handle strings with
             # linebreaks. This is only relevant for textareas.
             rule_str = rule_str.replace('\n', ' ').replace('\r', '')
-            print rule_str
             result = eval(rule_str)
             log.debug("Rule: %s -> %s" % (rule_str, result))
             return result
