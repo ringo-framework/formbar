@@ -69,6 +69,7 @@ number      A small number which is rendered in front of the label.
 type        Defines the python datatype which will be used on deserialisation of the submitted value. Defines the datatype of the model. Possible values are ``string`` (default), ``integer``, ``float``, ``date``, ``datetime``.
 css         Value will be rendered as class attribute in the rendered field.
 expr        Expression which is used to calculate the value of the field.
+value       Default value of the field. Supports expressions. The default value might get overwritten on rendering.
 readonly    Flag to indicate that the field should be rendered as readonly field. Default is ``false``.
 required    Flag to indicate that the is a required field. Default is ``false``.
 desired     Flag to indicate that the is a desired field. Default is ``false``.
@@ -150,7 +151,9 @@ Infofield
 `````````
 The info field renderer is used to render the value of the entity as
 textual information. This renderer is usually used to display calculated
-values of the entity. See the ``expr`` attribute of the :ref:`Entity`.
+values of the entity. See the ``expr`` attribute of the :ref:`Entity`. If you
+simply want to display a static value comming from on of the items attribute
+you can also use the ``value`` attribute.
 Appearance is same as a readonly field::
 
         <renderer type="infofield"/>
@@ -158,15 +161,19 @@ Appearance is same as a readonly field::
 Selection
 `````````
 The selection renderer is used to render a selection list fields. Such a field
-is capable to select multiple optiones. The renderer defines also the options
+is capable to select multiple options. The renderer defines also the options
 which should be available in the dropdown menu. For SQLAlchemy mapped items
 the options are automatically determined from the underlying data model::
 
-        <renderer type="selection">
-           <option value="1">Option 1</option>
-           <option value="2">Option 2</option>
-           <option value="3">Option 3</option>
-        </renderer>
+        <entity
+          <renderer type="selection"/>
+          <!-- Note, that the options are part of the entity! -->
+          <options>
+             <option value="1">Option 1</option>
+             <option value="2">Option 2</option>
+             <option value="3">Option 3</option>
+          </options>
+        </entity
 
 =============== ===========
 Attribute       Description
