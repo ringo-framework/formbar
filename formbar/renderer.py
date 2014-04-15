@@ -42,6 +42,8 @@ def get_renderer(field, translate):
             return HiddenFieldRenderer(field, translate)
         elif renderer.render_type == "html":
             return HTMLRenderer(field, translate)
+        elif renderer.render_type == "formbareditor":
+            return FormbarEditorRenderer(field, translate)
     else:
         # Try to determine the datatype of the field and set approriate
         # renderer.
