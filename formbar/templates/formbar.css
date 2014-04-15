@@ -11,6 +11,11 @@
   -moz-box-sizing: border-box;
 }
 
+.formbar-preview-window {
+    margin-top: 5px;
+    padding: 5px;
+    background-color: #ffd9d9;
+}
 .formbar-form textarea {
   height: auto !important;
 }
