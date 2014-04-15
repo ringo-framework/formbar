@@ -7,6 +7,13 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.7.0
+=====
+- Added new renderer to render a editor for formbar forms. The editor support
+  depends on a service which will render the form. This is not part of the
+  editor. See ringo version > 0.12.0 for an example. Renderer support a live
+  preview of the form.
+
 0.6.5
 =====
 - Added support for the "value" attribute in the form configuration to define
