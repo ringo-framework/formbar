@@ -274,7 +274,8 @@ class Form(object):
     def add_validator(self, validator):
         return self.external_validators.append(validator)
 
-    def render(self, values={}, page=0, buttons=True, previous_values=None):
+    def render(self, values={}, page=0, buttons=True,
+               previous_values=None, outline=True):
         """Returns the rendererd form as an HTML string.
 
         :values: Dictionary with values to be prefilled/overwritten in
@@ -282,6 +283,8 @@ class Form(object):
         :previous_values: Dictionary of values of the last saved state
         of the item. If provided a diff between the current and previous
         values will be renderered in readonly mode.
+        :outline: Boolean flag to indicate that the outline for pages
+        should be rendered. Defaults to true.
         :returns: Rendered form.
 
         """
@@ -300,7 +303,8 @@ class Form(object):
 
         renderer = FormRenderer(self, self._translate)
         form = renderer.render(values=values, buttons=buttons,
-                               previous_values=previous_values)
+                               previous_values=previous_values,
+                               outline=outline)
         # TODO: Can happen: Error while parsing form in htmlfill: %s. Hint See
         # 'https://github.com/formencode/formencode/issues/57desc (ti)
         # <2014-03-21 10:29> 

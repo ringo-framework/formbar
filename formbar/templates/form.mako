@@ -1,6 +1,6 @@
 ## Render pages
 <div class="row">
-% if len(form._config.get_pages()) > 0:
+% if render_outline and len(form._config.get_pages()) > 0:
   <div class="col-sm-3">
     <div>
       <div class="panel panel-default formbar-outline">
@@ -36,7 +36,9 @@
 <%def name="render_recursive(elem)">
   % for child in elem:
     % if len(child) > 0:
-      % if child.tag == "row":
+      % if child.tag == "page" and not render_outline:
+        <h3>${child.attrib.get("label")}</h3>
+      % elif child.tag == "row":
         <div class="row row-fluid">
       % elif child.tag == "col":
         <% width = child.attrib.get('width', (12/len(elem))) %>

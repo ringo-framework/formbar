@@ -91,7 +91,8 @@ class FormRenderer(Renderer):
         self.translate = translate
         self.template = template_lookup.get_template("form.mako")
 
-    def render(self, buttons=True, values=None, previous_values=None):
+    def render(self, buttons=True, values=None,
+               previous_values=None, outline=True):
         """Returns the rendered form as string.
 
         :buttons: Boolean flag to indicate if the form buttons should be
@@ -99,6 +100,8 @@ class FormRenderer(Renderer):
         :previous_values: Dictionary of values of the last saved state
         of the item. If provided a diff between the current and previous
         values will be renderered in readonly mode.
+        :outline: Boolean flag to indicate that the outline for pages
+        should be rendered. Defaults to true.
         :returns: rendered form.
 
         """
@@ -108,7 +111,7 @@ class FormRenderer(Renderer):
             previous_values = {}
         html = []
         html.append(self._render_form_start())
-        html.append(self._render_form_body(values, previous_values))
+        html.append(self._render_form_body(values, previous_values, outline))
         if not self._form._config.readonly and buttons:
             html.append(self._render_form_buttons())
         html.append(self._render_form_end())
@@ -133,9 +136,10 @@ class FormRenderer(Renderer):
                         % self._form._csrf_token)
         return "".join(html)
 
-    def _render_form_body(self, values, previous_values):
+    def _render_form_body(self, values, previous_values, render_outline):
         values = {'form': self._form,
                   '_': self.translate,
+                  'render_outline': render_outline,
                   'previous_values': previous_values,
                   'values': values}
         return self.template.render(**values)
