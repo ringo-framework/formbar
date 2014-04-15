@@ -280,6 +280,22 @@ will be uses as some kind of header to the html part.
 
 .. _form:
 
+FormbarFormEditor
+`````````````````
+Use this renderer if you want to render a editor for formbar forms. The
+Editor will have a preview window which shows the result of the
+rendering of the form. If rendering fails, the preview will show the
+errors which happened while rendering::
+
+        <renderer type="formbareditor" url="foo/bar" rows="20"/>
+
+=========   ===========
+Attribute   Description
+=========   ===========
+rows        Number of rows of the texteare. Default is 3.
+url         URL which is called to renderer the form.
+=========   ===========
+
 Form
 ====
 The form directive is the place where the form definition and layout happens.
