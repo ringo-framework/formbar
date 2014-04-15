@@ -307,7 +307,7 @@ class Form(object):
                                outline=outline)
         # TODO: Can happen: Error while parsing form in htmlfill: %s. Hint See
         # 'https://github.com/formencode/formencode/issues/57desc (ti)
-        # <2014-03-21 10:29> 
+        # <2014-03-21 10:29>
         return htmlfill.render(form, values)
 
     def _add_error(self, fieldname, error):
@@ -764,7 +764,16 @@ class Field(object):
         options = []
         if self.get_type() == 'manytoone':
             options.append(("None", "", True))
-        clazz = self._get_sa_mapped_class()
+        try:
+            clazz = self._get_sa_mapped_class()
+        except:
+            # Catch exception here. This exception can happen when
+            # rendering the form in the preview of the formeditor. In
+            # this case the item is None and will fail to get the mapped
+            # class.
+            log.error("Can not get a mappend class for '%s' "
+                      "to load the option from db" % self.name)
+            return options
         items = self._form._dbsession.query(clazz)
         for item in items:
             if self._config.renderer and self._config.renderer.filter:
