@@ -375,6 +375,14 @@ class SelectionFieldRenderer(FieldRenderer):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("selection.mako")
 
+class FormbarEditorRenderer(FieldRenderer):
+    """A Renderer to render the formbar editor widget used to edit
+    formbar form definitons."""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("formbareditor.mako")
+
 # TODO: Check which of the following Renderers are needed (ti). It looks
 # like they are outdated as they are using old FormAlchemy fa_*.mako
 # templates <2013-10-11 22:31>
