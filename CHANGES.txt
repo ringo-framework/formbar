@@ -13,6 +13,8 @@ TODO
   depends on a service which will render the form. This is not part of the
   editor. See ringo version > 0.12.0 for an example. Renderer support a live
   preview of the form.
+- Removed injected "eval_url" in the formbar.js file. The js file is now
+  static. The eval url must now provided on form initialisation.
 
 0.6.5
 =====

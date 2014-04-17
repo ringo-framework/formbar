@@ -18,9 +18,8 @@ pages = [x.attrib.get('id') for x in field._form._config._parent.get_elements("f
         % endif
       </div>
     % else:
-      <form id="" action="${renderer.url}" target="preview-iframe">
-        <textarea class="form-control" id="${field.id}" name="${field.name}" rows="${field.renderer.rows}">${field.get_value()}</textarea>
-      </form>
+      <textarea class="form-control" id="${field.id}" name="${field.name}" rows="${field.renderer.rows}">${field.get_value()}</textarea>
+      <div id="formbareditor" style="height:350px;position:relative;"></div>
     % endif
   </div>
   %for page in pages:
@@ -32,20 +31,42 @@ pages = [x.attrib.get('id') for x in field._form._config._parent.get_elements("f
 <p><small><strong>Note:</strong> ${_('This is just a basic editor for formbar forms. The preview of the forms will have no outline, no dynamic nor will show application specific fields. Instead of those the default textfield will be rendered.')} </small></p>
 
 <script>
-//$('#${field.id}').focus(function(e) {
-//  var definition = $('#${field.id}').val();
-//  var pages = $(definition).find("form");
-//  alert(pages.length);
-//});
+ace.require("ace/ext/language_tools");
+##//Add custom snippets
+##ace.config.loadModule('ace/ext/language_tools', function () {
+##  var snippetManager = ace.require('ace/snippets').snippetManager; 
+##  ace.config.loadModule('ace/snippets/xml', function(m) {
+##    if (m) { 
+##      m.snippets.push({ 
+##        content: '${"${1:test}"}.this is custom snippet text!', 
+##        tabTrigger: 'xxx'
+##      });
+##      snippetManager.register(m.snippets, m.scope); 
+##    }
+##  });
+##});
+
+// Initialisation of the formbar editor
+var editor = ace.edit("formbareditor");
+editor.getSession().setMode("ace/mode/xml");
+editor.getSession().setTabSize(2);
+editor.setOptions({
+  enableBasicAutocompletion: true,
+  enableSnippets: true
+});
+
+// Handle exchanging values between the ace editor window and the textarea
+// field.
+var textarea = $('textarea[name="${field.name}"]').hide();
+editor.getSession().setValue(textarea.val());
+editor.getSession().on('change', function(){
+  textarea.val(editor.getSession().getValue());
+});
+
 $('.formbar-preview-tab').click(function(e) {
   var definition = getFormDefinition();
   var tmp = $(this).attr("id").split("-");
   var formid = tmp[tmp.length-1];
-  // Dynamically create a form to submit the form definition
-  // var tmpform = $('<form action="${renderer.url}" method="POST" target="_blank"></form>')
-  // tmpform.append($('<input type="hidden" name="definition"/>').attr("value", getFormDefinition()))
-  // tmpform.append($('<input type="hidden" name="csrf_token"/>').attr("value", "${field._form._request.session.get_csrf_token()}"))
-  // tmpform.appendTo('body').submit().remove();
   var renderered_form = renderPreview(definition, formid); 
   $('#formbar-preview-'+formid).html(renderered_form);
 
@@ -74,5 +95,4 @@ function renderPreview(definition, formid) {
   });
   return result;
 }
-
 </script>
