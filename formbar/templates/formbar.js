@@ -50,7 +50,9 @@ $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form 
 function evaluate(element) {
     var expr = element['attributes'][0].value;
     var tokens = expr.split(" ");
-    var eval_url = ${eval_url};
+
+    var form = $(element).closest("form");
+    var eval_url = $(form).attr("evalurl"); 
 
     var eval_expr = "";
     // Build evaluation string
