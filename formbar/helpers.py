@@ -1,8 +1,8 @@
 import os
 from mako.lookup import TemplateLookup
-from formbar import template_dir
+from formbar import static_dir
 
-template_lookup = TemplateLookup(directories=[template_dir])
+template_lookup = TemplateLookup(directories=[static_dir])
 
 
 def get_css():

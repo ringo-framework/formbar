@@ -8,5 +8,6 @@ logging.basicConfig()
 
 base_dir = pkg_resources.get_distribution("formbar").location
 template_dir = os.path.join(base_dir, 'formbar', 'templates')
+static_dir = os.path.join(base_dir, 'formbar', 'static')
 test_dir = os.path.join(base_dir, 'test')
 example_dir = os.path.join(base_dir, 'examples')
