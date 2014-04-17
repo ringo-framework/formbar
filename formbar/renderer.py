@@ -126,10 +126,12 @@ class FormRenderer(Renderer):
                 'method': self._form._config.method,
                 'autocomplete': self._form._config.autocomplete,
                 'enctype': self._form._config.enctype,
+                'evalurl': self._form._eval_url or "",
                 '_': self.translate}
         html.append('<form id="%(id)s" class="%(css)s" role="form" '
                     'method="%(method)s" action="%(action)s" '
-                    'autocomplete="%(autocomplete)s" enctype="%(enctype)s">' % attr)
+                    'autocomplete="%(autocomplete)s" enctype="%(enctype)s" '
+                    'evalurl="%(evalurl)s">' % attr)
         # Add hidden field with csrf_token if this is not None.
         if self._form._csrf_token:
             html.append('<input type="hidden" name="csrf_token" value="%s"/>'
