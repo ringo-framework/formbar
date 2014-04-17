@@ -15,6 +15,7 @@ TODO
   preview of the form.
 - Removed injected "eval_url" in the formbar.js file. The js file is now
   static. The eval url must now provided on form initialisation.
+- Use ACE editor for formbar editor. (http://ace.c9.io/)
 
 0.6.5
 =====
