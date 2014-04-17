@@ -1,16 +1,15 @@
 import os
-from mako.lookup import TemplateLookup
 from formbar import static_dir
-
-template_lookup = TemplateLookup(directories=[static_dir])
 
 def get_css_files():
     files = ['css/datepicker3.css', 'css/formbar.css']
     css = []
     values = {}
     for filename in files:
-        template = template_lookup.get_template(filename)
-        css.append((filename, template.render(**values)))
+        filepath = os.path.join(static_dir, filename)
+        with open(filepath, 'r') as f:
+            content = f.read()
+        css.append((filename, content))
     return css
 
 def get_js_files():
