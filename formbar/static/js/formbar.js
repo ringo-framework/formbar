@@ -1,51 +1,54 @@
 /* ATTENTION: This file is created with mako and includes some attribute which
  * are inserted dynamically */
 
-$('.formbar-tooltip').tooltip();
-$('.formbar-datepicker').datepicker({
-    format: 'yyyy-mm-dd',
-    todayBtn: "linked",
-});
+$( document ).ready(function() {
+    $('.formbar-tooltip').tooltip();
+    $('.formbar-datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        todayBtn: "linked",
+    });
 
-/*
-* Set hidden form field "formbar-page" to the value of the currently
-* selected page. This value will be used to set the currently selected
-* page when the form ist rendered
-*/
-$('div.formbar-form form div.tabbable ul.nav li a').click(function() {
-  var page = $(this).attr('href').split('#p')[1];
-  var item = $(this).attr('formbar-item');
-  var itemid = $(this).attr('formbar-itemid');
-  $.get('/set_current_form_page', 
-        {
-            page: page,
-            item: item,
-            itemid: itemid
-        },
-        function(data, status) {});
-});
+    /*
+    * Set hidden form field "formbar-page" to the value of the currently
+    * selected page. This value will be used to set the currently selected
+    * page when the form ist rendered
+    */
+    $('div.formbar-form form div.tabbable ul.nav li a').click(function() {
+      var page = $(this).attr('href').split('#p')[1];
+      var item = $(this).attr('formbar-item');
+      var itemid = $(this).attr('formbar-itemid');
+      $.get('/set_current_form_page', 
+            {
+                page: page,
+                item: item,
+                itemid: itemid
+            },
+            function(data, status) {});
+    });
 
-$('div.formbar-outline a').click(function() {
-  var page = $(this).attr('href').split('#p')[1];
-  var item = $(this).attr('formbar-item');
-  var itemid = $(this).attr('formbar-itemid');
-  $.get('/set_current_form_page', 
-        {
-            page: page,
-            item: item,
-            itemid: itemid
-        },
-        function(data, status) {});
-  $('.formbar-page').hide();
-  $('#formbar-page-'+page).show();
+    $('div.formbar-outline a').click(function() {
+      var page = $(this).attr('href').split('#p')[1];
+      var item = $(this).attr('formbar-item');
+      var itemid = $(this).attr('formbar-itemid');
+      $.get('/set_current_form_page', 
+            {
+                page: page,
+                item: item,
+                itemid: itemid
+            },
+            function(data, status) {});
+      $('.formbar-page').hide();
+      $('#formbar-page-'+page).show();
+    });
+
+    /*
+     * Evaluate when values in the form changes
+    */
+    evaluateFields();
+    evaluateConditionals();
+    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateFields);
+    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateConditionals);
 });
-/*
- * Evaluate when values in the form changes
-*/
-evaluateFields();
-evaluateConditionals();
-$('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateFields);
-$('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateConditionals);
 
 function evaluate(element) {
     var expr = element['attributes'][0].value;
