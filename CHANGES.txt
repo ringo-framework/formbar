@@ -7,6 +7,10 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.7.1
+=====
+- Set value of the field always on rendering (Fixes issue with dropdown fields in view model
+
 0.7.0
 =====
 - Added new renderer to render a editor for formbar forms. The editor support
