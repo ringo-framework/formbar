@@ -281,7 +281,7 @@ class Form(object):
         return self.external_validators.append(validator)
 
     def render(self, values={}, page=0, buttons=True,
-               previous_values=None, outline=True):
+               previous_values={}, outline=True):
         """Returns the rendererd form as an HTML string.
 
         :values: Dictionary with values to be prefilled/overwritten in
