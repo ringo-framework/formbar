@@ -142,6 +142,20 @@ class Form(object):
         """This is the initial data loaded from the given item. Used to
         render the readonly forms"""
 
+    def _set_current_field_data(self, data):
+        for key in self.fields:
+            value = data.get(key)
+            if value or isinstance(value, int):
+                field = self.fields[key]
+                field.set_value(value)
+
+    def _set_previous_field_data(self, data):
+        for key in self.fields:
+            value = data.get(key)
+            if value or isinstance(value, int):
+                field = self.fields[key]
+                field.set_previous_value(value)
+
     def _get_data_from_item(self):
         values = {}
         if not self._item:
@@ -303,6 +317,10 @@ class Form(object):
         # Merge the items_values with the extra provided values. Extra
         # values will overwrite the item_values.
         values = dict(item_values.items() + values.items())
+
+        # Set current and previous values of the fields in the form.
+        self._set_current_field_data(values)
+        self._set_previous_field_data(previous_values)
 
         # Add csrf_token to the values dictionary
         values['csrf_token'] = self._csrf_token
@@ -636,6 +654,7 @@ class Field(object):
         self.renderer = get_renderer(self, translate)
         self._errors = []
         self._warnings = []
+
         # Set default value
         value = getattr(self._config, "value")
         if value and value.startswith("$"):
@@ -649,6 +668,7 @@ class Field(object):
                 log.error("Error while accessing attribute '%s': %s" % (value, e))
                 value = None
         self.value = value
+
         self.previous_value = None
         """Value as string of the field. Will be set on rendering the
         form"""
