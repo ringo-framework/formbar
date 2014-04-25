@@ -326,9 +326,7 @@ class Form(object):
         values['csrf_token'] = self._csrf_token
 
         renderer = FormRenderer(self, self._translate)
-        form = renderer.render(values=values, buttons=buttons,
-                               previous_values=previous_values,
-                               outline=outline)
+        form = renderer.render(buttons=buttons, outline=outline)
         # TODO: Can happen: Error while parsing form in htmlfill: %s. Hint See
         # 'https://github.com/formencode/formencode/issues/57desc (ti)
         # <2014-03-21 10:29>
