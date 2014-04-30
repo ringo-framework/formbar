@@ -10,6 +10,8 @@ TODO
 0.7.1
 =====
 - Set value of the field always on rendering (Fixes issue with dropdown fields in view model
+- Split loading and filtering of options. Make filtering option available as
+  method for external applications.
 
 0.7.0
 =====
