@@ -799,18 +799,22 @@ class Field(object):
                       "to load the option from db" % self.name)
             return options
         items = self._form._dbsession.query(clazz)
-        for item in items:
+        return items
+
+    def filter_options(self, options):
+        filtered_options = []
+        for option in options:
             if self._config.renderer and self._config.renderer.filter:
                 expr = self._build_filter_expr(
-                    self._config.renderer.filter, item)
+                    self._config.renderer.filter, option)
                 rule = Rule(expr)
                 if rule.evaluate({}):
-                    options.append((item, item.id, True))
+                    filtered_options.append((option, option.id, True))
                 else:
-                    options.append((item, item.id, False))
+                    filtered_options.append((option, option.id, False))
             else:
-                options.append((item, item.id, True))
-        return options
+                filtered_options.append((option, option.id, True))
+        return filtered_options
 
     def get_options(self):
         """Will return a list of tuples containing the options of the
@@ -837,7 +841,7 @@ class Field(object):
                 # TODO: Filter user defined options too (ti) <2014-02-19 23:46>
                 options.append((option[0], option[1], True))
         elif self._form._dbsession:
-            return self._load_options_from_db()
+            self.filter_options(self._load_options_from_db())
         else:
             # TODO: Try to get the session from the item. Ther must be
             # somewhere the already bound session. (torsten) <2013-07-23 00:27>
