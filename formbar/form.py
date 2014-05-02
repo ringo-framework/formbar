@@ -841,7 +841,7 @@ class Field(object):
                 # TODO: Filter user defined options too (ti) <2014-02-19 23:46>
                 options.append((option[0], option[1], True))
         elif self._form._dbsession:
-            self.filter_options(self._load_options_from_db())
+            options = self.filter_options(self._load_options_from_db())
         else:
             # TODO: Try to get the session from the item. Ther must be
             # somewhere the already bound session. (torsten) <2013-07-23 00:27>
