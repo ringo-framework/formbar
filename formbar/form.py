@@ -785,9 +785,6 @@ class Field(object):
 
     def _load_options_from_db(self):
         # Get mapped clazz for the field
-        options = []
-        if self.get_type() == 'manytoone':
-            options.append(("None", "", True))
         try:
             clazz = self._get_sa_mapped_class()
         except:
@@ -835,13 +832,15 @@ class Field(object):
         the SQLAlchemy model and which are loaded from the database.
         """
         options = []
+        if self.get_type() == 'manytoone':
+            options.append(("None", "", True))
         user_defined_options = self._config.options
         if user_defined_options:
             for option in user_defined_options:
                 # TODO: Filter user defined options too (ti) <2014-02-19 23:46>
                 options.append((option[0], option[1], True))
         elif self._form._dbsession:
-            options = self.filter_options(self._load_options_from_db())
+            options.extend(self.filter_options(self._load_options_from_db()))
         else:
             # TODO: Try to get the session from the item. Ther must be
             # somewhere the already bound session. (torsten) <2013-07-23 00:27>
