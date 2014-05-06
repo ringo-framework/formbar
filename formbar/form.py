@@ -787,6 +787,7 @@ class Field(object):
         # Get mapped clazz for the field
         try:
             clazz = self._get_sa_mapped_class()
+            return self._form._dbsession.query(clazz)
         except:
             # Catch exception here. This exception can happen when
             # rendering the form in the preview of the formeditor. In
@@ -794,9 +795,7 @@ class Field(object):
             # class.
             log.error("Can not get a mappend class for '%s' "
                       "to load the option from db" % self.name)
-            return options
-        items = self._form._dbsession.query(clazz)
-        return items
+        return []
 
     def filter_options(self, options):
         filtered_options = []
