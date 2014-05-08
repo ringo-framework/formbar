@@ -143,10 +143,27 @@ class FormRenderer(Renderer):
             html.append('<div class="col-sm-9 span9 button-pane">')
         else:
             html.append('<div class="col-sm-12 span12 button-pane well-small">')
-        html.append('<button type="submit" '
-                    'class="btn btn-default">%s</button>' % 'Submit')
-        html.append('<button type="reset" '
-                    'class="btn btn-default">%s</button>' % 'Reset')
+
+        # Render default buttons if no buttons have been defined for the
+        # form.
+        if len(self._form._config._buttons) == 0:
+            html.append('<button type="submit" '
+                        'class="btn btn-default">%s</button>' % 'Submit')
+            html.append('<button type="reset" '
+                        'class="btn btn-default">%s</button>' % 'Reset')
+        else:
+            for b in self._form._config._buttons:
+                attr = {
+                    'type': b.attrib.get("type") or "submit",
+                    'value': b.attrib.get("value") or "",
+                    'class': "btn btn-%s" % (b.attrib.get("class") or "default"),
+                    'label': b.text or "XXX"
+                }
+                html.append('<button type="%(type)s" name="_%(type)s"' 
+                            ' value="%(value)s" class="%(class)s">'
+                            '%(label)s</button>'
+                            % (attr))
+        # Else render defined buttons.
         html.append('</div>')
         html.append('</div>')
         return "".join(html)

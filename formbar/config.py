@@ -153,10 +153,21 @@ class Form(Config):
         self._initialized = False
         """Flag to indicate that the form has been setup"""
 
+        self._buttons = self.get_buttons()
+        """Buttons of the form"""
         self._fields = self.get_fields()
         self._initialized = True
         """Dictionary with all fields in the form. The name of the field is the
         key in the dictionary"""
+
+    def get_buttons(self, root=None):
+        # Get all Buttons for the form.
+        buttons = []
+        if root is None:
+            root = self._tree
+        for b in root.findall('.//button'):
+            buttons.append(b)
+        return buttons
 
     def get_pages(self, root=None):
         # Get all fields for the form.

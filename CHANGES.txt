@@ -12,6 +12,8 @@ TODO
 - Set value of the field always on rendering (Fixes issue with dropdown fields in view model
 - Split loading and filtering of options. Make filtering option available as
   method for external applications.
+- Add support for defining buttons in a form. This is optional. If no form
+  section is defined the default buttons will be added.
 
 0.7.0
 =====
