@@ -326,6 +326,29 @@ action         URL where is submitted data is sent to. Default to the current UR
 enctype        Encrytion used while sending the data. Defaults to ``application/x-www-form-urlencoded``. Use ``multipart/form-data`` if you plan to submit file uploads.
 ============   ===========
 
+Buttons
+-------
+Optional directive within the form tag to configure custom buttons for the
+form. If not defined the default Submit and Reset Buttons are renderered::
+
+        <buttons>
+          <button type="submit" value="delete" name="_submit" class="warning" icon="glyphicon glyphicon-delete">Delete</button>
+          ...
+        </buttons>
+
+Buttons are rendererd at the bottom of the form element.
+The first button in the definition will be the first button on the left side.
+
+============   ===========
+Attribute      Description
+============   ===========
+type           Optional. Type of action the button will trigger on the form (submit, reset). Defaults to ``submit``
+value          Optional. Value which is submitted in the form. Defaults to the buttons text.
+name           Optional. Name under which the value will be available in the submitted data Defaults to ``_$type``.
+class          Optional. CSS class which will be added to the button.
+icon           Optional. Definition of glyphicons which will be displayed before the buttons label.
+============   ===========
+
 Page
 ----
 Use pages if you want to divide your form into multiple pages. Pages are
