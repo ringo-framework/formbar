@@ -153,15 +153,20 @@ class FormRenderer(Renderer):
                         'class="btn btn-default">%s</button>' % 'Reset')
         else:
             for b in self._form._config._buttons:
+                if b.attrib.get("icon"):
+                    icon = '<i class="%s"/>' % b.attrib.get("icon")
+                else:
+                    icon = ""
                 attr = {
                     'type': b.attrib.get("type") or "submit",
                     'value': b.attrib.get("value") or "",
                     'class': "btn btn-%s" % (b.attrib.get("class") or "default"),
+                    'icon': icon,
                     'label': b.text or "XXX"
                 }
                 html.append('<button type="%(type)s" name="_%(type)s"' 
                             ' value="%(value)s" class="%(class)s">'
-                            '%(label)s</button>'
+                            '%(icon)s %(label)s</button>'
                             % (attr))
         # Else render defined buttons.
         html.append('</div>')
