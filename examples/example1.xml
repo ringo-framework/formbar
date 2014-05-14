@@ -86,6 +86,9 @@
       <row>
         <col><field ref="e8"/></col>
       </row>
+      <row>
+        <col><field ref="e10"/></col>
+      </row>
       </fieldset>
       <fieldset label="Other">
       <row>

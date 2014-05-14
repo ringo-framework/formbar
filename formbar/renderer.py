@@ -33,6 +33,8 @@ def get_renderer(field, translate):
             return DropdownFieldRenderer(field, translate)
         elif renderer.render_type == "selection":
             return SelectionFieldRenderer(field, translate)
+        elif renderer.render_type == "checkbox":
+            return CheckboxFieldRenderer(field, translate)
         elif renderer.render_type == "datepicker":
             return DateFieldRenderer(field, translate)
         elif renderer.render_type == "password":
@@ -398,6 +400,13 @@ class SelectionFieldRenderer(OptionFieldRenderer):
         OptionFieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("selection.mako")
 
+class CheckboxFieldRenderer(OptionFieldRenderer):
+    """A Renderer to render selection field"""
+
+    def __init__(self, field, translate):
+        OptionFieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("checkbox.mako")
+
 class FormbarEditorRenderer(FieldRenderer):
     """A Renderer to render the formbar editor widget used to edit
     formbar form definitons."""
@@ -416,16 +425,6 @@ class ListFieldRenderer(FieldRenderer):
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("fa_field.mako")
-
-
-class CheckboxFieldRenderer(FieldRenderer):
-    """A Renderer to render checkboxes"""
-
-    def __init__(self, field, translate):
-        FieldRenderer.__init__(self, field, translate)
-        self.template = template_lookup.get_template("fa_field.mako")
-
-
 class RadioFieldRenderer(FieldRenderer):
     """A Renderer to render radio boxes"""
 
