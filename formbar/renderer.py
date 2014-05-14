@@ -366,17 +366,14 @@ class HTMLRenderer(FieldRenderer):
         return "".join(html)
 
 
-# TODO: Use a new superclass for the following two renderers as they
-# deal not only with one single value but with multiple selectable
-# values. Implement filtering of items here if possible. See Plorma
-# implementation of the ListingFieldRenderer to see how this ignoring is
-# implemented. (ti) <2013-10-11 22:39>
-class DropdownFieldRenderer(FieldRenderer):
-    """A Renderer to render dropdown list"""
-
+class OptionFieldRenderer(FieldRenderer):
+    """Superclass for fields element which supports selecting one or
+    more options from a selection"""
+    # TODO: Implement filtering of items here if possible. See Plorma
+    # implementation of the ListingFieldRenderer to see how this
+    # ignoring is implemented. (ti) <2013-10-11 22:39>
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
-        self.template = template_lookup.get_template("dropdown.mako")
         self._cache_options = None
 
     def _get_template_values(self):
@@ -387,11 +384,18 @@ class DropdownFieldRenderer(FieldRenderer):
         values['options'] = self._cache_options
         return values
 
-class SelectionFieldRenderer(FieldRenderer):
+class DropdownFieldRenderer(OptionFieldRenderer):
+    """A Renderer to render dropdown list"""
+
+    def __init__(self, field, translate):
+        OptionFieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("dropdown.mako")
+
+class SelectionFieldRenderer(OptionFieldRenderer):
     """A Renderer to render selection field"""
 
     def __init__(self, field, translate):
-        FieldRenderer.__init__(self, field, translate)
+        OptionFieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("selection.mako")
 
 class FormbarEditorRenderer(FieldRenderer):
