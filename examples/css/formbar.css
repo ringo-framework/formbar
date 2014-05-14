@@ -1,0 +1,139 @@
+/* Formbar Style */
+
+/* Make all field elements expand to 100% on default */
+.formbar-form input, .formbar-form select,.formbar-form textarea {
+  width: 100%;
+  /* Fix width and height of the fields by setting it to the border-box modell
+   * (CSS3) Does not work in IE
+  height: 30px !important; */
+  box-sizing: border-box;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing: border-box;
+}
+
+.formbar-preview-window {
+    margin-top: 5px;
+    padding: 5px;
+    background-color: #ffd9d9;
+}
+.formbar-form textarea {
+  height: auto !important;
+}
+
+label {
+    display: inline;
+}
+
+.formbar-form table td {
+  vertical-align: middle;
+}
+
+.formbar-form table td input {
+  margin-bottom: 0px;
+}
+
+.formbar-form fieldset fieldset fieldset legend {
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.formbar-form fieldset fieldset legend {
+  font-size: 17px;
+  margin-bottom: 17px;
+}
+
+.formbar-form fieldset legend {
+  font-size: 21px;
+  margin-bottom: 20px;
+}
+
+.formbar-form table td div.readonlyfield {
+  margin-bottom: 0px;
+}
+
+select[multiple], textarea {
+  /* Reset heigt of the field elements which have been modified by the
+   * border-box modell */
+  height: auto !important;
+}
+
+div.readonlyfield {
+  border-radius: 3px 3px 3px 3px;
+  background-color: #e0e0e0;
+  padding: 8px;
+  margin-bottom: 10px;
+  min-height: 14px;
+}
+
+/* Helptexts */
+.text-help {
+  position: relative;
+  top: 3px;
+  font-size: 0.8em;
+  color: #707070;
+}
+
+.text-error, .help-block {
+  position: relative;
+  font-size: 0.8em;
+  margin-bottom: 0px;
+}
+
+.formbar-new-value {
+    background: #edff76;
+}
+
+.formbar-del-value {
+    text-decoration: line-through;
+}
+
+/* Button */
+button {
+  margin-right: 15px;
+}
+
+.button-pane {
+  margin: 10px 0px;
+}
+
+.formbar-outline {
+  margin-top: 10px;
+}
+
+.formbar-page {
+  display: none;
+}
+
+.formbar-page h2 {
+  margin-top: 5px;
+}
+
+.active {
+  display: block;
+}
+
+// Media depended affix CSS.
+@media(max-width:767px){
+  .formbar-outline.affix {
+    position: static;
+    width: 100%;
+    top: 0;
+    z-index:10;
+  }
+}
+@media(min-width:768px){
+  .formbar-outline.affix {
+    position: fixed;
+    top: 0;
+    z-index:10;
+    width: 126px;
+  }
+}
+@media(min-width:992px){
+  .formbar-outline.affix {
+    width: 213px;
+}
+@media(min-width:1200px){
+  .formbar-outline.affix {
+    width: 290px;
+}

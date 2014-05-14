@@ -99,6 +99,8 @@ if __name__ == '__main__':
     config.add_view(example_1, route_name='ex1')
     config.add_view(example_2, route_name='ex2')
     config.add_static_view('bootstrap', 'bootstrap', cache_max_age=3600)
+    config.add_static_view('css', 'css', cache_max_age=3600)
+    config.add_static_view('js', 'js', cache_max_age=3600)
     app = config.make_wsgi_app()
     server = make_server('0.0.0.0', 8080, app)
     print "Server is available on http://0.0.0.0:8080"
