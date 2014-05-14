@@ -4,7 +4,7 @@
   </div>
 % else:
   <select class="form-control" id="${field.id}" name="${field.name}" size="5" multiple>
-    % for option in field.get_options():
+    % for option in options:
       ## Depending if the options has passed the configured filter the
       ## option will be visible or hidden
       % if option[2]:
