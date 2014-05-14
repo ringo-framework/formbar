@@ -10,6 +10,7 @@ TODO
 0.7.2
 =====
 - Changed Bootstrap version of demoserver to ver. 3.
+- Changed example form. Show all possibilities in one form.
 
 0.7.1
 =====

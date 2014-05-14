@@ -27,8 +27,7 @@
       </div>
       <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-          <li class="active"><a href="example1">Example 1</a></li>
-          <li><a href="example2">Example 2</a></li>
+          <li class="active"><a href="example1">Examples</a></li>
         </ul>
       </div><!--/.nav-collapse -->
     </div>
