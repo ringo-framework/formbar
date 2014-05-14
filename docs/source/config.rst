@@ -165,7 +165,7 @@ is capable to select multiple options. The renderer defines also the options
 which should be available in the dropdown menu. For SQLAlchemy mapped items
 the options are automatically determined from the underlying data model::
 
-        <entity
+        <entity>
           <renderer type="selection"/>
           <!-- Note, that the options are part of the entity! -->
           <options>
@@ -173,7 +173,7 @@ the options are automatically determined from the underlying data model::
              <option value="2">Option 2</option>
              <option value="3">Option 3</option>
           </options>
-        </entity
+        </entity>
 
 =============== ===========
 Attribute       Description
@@ -229,6 +229,58 @@ ignore      Another way to filter options. (Deprecated)
 
 .. note::
    Filtering is only possible for SQLAlchemy mapped items.
+
+See filtering section of the :ref:`dropdown` renderer.
+
+Radio
+`````
+The radio renderer is used to render radio fields based on the given options.
+Such a field is capable to select only one option. For SQLAlchemy mapped
+items the options are automatically determined from the underlying data
+model. The radionfields will be aligned in a horizontal row::
+
+        <entity>
+          <renderer type="radio"/>
+          <options>
+             <option value="1">Option 1</option>
+             <option value="2">Option 2</option>
+             <option value="3">Option 3</option>
+          </options>
+        </entity>
+
+=============== ===========
+Attribute       Description
+=============== ===========
+filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+ignore          Another way to filter options. (Deprecated)
+=============== ===========
+
+See filtering section of the :ref:`dropdown` renderer.
+
+Checkbox
+````````
+The checkbox renderer is used to render checkbox fields based on the given options.
+Such a field is capable to multiple options. For SQLAlchemy mapped
+items the options are automatically determined from the underlying data
+model. The checkboxes will be aligned in a horizontal row::
+
+        <entity>
+          <renderer type="radio"/>
+          <options>
+             <option value="1">Option 1</option>
+             <option value="2">Option 2</option>
+             <option value="3">Option 3</option>
+          </options>
+        </entity>
+
+=============== ===========
+Attribute       Description
+=============== ===========
+filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+ignore          Another way to filter options. (Deprecated)
+=============== ===========
 
 See filtering section of the :ref:`dropdown` renderer.
 
