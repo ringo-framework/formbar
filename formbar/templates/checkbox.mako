@@ -10,6 +10,9 @@ readonly = (field.is_readonly() and "disabled") or ""
       <input type="checkbox" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" ${readonly}/>
       ${option[0]}
     </label>
+    % if field.renderer.align == "vertical" and num < len(options):
+      <br/>
+    % endif
   % elif not field.renderer.remove_filtered == "true":
     <input type="hidden" id="${field.id}" name="${field.name}" value="${option[1]}"/>
   % endif
