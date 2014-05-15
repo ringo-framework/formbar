@@ -11,6 +11,8 @@ TODO
 =====
 - Added renderer for checkbox fields.
 - Added renderer for radio fields.
+- Added label tag for the renderer to have more option on rendering the fields
+  label.
 
 0.7.2
 =====
