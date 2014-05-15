@@ -407,6 +407,23 @@ class Renderer(Config):
         - Textarea
         - HTML
         """
+        self.label_position = "top"
+        """Optional. If defined the label will placed left, top
+        or right to the field.  Defaults to top"""
+        self.label_align = "left"
+        """Optional. If defined the label will be aligned left or right,
+        Defaults to left This only applies for lables which are
+        positioned on the left or right side"""
+        self.label_width = 0
+        """Optional. If defined the label will have the defined width.
+        Defaults to 0 cols. The Fieldwidth will be reduced by the label
+        width. This only applies for lables which are positioned on the
+        left or right side."""
+        label_config = entity.find('label')
+        if label_config is not None:
+            self.label_position = label_config.attrib.get("position") or "top"
+            self.label_align = label_config.attrib.get("align") or "left"
+            self.label_width = int(label_config.attrib.get("width")) or 0
 
         # Warning! The body of the renderer may include all valid and
         # invalid html data including scripting. Use with caution here as
