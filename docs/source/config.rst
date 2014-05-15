@@ -290,7 +290,7 @@ items the options are automatically determined from the underlying data
 model. The checkboxes will be aligned in a horizontal row::
 
         <entity>
-          <renderer type="radio"/>
+          <renderer type="checkbox"/>
           <options>
              <option value="1">Option 1</option>
              <option value="2">Option 2</option>
