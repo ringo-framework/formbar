@@ -204,6 +204,8 @@ class FieldRenderer(Renderer):
 
     def __getattr__(self, name):
         """Give access to the config values of the renderer"""
+        if self._config is None:
+            return None
         return getattr(self._config, name)
 
     def _render_label(self):
