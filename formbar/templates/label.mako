@@ -1,4 +1,4 @@
-<label class="control-label" for="${field.name}">
+<label class="control-label ${field.renderer.label_position}" for="${field.name}">
   % if field.number:
     <sup>(${field.number})</sup>
   % endif

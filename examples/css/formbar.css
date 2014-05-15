@@ -2,7 +2,7 @@
 
 /* Make all field elements expand to 100% on default */
 .formbar-form input, .formbar-form select,.formbar-form textarea {
-  width: 100%;
+  /*width: 100%; */
   /* Fix width and height of the fields by setting it to the border-box modell
    * (CSS3) Does not work in IE
   height: 30px !important; */
@@ -22,6 +22,18 @@
 
 label {
     display: inline;
+}
+
+label.left {
+    display: block;
+    margin-top: 0.5em;
+    margin-right: -20px;
+}
+
+label.right {
+    display: block;
+    margin-top: 0.5em;
+    margin-left: -20px;
 }
 
 .formbar-form table td {
