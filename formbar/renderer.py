@@ -279,13 +279,36 @@ class FieldRenderer(Renderer):
         html = []
         has_errors = len(self._field.get_errors())
         has_warnings = len(self._field.get_warnings())
-        html.append('<div class="form-group %s %s">' % ((has_errors and 'has-error'),
-                                                       (has_warnings and 'has-warning')))
-        html.append(self._render_label())
+        html.append('<div class="form-group %s %s">' % ((has_errors and 'has-error'), (has_warnings and 'has-warning')))
         values = self._get_template_values()
-        html.append(self.template.render(**values))
-        html.append(self._render_errors())
-        html.append(self._render_help())
+        if self.label_width > 0 and self.label_position in ["left", "right"]:
+            label_width = self.label_width
+            field_width = 12-self.label_width
+            html.append('<div class="row">')
+            if self.label_position == "left":
+                html.append('<div class="col-md-%s" align="right">' % label_width)
+                html.append(self._render_label())
+                html.append('</div>')
+                html.append('<div class="col-md-%s">' % field_width)
+                html.append(self.template.render(**values))
+                html.append(self._render_errors())
+                html.append(self._render_help())
+                html.append('</div>')
+            else:
+                html.append('<div class="col-md-%s">' % field_width)
+                html.append(self.template.render(**values))
+                html.append(self._render_errors())
+                html.append(self._render_help())
+                html.append('</div>')
+                html.append('<div class="col-md-%s" align="left">' % label_width)
+                html.append(self._render_label())
+                html.append('</div>')
+            html.append("</div>")
+        else:
+            html.append(self._render_label())
+            html.append(self.template.render(**values))
+            html.append(self._render_errors())
+            html.append(self._render_help())
         html.append('</div>')
         return "".join(html)
 
