@@ -35,6 +35,9 @@ label.right {
     margin-top: 0.5em;
     margin-left: -20px;
 }
+label.checkbox, label.radio {
+    margin-top: 0.1em;
+}
 
 .formbar-form table td {
   vertical-align: middle;

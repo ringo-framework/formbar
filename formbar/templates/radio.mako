@@ -1,4 +1,3 @@
-<br>
 <%
 readonly = (field.is_readonly() and "disabled") or ""
 %>
