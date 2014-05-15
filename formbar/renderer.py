@@ -285,10 +285,11 @@ class FieldRenderer(Renderer):
         values = self._get_template_values()
         if self.label_width > 0 and self.label_position in ["left", "right"]:
             label_width = self.label_width
+            label_align = self.label_align
             field_width = 12-self.label_width
             html.append('<div class="row">')
             if self.label_position == "left":
-                html.append('<div class="col-sm-%s" align="right">' % label_width)
+                html.append('<div class="col-sm-%s" align="%s">' % (label_width, label_align))
                 html.append(self._render_label())
                 html.append('</div>')
                 html.append('<div class="col-sm-%s">' % field_width)
@@ -302,7 +303,7 @@ class FieldRenderer(Renderer):
                 html.append(self._render_errors())
                 html.append(self._render_help())
                 html.append('</div>')
-                html.append('<div class="col-sm-%s" align="left">' % label_width)
+                html.append('<div class="col-sm-%s" align="%s">' % (label_width, label_align))
                 html.append(self._render_label())
                 html.append('</div>')
             html.append("</div>")
