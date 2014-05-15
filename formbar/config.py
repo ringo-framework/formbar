@@ -423,7 +423,7 @@ class Renderer(Config):
         if label_config is not None:
             self.label_position = label_config.attrib.get("position") or "top"
             self.label_align = label_config.attrib.get("align") or "left"
-            self.label_width = int(label_config.attrib.get("width")) or 0
+            self.label_width = int(label_config.attrib.get("width") or 0)
 
         # Warning! The body of the renderer may include all valid and
         # invalid html data including scripting. Use with caution here as
