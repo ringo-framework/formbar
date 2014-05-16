@@ -13,6 +13,7 @@ TODO
 - Added renderer for radio fields.
 - Added label tag for the renderer to have more option on rendering the fields
   label.
+- Added support to configure simple text element within the form.
 
 0.7.2
 =====
