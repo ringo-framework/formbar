@@ -491,6 +491,26 @@ Attribute      Description
 label          Label of the fieldset rendered as header.
 ============   ===========
 
+Text
+----
+Text can be used to add some simple text information in the form. It does not
+support any formatting of the text. If you need more formatting please use the
+html renderer::
+
+      <row>
+        <col><text>Hello I'm Text</text></col>
+        <col><text>Hello I'm a seconds Text</text></col>
+      </row>
+
+
+============   ===========
+Attribute      Description
+============   ===========
+color          Color of the text. Possible options: "muted", "warning", "danger", "info", "primary", "success". Defaults to no change of the current text color.
+bg             Color of the background. Possible options: "warning", "danger", "info", "primary", "success". Defaults to render no background.
+em             Emphasis of the text. Possible options: "strong", "small", "em" (italic). Defaults to no emphasis.
+============   ===========
+
 Table
 -----
 .. important::
