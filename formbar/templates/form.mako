@@ -88,6 +88,29 @@
           <% child = form._config._parent.get_element('snippet', ref) %>
         % endif
         ${self.render_recursive(child)}
+      ## Others
+      % elif child.tag == "text":
+        <%
+          textclasses = []
+          if child.attrib.get('bg'):
+            textclasses.append("bg-%s" % child.attrib.get('bg'))
+            textclasses.append("text-generic")
+          if child.attrib.get('color'):
+            textclasses.append("text-%s" % child.attrib.get('color'))
+        %>
+        <p class="${' '.join(textclasses)}">
+          % if child.attrib.get('em'):
+            % for em in child.attrib.get('em').split(" "):
+              <${em}>
+            % endfor
+              ${child.text}
+            % for em in child.attrib.get('em').split(" "):
+              </${em}>
+            % endfor
+          % else:
+            ${child.text}
+          % endif
+        </p>
       ## Table rendering
       % elif child.tag == "th":
         <th>${child.text}</th>

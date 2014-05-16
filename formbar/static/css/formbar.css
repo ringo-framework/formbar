@@ -84,6 +84,10 @@ div.readonlyfield {
 }
 
 /* Helptexts */
+.text-generic {
+  padding: 0.5em;
+}
+
 .text-help {
   position: relative;
   top: 3px;
