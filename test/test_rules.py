@@ -47,6 +47,36 @@ class TestParseRule(unittest.TestCase):
         result = self.parser.parse(expr)
         self.assertEqual(expr, " ".join(result.asList()))
 
+    def test_plus_expr(self):
+        expr = "$field + $field"
+        result = self.parser.parse(expr)
+        self.assertEqual(expr, " ".join(result.asList()))
+
+    def test_minus_expr(self):
+        expr = "$field - $field"
+        result = self.parser.parse(expr)
+        self.assertEqual(expr, " ".join(result.asList()))
+
+    def test_mul_expr(self):
+        expr = "$field * $field"
+        result = self.parser.parse(expr)
+        self.assertEqual(expr, " ".join(result.asList()))
+
+    def test_div_expr(self):
+        expr = "$field / $field"
+        result = self.parser.parse(expr)
+        self.assertEqual(expr, " ".join(result.asList()))
+
+    def test_proz_expr(self):
+        expr = "$field / 100 * 10"
+        result = self.parser.parse(expr)
+        self.assertEqual(expr, " ".join(result.asList()))
+
+    def test_grouping_expr(self):
+        expr = "( $do_zg_ap + $do_zg_pxa + $do_zg_team + $do_zg_leit + $do_zg_doz ) < 100"
+        result = self.parser.parse(expr)
+        self.assertEqual(expr, " ".join(result.asList()))
+
     # Test function
 
     def test_function_len_expr(self):

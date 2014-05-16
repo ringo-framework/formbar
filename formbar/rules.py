@@ -134,6 +134,14 @@ def convertOperator(op):
         top = "and"
     elif op == "or":
         top = "or"
+    elif op == "plus":
+        top = "+"
+    elif op == "minus":
+        top = "-"
+    elif op == "mul":
+        top = "*"
+    elif op == "div":
+        top = "/"
     return [top]
 
 op_eq = Literal("eq").setParseAction(convertOperator)
@@ -145,14 +153,20 @@ op_le = Literal("le").setParseAction(convertOperator)
 op_in = Literal("in").setParseAction(convertOperator)
 op_and = Literal("and").setParseAction(convertOperator)
 op_or = Literal("or").setParseAction(convertOperator)
-operator = (oneOf('== < > <= >= != in and or')
-            | op_eq | op_ne | op_gt | op_ge | op_lt | op_le | op_in | op_and | op_or)
+op_plus = Literal("plus").setParseAction(convertOperator)
+op_minus = Literal("minus").setParseAction(convertOperator)
+op_mul = Literal("mul").setParseAction(convertOperator)
+op_div = Literal("div").setParseAction(convertOperator)
+operator = (oneOf('== < > <= >= != in and or + - * /')
+            | op_eq | op_ne | op_gt | op_ge | op_lt | op_le | op_in | op_and | op_or | op_plus | op_minus | op_mul | op_div)
 
 operand = Forward()
 function_call = functor + LPAR + Optional(delimitedList(operand)) + RPAR
 option_list = LSBR + Optional(delimitedList(operand, combine=True)) + RSBR
 operand << (option_list | function_call | functor | real | integer | string | fieldname)
-term = operand + operator + operand | operand
+expr = operand + operator + operand | operand
+grouping = LPAR + OneOrMore( expr | operator + expr ) + RPAR
+term = grouping | expr
 rule = term + Optional(OneOrMore( operator + term))
 
 
@@ -171,5 +185,5 @@ class Parser(object):
             result = rule.parseString(expr)
             return result
         except ParseException, e:
-            log.error(e)
+            #log.error(e)
             raise ValueError('Can not parse "%s"' % expr)
