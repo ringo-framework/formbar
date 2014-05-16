@@ -52,17 +52,17 @@ label.checkbox, label.radio {
 
 .formbar-form fieldset fieldset fieldset legend {
   font-size: 14px;
-  margin-bottom: 14px;
+  margin-bottom: 4px;
 }
 
 .formbar-form fieldset fieldset legend {
   font-size: 17px;
-  margin-bottom: 17px;
+  margin-bottom: 7px;
 }
 
 .formbar-form fieldset legend {
   font-size: 21px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .formbar-form table td div.readonlyfield {
@@ -84,6 +84,10 @@ div.readonlyfield {
 }
 
 /* Helptexts */
+.text-generic {
+  padding: 0.5em;
+}
+
 .text-help {
   position: relative;
   top: 3px;
