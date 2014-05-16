@@ -7,7 +7,4 @@
   % endif
   % if field.is_required():
     <span data-toggle="tooltip" data-original-title="Required field" class="formbar-tooltip glyphicon glyphicon-asterisk"></span>
-  % elif field.is_desired():
-    <span data-toggle="tooltip" data-original-title="Desired field" class="formbar-tooltip glyphicon glyphicon-star"></span>
-  % endif
 </label>
