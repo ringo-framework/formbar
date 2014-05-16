@@ -414,16 +414,19 @@ class Renderer(Config):
         """Optional. If defined the label will be aligned left or right,
         Defaults to left This only applies for lables which are
         positioned on the left or right side"""
-        self.label_width = 0
+        self.label_width = 2
         """Optional. If defined the label will have the defined width.
-        Defaults to 0 cols. The Fieldwidth will be reduced by the label
+        Defaults to 2 cols. The Fieldwidth will be reduced by the label
         width. This only applies for lables which are positioned on the
         left or right side."""
         label_config = entity.find('label')
         if label_config is not None:
             self.label_position = label_config.attrib.get("position") or "top"
-            self.label_align = label_config.attrib.get("align") or "left"
-            self.label_width = int(label_config.attrib.get("width") or 0)
+            if self.label_position == "left":
+                self.label_align = label_config.attrib.get("align") or "right"
+            elif self.label_position == "right":
+                self.label_align = label_config.attrib.get("align") or "left"
+            self.label_width = int(label_config.attrib.get("width") or 2)
 
         # Warning! The body of the renderer may include all valid and
         # invalid html data including scripting. Use with caution here as
