@@ -81,7 +81,17 @@ function evaluate(element) {
             if (!value) {
                 value = field.text();
             }
-            console.log(tokens[j].replace('$', ''));
+            if (value.indexOf("[") < 0) {
+                if (!value) {
+                    value = "None";
+                } else {
+                    if (!$.isNumeric(value)) {
+                        value = "'"+value+"'";
+                    }
+                }
+            }
+            //console.log(tokens[j].replace('$', ''));
+            //console.log(value);
             eval_expr += " "+value;
         } else {
             eval_expr += " "+tokens[j];
@@ -99,7 +109,7 @@ function evaluate(element) {
                     if (data.success) {
                         result = data.data;
                     } else {
-                        console.log(data.params.msg);
+                        //console.log(data.params.msg);
                         result = data.data;
                     }
                 },

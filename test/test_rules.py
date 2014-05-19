@@ -89,6 +89,16 @@ class TestParseRule(unittest.TestCase):
         result = self.parser.parse(expr)
         self.assertEqual('_bool($field)', "".join(result.asList()))
 
+    def test_function_bool_expr2(self):
+        expr = "bool( '_' )"
+        result = self.parser.parse(expr)
+        self.assertEqual("_bool('_')", "".join(result.asList()))
+
+    def test_function_bool_expr3(self):
+        expr = "bool( 'xxx' )"
+        result = self.parser.parse(expr)
+        self.assertEqual("_bool('xxx')", "".join(result.asList()))
+
 
 class TestEvaluateRule(unittest.TestCase):
 
@@ -193,6 +203,12 @@ class TestEvaluateRule(unittest.TestCase):
         expr = "len($field)<=5"
         rule = self.build_rule(expr)
         self.assertEqual(rule.evaluate(values), False)
+
+    def test_bool_ok(self):
+        values = {"field": "we have a value"}
+        expr = "bool('xxx')"
+        rule = self.build_rule(expr)
+        self.assertEqual(rule.evaluate(values), True)
 
     def test_required_ok(self):
         values = {"field": "we have a value"}
