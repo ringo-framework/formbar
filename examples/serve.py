@@ -18,6 +18,7 @@ from mako.lookup import TemplateLookup
 from formbar import example_dir, logging
 from formbar.config import Config, load
 from formbar.form import Form
+from formbar.rules import Rule
 
 template_lookup = TemplateLookup(directories=[example_dir],
                                  module_directory='/tmp/phormular_modules')
@@ -56,11 +57,17 @@ def get_items():
     session = Session()
     return session.query(User).all()
 
+def evaluate(request):
+    rule = Rule(expr=request.GET.get('rule').split(' '))
+    result = rule.evaluate({})
+    return {"success": True,
+            "data": result,
+            "params": {"msg": rule.msg}}
 
 def example_1(request):
     config = Config(load(os.path.join(example_dir, 'example1.xml')))
     form_config = config.get_form('example1')
-    form = Form(form_config)
+    form = Form(form_config, eval_url="/evaluate")
 
     if request.POST:
         form.validate(request.POST.mixed())
@@ -95,9 +102,11 @@ if __name__ == '__main__':
     config.add_route('root', '/')
     config.add_route('ex1', '/example1')
     config.add_route('ex2', '/example2')
+    config.add_route('evaluate', '/evaluate')
     config.add_view(example_1, route_name='root')
     config.add_view(example_1, route_name='ex1')
     config.add_view(example_2, route_name='ex2')
+    config.add_view(evaluate, route_name='evaluate', renderer="json")
     config.add_static_view('bootstrap', 'bootstrap', cache_max_age=3600)
     config.add_static_view('css', 'css', cache_max_age=3600)
     config.add_static_view('js', 'js', cache_max_age=3600)
