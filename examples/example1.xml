@@ -51,6 +51,24 @@
     <entity id="e12" name="e12" label="Hiddenfield">
       <renderer type="hidden"/>
     </entity>
+    <entity id="e13" name="e13" label="Readonly Textfield">
+    </entity>
+    <entity id="e13t" name="e13t" label="Edit readonly Textfield">
+      <renderer type="dropdown"></renderer>
+      <options>
+        <option value="1">Yes</option>
+        <option value="2">No</option>
+      </options>
+    </entity>
+    <entity id="e14" name="e14" label="Hidden Textfield">
+    </entity>
+    <entity id="e14t" name="e14t" label="Show hidden Textfield">
+      <renderer type="dropdown"></renderer>
+      <options>
+        <option value="1">Yes</option>
+        <option value="2">No</option>
+      </options>
+    </entity>
   </source>
   <form id="example1" css="testcss" autocomplete="off" method="POST" action="" enctype="multipart/form-data">
     <snippet ref="s1"/>
@@ -100,6 +118,26 @@
       <row>
         <col><field ref="e12"/></col>
       </row>
+      </fieldset>
+    </page>
+    <page id="p2" label="Dynamic">
+      <fieldset label="Conditionals">
+        <row>
+          <col><field ref="e13t"/></col>
+          <col>
+            <if expr="bool( $e13t )" type="readonly">
+              <field ref="e13"/>
+            </if>
+           </col>
+        </row>
+        <row>
+          <col><field ref="e14t"/></col>
+          <col>
+            <if expr="bool( $e14t )" type="hide">
+              <field ref="e14"/>
+            </if>
+           </col>
+        </row>
       </fieldset>
     </page>
   </snippet>
