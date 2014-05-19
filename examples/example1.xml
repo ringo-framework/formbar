@@ -56,8 +56,8 @@
     <entity id="e13t" name="e13t" label="Edit readonly Textfield">
       <renderer type="dropdown"></renderer>
       <options>
+        <option value="0">No</option>
         <option value="1">Yes</option>
-        <option value="2">No</option>
       </options>
     </entity>
     <entity id="e14" name="e14" label="Hidden Textfield">
@@ -65,8 +65,8 @@
     <entity id="e14t" name="e14t" label="Show hidden Textfield">
       <renderer type="dropdown"></renderer>
       <options>
+        <option value="0">No</option>
         <option value="1">Yes</option>
-        <option value="2">No</option>
       </options>
     </entity>
   </source>
@@ -133,7 +133,7 @@
         <row>
           <col><field ref="e14t"/></col>
           <col>
-            <if expr="bool( $e14t )" type="hide">
+            <if expr="bool( $e14t )">
               <field ref="e14"/>
             </if>
            </col>
