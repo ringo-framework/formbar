@@ -562,7 +562,7 @@ If the condition must evaluate to true or false. If true, the elements are
 rendered normal. If the condition is false the effect is determined by the
 type of the conditional. On default the elements will be hidden completely. As
 alternative you can set the type of the conditional to "readonly". Currently
-only the types "hide" (default) and "readonly" are supported. Expample::
+only the type "readonly" are supported. Expample::
 
         <if type="readonly" expr="$fieldname == 4">
             <field ref="r1"/>
