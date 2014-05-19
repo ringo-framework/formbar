@@ -69,6 +69,13 @@
         <option value="1">Yes</option>
       </options>
     </entity>
+    <entity id="e15m" name="e15m" label="Men" type="integer">
+    </entity>
+    <entity id="e15w" name="e15w" label="Woman" type="integer">
+    </entity>
+    <entity id="e15t" name="e15t" label="Total" expr="$e15m + $e15w">
+      <renderer type="info" />
+    </entity>
   </source>
   <form id="example1" css="testcss" autocomplete="off" method="POST" action="" enctype="multipart/form-data">
     <snippet ref="s1"/>
@@ -137,6 +144,13 @@
               <field ref="e14"/>
             </if>
            </col>
+        </row>
+      </fieldset>
+      <fieldset label="Calculations">
+        <row>
+          <col><field ref="e15m"/></col>
+          <col><field ref="e15w"/></col>
+          <col><field ref="e15t"/></col>
         </row>
       </fieldset>
     </page>
