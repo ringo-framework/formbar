@@ -57,6 +57,12 @@ def get_items():
     session = Session()
     return session.query(User).all()
 
+def set_current_form_page(request):
+    """Will save the currently selected page in the form into a
+    sessions. Note this is only a dummy implementation. This function
+    needs to be implemented."""
+    return {"success": True}
+
 def evaluate(request):
     rule = Rule(expr=request.GET.get('rule').split(' '))
     result = rule.evaluate({})
@@ -103,6 +109,7 @@ if __name__ == '__main__':
     config.add_route('ex1', '/example1')
     config.add_route('ex2', '/example2')
     config.add_route('evaluate', '/evaluate')
+    config.add_route('set_current_form_page', '/set_current_form_page')
     config.add_view(example_1, route_name='root')
     config.add_view(example_1, route_name='ex1')
     config.add_view(example_2, route_name='ex2')
