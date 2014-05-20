@@ -90,8 +90,6 @@ function evaluate(element) {
                     }
                 }
             }
-            //console.log(tokens[j].replace('$', ''));
-            //console.log(value);
             eval_expr += " "+value;
         } else {
             eval_expr += " "+tokens[j];
@@ -109,7 +107,6 @@ function evaluate(element) {
                     if (data.success) {
                         result = data.data;
                     } else {
-                        //console.log(data.params.msg);
                         result = data.data;
                     }
                 },

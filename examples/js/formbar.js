@@ -62,7 +62,7 @@ function evaluate(element) {
     for (var j = 0; j <= tokens.length - 1; j++) {
         var tfield = null;
         var value = null;
-        if (tokens[j].contains("$")) {
+        if (tokens[j].indexOf("$") >= 0) {
             tfield = tokens[j].replace('$', '');
             // Select field
             var field = $('input[name='+tfield+'], '
@@ -81,7 +81,15 @@ function evaluate(element) {
             if (!value) {
                 value = field.text();
             }
-            console.log(tokens[j].replace('$', ''));
+            if (value.indexOf("[") < 0) {
+                if (!value) {
+                    value = "None";
+                } else {
+                    if (!$.isNumeric(value)) {
+                        value = "'"+value+"'";
+                    }
+                }
+            }
             eval_expr += " "+value;
         } else {
             eval_expr += " "+tokens[j];
@@ -99,7 +107,6 @@ function evaluate(element) {
                     if (data.success) {
                         result = data.data;
                     } else {
-                        console.log(data.params.msg);
                         result = data.data;
                     }
                 },
@@ -122,7 +129,7 @@ function evaluateConditionals() {
     var fieldsToEvaluate = $('.formbar-conditional');
     for (var i = fieldsToEvaluate.length - 1; i >= 0; i--) {
         var conditional = fieldsToEvaluate[i];
-        var readonly = $(conditional).attr('class').contains('readonly');
+        var readonly = $(conditional).attr('class').indexOf('readonly') >= 0;
         var result = evaluate(conditional);
         if (result) {
             if (readonly) {
