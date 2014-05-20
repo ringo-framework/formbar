@@ -1,18 +1,12 @@
 import os
+from sqlalchemy.orm import scoped_session
 from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.response import Response
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import sessionmaker, scoped_session
-
-engine = create_engine('sqlite:///:memory:', echo=False)
-Session = scoped_session(sessionmaker())
-Session.configure(bind=engine)
-Base = declarative_base()
-
+# FIXME: Why is this import needed? If not present the server will fail
+# to work. (ti) <2014-05-20 17:08> 
+from sqlalchemy.orm import scoped_session
 
 from mako.lookup import TemplateLookup
 from formbar import example_dir, logging
@@ -20,42 +14,10 @@ from formbar.config import Config, load
 from formbar.form import Form
 from formbar.rules import Rule
 
-template_lookup = TemplateLookup(directories=[example_dir],
-                                 module_directory='/tmp/phormular_modules')
-Base.metadata.create_all(engine)
+template_lookup = TemplateLookup(directories=[example_dir])
 
 log = logging.getLogger(__name__)
 
-
-class User(Base):
-    __tablename__ = 'users'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    fullname = Column(String)
-    password = Column(String)
-
-    def __init__(self, name, fullname, password):
-        self.name = name
-        self.fullname = fullname
-        self.password = password
-
-    def __repr__(self):
-        return "<User('%s','%s', '%s')>" % (self.name, self.fullname,
-                                            self.password)
-
-
-def add_item():
-    session = Session()
-    ed_user = User('ed', 'Ed Jones', 'edspassword')
-    session.add(ed_user)
-    session.commit()
-    return ed_user
-
-
-def get_items():
-    session = Session()
-    return session.query(User).all()
 
 def set_current_form_page(request):
     """Will save the currently selected page in the form into a
@@ -86,10 +48,6 @@ def example(request):
 
 
 if __name__ == '__main__':
-    Base.metadata.create_all(engine)
-    add_item()
-    add_item()
-    add_item()
     config = Configurator()
     config.add_route('root', '/')
     config.add_route('ex1', '/example')
