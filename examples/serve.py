@@ -72,9 +72,9 @@ def evaluate(request):
             "data": result,
             "params": {"msg": rule.msg}}
 
-def example_1(request):
-    config = Config(load(os.path.join(example_dir, 'example1.xml')))
-    form_config = config.get_form('example1')
+def example(request):
+    config = Config(load(os.path.join(example_dir, 'example.xml')))
+    form_config = config.get_form('example')
     form = Form(form_config, eval_url="/evaluate")
 
     if request.POST:
@@ -85,22 +85,6 @@ def example_1(request):
     return Response(template.render(**values))
 
 
-def example_2(request):
-    """Testfunction to check if SQL-Alchemy enabled forms to work"""
-    config = Config(load(os.path.join(example_dir, 'example2.xml')))
-    form_config = config.get_form('form')
-    items = get_items()
-    form = Form(form_config, items[0])
-
-    if request.POST:
-        values = request.POST.mixed()
-        if form.validate(values):
-            form.save()
-
-    template = template_lookup.get_template("index.mako")
-    values = {'form': form.render()}
-    return Response(template.render(**values))
-
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
     add_item()
@@ -108,13 +92,11 @@ if __name__ == '__main__':
     add_item()
     config = Configurator()
     config.add_route('root', '/')
-    config.add_route('ex1', '/example1')
-    config.add_route('ex2', '/example2')
+    config.add_route('ex1', '/example')
     config.add_route('evaluate', '/evaluate')
     config.add_route('set_current_form_page', '/set_current_form_page')
-    config.add_view(example_1, route_name='root')
-    config.add_view(example_1, route_name='ex1')
-    config.add_view(example_2, route_name='ex2')
+    config.add_view(example, route_name='root')
+    config.add_view(example, route_name='ex1')
     config.add_view(evaluate, route_name='evaluate', renderer="json")
     config.add_view(set_current_form_page, route_name='set_current_form_page', renderer="json")
     config.add_static_view('bootstrap', 'bootstrap', cache_max_age=3600)

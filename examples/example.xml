@@ -77,7 +77,7 @@
       <renderer type="info" />
     </entity>
   </source>
-  <form id="example1" css="testcss" autocomplete="off" method="POST" action="" enctype="multipart/form-data">
+  <form id="example" css="testcss" autocomplete="off" method="POST" action="" enctype="multipart/form-data">
     <snippet ref="s1"/>
   </form>
   <snippet id="s1">
