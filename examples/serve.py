@@ -114,6 +114,7 @@ if __name__ == '__main__':
     config.add_view(example_1, route_name='ex1')
     config.add_view(example_2, route_name='ex2')
     config.add_view(evaluate, route_name='evaluate', renderer="json")
+    config.add_view(set_current_form_page, route_name='set_current_form_page', renderer="json")
     config.add_static_view('bootstrap', 'bootstrap', cache_max_age=3600)
     config.add_static_view('css', 'css', cache_max_age=3600)
     config.add_static_view('js', 'js', cache_max_age=3600)
