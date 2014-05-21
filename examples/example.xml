@@ -2,18 +2,38 @@
 <configuration>
   <source>
     <entity id="e1" name="e1" label="Textfield"></entity>
+    <entity id="e1r" name="e1r" label="Textfield" readonly="true" value="Foo"></entity>
     <entity id="e2" name="e2" label="Integer" type="integer"></entity>
+    <entity id="e2r" name="e2r" label="Integer" type="integer" readonly="true" value="12345"></entity>
     <entity id="e3" name="e3" label="Float" type="float"></entity>
+    <entity id="e3r" name="e3r" label="Float" type="float" readonly="true" value="1.2345"></entity>
     <entity id="e4" name="e4" label="Textarea">
+      <renderer type="textarea"/>
+    </entity>
+    <entity id="e4r" name="e4r" label="Textarea" readonly="true" value="Bar">
       <renderer type="textarea"/>
     </entity>
     <entity id="e5" name="e5" label="Datefield" type="date">
       <renderer type="datepicker"/>
     </entity>
+    <entity id="e5r" name="e5r" label="Datefield" type="date" readonly="true" value="2014-05-20">
+      <renderer type="datepicker"/>
+    </entity>
     <entity id="e6" name="e6" label="Password">
       <renderer type="password"/>
     </entity>
+    <entity id="e6r" name="e6r" label="Password" readonly="true" value="xxx">
+      <renderer type="password"/>
+    </entity>
     <entity id="e7" name="e7" label="Dropdown">
+      <renderer type="dropdown"/>
+      <options>
+        <option value="1">Option 1</option>
+        <option value="2">Option 2</option>
+        <option value="3">Option 3</option>
+      </options>
+    </entity>
+    <entity id="e7r" name="e7r" label="Dropdown" readonly="true" value="1">
       <renderer type="dropdown"/>
       <options>
         <option value="1">Option 1</option>
@@ -29,6 +49,14 @@
         <option value="3">Option 3</option>
       </options>
     </entity>
+    <entity id="e8r" name="e8r" label="Selection" readonly="true" value="2">
+      <renderer type="selection"/>
+      <options>
+        <option value="1">Option 1</option>
+        <option value="2">Option 2</option>
+        <option value="3">Option 3</option>
+      </options>
+    </entity>
     <entity id="e9" name="e9" label="Radio">
       <renderer type="radio"/>
       <options>
@@ -37,7 +65,23 @@
         <option value="3">Option 3</option>
       </options>
     </entity>
+    <entity id="e9r" name="e9r" label="Radio" readonly="true" value="3">
+      <renderer type="radio"/>
+      <options>
+        <option value="1">Option 1</option>
+        <option value="2">Option 2</option>
+        <option value="3">Option 3</option>
+      </options>
+    </entity>
     <entity id="e10" name="e10" label="Checkboxes">
+      <renderer type="checkbox"/>
+      <options>
+        <option value="1">Option 1</option>
+        <option value="2">Option 2</option>
+        <option value="3">Option 3</option>
+      </options>
+    </entity>
+    <entity id="e10r" name="e10r" label="Checkboxes" readonly="true" value="1">
       <renderer type="checkbox"/>
       <options>
         <option value="1">Option 1</option>
@@ -76,46 +120,85 @@
     <entity id="e15t" name="e15t" label="Total" expr="$e15m + $e15w">
       <renderer type="info" />
     </entity>
+    <entity id="e16" name="e16" label="Odd/Even Numbers">
+      <renderer type="dropdown"></renderer>
+      <options>
+        <option value="1">Odd</option>
+        <option value="2">Even</option>
+      </options>
+    </entity>
+    <entity id="e17" name="e17" label="Select Numbers">
+      <renderer type="dropdown" filter="( %e17 / $e16 )" remove_filtered="true"></renderer>
+      <options>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </options>
+    </entity>
+    <entity id="e18" name="e18" label="Enter a number" type="integer">
+      <help>Number must not be greater 100</help>
+      <rule expr="$e18 le 100" msg="You entered a number larger than 100"/>
+    </entity>
   </source>
   <form id="example" css="testcss" autocomplete="off" method="POST" action="" enctype="multipart/form-data">
     <snippet ref="s1"/>
   </form>
   <snippet id="s1">
-    <page id="p1" label="Fields">
+    <page id="p1" label="Supported Fields">
+      <text>Below you find a list of supported field elements in formbar. On
+      the left side you the the editable version and on the right side the
+      readonly version.</text>
       <fieldset label="Textfields">
       <row>
         <col><field ref="e1"/></col>
+        <col><field ref="e1r"/></col>
       </row>
       <row>
         <col><field ref="e4"/></col>
+        <col><field ref="e4r"/></col>
       </row>
       <row>
         <col><field ref="e6"/></col>
+        <col><field ref="e6r"/></col>
       </row>
       </fieldset>
       <fieldset label="Supported formats in textfields">
       <row>
         <col><field ref="e2"/></col>
+        <col><field ref="e2r"/></col>
       </row>
       <row>
         <col><field ref="e3"/></col>
+        <col><field ref="e3r"/></col>
       </row>
       <row>
         <col><field ref="e5"/></col>
+        <col><field ref="e5r"/></col>
       </row>
       </fieldset>
       <fieldset label="Selections">
       <row>
         <col><field ref="e7"/></col>
+        <col><field ref="e7r"/></col>
       </row>
       <row>
         <col><field ref="e8"/></col>
+        <col><field ref="e8r"/></col>
       </row>
       <row>
         <col><field ref="e9"/></col>
+        <col><field ref="e9r"/></col>
       </row>
       <row>
         <col><field ref="e10"/></col>
+        <col><field ref="e10r"/></col>
       </row>
       </fieldset>
       <fieldset label="Other">
@@ -127,7 +210,36 @@
       </row>
       </fieldset>
     </page>
-    <page id="p2" label="Dynamic">
+    <page id="p2" label="Layouting">
+      <fieldset label="Rows and Cols">
+        <text>Formbar uses the bootstrap grid system to laout the forms. It
+        supports up to 12 cols per row. Width of the cols can be sized easily.
+        Rows and cols can be nested to build complex layouts.</text>
+        <row>
+          <col><field ref="e8"/></col>
+          <col><field ref="e10"/></col>
+          <col><field ref="e1"/></col>
+        </row>
+        <row>
+          <col width="9"><field ref="e7"/></col>
+          <col width="3"><field ref="e1"/></col>
+        </row>
+        <row>
+          <col><field ref="e2"/></col>
+          <col><field ref="e4"/></col>
+        </row>
+      </fieldset>
+      <fieldset label="Labeling">
+      </fieldset>
+    </page>
+    <page id="p3" label="Dynamic elements">
+      <fieldset label="Rules">
+        <text>Rules are evaluated on form submission and can be used to check
+        the validity of the submitted data.</text>
+        <row>
+          <col><field ref="e18"/></col>
+        </row>
+      </fieldset>
       <fieldset label="Conditionals">
         <row>
           <col><field ref="e13t"/></col>
