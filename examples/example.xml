@@ -161,6 +161,19 @@
         <label position="top"/>
       </renderer>
     </entity>
+    <entity id="req" name="req" label="Required field" required="true"></entity>
+    <entity id="des" name="des" label="Desired field" desired="true"></entity>
+    <entity id="help" name="help" label="Helptexts">
+      <help>Fields can have a small helptext to give some explaination on how
+      to fill out the field.</help>
+    </entity>
+    <entity id="numbering" name="numbering" label="Numbering" number="F42"></entity>
+    <entity id="html" name="html" label="HTML">
+      <renderer type="html">
+        <p>The following image was inserted using the HTML option of formbar</p>
+        <img src="http://intevation.de/images/graphics/intevation_logo_120.png"/>
+      </renderer>
+    </entity>
   </source>
   <form id="example" css="testcss" autocomplete="off" method="POST" action="" enctype="multipart/form-data">
     <snippet ref="s1"/>
@@ -226,6 +239,12 @@
       </fieldset>
     </page>
     <page id="p2" label="Field attributes">
+      <fieldset label="Required and Desired fields">
+        <row>
+          <col><field ref="req"/></col>
+          <col><field ref="des"/></col>
+        </row>
+      </fieldset>
       <fieldset label="Labeling">
         <text>Labels can be place left, right and on the top of the field.
         Additionally the labels can be aligned to the left and right side.</text>
@@ -237,6 +256,18 @@
         </row>
         <row>
           <col><field ref="labelr"/></col>
+        </row>
+      </fieldset>
+      <fieldset label="Helptexts">
+        <row>
+          <col><field ref="help"/></col>
+        </row>
+      </fieldset>
+      <fieldset label="Numbering">
+        <text>Use the numbering feature to give the fields a unique human
+        readable identifier to make it easier to reference to fields.</text>
+        <row>
+          <col><field ref="numbering"/></col>
         </row>
       </fieldset>
     </page>
@@ -265,6 +296,124 @@
         <row>
           <col><field ref="e2"/></col>
           <col><field ref="e4"/></col>
+        </row>
+      </fieldset>
+      <fieldset label="Text elements">
+        <row>
+          <col>
+          <text color="">Default Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.lorem</text>
+          </col>
+          <col>
+          <text color="info">Info Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.</text>
+          </col>
+          <col>
+          <text color="primary">Primary Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.</text>
+          </col>
+        </row>
+        <row>
+          <col>
+          <text color="warning">Warning Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.</text>
+          </col>
+          <col>
+          <text color="danger">Danger Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.</text>
+          </col>
+          <col>
+          <text color="Muted">Muted Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.</text>
+          </col>
+        </row>
+      </fieldset>
+      <fieldset label="Text elements with background">
+        <row>
+          <col>
+          <text bg="info">Info Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.</text>
+          </col>
+          <col>
+          <text bg="primary">Primary Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.</text>
+          </col>
+        </row>
+        <row>
+          <col>
+          <text bg="warning">Warning Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.</text>
+          </col>
+          <col>
+          <text bg="danger">Danger Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.</text>
+          </col>
+        </row>
+      </fieldset>
+      <fieldset label="Text elements with emphasis">
+        <row>
+          <col>
+          <text em="small">Small Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.</text>
+          </col>
+          <col>
+          <text em="em">Italic Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.</text>
+          </col>
+          <col>
+          <text em="strong">Strong Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+          et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+          accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+          no sea takimata sanctus est Lorem ipsum dolor sit amet.</text>
+          </col>
+        </row>
+      </fieldset>
+      <fieldset label="Tables">
+        <text>Sometimes it is helpfull to render some fields in a table layout.</text>
+      </fieldset>
+      <fieldset label="Custom HTML">
+        <text>If all the above options for layouting does not fullfill your
+        requirement, there is at least the option to define your own HTML
+        code. This can be helpfull to e.g insert images</text>
+        <row>
+          <col><field ref="html"></field></col>
         </row>
       </fieldset>
     </page>
