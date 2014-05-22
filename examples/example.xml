@@ -146,6 +146,21 @@
       <help>Number must not be greater 100</help>
       <rule expr="$e18 le 100" msg="You entered a number larger than 100"/>
     </entity>
+    <entity id="labell" name="labell" label="Label of the left">
+      <renderer>
+        <label position="left"/>
+      </renderer>
+    </entity>
+    <entity id="labelr" name="labelr" label="Label of the right">
+      <renderer>
+        <label position="right"/>
+      </renderer>
+    </entity>
+    <entity id="labelt" name="labelt" label="Label on the top">
+      <renderer>
+        <label position="top"/>
+      </renderer>
+    </entity>
   </source>
   <form id="example" css="testcss" autocomplete="off" method="POST" action="" enctype="multipart/form-data">
     <snippet ref="s1"/>
@@ -210,7 +225,30 @@
       </row>
       </fieldset>
     </page>
-    <page id="p2" label="Layouting">
+    <page id="p2" label="Field attributes">
+      <fieldset label="Labeling">
+        <text>Labels can be place left, right and on the top of the field.
+        Additionally the labels can be aligned to the left and right side.</text>
+        <row>
+          <col><field ref="labell"/></col>
+        </row>
+        <row>
+          <col><field ref="labelt"/></col>
+        </row>
+        <row>
+          <col><field ref="labelr"/></col>
+        </row>
+      </fieldset>
+    </page>
+    <page id="p3" label="Layouting">
+      <fieldset label="Pages">
+        <text>Forms can be seperated in pages. If so the form will get such an
+        outline as you see on the left side.</text>
+      </fieldset>
+      <fieldset label="Fieldsets">
+        <text>Formbar offers fieldsets in the same way as plain HTML does to
+        group fields into logical groups.</text>
+      </fieldset>
       <fieldset label="Rows and Cols">
         <text>Formbar uses the bootstrap grid system to laout the forms. It
         supports up to 12 cols per row. Width of the cols can be sized easily.
@@ -229,10 +267,8 @@
           <col><field ref="e4"/></col>
         </row>
       </fieldset>
-      <fieldset label="Labeling">
-      </fieldset>
     </page>
-    <page id="p3" label="Dynamic elements">
+    <page id="p4" label="Dynamic elements">
       <fieldset label="Rules">
         <text>Rules are evaluated on form submission and can be used to check
         the validity of the submitted data.</text>
