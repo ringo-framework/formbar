@@ -16,6 +16,7 @@ TODO
 - Added support to configure simple text element within the form.
 - Removed "star" indicator at labels for requierd fields.
 - Support (+,-,*,/) and logical grouping of elements
+- Conditionals supports now hidding whole pages.
 
 0.7.2
 =====

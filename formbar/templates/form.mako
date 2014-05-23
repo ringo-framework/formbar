@@ -8,12 +8,13 @@
         <div class="panel-heading">${_('Outline')}</div>
         <!-- List group -->
         <ul class="list-group">
-          % for num, page in enumerate(form._config.get_pages()):
-            <a href="#${page.attrib.get('id')}" class="list-group-item" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${page.attrib.get('label')}
-            <span class="label label-danger pull-right">${len(form.get_errors(page)) or ""}</span>
-            <span class="label label-warning pull-right">${len(form.get_warnings(page)) or ""}</span>
-            </a>
-          % endfor
+          ${self.render_recursive_outline(form, form._config._tree)}
+          ##% for num, page in enumerate(form._config.get_pages()):
+          ##  <a href="#${page.attrib.get('id')}" class="list-group-item" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${page.attrib.get('label')}
+          ##  <span class="label label-danger pull-right">${len(form.get_errors(page)) or ""}</span>
+          ##  <span class="label label-warning pull-right">${len(form.get_warnings(page)) or ""}</span>
+          ##  </a>
+          ##% endfor
         </ul>
       </div>
     </div>
@@ -32,6 +33,32 @@
   </div>
 % endif
 </div>
+
+<%def name="render_recursive_outline(form, element)">
+  % for child in element:
+    % if child.tag == "snippet":
+      <% ref = child.attrib.get('ref') %>
+      % if ref:
+        <% child = form._config._parent.get_element('snippet', ref) %>
+      % endif
+    % elif child.tag == "page":
+      ${self.render_outline_element(form, child)}
+    % elif child.tag == "if" and child[0].tag == "page":
+      <div class="formbar-conditional ${child.attrib.get('type')}" expr="${child.attrib.get('expr')}">
+    % endif
+    ${self.render_recursive_outline(form, child)}
+    % if child.tag == "if" and child[0].tag == "page":
+      </div>
+    % endif
+  % endfor
+</%def>
+
+<%def name="render_outline_element(form, page)">
+  <a href="#${page.attrib.get('id')}" class="list-group-item" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${page.attrib.get('label')}
+  <span class="label label-danger pull-right">${len(form.get_errors(page)) or ""}</span>
+  <span class="label label-warning pull-right">${len(form.get_warnings(page)) or ""}</span>
+  </a>
+</%def>
 
 <%def name="render_recursive(elem)">
   % for child in elem:
@@ -120,7 +147,4 @@
       % endif
     % endif
   % endfor
-</%def>
-
-<%def name="render_table(elem)">
 </%def>
