@@ -170,8 +170,10 @@
     <entity id="numbering" name="numbering" label="Numbering" number="F42"></entity>
     <entity id="html" name="html" label="HTML">
       <renderer type="html">
-        <p>The following image was inserted using the HTML option of formbar</p>
-        <img src="http://intevation.de/images/graphics/intevation_logo_120.png"/>
+        <div>
+          <p>The following image was inserted using the HTML option of formbar</p>
+          <img src="http://intevation.de/images/graphics/intevation_logo_120.png"/>
+        </div>
       </renderer>
     </entity>
   </source>
