@@ -41,6 +41,8 @@ def example(request):
 
     if request.POST:
         form.validate(request.POST.mixed())
+    else:
+        form.validate({})
 
     template = template_lookup.get_template("index.mako")
     values = {'form': form.render()}
