@@ -435,7 +435,8 @@ class Renderer(Config):
         self.body = None
         """The body attribute is currently only used by the HTML
         Renderer and has the content to be rendererd."""
-        if self.renderer_type == "html" and len(entity) > 0:
+        print self.render_type,  len(entity) > 0
+        if self.render_type == "html" and len(entity) > 0:
             self.body = ET.tostring(entity[0], method="html")
 
     def __getattr__(self, name):
