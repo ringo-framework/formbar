@@ -176,6 +176,9 @@
         </div>
       </renderer>
     </entity>
+    <entity id="table1" name="table1" label="" type="integer"/>
+    <entity id="table2" name="table2" label="" type="integer"/>
+    <entity id="table3" name="table3" label="" type="integer"/>
   </source>
   <form id="example" css="testcss" autocomplete="off" method="POST" action="" enctype="multipart/form-data">
     <snippet ref="s1"/>
@@ -409,6 +412,20 @@
       </fieldset>
       <fieldset label="Tables">
         <text>Sometimes it is helpfull to render some fields in a table layout.</text>
+        <table>
+          <tr>
+            <th>Question</th>
+            <th>Dogs</th>
+            <th>Cats</th>
+            <th>Birds</th>
+          </tr>
+          <tr>
+            <td width="70%">How many pets do you have at home</td>
+            <td><field ref="table1"/></td>
+            <td><field ref="table2"/></td>
+            <td><field ref="table3"/></td>
+          </tr>
+        </table>
       </fieldset>
       <fieldset label="Custom HTML">
         <text>If all the above options for layouting does not fullfill your

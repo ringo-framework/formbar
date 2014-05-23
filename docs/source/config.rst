@@ -535,7 +535,8 @@ handy in some situations e.g to build your own widget::
 
 Tables are usually used in the same way as :ref:`field` is used. Tables will
 take 100% of the available space. You can set the ``width`` attribute of the
-<td> field to configure the width of the columns.
+<td> field to configure the width of the columns. The width of the
+column can be set to % or pixel.
 
 .. _field:
 
