@@ -41,6 +41,15 @@ $( document ).ready(function() {
       $('#formbar-page-'+page).show();
     });
 
+    /* Restrict input depending on datatypes */
+    $('div.formbar-form input.integer').keypress(function(key) {
+        /* Only allow 0-9 (48-58) */
+        if (key.charCode < 48 || key.charCode > 57){
+            return false;
+        }
+    });
+
+
     /*
      * Evaluate when values in the form changes
     */
