@@ -113,6 +113,15 @@
         <option value="1">Yes</option>
       </options>
     </entity>
+    <entity id="showhiddenpage" name="showhiddenpage" label="Show hidden Page">
+      <renderer type="dropdown"></renderer>
+      <options>
+        <option value="0">No</option>
+        <option value="1">Yes</option>
+      </options>
+      <help>Setting the value to "yes" will add another page to the form. The
+      page will be added dynamically to the navigation too.</help>
+    </entity>
     <entity id="e15m" name="e15m" label="Men" type="integer">
     </entity>
     <entity id="e15w" name="e15w" label="Woman" type="integer">
@@ -461,6 +470,11 @@
             </if>
            </col>
         </row>
+        <row>
+          <col>
+            <field ref="showhiddenpage"/>
+          </col>
+        </row>
       </fieldset>
       <fieldset label="Calculations">
         <row>
@@ -470,5 +484,10 @@
         </row>
       </fieldset>
     </page>
+    <if expr="$showhiddenpage == 1">
+      <page id="p5" label="Hidden Page">
+        <text>This page is hidden as long as the user selects show hidden page.</text>
+      </page>
+    </if>
   </snippet>
 </configuration>
