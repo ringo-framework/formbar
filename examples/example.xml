@@ -299,17 +299,17 @@
         supports up to 12 cols per row. Width of the cols can be sized easily.
         Rows and cols can be nested to build complex layouts.</text>
         <row>
-          <col><field ref="e8"/></col>
-          <col><field ref="e10"/></col>
-          <col><field ref="e1"/></col>
+          <col><field ref="e8r"/></col>
+          <col><field ref="e10r"/></col>
+          <col><field ref="e1r"/></col>
         </row>
         <row>
-          <col width="9"><field ref="e7"/></col>
-          <col width="3"><field ref="e1"/></col>
+          <col width="9"><field ref="e7r"/></col>
+          <col width="3"><field ref="e1r"/></col>
         </row>
         <row>
-          <col><field ref="e2"/></col>
-          <col><field ref="e4"/></col>
+          <col><field ref="e2r"/></col>
+          <col><field ref="e4r"/></col>
         </row>
       </fieldset>
       <fieldset label="Text elements">
