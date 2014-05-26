@@ -77,11 +77,11 @@
       % elif child.tag == "table":
         <table class="table table-condensed table-bordered table-striped">
       % elif child.tag == "tr":
-        <tr>
+        <tr class="${child.attrib.get('class', '')}">
       % elif child.tag == "th":
-        <th>
+        <th colspan="${child.attrib.get('colspan', '')}" class="${child.attrib.get('class', '')}" rowspan="${child.attrib.get('rowspan', '')}" width="${child.attrib.get('width', '')}">
       % elif child.tag == "td":
-        <td class="${child.attrib.get('class', '')}" width="${child.attrib.get('width', '')}">
+        <td colspan="${child.attrib.get('colspan', '')}" class="${child.attrib.get('class', '')}" rowspan="${child.attrib.get('rowspan', '')}" width="${child.attrib.get('width', '')}">
       ## Conditionals
       % elif child.tag == "if":
         <div class="formbar-conditional ${child.attrib.get('type')}" expr="${child.attrib.get('expr')}">
@@ -140,10 +140,9 @@
         </p>
       ## Table rendering
       % elif child.tag == "th":
-        <th>${child.text}</th>
+        <th colspan="${child.attrib.get('colspan', '')}" class="${child.attrib.get('class', '')}" rowspan="${child.attrib.get('rowspan', '')}" width="${child.attrib.get('width', '')}">${child.text}</th>
       % elif child.tag == "td":
-        <td class="${child.attrib.get('class', '')}"
-        width="${child.attrib.get('width', '')}">${child.text or ""}</td>
+        <td colspan="${child.attrib.get('colspan', '')}" class="${child.attrib.get('class', '')}" rowspan="${child.attrib.get('rowspan', '')}" width="${child.attrib.get('width', '')}">${child.text or ""}</td>
       % endif
     % endif
   % endfor

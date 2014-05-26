@@ -17,6 +17,7 @@ TODO
 - Removed "star" indicator at labels for requierd fields.
 - Support (+,-,*,/) and logical grouping of elements
 - Conditionals supports now hidding whole pages.
+- Table rendering: td and th supports row and colspan.
 
 0.7.2
 =====

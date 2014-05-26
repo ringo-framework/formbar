@@ -538,6 +538,9 @@ take 100% of the available space. You can set the ``width`` attribute of the
 <td> field to configure the width of the columns. The width of the
 column can be set to % or pixel.
 
+The following attributes are supported for the ``td`` and ``th`` tags of the
+table: ``width``, ``class`` , ``rowspan``, ``colspan``.
+
 .. _field:
 
 Field
