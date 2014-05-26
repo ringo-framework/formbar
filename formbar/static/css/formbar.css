@@ -159,3 +159,8 @@ button {
   .formbar-outline.affix {
     width: 290px;
 }
+
+/* Bootstrap overwrites */
+.formbar-conditional .list-group-item {
+    border-top-width: 1px !important;
+}

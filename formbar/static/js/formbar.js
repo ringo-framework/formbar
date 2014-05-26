@@ -41,6 +41,30 @@ $( document ).ready(function() {
       $('#formbar-page-'+page).show();
     });
 
+    /* Restrict input depending on datatypes */
+    $('div.formbar-form input.integer').keypress(function(key) {
+        /* Only allow 0-9 (48-58) */
+        var cc = key.charCode;
+        if ((cc < 48 || cc > 57) && cc != 0){
+            return false;
+        }
+    });
+    $('div.formbar-form input.float').keypress(function(key) {
+        /* Only allow 0-9 (48-58 and ".") */
+        var cc = key.charCode;
+        if ((cc < 48 || cc > 57) && cc != 0 && cc != 46){
+            return false;
+        }
+    });
+    $('div.formbar-form input.date').keypress(function(key) {
+        /* Only allow 0-9 (48-58 and "-") */
+        var cc = key.charCode;
+        if ((cc < 48 || cc > 57) && cc != 0 && cc != 45){
+            return false;
+        }
+    });
+
+
     /*
      * Evaluate when values in the form changes
     */
