@@ -37,6 +37,11 @@ class TestParseRule(unittest.TestCase):
         result = self.parser.parse(expr)
         self.assertEqual(expr, "".join(result.asList()))
 
+    def test_lteq_expr(self):
+        expr = "2 le 4" # -> "2<=4"
+        result = self.parser.parse(expr)
+        self.assertEqual("2<=4", "".join(result.asList()))
+
     def test_gteq_expr(self):
         expr = "$field>=$field"
         result = self.parser.parse(expr)
@@ -183,6 +188,12 @@ class TestEvaluateRule(unittest.TestCase):
     def test_lteq_expr_ok(self):
         values = {"field": 3}
         expr = "$field<=4"
+        rule = self.build_rule(expr)
+        self.assertEqual(rule.evaluate(values), True)
+
+    def test_lteq2_expr_ok(self):
+        values = {}
+        expr = " 2 le 4"
         rule = self.build_rule(expr)
         self.assertEqual(rule.evaluate(values), True)
 
