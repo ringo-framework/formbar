@@ -241,8 +241,8 @@ class FieldRenderer(Renderer):
         out = []
         mode = None
         d = difflib.Differ()
-        old = newvalue.split(" ")
-        new = oldvalue.split(" ")
+        old = unicode(newvalue).split(" ")
+        new = unicode(oldvalue).split(" ")
         diff = d.compare(old, new)
         for x in diff:
             if x[0:2] == "+ " and mode != "new":
