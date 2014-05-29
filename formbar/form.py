@@ -597,8 +597,7 @@ class Form(object):
                 self._add_error(validator._field, validator._error)
 
         # If the form is valid. Save the converted and validated data
-        # into the data dictionary. If not, than save the origin
-        # submitted data.
+        # into the data dictionary.
         has_errors = self.has_errors()
         if not has_errors:
             self.data = converted
