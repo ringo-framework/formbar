@@ -5,7 +5,7 @@ from pyramid.config import Configurator
 from pyramid.response import Response
 
 # FIXME: Why is this import needed? If not present the server will fail
-# to work. (ti) <2014-05-20 17:08> 
+# to work. (ti) <2014-05-20 17:08>
 from sqlalchemy.orm import scoped_session
 
 from mako.lookup import TemplateLookup
@@ -40,7 +40,7 @@ def example(request):
     form = Form(form_config, eval_url="/evaluate")
 
     if request.POST:
-        form.validate(request.POST.mixed())
+        form.validate(request.POST)
     else:
         form.validate({})
 
