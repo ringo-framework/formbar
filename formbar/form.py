@@ -1,7 +1,7 @@
 import logging
 import datetime
 import sqlalchemy as sa
-from formencode import htmlfill, variabledecode
+from formencode import htmlfill
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Parser
 
@@ -201,8 +201,7 @@ class Form(object):
 
     def serialize(self, data):
         """Returns a dictionary with serialized data from the forms
-        item.  The return dictionary is suitable for htmlfill to prefill
-        the rendered form. The dictionary will include all attributes
+        item.  The dictionary will include all attributes
         and relations values of the items. The key in the dictionary is
         the name of the relation/attribute. In case of relations the
         value in the dictionary is the "id" value of the related item.
@@ -327,10 +326,7 @@ class Form(object):
 
         renderer = FormRenderer(self, self._translate)
         form = renderer.render(buttons=buttons, outline=outline)
-        # TODO: Can happen: Error while parsing form in htmlfill: %s. Hint See
-        # 'https://github.com/formencode/formencode/issues/57desc (ti)
-        # <2014-03-21 10:29>
-        return htmlfill.render(form, values)
+        return form
 
     def _add_error(self, fieldname, error):
         field = self.get_field(fieldname)
@@ -493,7 +489,7 @@ class Form(object):
                 values = []
                 db = self._dbsession
                 rel = relation_names[field.name].mapper.class_
-                for v in value:
+                for v in [v for v in value if v != ""]:
                     values.append(db.query(rel).filter(rel.id == int(v)).one())
                 converted = values
             except ValueError:
@@ -572,7 +568,7 @@ class Form(object):
             # already pythonic when loaded from the item.
             converted = unvalidated
         else:
-            self.submitted_data = variabledecode.variable_decode(submitted)
+            self.submitted_data = submitted.mixed()
             unvalidated = self.submitted_data
             converted = self.deserialize(unvalidated)
 
