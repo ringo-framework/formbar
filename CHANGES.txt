@@ -10,6 +10,9 @@ TODO
 0.8.1
 =====
 - Removed dependency to formencode.
+- Added experimental special logic to submit unselected items for radio and
+  checkbox input fields.
+- Render diff to previous value in dropdowns too.
 
 0.8.0
 =====
