@@ -8,9 +8,9 @@ selected = field.get_value()
   % if option[2]:
     <label class="radio-inline">
       % if option[1] in selected:
-        <input type="checkbox" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" checked="checked" ${readonly}/>
+        <input type="radio" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" checked="checked" ${readonly}/>
       % else:
-        <input type="checkbox" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" ${readonly}/>
+        <input type="radio" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" ${readonly}/>
       % endif
       ${option[0]}
     </label>
