@@ -1,6 +1,10 @@
 <%
 readonly = (field.is_readonly() and "disabled") or ""
 selected = field.get_value()
+if not isinstance(selected, list):
+  selected = [str(selected)]
+else:
+  selected = [str(s) for s in selected]
 %>
 % for num, option in enumerate(options):
   ## Depending if the options has passed the configured filter the
