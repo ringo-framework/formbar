@@ -1,17 +1,17 @@
-# Translations template for formbar.
+# German translations for formbar.
 # Copyright (C) 2014 ORGANIZATION
 # This file is distributed under the same license as the formbar project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: formbar 0.8.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-06-30 12:57+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2014-06-30 13:03+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,20 +19,24 @@ msgstr ""
 
 #: formbar/templates/form.mako:8
 msgid "Outline"
-msgstr ""
+msgstr "Gliederung"
 
 #: formbar/templates/formbareditor.mako:5
 msgid "Editor"
-msgstr ""
+msgstr "Editor"
 
 #: formbar/templates/formbareditor.mako:7
 msgid "Preview"
-msgstr ""
+msgstr "Vorschau"
 
 #: formbar/templates/formbareditor.mako:31
 msgid ""
-"This is just a basic editor for formbar forms. The preview of the forms will "
-"have no outline, no dynamic nor will show application specific fields. "
-"Instead of those the default textfield will be rendered."
+"This is just a basic editor for formbar forms. The preview of the forms "
+"will have no outline, no dynamic nor will show application specific "
+"fields. Instead of those the default textfield will be rendered."
 msgstr ""
+"Dies ist nur ein einfacher Editor für formbar Formulare. Die Vorschau "
+"wird keine Gliederung, keine dynamischen Inhalte noch "
+"anwendungsspezifische Felder beinhalten. Anstelle dieser werden die "
+"Vorgabe Felder gerendert."
 
