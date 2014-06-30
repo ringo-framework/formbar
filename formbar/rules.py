@@ -107,6 +107,9 @@ fieldname = Word("$" + alphanums + "_")
 integer = Regex(r"-?\d+")
 string = Regex(r"'-?\w+'")
 real = Regex(r"-?\d+\.\d*")
+c_true = Literal("True")
+c_false = Literal("False")
+const = c_true | c_false
 
 
 def convertOperator(op):
@@ -163,7 +166,7 @@ operator = (oneOf('== < > <= >= != in and or + - * /')
 operand = Forward()
 function_call = functor + LPAR + Optional(delimitedList(operand)) + RPAR
 option_list = LSBR + Optional(delimitedList(operand, combine=True)) + RSBR
-operand << (option_list | function_call | functor | real | integer | string | fieldname)
+operand << (option_list | function_call | functor | real | integer | string | fieldname | const)
 expr = operand + operator + operand | operand
 grouping = LPAR + OneOrMore( expr | operator + expr ) + RPAR
 term = grouping | expr
