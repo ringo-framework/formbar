@@ -290,6 +290,18 @@
         <text>Forms can be seperated in pages. If so the form will get such an
         outline as you see on the left side.</text>
       </fieldset>
+      <fieldset label="Sections">
+        <text>Formbar supports sections up to three layers.</text>
+        <section label="1. Section">
+          <text>Section text</text>
+          <subsection label="1.1 Sub-Section">
+            <text>Sub-Section text</text>
+            <subsubsection label="1.1.1 Subsub-Section">
+              <text>Subsub-Section text</text>
+            </subsubsection>
+          </subsection>
+        </section>
+      </fieldset>
       <fieldset label="Fieldsets">
         <text>Formbar offers fieldsets in the same way as plain HTML does to
         group fields into logical groups.</text>

@@ -13,6 +13,7 @@ TODO
 - Added experimental special logic to submit unselected items for radio and
   checkbox input fields.
 - Render diff to previous value in dropdowns too.
+- Add Section elements.
 
 0.8.0
 =====

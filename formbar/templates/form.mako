@@ -22,7 +22,7 @@
   <div class="col-sm-9">
   % for num, page in enumerate(form._config.get_pages()):
     <div class="formbar-page ${num==form.current_page-1 and 'active'}" id="formbar-page-${num+1}">
-      <h2>${page.attrib.get('label')}</h2>
+      <h1 class="page">${page.attrib.get('label')}</h1>
       ${self.render_recursive(page)}
     </div>
   % endfor
@@ -64,7 +64,13 @@
   % for child in elem:
     % if len(child) > 0:
       % if child.tag == "page" and not render_outline:
-        <h3>${child.attrib.get("label")}</h3>
+        <h1 class="page">${child.attrib.get("label")}</h1>
+      % elif child.tag == "section":
+        <h2 class="section">${child.attrib.get('label')}</h2>
+      % elif child.tag == "subsection":
+        <h3 class="section">${child.attrib.get('label')}</h3>
+      % elif child.tag == "subsubsection":
+        <h4 class="section">${child.attrib.get('label')}</h4>
       % elif child.tag == "row":
         <div class="row row-fluid">
       % elif child.tag == "col":

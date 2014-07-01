@@ -65,6 +65,22 @@ label.checkbox, label.radio {
   margin-bottom: 10px;
 }
 
+.formbar-form h1.page {
+  font-size: 30px;
+}
+
+.formbar-form h2.section {
+  font-size: 28px;
+}
+
+.formbar-form h3.section {
+  font-size: 25px;
+}
+
+.formbar-form h4.section {
+  font-size: 22px;
+}
+
 .formbar-form table td div.readonlyfield {
   margin-bottom: 0px;
 }
