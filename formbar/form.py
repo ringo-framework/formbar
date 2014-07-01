@@ -568,7 +568,10 @@ class Form(object):
             # already pythonic when loaded from the item.
             converted = unvalidated
         else:
-            self.submitted_data = submitted.mixed()
+            try:
+                self.submitted_data = submitted.mixed()
+            except AttributeError:
+                self.submitted_data = submitted
             unvalidated = self.submitted_data
             converted = self.deserialize(unvalidated)
 
