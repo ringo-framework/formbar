@@ -140,6 +140,7 @@ class FormRenderer(Renderer):
         return self.template.render(**values)
 
     def _render_form_buttons(self):
+        _ = self.translate
         html = []
         html.append('<div class="row row-fluid">')
         if len(self._form._config.get_pages()) > 0:
@@ -152,9 +153,9 @@ class FormRenderer(Renderer):
         # form.
         if len(self._form._config._buttons) == 0:
             html.append('<button type="submit" '
-                        'class="btn btn-default">%s</button>' % 'Submit')
+                        'class="btn btn-default">%s</button>' % _('Submit'))
             html.append('<button type="reset" '
-                        'class="btn btn-default">%s</button>' % 'Reset')
+                        'class="btn btn-default">%s</button>' % _('Reset'))
         else:
             for b in self._form._config._buttons:
                 if b.attrib.get("icon"):
