@@ -1,7 +1,6 @@
 import logging
 import datetime
 import sqlalchemy as sa
-from formencode import htmlfill
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Parser
 
