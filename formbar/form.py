@@ -767,8 +767,12 @@ class Field(object):
                 if len(tokens) > 1:
                     key = tokens[0].strip("$")
                     attribute = ".".join(tokens[1:])
+                    # FIXME: This is a bad assumption that there is a
+                    # user within a request. (ti) <2014-07-09 11:18> 
                     if key == "user":
                         tmpitem = self._form._request.user
+                else:
+                    value = self._form.merged_data.get(tokens[0].strip("$"))
                 if tmpitem and not value:
                     value = getattr(tmpitem, attribute)
                     if hasattr(value, '__call__'):
@@ -776,7 +780,7 @@ class Field(object):
             else:
                 value = None
 
-            if value:
+            if value is not None:
                 if isinstance(value, list):
                     value = "[%s]" % ", ".join("'%s'" % unicode(v) for v in value)
                     expr_str = expr_str.replace(x, value)
