@@ -140,6 +140,10 @@ class Form(object):
         self.loaded_data = self.serialize(self._get_data_from_item())
         """This is the initial data loaded from the given item. Used to
         render the readonly forms"""
+        self.merged_data = {}
+        """This is merged date from the initial data loaded from the
+        given item. And userprovied data. The data is available after
+        rendering the form"""
 
     def _set_current_field_data(self, data):
         for key in self.fields:
@@ -315,6 +319,7 @@ class Form(object):
         # Merge the items_values with the extra provided values. Extra
         # values will overwrite the item_values.
         values = dict(item_values.items() + values.items())
+        self.merged_data = values
 
         # Set current and previous values of the fields in the form.
         self._set_current_field_data(values)
