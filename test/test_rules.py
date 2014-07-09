@@ -215,6 +215,30 @@ class TestEvaluateRule(unittest.TestCase):
         rule = self.build_rule(expr)
         self.assertEqual(rule.evaluate(values), False)
 
+    def test_or_expr_ok(self):
+        values = {"x": "1", "y": "1"}
+        expr = "('1' == $x) or ('2' == $y)"
+        rule = self.build_rule(expr, desired=True)
+        self.assertEqual(rule.evaluate(values), True)
+
+    def test_or_expr_fail(self):
+        values = {"x": "3", "y": "3"}
+        expr = "('1' == $x) or ('2' == $y)"
+        rule = self.build_rule(expr, desired=True)
+        self.assertEqual(rule.evaluate(values), False)
+
+    def test_and_expr_ok(self):
+        values = {"x": "1", "y": "2"}
+        expr = "('1' == $x) and ('2' == $y)"
+        rule = self.build_rule(expr, desired=True)
+        self.assertEqual(rule.evaluate(values), True)
+
+    def test_and_expr_fail(self):
+        values = {"x": "2", "y": "2"}
+        expr = "('1' == $x) and ('2' == $y)"
+        rule = self.build_rule(expr, desired=True)
+        self.assertEqual(rule.evaluate(values), False)
+
     def test_bool_ok(self):
         values = {"field": "we have a value"}
         expr = "bool('xxx')"
@@ -244,6 +268,7 @@ class TestEvaluateRule(unittest.TestCase):
         expr = "bool($field)"
         rule = self.build_rule(expr, desired=True)
         self.assertEqual(rule.evaluate(values), False)
+
 
 if __name__ == '__main__':
     unittest.main()
