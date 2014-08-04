@@ -402,6 +402,8 @@ class Form(object):
             if not re.match(r"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$", value):
                 msg = "%s is not valid email address." % value
                 self._add_error(field.name, msg)
+            else:
+                converted = value
         elif dtype == 'boolean':
             if not value:
                 return None
