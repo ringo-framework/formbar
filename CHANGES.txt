@@ -7,6 +7,10 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.8.3
+=====
+- Added translation for warning and error messages.
+
 0.8.2
 =====
 - Added email field.

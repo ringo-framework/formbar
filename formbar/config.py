@@ -1,8 +1,11 @@
+import gettext
 import logging
 import xml.etree.ElementTree as ET
 from formbar.rules import Rule, Parser
 
 log = logging.getLogger(__name__)
+_ = gettext.gettext
+
 
 
 def load(path):
@@ -368,13 +371,13 @@ class Field(Config):
         # desired flag
         if self.required:
             expr = "bool($%s)" % self.name
-            msg = "This field is required. You need to provide a value"
+            msg = _("This field is required. You must provide a value")
             mode = "pre"
             expr = parser.parse(expr)
             self.rules.append(Rule(expr, msg, mode))
         if self.desired:
             expr = "bool($%s)" % self.name
-            msg = "This field is desired. Pleas provide a value"
+            msg = _("This field is desired. Pleas provide a value")
             mode = "pre"
             triggers = "warning"
             expr = parser.parse(expr)
