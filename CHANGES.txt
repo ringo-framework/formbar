@@ -10,6 +10,7 @@ TODO
 0.8.3
 =====
 - Added translation for warning and error messages.
+- Added translation of options in dropdown fields.
 
 0.8.2
 =====
