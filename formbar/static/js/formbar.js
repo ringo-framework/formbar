@@ -83,7 +83,7 @@ $( document ).ready(function() {
 });
 
 function evaluate(element) {
-    var expr = element['attributes'][0].value;
+    var expr = element.getAttribute("expr");
     var tokens = expr.split(" ");
 
     var form = $(element).closest("form");
@@ -94,7 +94,6 @@ function evaluate(element) {
     for (var j = 0; j <= tokens.length - 1; j++) {
         var tfield = null;
         var value = null;
-        var readonly = null;
         if (tokens[j].indexOf("$") >= 0) {
             tfield = tokens[j].replace('$', '');
             // Select field
@@ -103,26 +102,17 @@ function evaluate(element) {
                           + 'div[name='+tfield+'], '
                           + 'textarea[name='+tfield+']');
             value = field.val();
-            readonly = field.attr("class");
-            if (readonly && readonly.indexOf("readonly") >= 0) {
-                readonly = true;
-            } else {
-                readonly = false;
-            }
             // If we can not get a value from an input fields the field my
             // be readonly. So get the value from the readonly element.
             // First try to get the unexpaned value, if there is no
             // value get the textvalue of the field. (Which is usually
             // the expanded value).
-            if (readonly) {
-                if (!value) {
-                    value = field.attr("value");
-                }
-                if (!value) {
-                    value = field.text();
-                }
+            if (!value) {
+                value = field.attr("value");
             }
-            value = value.trim();
+            if (!value) {
+                value = field.text();
+            }
             if (value.indexOf("[") < 0) {
                 if (!value) {
                     value = "None";

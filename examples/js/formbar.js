@@ -83,7 +83,7 @@ $( document ).ready(function() {
 });
 
 function evaluate(element) {
-    var expr = element['attributes'][0].value;
+    var expr = element.getAttribute("expr");
     var tokens = expr.split(" ");
 
     var form = $(element).closest("form");
