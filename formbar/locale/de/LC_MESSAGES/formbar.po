@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: formbar 0.8.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-08-14 10:08+0200\n"
-"PO-Revision-Date: 2014-08-14 10:11+0200\n"
+"PO-Revision-Date: 2014-08-18 12:11+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -23,7 +23,7 @@ msgstr "Dieses Feld wird verlangt. Sie müssen ein Wert angeben."
 
 #: formbar/config.py:380
 msgid "This field is desired. Pleas provide a value"
-msgstr "Dieses Feld is erwünscht. Bitte geben Sie einen Wert an."
+msgstr "Dieses Feld ist erwünscht. Bitte geben Sie einen Wert an."
 
 #: formbar/renderer.py:158
 msgid "Submit"
