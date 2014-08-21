@@ -62,3 +62,18 @@ def get_local_datetime(dt, timezone=None):
     return dt.astimezone(timezone)
 
 
+def get_utc_datetime(dt, timezone=None):
+    """Will return a datetime converted into to given timezone. If the
+    given datetime is naiv and does not support timezone information
+    then UTC timezone is assumed. If timezone is None, then the local
+    timezone of the server will be used.
+
+    :dt: datetime
+    :timezone: String timezone (eg. Europe/Berin)
+    :returns: datetime
+
+    """
+    if not timezone:
+        dt = dt.replace(tzinfo=tz.tzlocal())
+    timezone = tz.gettz('UTC')
+    return dt.astimezone(timezone)

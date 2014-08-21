@@ -5,7 +5,7 @@ import sqlalchemy as sa
 from babel.dates import format_datetime
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Parser
-from formbar.helpers import get_local_datetime
+from formbar.helpers import get_local_datetime, get_utc_datetime
 
 log = logging.getLogger(__name__)
 
@@ -472,6 +472,7 @@ class Form(object):
                 M = int(M)
                 s = int(s)
                 converted = datetime.datetime(y, m, d, h, M, s)
+                converted = get_utc_datetime(converted)
             except:
                 log.exception("e")
                 msg = "%s is not a valid datetime format." % value
