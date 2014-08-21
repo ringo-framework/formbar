@@ -2,6 +2,7 @@ import logging
 import re
 import datetime
 import sqlalchemy as sa
+from babel.dates import format_datetime
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Parser
 from formbar.helpers import get_local_datetime
@@ -548,7 +549,8 @@ class Form(object):
                         serialized = "%02d:%02d:%02d" % (d.hour, d.minute, d.second)
                     elif ftype == "datetime":
                         value = get_local_datetime(value)
-                        serialized = value.strftime("%Y-%m-%d %H:%M:%S")
+                        dateformat = "yyyy-MM-dd HH:mm:ss"
+                        serialized = format_datetime(value, format=dateformat)
                     else:
                         serialized = value
         except AttributeError:
