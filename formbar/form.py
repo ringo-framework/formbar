@@ -4,6 +4,7 @@ import datetime
 import sqlalchemy as sa
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Parser
+from formbar.helpers import get_local_datetime
 
 log = logging.getLogger(__name__)
 
@@ -546,6 +547,7 @@ class Form(object):
                         d = datetime.datetime(1, 1, 1) + td
                         serialized = "%02d:%02d:%02d" % (d.hour, d.minute, d.second)
                     elif ftype == "datetime":
+                        value = get_local_datetime(value)
                         serialized = value.strftime("%Y-%m-%d %H:%M:%S")
                     else:
                         serialized = value
