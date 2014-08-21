@@ -1,4 +1,5 @@
 import logging
+import re
 import datetime
 import sqlalchemy as sa
 from formbar.renderer import FormRenderer, get_renderer
@@ -393,6 +394,16 @@ class Form(object):
             except ValueError:
                 msg = "%s is not a float value." % value
                 self._add_error(field.name, msg)
+        elif dtype == 'email':
+            # TODO: Really check the email. Ask the server mailsserver
+            # if the adress is known. (ti) <2014-08-04 16:31> 
+            if not value:
+                return None
+            if not re.match(r"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$", value):
+                msg = "%s is not valid email address." % value
+                self._add_error(field.name, msg)
+            else:
+                converted = value
         elif dtype == 'boolean':
             if not value:
                 return None

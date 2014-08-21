@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: formbar 0.8.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-04 15:55+0200\n"
-"PO-Revision-Date: 2014-07-04 15:55+0200\n"
+"POT-Creation-Date: 2014-08-14 10:08+0200\n"
+"PO-Revision-Date: 2014-08-18 12:11+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -17,11 +17,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: formbar/renderer.py:156
+#: formbar/config.py:374
+msgid "This field is required. You must provide a value"
+msgstr "Dieses Feld wird verlangt. Sie müssen ein Wert angeben."
+
+#: formbar/config.py:380
+msgid "This field is desired. Pleas provide a value"
+msgstr "Dieses Feld ist erwünscht. Bitte geben Sie einen Wert an."
+
+#: formbar/renderer.py:158
 msgid "Submit"
 msgstr "Speichern"
 
-#: formbar/renderer.py:158
+#: formbar/renderer.py:160
 msgid "Reset"
 msgstr "Zurücksetzen"
 
@@ -47,3 +55,4 @@ msgstr ""
 "wird keine Gliederung, keine dynamischen Inhalte noch "
 "anwendungsspezifische Felder beinhalten. Anstelle dieser werden die "
 "Vorgabe Felder gerendert."
+

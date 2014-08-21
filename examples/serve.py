@@ -63,6 +63,6 @@ if __name__ == '__main__':
     config.add_static_view('css', 'css', cache_max_age=3600)
     config.add_static_view('js', 'js', cache_max_age=3600)
     app = config.make_wsgi_app()
-    server = make_server('0.0.0.0', 8080, app)
-    print "Server is available on http://0.0.0.0:8080"
+    server = make_server('127.0.0.1', 8080, app)
+    print "Server is available on http://127.0.0.1:8080"
     server.serve_forever()

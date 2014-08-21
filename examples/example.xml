@@ -5,6 +5,8 @@
     <entity id="e1r" name="e1r" label="Textfield" readonly="true" value="Foo"></entity>
     <entity id="e2" name="e2" label="Integer" type="integer"></entity>
     <entity id="e2r" name="e2r" label="Integer" type="integer" readonly="true" value="12345"></entity>
+    <entity id="email" name="email" label="Email" type="email"></entity>
+    <entity id="emailr" name="emailr" label="Email" type="email" readonly="true" value="mail@example.com"></entity>
     <entity id="e3" name="e3" label="Float" type="float"></entity>
     <entity id="e3r" name="e3r" label="Float" type="float" readonly="true" value="1.2345"></entity>
     <entity id="e4" name="e4" label="Textarea">
@@ -223,6 +225,10 @@
       <row>
         <col><field ref="e5"/></col>
         <col><field ref="e5r"/></col>
+      </row>
+      <row>
+        <col><field ref="email"/></col>
+        <col><field ref="emailr"/></col>
       </row>
       </fieldset>
       <fieldset label="Selections">

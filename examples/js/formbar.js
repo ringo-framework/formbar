@@ -63,6 +63,14 @@ $( document ).ready(function() {
             return false;
         }
     });
+    $('div.formbar-form input.email').keypress(function(key) {
+        /* Only allow a-z0-9-_@. (48-58 and "-") */
+        var cc = key.charCode;
+        console.log(cc)
+        if ((cc < 97 || cc > 122) && (cc < 48 || cc > 57) && cc != 0 && cc != 45 && cc != 64 && cc != 95 && cc != 46){
+            return false;
+        }
+    });
 
 
     /*
@@ -75,7 +83,7 @@ $( document ).ready(function() {
 });
 
 function evaluate(element) {
-    var expr = element['attributes'][0].value;
+    var expr = element.getAttribute("expr");
     var tokens = expr.split(" ");
 
     var form = $(element).closest("form");
@@ -158,7 +166,8 @@ function evaluateConditionals() {
         if (result) {
             if (readonly) {
                 $(conditional).animate({opacity:'1.0'}, 1500);
-                $(conditional).find('input, select, textarea').attr('readonly', false);
+                $(conditional).find('input, textarea').attr('readonly', false);
+                $(conditional).find('select').attr('disabled', false);
             }
             else {
                 $(conditional).show();
@@ -167,7 +176,8 @@ function evaluateConditionals() {
         else {
             if (readonly) {
                 $(conditional).animate({opacity:'0.4'}, 1500);
-                $(conditional).find('input, select, textarea').attr('readonly', true);
+                $(conditional).find('input, textarea').attr('readonly', true);
+                $(conditional).find('select').attr('disabled', true);
             }
             else {
                 $(conditional).hide();

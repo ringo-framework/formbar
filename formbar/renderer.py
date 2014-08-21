@@ -61,6 +61,8 @@ def get_renderer(field, translate):
             return FileFieldRenderer(field, translate)
         elif dtype == "time":
             return TimeFieldRenderer(field, translate)
+        elif dtype == "email":
+            return EmailFieldRenderer(field, translate)
     return TextFieldRenderer(field, translate)
 
 
@@ -336,6 +338,13 @@ class TimeFieldRenderer(FieldRenderer):
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("timefield.mako")
+
+class EmailFieldRenderer(FieldRenderer):
+    """A Renderer to render email fields"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("email.mako")
 
 
 class FileFieldRenderer(FieldRenderer):
