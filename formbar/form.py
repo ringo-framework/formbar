@@ -472,7 +472,12 @@ class Form(object):
                 M = int(M)
                 s = int(s)
                 converted = datetime.datetime(y, m, d, h, M, s)
+		# Convert datetime to UTC and remove tzinfo because SQLAlchemy
+		# fails when trying to store offset-aware datetimes if the date
+		# column isn't prepared. As storing dates in UTC is a good idea
+		# anyway this is the default.
                 converted = get_utc_datetime(converted)
+		converted = converted.replace(tzinfo=None)
             except:
                 log.exception("e")
                 msg = "%s is not a valid datetime format." % value
