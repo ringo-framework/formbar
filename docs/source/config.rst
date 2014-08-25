@@ -203,7 +203,6 @@ Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
-ignore          Another way to filter options. (Deprecated)
 =============== ===========
 
 .. note::
@@ -225,9 +224,6 @@ Both variables support accessing related items through the dot-syntax::
         
         <renderer type="selection" filter="%foo eq @bar.baz">
 
-The ignore attribute offers another but deprecated way to filter options. It
-syntax differs from the filter expression. See source for more information.
-
 .. _dropdown:
 
 Dropdown
@@ -247,7 +243,6 @@ underlying data model::
 Attribute   Description
 =========   ===========
 filter      Expression which must evaluate to True if the option shoul be shown in the Dropdown.
-ignore      Another way to filter options. (Deprecated)
 =========   ===========
 
 .. note::
@@ -276,7 +271,6 @@ Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
-ignore          Another way to filter options. (Deprecated)
 align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
 =============== ===========
 
@@ -303,7 +297,6 @@ Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
-ignore          Another way to filter options. (Deprecated)
 align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
 =============== ===========
 

@@ -2,8 +2,10 @@ import logging
 import re
 import datetime
 import sqlalchemy as sa
+from babel.dates import format_datetime
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Parser
+from formbar.helpers import get_local_datetime, get_utc_datetime
 
 log = logging.getLogger(__name__)
 
@@ -470,6 +472,12 @@ class Form(object):
                 M = int(M)
                 s = int(s)
                 converted = datetime.datetime(y, m, d, h, M, s)
+		# Convert datetime to UTC and remove tzinfo because SQLAlchemy
+		# fails when trying to store offset-aware datetimes if the date
+		# column isn't prepared. As storing dates in UTC is a good idea
+		# anyway this is the default.
+                converted = get_utc_datetime(converted)
+		converted = converted.replace(tzinfo=None)
             except:
                 log.exception("e")
                 msg = "%s is not a valid datetime format." % value
@@ -546,7 +554,9 @@ class Form(object):
                         d = datetime.datetime(1, 1, 1) + td
                         serialized = "%02d:%02d:%02d" % (d.hour, d.minute, d.second)
                     elif ftype == "datetime":
-                        serialized = value.strftime("%Y-%m-%d %H:%M:%S")
+                        value = get_local_datetime(value)
+                        dateformat = "yyyy-MM-dd HH:mm:ss"
+                        serialized = format_datetime(value, format=dateformat)
                     else:
                         serialized = value
         except AttributeError:
