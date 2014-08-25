@@ -17,7 +17,7 @@
         % else:
           <option value="${option[1]}">${_(option[0])}</option>
         % endif
-      % else:
+      % elif not field.renderer.remove_filtered == "true":
         <option value="${option[1]}" class="hidden">${_(option[0])}</option>
       % endif
     % endfor
