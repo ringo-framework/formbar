@@ -22,7 +22,7 @@ setup(name='formbar',
       zip_safe=False,
       install_requires=['pyparsing==1.5.6',
                         'babel',
-                        'dateutil',
+                        'dateutils',
                         'mako'],
       # Used for the example server
       extras_require={'examples':  ["pyramid"]},
