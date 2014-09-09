@@ -2,7 +2,7 @@ import logging
 import re
 import datetime
 import sqlalchemy as sa
-from babel.dates import format_datetime
+from babel.dates import format_datetime, format_date
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Parser
 from formbar.helpers import get_local_datetime, get_utc_datetime
@@ -398,7 +398,7 @@ class Form(object):
                 self._add_error(field.name, msg)
         elif dtype == 'email':
             # TODO: Really check the email. Ask the server mailsserver
-            # if the adress is known. (ti) <2014-08-04 16:31> 
+            # if the adress is known. (ti) <2014-08-04 16:31>
             if not value:
                 return None
             if not re.match(r"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$", value):
@@ -557,6 +557,9 @@ class Form(object):
                         value = get_local_datetime(value)
                         dateformat = "yyyy-MM-dd HH:mm:ss"
                         serialized = format_datetime(value, format=dateformat)
+                    elif ftype == "date":
+                        dateformat = "yyyy-MM-dd"
+                        serialized = format_date(value, format=dateformat)
                     else:
                         serialized = value
         except AttributeError:
@@ -789,7 +792,7 @@ class Field(object):
                     key = tokens[0].strip("$")
                     attribute = ".".join(tokens[1:])
                     # FIXME: This is a bad assumption that there is a
-                    # user within a request. (ti) <2014-07-09 11:18> 
+                    # user within a request. (ti) <2014-07-09 11:18>
                     if key == "user":
                         tmpitem = self._form._request.user
                 else:
