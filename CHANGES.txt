@@ -7,6 +7,10 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.8.4
+=====
+- Set autocomplete="off" for password fields.
+
 0.8.3
 =====
 - Added translation for warning and error messages.
