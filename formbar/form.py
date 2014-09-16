@@ -2,7 +2,7 @@ import logging
 import re
 import datetime
 import sqlalchemy as sa
-from babel.dates import format_datetime
+from babel.dates import format_datetime, format_date
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Parser
 from formbar.helpers import get_local_datetime, get_utc_datetime
@@ -398,7 +398,7 @@ class Form(object):
                 self._add_error(field.name, msg)
         elif dtype == 'email':
             # TODO: Really check the email. Ask the server mailsserver
-            # if the adress is known. (ti) <2014-08-04 16:31> 
+            # if the adress is known. (ti) <2014-08-04 16:31>
             if not value:
                 return None
             if not re.match(r"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$", value):
@@ -557,6 +557,9 @@ class Form(object):
                         value = get_local_datetime(value)
                         dateformat = "yyyy-MM-dd HH:mm:ss"
                         serialized = format_datetime(value, format=dateformat)
+                    elif ftype == "date":
+                        dateformat = "yyyy-MM-dd"
+                        serialized = format_date(value, format=dateformat)
                     else:
                         serialized = value
         except AttributeError:
@@ -589,16 +592,13 @@ class Form(object):
 
         if not submitted:
             unvalidated = self.loaded_data
-            # No need to convert the values here as the values are
-            # already pythonic when loaded from the item.
-            converted = unvalidated
         else:
             try:
                 self.submitted_data = submitted.mixed()
             except AttributeError:
                 self.submitted_data = submitted
             unvalidated = self.submitted_data
-            converted = self.deserialize(unvalidated)
+        converted = self.deserialize(unvalidated)
 
         # Validate the fields. Ignore fields which are disabled in
         # conditionals First get list of fields which are still in the
@@ -789,7 +789,7 @@ class Field(object):
                     key = tokens[0].strip("$")
                     attribute = ".".join(tokens[1:])
                     # FIXME: This is a bad assumption that there is a
-                    # user within a request. (ti) <2014-07-09 11:18> 
+                    # user within a request. (ti) <2014-07-09 11:18>
                     if key == "user":
                         tmpitem = self._form._request.user
                 else:
