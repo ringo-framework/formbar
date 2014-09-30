@@ -1,8 +1,86 @@
 import logging
-from pyparsing import Literal, Word, alphanums, Regex, \
-    oneOf, Forward, Optional, delimitedList, ParseException, OneOrMore
+from pyparsing import (
+    operatorPrecedence,
+    Group,
+    oneOf,
+    Forward,
+    Optional,
+    delimitedList,
+    opAssoc,
+    Keyword,
+    Literal,
+    Word,
+    alphas,
+    alphanums,
+    nums,
+    Regex,
+    ParseResults,
+    ParserElement,
+    ParseException
+)
 
 log = logging.getLogger(__name__)
+
+ParserElement.enablePackrat()
+
+opmap = {
+    "eq": "==",
+    "ne": "!=",
+    "gt": ">",
+    "ge": ">=",
+    "le": "<=",
+    "lt": "<",
+    "plus": "+",
+    "minus": "-",
+    "mul": "*",
+    "div": "/"
+}
+
+
+def convertOperator(op):
+    """Returns operater for a given string. Operators can be expressed
+    as string known from the shell as "<" can not be included in XML"""
+    op = op[0]
+    return opmap.get(op, op)
+
+RULE = Forward()
+EXPR = Forward()
+f_len = Literal("len")
+f_bool = Literal("bool").setParseAction(lambda x: ['_bool'])
+functor = f_len | f_bool
+
+LPAR = Literal("(")
+RPAR = Literal(")")
+LBR = Literal("[")
+RBR = Literal("]")
+TRUE = Keyword("True")
+FALSE = Keyword("False")
+VAR = Word("$" + alphanums + "_")
+STR = Word("'" + alphanums + "_" + "'")
+FLOAT = Regex(r'\d+(\.\d*)?([eE]\d+)?')
+NUM =  FLOAT | Word(nums)
+LIST = LBR + Optional(delimitedList(STR | NUM, combine=True)) + RBR
+FUNC = functor + LPAR + Optional(delimitedList(EXPR, combine=True)) + RPAR
+OPERAND = FUNC | LIST | NUM | STR | VAR | FALSE | TRUE
+
+expop = Literal('^')
+negop = Literal('not')
+boolop = oneOf('and or')
+eqop = oneOf('== != < > <= >= gt lt eq ne ge le in').setParseAction(convertOperator)
+signop = oneOf('+ -').setParseAction(convertOperator)
+multop = oneOf('* / mul div').setParseAction(convertOperator)
+plusop = oneOf('+ - plus minus').setParseAction(convertOperator)
+
+EXPR << OPERAND
+RULE << operatorPrecedence(EXPR,
+                           [(expop, 2, opAssoc.RIGHT),
+                            (signop, 1, opAssoc.RIGHT),
+                            (negop, 1, opAssoc.RIGHT),
+                            (multop, 2, opAssoc.LEFT),
+                            (eqop, 2, opAssoc.LEFT),
+                            (boolop, 2, opAssoc.LEFT),
+                            (plusop, 2, opAssoc.LEFT)])
+
 
 def _bool(value):
     """Helper function for checking rules. The fuction is used to check
@@ -13,9 +91,10 @@ def _bool(value):
     :returns: True or False
 
     """
-    if value is not None:
-        value = unicode(value)
-    return bool(value)
+    if value is None:
+        return False
+    return bool(unicode(value))
+
 
 class Rule(object):
     """Rule class. Rules must evaluate to True or False. If the
@@ -48,13 +127,31 @@ class Rule(object):
         self.expr = expr
         self.msg = msg
         if msg is None:
-            self.msg = 'Expression "%s" failed' % " ".join(expr)
+            self.msg = 'Expression "%s" failed' % " ".join(str(expr))
         self.mode = mode
         if mode is None:
             self.mode = 'post'
         self.triggers = triggers
         if triggers is None:
             self.triggers = 'error'
+
+    def _evaluate(self, tree, values=None):
+        stack = []
+        if not values:
+            values = {}
+        for t in tree:
+            if isinstance(t, ParseResults):
+                stack.append(str(self._evaluate(t, values)))
+            else:
+                if t.startswith("$"):
+                    value = values[t.strip("$")]
+                    if isinstance(value, basestring):
+                        value = '"""%s"""' % value
+                    t = t.replace(t, unicode(value))
+                stack.append(t)
+        result = eval(" ".join(stack))
+        log.debug("Eval: %s: %s" % (result, stack))
+        return result
 
     def evaluate(self, values):
         """Returns True or False. Evaluates the expression of the rule against
@@ -66,127 +163,70 @@ class Rule(object):
         :returns: True or False
 
         """
-        rule = []
-        for token in self.expr:
-            if token.startswith('$'):
-                token = values.get(token.strip('$'))
-                if isinstance(token, basestring):
-                    # Allow " and ' in the token
-                    token = '"""%s"""' % token
-            try:
-                rule.append(str(token))
-            except UnicodeEncodeError:
-                # eval only seems to like ascii strings. Convert
-                # it to ascii before actually evaluate it. Replace non
-                # ascii chars
-                rule.append(token.encode("ascii","replace"))
         try:
-            rule_str = u" ".join(rule)
-            # Replace all linebreaks as eval can not handle strings with
-            # linebreaks. This is only relevant for textareas.
-            rule_str = rule_str.replace('\n', ' ').replace('\r', '')
-            result = eval(rule_str)
-            log.debug("Rule: %s -> %s" % (rule_str, result))
-            return result
-        except Exception, e:
-            log.error(
-                'Evaluation of "%s" failed with error "%s"' % (rule_str, e))
+            return bool(self._evaluate(self.expr, values))
+        except:
+            log.exception("")
+            log.error("Can not evalute '%s' "
+                      "with values: %s" % (self.expr, values))
             return False
-
-
-# Syntax definition for the parser.
-LPAR, RPAR = Literal("("), Literal(")")
-LSBR, RSBR = Literal("["), Literal("]")
-
-
-f_len = Literal("len")
-f_bool = Literal("bool").setParseAction(lambda x: ['_bool'])
-functor = f_len | f_bool
-
-fieldname = Word("$" + alphanums + "_")
-integer = Regex(r"-?\d+")
-string = Regex(r"'-?\w+'")
-real = Regex(r"-?\d+\.\d*")
-c_true = Literal("True")
-c_false = Literal("False")
-const = c_true | c_false
-
-
-def convertOperator(op):
-    """Returns operater for a given string. Operators can be expressed
-    as string known from the shell as "<" can not be included in XML"""
-    top = "unknown"
-    op = op[0]
-    if op == "eq":
-        top = "=="
-    elif op == "ne":
-        top = "!="
-    elif op == "gt":
-        top = ">"
-    elif op == "ge":
-        top = ">="
-    elif op == "lt":
-        top = "<"
-    elif op == "le":
-        top = "<="
-    elif op == "in":
-        top = "in"
-    elif op == "==":
-        top = "=="
-    elif op == "and":
-        top = "and"
-    elif op == "or":
-        top = "or"
-    elif op == "plus":
-        top = "+"
-    elif op == "minus":
-        top = "-"
-    elif op == "mul":
-        top = "*"
-    elif op == "div":
-        top = "/"
-    return [top]
-
-op_eq = Literal("eq").setParseAction(convertOperator)
-op_ne = Literal("ne").setParseAction(convertOperator)
-op_gt = Literal("gt").setParseAction(convertOperator)
-op_ge = Literal("ge").setParseAction(convertOperator)
-op_lt = Literal("lt").setParseAction(convertOperator)
-op_le = Literal("le").setParseAction(convertOperator)
-op_in = Literal("in").setParseAction(convertOperator)
-op_and = Literal("and").setParseAction(convertOperator)
-op_or = Literal("or").setParseAction(convertOperator)
-op_plus = Literal("plus").setParseAction(convertOperator)
-op_minus = Literal("minus").setParseAction(convertOperator)
-op_mul = Literal("mul").setParseAction(convertOperator)
-op_div = Literal("div").setParseAction(convertOperator)
-operator = (oneOf('== < > <= >= != in and or + - * /')
-            | op_eq | op_ne | op_gt | op_ge | op_lt | op_le | op_in | op_and | op_or | op_plus | op_minus | op_mul | op_div)
-
-operand = Forward()
-function_call = functor + LPAR + Optional(delimitedList(operand)) + RPAR
-option_list = LSBR + Optional(delimitedList(operand, combine=True)) + RSBR
-operand << (option_list | function_call | functor | real | integer | string | fieldname | const)
-expr = operand + operator + operand | operand
-grouping = LPAR + OneOrMore( expr | operator + expr ) + RPAR
-term = grouping | expr
-rule = term + Optional(OneOrMore( operator + term))
 
 
 class Parser(object):
     """Parser for ``Rule`` instances"""
 
-    def parse(self, expr):
+    def parse(self, expression):
         """Will parse and check the expr. If parsing fails a ValueError will be
         raised
 
-        :expr: string of expression
+        :expression: string of expression
         :returns: string of expression
 
         """
         try:
-            result = rule.parseString(expr)
+            result = RULE.parseString(expression)
             return result
         except ParseException, e:
-            #log.error(e)
-            raise ValueError('Can not parse "%s"' % expr)
+            log.error("%s: '%s'" % (e, expression))
+            raise ValueError('Can not parse "%s"' % expression)
+
+if __name__ == "__main__":
+    values = {
+        "t": 1,
+        "f": 0,
+        "z": 2,
+        "y": "1",
+        "name": "test",
+        "x": [1, 2, 3],
+    }
+    tests = [("$t", True),
+             ("$f", False),
+             ("$t and $f", False),
+             ("$t and not $f", True),
+             ("not not $t", True),
+             ("not($t and $f)", True),
+             ("$f or not $t and $t", False),
+             ("$f or not $t or not $f", True),
+             ("$f or not ($t and $t)", False),
+             ("$t or $f or $t", True),
+             ("$t or $f or $t and False", True),
+             ("($t or $f or $t) and False", False),
+             ("$t + $t == $z", True),
+             ("(200 * 5 / 3) > $t", True),
+             ("$t in $x", True),
+             ("$f in $x", False),
+             ("bool($f)", False),
+             ("bool($t)", True),
+             ("$t gt $f", True),
+             ("'test' == $name", True),
+             ("len($x) == 3", True),
+             ("($t in [1,2,4] and $f == 0) or ($t in [0,3,5] and $f == 1) or ($t in ['', 6])", True),
+             ("($y eq '1' and $z in [1,2] ) or ( $y '3' and $z in [3,4] ) or ( $y in ['','2','4'] )", True),
+             ]
+
+    for t, expected in tests:
+        p = Parser()
+        rule = Rule(p.parse(t))
+        res = rule.evaluate(values)
+        success = "PASS" if res == expected else "FAIL"
+        print success, ":", t, "->", res, rule.expr

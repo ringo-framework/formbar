@@ -11,6 +11,7 @@ TODO
 =====
 - Set autocomplete="off" for password fields.
 - Added serialisation of dates.
+- Improved rule parsing.
 
 0.8.3
 =====
