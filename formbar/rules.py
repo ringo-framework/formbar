@@ -93,7 +93,10 @@ def _bool(value):
     """
     if value is None:
         return False
-    return bool(unicode(value))
+    elif isinstance(value, basestring):
+        return bool(value)
+    else:
+        return bool(str(value))
 
 
 class Rule(object):
