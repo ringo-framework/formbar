@@ -16,7 +16,7 @@ else:
       % else:
         <input type="radio" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" ${readonly}/>
       % endif
-      ${option[0]}
+      ${_(option[0])}
     </label>
     % if field.renderer.align == "vertical" and num < len(options):
       <br/>

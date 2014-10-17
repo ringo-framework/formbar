@@ -22,7 +22,7 @@
   <div class="col-sm-9">
   % for num, page in enumerate(form._config.get_pages()):
     <div class="formbar-page ${num==form.current_page-1 and 'active'}" id="formbar-page-${num+1}">
-      <h1 class="page">${page.attrib.get('label')}</h1>
+      <h1 class="page">${_(page.attrib.get('label'))}</h1>
       ${self.render_recursive(page)}
     </div>
   % endfor
@@ -54,7 +54,7 @@
 </%def>
 
 <%def name="render_outline_element(form, page)">
-  <a href="#${page.attrib.get('id')}" class="list-group-item" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${page.attrib.get('label')}
+  <a href="#${page.attrib.get('id')}" class="list-group-item" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${_(page.attrib.get('label'))}
   <span class="label label-danger pull-right">${len(form.get_errors(page)) or ""}</span>
   <span class="label label-warning pull-right">${len(form.get_warnings(page)) or ""}</span>
   </a>
@@ -64,13 +64,13 @@
   % for child in elem:
     % if len(child) > 0:
       % if child.tag == "page" and not render_outline:
-        <h1 class="page">${child.attrib.get("label")}</h1>
+        <h1 class="page">${_(child.attrib.get("label"))}</h1>
       % elif child.tag == "section":
-        <h2 class="section">${child.attrib.get('label')}</h2>
+        <h2 class="section">${_(child.attrib.get('label'))}</h2>
       % elif child.tag == "subsection":
-        <h3 class="section">${child.attrib.get('label')}</h3>
+        <h3 class="section">${_(child.attrib.get('label'))}</h3>
       % elif child.tag == "subsubsection":
-        <h4 class="section">${child.attrib.get('label')}</h4>
+        <h4 class="section">${_(child.attrib.get('label'))}</h4>
       % elif child.tag == "row":
         <div class="row row-fluid">
       % elif child.tag == "col":
@@ -78,7 +78,7 @@
         <div class="col-md-${width} span${width}">
       % elif child.tag == "fieldset":
         <fieldset>
-        <legend>${child.attrib.get('label')}</legend>
+        <legend>${_(child.attrib.get('label'))}</legend>
       ## Table rendering
       % elif child.tag == "table":
         <table class="table table-condensed table-bordered table-striped">

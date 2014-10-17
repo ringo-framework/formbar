@@ -12,7 +12,7 @@ selected = field.get_value()
       % else:
         <input type="checkbox" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" ${readonly}/>
       % endif
-      ${option[0]}
+      ${_(option[0])}
     </label>
     % if field.renderer.align == "vertical" and num < len(options):
       <br/>

@@ -47,6 +47,60 @@ def extract_i18n_formconfig(fileobj, keywords, comment_tags, options):
                "_",
                ruletoken.attrib.get('msg'),
                [])
+    for ruletoken in config.iter('page'):
+        lineno += 1
+        # "_" is one of the default keywords which marks a string
+        # for extraction. As the json file does not have any
+        # keywords. Set a dummy funcname here.
+        yield (lineno,
+               "_",
+               ruletoken.attrib.get('label'),
+               [])
+    for ruletoken in config.iter('section'):
+        lineno += 1
+        # "_" is one of the default keywords which marks a string
+        # for extraction. As the json file does not have any
+        # keywords. Set a dummy funcname here.
+        yield (lineno,
+               "_",
+               ruletoken.attrib.get('label'),
+               [])
+    for ruletoken in config.iter('subsection'):
+        lineno += 1
+        # "_" is one of the default keywords which marks a string
+        # for extraction. As the json file does not have any
+        # keywords. Set a dummy funcname here.
+        yield (lineno,
+               "_",
+               ruletoken.attrib.get('label'),
+               [])
+    for ruletoken in config.iter('subsubsection'):
+        lineno += 1
+        # "_" is one of the default keywords which marks a string
+        # for extraction. As the json file does not have any
+        # keywords. Set a dummy funcname here.
+        yield (lineno,
+               "_",
+               ruletoken.attrib.get('label'),
+               [])
+    for ruletoken in config.iter('fieldset'):
+        lineno += 1
+        # "_" is one of the default keywords which marks a string
+        # for extraction. As the json file does not have any
+        # keywords. Set a dummy funcname here.
+        yield (lineno,
+               "_",
+               ruletoken.attrib.get('label'),
+               [])
+    for ruletoken in config.iter('text'):
+        lineno += 1
+        # "_" is one of the default keywords which marks a string
+        # for extraction. As the json file does not have any
+        # keywords. Set a dummy funcname here.
+        yield (lineno,
+               "_",
+               ruletoken.text,
+               [])
     for optiontoken in config.iter('option'):
         lineno += 1
         # "_" is one of the default keywords which marks a string
