@@ -29,7 +29,7 @@
     <entity id="e5" name="name"/>
     <entity id="e6" name="fullname"/>
     <entity id="e7" name="password"/>
-    <entity id="e9" name="html">
+    <entity id="e9" name="html" tags="tag1, tag2">
       <renderer type="html">
         <div>Test</div>
       </renderer>

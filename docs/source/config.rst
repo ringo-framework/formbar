@@ -73,6 +73,7 @@ value       Default value of the field. Supports expressions. The default value 
 readonly    Flag to indicate that the field should be rendered as readonly field. Default is ``false``.
 required    Flag to indicate that the is a required field. Default is ``false``.
 desired     Flag to indicate that the is a desired field. Default is ``false``.
+tags        Comma separated list of tags for this field.
 =========   ===========
 
 .. _rule:

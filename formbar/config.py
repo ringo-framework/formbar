@@ -343,8 +343,16 @@ class Field(Config):
         submitted values on a form submission. Defaults to empty
         string. This attribute is also used for Infofields to define the
         value which should be displayed (If no expression is defined)"""
-        # Subelements of the fields
 
+        self.tags = []
+        """Tags of the field. Fields can have tags. Tags can be used to
+        mark fields in the form and become handy if a application wants
+        to find fields having a specific tag."""
+        for tag in entity.attrib.get('tags', "").split(","):
+            if tag:
+                self.tags.append(tag.strip())
+
+        # Subelements of the fields
         # Options (For dropdown, checkbox and radio fields)
         self.options = []
         options = entity.find('options')

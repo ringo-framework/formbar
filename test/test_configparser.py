@@ -196,5 +196,14 @@ class TestFieldConfig(unittest.TestCase):
     def test_html_renderer(self):
         self.assertEqual(self.hfield.renderer.body.strip(), "<div>Test</div>")
 
+    def test_tags_default(self):
+        self.assertEqual(self.dfield.tags, [])
+
+    def test_tags_custom(self):
+        self.assertEqual(self.hfield.tags, ["tag1", "tag2"])
+
+    def test_help_custom(self):
+        self.assertEqual(self.cfield.help, 'This is my helptext')
+
 if __name__ == '__main__':
     unittest.main()
