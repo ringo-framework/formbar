@@ -107,8 +107,9 @@ class TestFormValidation(unittest.TestCase):
         self.assertEqual(self.form.data['date'], datetime.date(1998, 2, 1))
 
     def test_form_deserialize_string(self):
-        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
+        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01', 'float': '99'}
         self.form.validate(values)
+        print self.form.get_errors()
         self.assertEqual(self.form.data['default'], 'test')
 
     def test_form_save(self):
@@ -116,7 +117,7 @@ class TestFormValidation(unittest.TestCase):
         self.assertEqual(self.form.validate(values), True)
 
     def test_form_warnings(self):
-        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
+        values = {'select': '2', 'default': 'test', 'integer': '16', 'date': '1998-02-01'}
         self.form.validate(values)
         warnings = self.form.get_warnings()
         self.assertEqual(len(warnings), 1)
