@@ -17,7 +17,7 @@
       <renderer type="datepicker"/>
       <help>This is my helptext</help>
     </entity>
-    <entity id="e8" name="select">
+    <entity id="e8" name="select" type="integer">
       <options>
         <option value="1">Value 1</option>
         <option value="2">Value 2</option>
@@ -29,7 +29,7 @@
     <entity id="e5" name="name"/>
     <entity id="e6" name="fullname"/>
     <entity id="e7" name="password"/>
-    <entity id="e9" name="html">
+    <entity id="e9" name="html" tags="tag1, tag2">
       <renderer type="html">
         <div>Test</div>
       </renderer>

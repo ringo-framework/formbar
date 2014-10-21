@@ -4,8 +4,8 @@ import datetime
 import sqlalchemy as sa
 from babel.dates import format_datetime, format_date
 from formbar.renderer import FormRenderer, get_renderer
-from formbar.rules import Rule, Parser
 from formbar.helpers import get_local_datetime, get_utc_datetime
+from formbar.rules import Rule
 
 log = logging.getLogger(__name__)
 
@@ -768,7 +768,7 @@ class Field(object):
             else:
                 return value
 
-    def _build_filter_expr(self, expr_str, item):
+    def _build_filter_rule(self, expr_str, item):
         t = expr_str.split(" ")
         for x in t:
             # % marks attributes of the current fields item in case of
@@ -803,12 +803,11 @@ class Field(object):
 
             if value is not None:
                 if isinstance(value, list):
-                    value = "[%s]" % ", ".join("'%s'" % unicode(v) for v in value)
+                    value = "[%s]" % ",".join("'%s'" % unicode(v) for v in value)
                     expr_str = expr_str.replace(x, value)
                 else:
                     expr_str = expr_str.replace(x, "'%s'" % str(value))
-        p = Parser()
-        return p.parse(expr_str)
+        return Rule(expr_str)
 
     def _load_options_from_db(self):
         # Get mapped clazz for the field
@@ -828,9 +827,8 @@ class Field(object):
         filtered_options = []
         for option in options:
             if self._config.renderer and self._config.renderer.filter:
-                expr = self._build_filter_expr(
+                rule = self._build_filter_rule(
                     self._config.renderer.filter, option)
-                rule = Rule(expr)
                 if rule.evaluate({}):
                     filtered_options.append((option, option.id, True))
                 else:

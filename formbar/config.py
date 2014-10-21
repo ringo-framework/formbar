@@ -1,7 +1,7 @@
 import gettext
 import logging
 import xml.etree.ElementTree as ET
-from formbar.rules import Rule, Parser
+from formbar.rules import Rule
 
 log = logging.getLogger(__name__)
 _ = gettext.gettext
@@ -205,11 +205,10 @@ class Form(Config):
         :returns: yields field elements
 
         """
-        parser = Parser()
         for child in root:
             if len(child) > 0:
                 if child.tag == "if":
-                    rule = Rule(parser.parse(child.attrib.get('expr')))
+                    rule = Rule(child.attrib.get('expr'))
                     if evaluate and not rule.evaluate(values):
                         continue
                     for elem in self.walk(child, values, evaluate):
@@ -343,8 +342,16 @@ class Field(Config):
         submitted values on a form submission. Defaults to empty
         string. This attribute is also used for Infofields to define the
         value which should be displayed (If no expression is defined)"""
-        # Subelements of the fields
 
+        self.tags = []
+        """Tags of the field. Fields can have tags. Tags can be used to
+        mark fields in the form and become handy if a application wants
+        to find fields having a specific tag."""
+        for tag in entity.attrib.get('tags', "").split(","):
+            if tag:
+                self.tags.append(tag.strip())
+
+        # Subelements of the fields
         # Options (For dropdown, checkbox and radio fields)
         self.options = []
         options = entity.find('options')
@@ -366,21 +373,18 @@ class Field(Config):
 
         # Get rules
         self.rules = []
-        parser = Parser()
         # Add automatic genertated rules based on the required or
         # desired flag
         if self.required:
             expr = "bool($%s)" % self.name
             msg = _("This field is required. You must provide a value")
             mode = "pre"
-            expr = parser.parse(expr)
             self.rules.append(Rule(expr, msg, mode))
         if self.desired:
             expr = "bool($%s)" % self.name
             msg = _("This field is desired. Pleas provide a value")
             mode = "pre"
             triggers = "warning"
-            expr = parser.parse(expr)
             self.rules.append(Rule(expr, msg, mode, triggers))
         # Add rules added the the field.
         for rule in self._tree.findall('rule'):
@@ -388,7 +392,6 @@ class Field(Config):
             msg = rule.attrib.get('msg')
             mode = rule.attrib.get('mode')
             triggers = rule.attrib.get('triggers')
-            expr = parser.parse(expr)
             self.rules.append(Rule(expr, msg, mode, triggers))
 
 
