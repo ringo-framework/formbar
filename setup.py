@@ -20,7 +20,7 @@ setup(name='formbar',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
-      test_requires=['coverage, nosetests']
+      test_requires=['coverage, nosetests'],
       install_requires=['brabbel',
                         'sqlalchemy',
                         'babel',
