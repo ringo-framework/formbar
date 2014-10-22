@@ -119,7 +119,7 @@ class TestFormValidation(unittest.TestCase):
         values = {'select': '2', 'default': 'test', 'integer': '16', 'date': '1998-02-01'}
         self.form.validate(values)
         warnings = self.form.get_warnings()
-        self.assertEqual(len(warnings), 1)
+        self.assertEqual(len(warnings), 2)
 
     def test_form_save_without_validation(self):
         self.assertRaises(StateError, self.form.save)
