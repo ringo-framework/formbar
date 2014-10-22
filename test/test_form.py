@@ -109,7 +109,6 @@ class TestFormValidation(unittest.TestCase):
     def test_form_deserialize_string(self):
         values = {'default': 'test', 'integer': '16', 'date': '1998-02-01', 'float': '99'}
         self.form.validate(values)
-        print self.form.get_errors()
         self.assertEqual(self.form.data['default'], 'test')
 
     def test_form_save(self):
