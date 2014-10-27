@@ -859,7 +859,7 @@ class Field(object):
         if self.get_type() == 'manytoone':
             options.append(("None", "", True))
         user_defined_options = self._config.options
-        if isinstance(user_defined_options, list):
+        if isinstance(user_defined_options, list) and len(user_defined_options) > 0:
             for option in user_defined_options:
                 # TODO: Filter user defined options too (ti) <2014-02-19 23:46>
                 options.append((option[0], option[1], True))
