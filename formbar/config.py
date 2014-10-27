@@ -355,7 +355,9 @@ class Field(Config):
         # Options (For dropdown, checkbox and radio fields)
         self.options = []
         options = entity.find('options')
-        if options is not None:
+        if not self.value and options is not None and options.attrib.get('value'):
+            self.options = options.attrib.get('value')
+        elif options is not None:
             for option in options:
                 self.options.append((option.text, option.attrib.get('value')))
 

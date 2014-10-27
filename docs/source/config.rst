@@ -124,6 +124,31 @@ The help will be rendererd below the field in the form.
 
 .. _renderer:
 
+Options
+-------
+Options are used to define available options for a entity in case it is an selection. The options my be defined in different ways.
+
+By defining every option per hand::
+
+    <options>
+        <option value="1">Foo</option>
+        <option value="2">Bar</option>
+        ...
+        <option value="99">Baz</option>
+    </options>
+
+By setting the value attribute of the options. This should be the name of an attribute of the item which is used to get the available options::
+
+    <options value=""/>
+
+By not defining options at all and letting the library load the options for you based on the entity name.
+
+=========   ===========
+Attribute   Description
+=========   ===========
+value       Optional. Name of an attribute of the item which will provide a list of items used for the options.
+=========   ===========
+
 Renderer
 --------
 The renderer directive can be used to configure an alternative renderer to be
@@ -181,6 +206,7 @@ you can also use the ``value`` attribute.
 Appearance is same as a readonly field::
 
         <renderer type="infofield"/>
+
 
 Selection
 `````````
