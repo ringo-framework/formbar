@@ -9,7 +9,7 @@ TODO
 
 0.9.1
 =====
-- Add option to options to defien a attribute where to load the available
+- Add option to options to define a attribute of the item where to load the available
   options from.
 
 0.9
