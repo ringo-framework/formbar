@@ -7,6 +7,11 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.9.2
+=====
+- Fixed getting values from select fields if no value is selected and the
+  value may be empty. In this case the application send all options to the server.
+
 0.9.1
 =====
 - Add option to options to define a attribute of the item where to load the available

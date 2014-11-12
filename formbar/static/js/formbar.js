@@ -107,10 +107,10 @@ function evaluate(element) {
             // First try to get the unexpaned value, if there is no
             // value get the textvalue of the field. (Which is usually
             // the expanded value).
-            if (!value) {
-                value = field.attr("value");
+            if (!value && $(field).attr("value")) {
+                value = $(field).attr("value");
             }
-            if (!value) {
+            if (!value && field.attr("readonly")) {
                 value = field.text();
             }
             if (value.indexOf("[") < 0) {
