@@ -757,7 +757,7 @@ class Field(object):
             options = self.get_options()
             for opt in options:
                 for v in value:
-                    if str(v) == str(opt[1]):
+                    if unicode(v) == unicode(opt[1]):
                         ex_values.append("%s" % opt[0])
             return ", ".join(ex_values)
         else:
