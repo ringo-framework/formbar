@@ -169,7 +169,7 @@ class FormRenderer(Renderer):
                     'value': b.attrib.get("value") or "",
                     'class': "btn btn-%s" % (b.attrib.get("class") or "default"),
                     'icon': icon,
-                    'label': b.text or "XXX"
+                    'label': _(b.text) or "XXX"
                 }
                 html.append('<button type="%(type)s" name="_%(type)s"'
                             ' value="%(value)s" class="%(class)s">'
