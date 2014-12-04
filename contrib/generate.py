@@ -15,7 +15,6 @@ def print_model(config):
     out = []
     for field in _get_fields(config):
         name = field.name
-        nullable = field.required is False
         if field.type == "string":
             dtype = "sa.Text"
         elif field.type == "integer":
@@ -38,8 +37,8 @@ def print_model(config):
             continue # ignore this type
         else:
             dtype = "sa.Text"
-        out.append("%s = sa.Column('%s', %s, nullable=%s)" %
-                   (name, name, dtype, nullable))
+        out.append("%s = sa.Column('%s', %s)" %
+                   (name, name, dtype))
     print "\n".join(out)
 
 def main (config, action):
