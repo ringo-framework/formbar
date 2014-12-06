@@ -101,6 +101,11 @@ function evaluate(element) {
                           + 'select[name='+tfield+'], '
                           + 'div[name='+tfield+'], '
                           + 'textarea[name='+tfield+']');
+            // In case of a radio field the result if the selection is a list
+            // of fields. So we need to get the selected item.
+            if (field.length > 1) {
+                field = field.filter(':checked');
+            }
             value = field.val();
             // If we can not get a value from an input fields the field my
             // be readonly. So get the value from the readonly element.
