@@ -22,7 +22,9 @@ TODO
 ===
 - Set autocomplete="off" for password fields.
 - Added serialisation of dates.
-- Improved rule parsing, Use brabbel library for rule parsing and evaluation.
+- Security fix: Fixed potential code injection issue by removing the rule
+  parsing out of formbar and use brabbel library for rule parsing and
+  evaluation.
 
 0.8.3
 =====
