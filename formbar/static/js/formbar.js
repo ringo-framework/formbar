@@ -5,7 +5,7 @@ $( document ).ready(function() {
     $('.formbar-tooltip').tooltip();
     $('.formbar-datepicker').datepicker({
         format: 'yyyy-mm-dd',
-        todayBtn: "linked",
+        todayBtn: "linked"
     });
 
     /*
@@ -196,7 +196,7 @@ function evaluateFields() {
     for (var i = fieldsToEvaluate.length - 1; i >= 0; i--){
         var field = fieldsToEvaluate[i];
         var id = field['attributes'][1].value;
-        var result = evaluate(field)
+        var result = evaluate(field);
         if (result) {
             $('#'+id).text(result);
         }
