@@ -153,7 +153,7 @@ function evaluate(element) {
             });
             return result;
         } else {
-            return eval(eval_expr);
+            return false;
         }
     } catch (e) {
         console.log(e);
