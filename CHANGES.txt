@@ -12,6 +12,7 @@ TODO
 - Fixed getting values from select fields if no value is selected and the
   value may be empty. In this case the application send all options to the server.
 - Do not include "nullable" when generate model definitions from form definition.
+- Restructured documentation.
 
 0.9.1
 =====
