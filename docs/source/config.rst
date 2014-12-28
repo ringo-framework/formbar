@@ -1,3 +1,5 @@
+.. _form_config:
+
 Form configuration
 ******************
 The form will be configured using a XML definition. The configuration is
