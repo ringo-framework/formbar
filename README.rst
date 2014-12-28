@@ -90,6 +90,8 @@ Formbar should be well documented and comes with documentation, bunch of
 unitests and last but not least an example serve which serve some example
 forms.
 
+Online documentation can be found `here <https://formbar.readthedocs.org`_
+
 Licence
 -------
 Formbar is Free Software and licensed under GPL version 2.
