@@ -160,10 +160,17 @@ used to render the field.
 
 The default renderer is chosen depending on the datatype of the field and is a
 textfield for almost all normal datatypes. On relations (in SQLAlchemy mapped
-items) a selection field is used for the relations.
+items) a selection field is used for the relations
 
-There are different types of renderers available coming with formed. But it
-is very easy to provide formed with your own custom renderer.
+There are different types of :ref:`formbar_renderers` available coming with formed. You
+can define which renderer will be used by setting the *type* attribute::
+
+        <renderer type="checkbox"/>
+
+But it is very easy to write your own custom renderer. See
+:ref:`custom_renderer` for more details on writing custom renderes and
+:ref:`conf_custom_renderer` on how to use them for rendering in your form.
+
 
 Label
 `````
@@ -462,6 +469,8 @@ id             Unique id of the snippet
 ref            References the snippet with id.
 ============   ===========
 
+.. _formbar_renderers:
+
 Renderers
 =========
 Usually the renderer for a field is chosen automatically from formbar based on
@@ -680,12 +689,16 @@ url         URL which is called to renderer the form.
 
 .. _custom_renderer:
 
-Custom renderes
-===============
-Write me!
+Write custom renderes
+=====================
+Formbar makes it easy to create a custom renderer. All you need to to is
+to overwrite the :class:`.FieldRenderer` class. In most cases you only
+need to provide a new Template for your field which handles to main
+rendering. As expamle see :class:`.InfoFieldRenderer` how to set a new
+template.
 
 .. _external_validator:
 
-External validators
-===================
+Write external validators
+=========================
 Write me!

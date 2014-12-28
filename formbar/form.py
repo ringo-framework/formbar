@@ -308,12 +308,13 @@ class Form(object):
         """Returns the rendererd form as an HTML string.
 
         :values: Dictionary with values to be prefilled/overwritten in
-        the rendered form.
+                 the rendered form.
         :previous_values: Dictionary of values of the last saved state
-        of the item. If provided a diff between the current and previous
-        values will be renderered in readonly mode.
+                          of the item. If provided a diff between the
+                          current and previous values will be renderered
+                          in readonly mode.
         :outline: Boolean flag to indicate that the outline for pages
-        should be rendered. Defaults to true.
+                  should be rendered. Defaults to true.
         :returns: Rendered form.
 
         """

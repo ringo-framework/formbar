@@ -10,6 +10,7 @@ Welcome to formbar's documentation!
    start
    config
    usage
+   api
    :maxdepth: 3
 
 Indices and tables
