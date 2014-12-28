@@ -23,11 +23,12 @@ The basic form configuration looks like this::
 
 The :ref:`snippet` element is optional and just a helper.
 
-Source
-======
+Datamodel
+=========
 The ``source`` directive defines the :ref:`entity` are available in your
 forms.  An entity is defined only once in the source section. It will get
 referenced in the :ref:`form` directive later to build the forms.
+
 
 .. _entity:
 
@@ -75,6 +76,32 @@ required    Flag to indicate that the is a required field. Default is ``false``.
 desired     Flag to indicate that the is a desired field. Default is ``false``.
 tags        Comma separated list of tags for this field.
 =========   ===========
+
+Options
+-------
+Options are used to define available options for a entity in case it is an selection. The options my be defined in different ways.
+
+By defining every option per hand::
+
+    <options>
+        <option value="1">Foo</option>
+        <option value="2">Bar</option>
+        ...
+        <option value="99">Baz</option>
+    </options>
+
+By setting the value attribute of the options. This should be the name of an attribute of the item which is used to get the available options::
+
+    <options value=""/>
+
+By not defining options at all and letting the library load the options for you based on the entity name.
+
+=========   ===========
+Attribute   Description
+=========   ===========
+value       Optional. Name of an attribute of the item which will provide a list of items used for the options.
+=========   ===========
+
 
 .. _rule:
 
@@ -124,31 +151,6 @@ The help will be rendererd below the field in the form.
 
 .. _renderer:
 
-Options
--------
-Options are used to define available options for a entity in case it is an selection. The options my be defined in different ways.
-
-By defining every option per hand::
-
-    <options>
-        <option value="1">Foo</option>
-        <option value="2">Bar</option>
-        ...
-        <option value="99">Baz</option>
-    </options>
-
-By setting the value attribute of the options. This should be the name of an attribute of the item which is used to get the available options::
-
-    <options value=""/>
-
-By not defining options at all and letting the library load the options for you based on the entity name.
-
-=========   ===========
-Attribute   Description
-=========   ===========
-value       Optional. Name of an attribute of the item which will provide a list of items used for the options.
-=========   ===========
-
 Renderer
 --------
 The renderer directive can be used to configure an alternative renderer to be
@@ -184,217 +186,8 @@ align       The alignment of the text in the label. This only applies for labels
 align       The width of the label in cols. The whole field including the label can be deived into 12 cols. If the label has e.g 4 cols the field will automatically take the remaining 8 cols. This only applies for labels with position set to "left" or "right".
 =========   ===========
 
-Textarea
-````````
-Use this renderer if you want to render the field as a textfield::
-
-        <renderer type="textarea" rows="20"/>
-
-=========   ===========
-Attribute   Description
-=========   ===========
-rows        Number of rows of the texteare. Default is 3.
-=========   ===========
-
-Infofield
-`````````
-The info field renderer is used to render the value of the entity as
-textual information. This renderer is usually used to display calculated
-values of the entity. See the ``expr`` attribute of the :ref:`Entity`. If you
-simply want to display a static value comming from on of the items attribute
-you can also use the ``value`` attribute.
-Appearance is same as a readonly field::
-
-        <renderer type="infofield"/>
-
-
-Selection
-`````````
-The selection renderer is used to render a selection list fields. Such a field
-is capable to select multiple options. The renderer defines also the options
-which should be available in the dropdown menu. For SQLAlchemy mapped items
-the options are automatically determined from the underlying data model::
-
-        <entity>
-          <renderer type="selection"/>
-          <!-- Note, that the options are part of the entity! -->
-          <options>
-             <option value="1">Option 1</option>
-             <option value="2">Option 2</option>
-             <option value="3">Option 3</option>
-          </options>
-        </entity>
-
-=============== ===========
-Attribute       Description
-=============== ===========
-filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
-remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
-=============== ===========
-
-.. note::
-   Filtering is only possible for SQLAlchemy mapped items.
-
-Filtering can be done by defining a expression in the filter attribute. This
-expression is later evaluated by the rule system of formbar. The expression
-must evaluate to true and is evaluated for every option. The expression uses a
-two special variables begining with 
-
-1. ``%``.  Variables begining with % marks the
-name of an attribute of the current options item. The variable will be
-replaced by the value of the attribute of the current item in the option for
-every option before evaluating.
-2. ``@``. Varaible beginning with @ marks the name of an attribute of
-the parents form item.
-
-Both variables support accessing related items through the dot-syntax:: 
-        
-        <renderer type="selection" filter="%foo eq @bar.baz">
-
-.. _dropdown:
-
-Dropdown
-````````
-The dropdown renderer is used to render dropdown fields. The renderer defines
-also the options which should be available in the dropdown menu. For
-SQLAlchemy mapped items the options are automatically determined from the
-underlying data model::
-
-        <renderer type="dropdown">
-           <option value="1">Option 1</option>
-           <option value="2">Option 2</option>
-           <option value="3">Option 3</option>
-        </renderer>
-
-=========   ===========
-Attribute   Description
-=========   ===========
-filter      Expression which must evaluate to True if the option shoul be shown in the Dropdown.
-=========   ===========
-
-.. note::
-   Filtering is only possible for SQLAlchemy mapped items.
-
-See filtering section of the :ref:`dropdown` renderer.
-
-Radio
-`````
-The radio renderer is used to render radio fields based on the given options.
-Such a field is capable to select only one option. For SQLAlchemy mapped
-items the options are automatically determined from the underlying data
-model. The radionfields will be aligned in a horizontal row::
-
-        <entity>
-          <renderer type="radio"/>
-          <options>
-             <option value="1">Option 1</option>
-             <option value="2">Option 2</option>
-             <option value="3">Option 3</option>
-          </options>
-        </entity>
-
-=============== ===========
-Attribute       Description
-=============== ===========
-filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
-remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
-align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
-=============== ===========
-
-See filtering section of the :ref:`dropdown` renderer.
-
-Checkbox
-````````
-The checkbox renderer is used to render checkbox fields based on the given options.
-Such a field is capable to multiple options. For SQLAlchemy mapped
-items the options are automatically determined from the underlying data
-model. The checkboxes will be aligned in a horizontal row::
-
-        <entity>
-          <renderer type="checkbox"/>
-          <options>
-             <option value="1">Option 1</option>
-             <option value="2">Option 2</option>
-             <option value="3">Option 3</option>
-          </options>
-        </entity>
-
-=============== ===========
-Attribute       Description
-=============== ===========
-filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
-remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
-align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
-=============== ===========
-
-See filtering section of the :ref:`dropdown` renderer.
-
-Datepicker
-``````````
-The datepicker renderer has some Javascript functionality which lets the used
-pick the date from a calender. It also only allows valid date entries per
-keyboard::
-
-        <renderer type="datepicker"/>
-
-Password
-````````
-The password renderer renderes a password field which hides the users input::
-
-        <renderer type="password"/>
-
-
-Hidden
-``````
-The hidden field renderer is used to render a hidden field for the entity. No
-labels, helptexts or error messages will be renderer. The hidden field will
-also take care on relations for SQLAlchemy mapped items::
-
-        <renderer type="hidden"/>
-
-Html
-````
-The html renderer is used to render custom html code. This is usefull if you
-want to render generic text sections or insert images. Images will need a
-external source for the image file. The html renderer will render Javascript
-, Stylesheets and HTML code::
-
-        <renderer type="html">
-         <div>
-           <p>You can include all valid html including images, lists etc.</p>
-           <p><strong>Warning:</strong>Also JS can be included.</p>
-         </div>
-        </renderer>
-
-Your custom code should be wrapped into a empty div node. Otherwise only the
-first child node of the renderer will be rendererd.
-The entity only needs the id attribute. If a label is provided, the label
-will be uses as some kind of header to the html part.
-
-.. warning::
-   Use this renderer with caution as it may introduce a large security hole if
-   users inject malicious javascript code into the form using the html renderer.
-
-.. _form:
-
-FormbarFormEditor
-`````````````````
-Use this renderer if you want to render a editor for formbar forms. The
-Editor will have a preview window which shows the result of the
-rendering of the form. If rendering fails, the preview will show the
-errors which happened while rendering::
-
-        <renderer type="formbareditor" url="foo/bar" rows="20"/>
-
-=========   ===========
-Attribute   Description
-=========   ===========
-rows        Number of rows of the texteare. Default is 3.
-url         URL which is called to renderer the form.
-=========   ===========
-
-Form
-====
+Layout
+======
 The form directive is the place where the form definition and layout happens.
 
 .. hint::
@@ -667,9 +460,229 @@ id             Unique id of the snippet
 ref            References the snippet with id.
 ============   ===========
 
+Renderers
+=========
+Usually the renderer for a field is chosen automatically from formbar based on
+the datatype. But you can define an alternative renderer. Below you can the
+the available default renderers in ringo. If you need custom renderers the
+refer to :ref:`custom_renderer` 
+
+Textarea
+--------
+Use this renderer if you want to render the field as a textfield::
+
+        <renderer type="textarea" rows="20"/>
+
+=========   ===========
+Attribute   Description
+=========   ===========
+rows        Number of rows of the texteare. Default is 3.
+=========   ===========
+
+Infofield
+---------
+The info field renderer is used to render the value of the entity as
+textual information. This renderer is usually used to display calculated
+values of the entity. See the ``expr`` attribute of the :ref:`Entity`. If you
+simply want to display a static value comming from on of the items attribute
+you can also use the ``value`` attribute.
+Appearance is same as a readonly field::
+
+        <renderer type="infofield"/>
+
+
+Selection
+---------
+The selection renderer is used to render a selection list fields. Such a field
+is capable to select multiple options. The renderer defines also the options
+which should be available in the dropdown menu. For SQLAlchemy mapped items
+the options are automatically determined from the underlying data model::
+
+        <entity>
+          <renderer type="selection"/>
+          <!-- Note, that the options are part of the entity! -->
+          <options>
+             <option value="1">Option 1</option>
+             <option value="2">Option 2</option>
+             <option value="3">Option 3</option>
+          </options>
+        </entity>
+
+=============== ===========
+Attribute       Description
+=============== ===========
+filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+=============== ===========
+
+.. note::
+   Filtering is only possible for SQLAlchemy mapped items.
+
+Filtering can be done by defining a expression in the filter attribute. This
+expression is later evaluated by the rule system of formbar. The expression
+must evaluate to true and is evaluated for every option. The expression uses a
+two special variables begining with 
+
+1. ``%``.  Variables begining with % marks the
+name of an attribute of the current options item. The variable will be
+replaced by the value of the attribute of the current item in the option for
+every option before evaluating.
+2. ``@``. Varaible beginning with @ marks the name of an attribute of
+the parents form item.
+
+Both variables support accessing related items through the dot-syntax:: 
+        
+        <renderer type="selection" filter="%foo eq @bar.baz">
+
+.. _dropdown:
+
+Dropdown
+--------
+The dropdown renderer is used to render dropdown fields. The renderer defines
+also the options which should be available in the dropdown menu. For
+SQLAlchemy mapped items the options are automatically determined from the
+underlying data model::
+
+        <renderer type="dropdown">
+           <option value="1">Option 1</option>
+           <option value="2">Option 2</option>
+           <option value="3">Option 3</option>
+        </renderer>
+
+=========   ===========
+Attribute   Description
+=========   ===========
+filter      Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+=========   ===========
+
+.. note::
+   Filtering is only possible for SQLAlchemy mapped items.
+
+See filtering section of the :ref:`dropdown` renderer.
+
+Radio
+-----
+The radio renderer is used to render radio fields based on the given options.
+Such a field is capable to select only one option. For SQLAlchemy mapped
+items the options are automatically determined from the underlying data
+model. The radionfields will be aligned in a horizontal row::
+
+        <entity>
+          <renderer type="radio"/>
+          <options>
+             <option value="1">Option 1</option>
+             <option value="2">Option 2</option>
+             <option value="3">Option 3</option>
+          </options>
+        </entity>
+
+=============== ===========
+Attribute       Description
+=============== ===========
+filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
+=============== ===========
+
+See filtering section of the :ref:`dropdown` renderer.
+
+Checkbox
+--------
+The checkbox renderer is used to render checkbox fields based on the given options.
+Such a field is capable to multiple options. For SQLAlchemy mapped
+items the options are automatically determined from the underlying data
+model. The checkboxes will be aligned in a horizontal row::
+
+        <entity>
+          <renderer type="checkbox"/>
+          <options>
+             <option value="1">Option 1</option>
+             <option value="2">Option 2</option>
+             <option value="3">Option 3</option>
+          </options>
+        </entity>
+
+=============== ===========
+Attribute       Description
+=============== ===========
+filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
+=============== ===========
+
+See filtering section of the :ref:`dropdown` renderer.
+
+Datepicker
+----------
+The datepicker renderer has some Javascript functionality which lets the used
+pick the date from a calender. It also only allows valid date entries per
+keyboard::
+
+        <renderer type="datepicker"/>
+
+Password
+--------
+The password renderer renderes a password field which hides the users input::
+
+        <renderer type="password"/>
+
+
+Hidden
+------
+The hidden field renderer is used to render a hidden field for the entity. No
+labels, helptexts or error messages will be renderer. The hidden field will
+also take care on relations for SQLAlchemy mapped items::
+
+        <renderer type="hidden"/>
+
+Html
+----
+The html renderer is used to render custom html code. This is usefull if you
+want to render generic text sections or insert images. Images will need a
+external source for the image file. The html renderer will render Javascript
+, Stylesheets and HTML code::
+
+        <renderer type="html">
+         <div>
+           <p>You can include all valid html including images, lists etc.</p>
+           <p><strong>Warning:</strong>Also JS can be included.</p>
+         </div>
+        </renderer>
+
+Your custom code should be wrapped into a empty div node. Otherwise only the
+first child node of the renderer will be rendererd.
+The entity only needs the id attribute. If a label is provided, the label
+will be uses as some kind of header to the html part.
+
+.. warning::
+   Use this renderer with caution as it may introduce a large security hole if
+   users inject malicious javascript code into the form using the html renderer.
+
+.. _form:
+
+FormbarFormEditor
+-----------------
+Use this renderer if you want to render a editor for formbar forms. The
+Editor will have a preview window which shows the result of the
+rendering of the form. If rendering fails, the preview will show the
+errors which happened while rendering::
+
+        <renderer type="formbareditor" url="foo/bar" rows="20"/>
+
+=========   ===========
+Attribute   Description
+=========   ===========
+rows        Number of rows of the texteare. Default is 3.
+url         URL which is called to renderer the form.
+=========   ===========
+
+.. _custom_renderer:
+
 Custom renderes
 ===============
 Write me!
+
+.. _external_validator:
 
 External validators
 ===================

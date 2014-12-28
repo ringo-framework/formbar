@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import multiprocessing
 import sys, os
 
-version = '0.9.1'
+version = '0.9.2'
 
 setup(name='formbar',
     version=version,
@@ -13,7 +13,7 @@ setup(name='formbar',
                  'Intended Audience :: Developers',
                  'License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)',
                  'Programming Language :: Python :: 2.7'],
-    keywords='python form validate web html',
+    keywords='form configuration layout rendering serialisation validation rules conditionals html',
     author='Torsten Irl\xc3\xa4nder',
     author_email='torsten@irlaender.de',
     url='https://bitbucket.org/ti/formbar',

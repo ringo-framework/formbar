@@ -3,7 +3,16 @@ Getting Started
 
 About
 =====
-.. include:: about.rst
+Formbar is a python library to layout, render and validate HTML forms in web
+applications. Formbar renders forms which are compatible with `Twitter
+Bootstrap <twitter.github.com/bootstrap/>`_ styles.
+
+In contrast to many other form libraries forms with formbar are configured in XML
+files to separate the form definition form the implementation and handle it as
+configuration.
+
+Formbar is the German word for "shapeable" and should emphasise the
+character of formbar which hopefully makes shaping your forms more easy.
 
 Installation
 ============
@@ -28,22 +37,25 @@ command::
 
 Features
 ========
-.. include:: features.rst
+ * Support for SQLAlchemy mapped items and plain forms.
+ * Expression bases rules
+ * Conditionals in forms
+ * Type conversation and validation
+ * XML based form definition
+ * i18n Support
+ * Row and column based layouts
+ * Different form layouts for the same model (Create, Edit, Read...)
+ * Twitter bootstrap support
+ * Custom CSS styling
+ * Error and warning messages
+ * Help texts
+ * Numbering of fields
+ * Extern defined renderers
+ * ...
 
 Quickstart
 ==========
-You will not need much code to include formbar in your application to be able
-to render nice forms. Only a few lines of code are needed::
-
-        from formbar.config import Config, load
-        from formbar.form import Form
-        # Simple rendering here, no data submission
-        # nor validation or saving.
-        config = Config(load('/path/to/formconfig.xml'))
-        form_config = config.get_form('example')
-        form = Form(form_config)
-        form.render()
-
+See :ref:`Quickstart`
 
 Licence
 =======
