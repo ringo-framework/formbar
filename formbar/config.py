@@ -88,7 +88,7 @@ class Config(object):
             return None
 
     def get_form(self, id):
-        """Returns a ``FormConfig`` instance with the configuration for a form
+        """Returns a :class:`.Form` instance with the configuration for a form
         with id in the configuration file. If the form can not be found a
         KeyError is raised.
 
