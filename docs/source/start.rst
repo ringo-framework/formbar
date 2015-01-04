@@ -57,6 +57,17 @@ Quickstart
 ==========
 See :ref:`Quickstart`
 
+Demo-Server
+===========
+Formbar comes with a very simple demo server to give you a impress on some
+features of formbar.
+
+To run the server do the following::
+
+        cd examples
+        python serve.py
+
+
 Licence
 =======
 Formbar is licensed with under the GNU general public license version 2.
