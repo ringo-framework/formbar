@@ -28,7 +28,7 @@ def set_current_form_page(request):
 def evaluate(request):
     """Will return a JSON response with the result of the evaluation of
     the submitted formbar rule."""
-    rule = Rule(expr=request.GET.get('rule').split(' '))
+    rule = Rule(request.GET.get('rule'))
     result = rule.evaluate({})
     return {"success": True,
             "data": result,
