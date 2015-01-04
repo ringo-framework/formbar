@@ -7,6 +7,12 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.9.3
+=====
+- Fixed demo server to make it start up again (Still some flaws in it).
+- Worked on documentation.
+- Some layout in forms.
+
 0.9.2
 =====
 - Fixed getting values from select fields if no value is selected and the
