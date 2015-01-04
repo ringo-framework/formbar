@@ -475,7 +475,7 @@
         <row>
           <col><field ref="e13t"/></col>
           <col>
-            <if expr="bool( $e13t )" type="readonly">
+            <if expr="$e13t == 1" type="readonly">
               <field ref="e13"/>
             </if>
            </col>
@@ -483,7 +483,7 @@
         <row>
           <col><field ref="e14t"/></col>
           <col>
-            <if expr="bool( $e14t )">
+            <if expr="$e14t == 1">
               <field ref="e14"/>
             </if>
            </col>
