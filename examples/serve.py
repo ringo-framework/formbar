@@ -37,7 +37,7 @@ def evaluate(request):
 def example(request):
     config = Config(load(os.path.join(example_dir, 'example.xml')))
     form_config = config.get_form('example')
-    form = Form(form_config, eval_url="/evaluate")
+    form = Form(form_config, eval_url="/evaluate", request=request)
 
     if request.POST:
         form.validate(request.POST)
