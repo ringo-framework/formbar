@@ -106,9 +106,10 @@ class Form(object):
         self._request = request
         self._csrf_token = csrf_token
         if request:
-            base_url = request.application_url
-            self._eval_url = base_url + eval_url
+            self._base_url = request.application_url
+            self._eval_url = self._base_url + eval_url
         else:
+            self._base_url = ""
             self._eval_url = eval_url
         if translate:
             self._translate = translate
