@@ -82,7 +82,7 @@ function renderPreview(definition, formid) {
   $.ajax({
       type: "POST",
       async: false,
-      url: "${field._form._base_url}${renderer.url}",
+      url: "${field._form._url_prefix}${renderer.url}",
       data: {definition: definition, formid: formid, csrf_token: "${field._form._request.session.get_csrf_token()}"},
       success: function (data) {
           if (data.success) {
