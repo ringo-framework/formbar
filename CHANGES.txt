@@ -9,9 +9,9 @@ TODO
 
 0.9.4
 =====
-- Save application base url for the form in case there is a request available.
-  This base url will be used to build correct urls in case the application
-  with uses formbar is hosted in a subpath. (eg. example.com/foo).
+- Add url_prefix as new parameter for forms. This prefix will be used to build
+  correct urls in case the application which uses formbar is hosted in a
+  subpath. (eg. example.com/foo).
 
 0.9.3
 =====
