@@ -7,6 +7,10 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.9.5
+=====
+- Set requirement to brabbel >= 0.2.6
+
 0.9.4
 =====
 - Add url_prefix as new parameter for forms. This prefix will be used to build
