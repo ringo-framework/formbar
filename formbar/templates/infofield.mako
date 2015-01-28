@@ -5,5 +5,5 @@ else:
   css = ""
 %>
 <div class="readonlyfield ${css}" id="${field.id}" expr="${field._tree.attrib.get('expr')}">
-  ${field.get_value("")}
+  ${_(field.get_value(""))}
 </div>
