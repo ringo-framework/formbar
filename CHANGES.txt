@@ -9,6 +9,8 @@ TODO
 
 0.9.5
 =====
+- Add special logic for ringo items when rendererd in info fields. In this
+  case display the expanded values.
 - Set requirement to brabbel >= 0.2.6
 
 0.9.4
