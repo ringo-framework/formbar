@@ -136,12 +136,12 @@
             % for em in child.attrib.get('em').split(" "):
               <${em}>
             % endfor
-              ${child.text}
+              ${_(child.text)}
             % for em in child.attrib.get('em').split(" "):
               </${em}>
             % endfor
           % else:
-            ${child.text}
+            ${_(child.text)}
           % endif
         </p>
       ## Table rendering
