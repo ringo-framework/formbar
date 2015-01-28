@@ -687,7 +687,13 @@ class Field(object):
         if value and value.startswith("$"):
             # value is a field. Try to get the value of the field.
             try:
-                value = getattr(self._form._item, value.strip("$"))
+                # Special logic for ringo items.
+                if (self.renderer.render_type == "info"
+                    and hasattr(self._form._item, "get_value")):
+                    value = self._form._item.get_value(value.strip("$"),
+                                                       expand=True)
+                else:
+                    value = getattr(self._form._item, value.strip("$"))
             except IndexError, e:
                 log.error("Error while accessing attribute '%s': %s" % (value, e))
                 value = None
