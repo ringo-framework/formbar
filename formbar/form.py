@@ -380,7 +380,7 @@ class Form(object):
 
         converted = ""
         dtype = field.get_type()
-        if dtype == 'string':
+        if dtype in ['string', 'text']:
             try:
                 converted = value
             except ValueError:

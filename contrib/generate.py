@@ -16,6 +16,8 @@ def print_model(config):
     for field in _get_fields(config):
         name = field.name
         if field.type == "string":
+            dtype = "sa.String"
+        elif field.type == "text":
             dtype = "sa.Text"
         elif field.type == "integer":
             dtype = "sa.Integer"
