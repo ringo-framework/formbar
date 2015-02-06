@@ -13,6 +13,7 @@ TODO
   case display the expanded values.
 - Do not show any value in the password field.
 - Set requirement to brabbel >= 0.2.6
+- Improve generation of model generation based on form definition.
 
 0.9.4
 =====

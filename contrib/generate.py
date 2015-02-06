@@ -1,6 +1,9 @@
 #!/usr/bin/env python
+import logging
 from formbar.config import Config, Field, parse
 import sys, argparse
+
+log = logging.getLogger(name="formbar.contrib.generate")
 
 def _get_config(config):
     return Config(parse(config.read()))
@@ -15,10 +18,16 @@ def print_model(config):
     out = []
     for field in _get_fields(config):
         name = field.name
+        extra_attributes = []
+        column_format = "%s = sa.Column('%s', %s, %s)"
         if field.type == "string":
             dtype = "sa.String"
+            extra_attributes.append("nullable=False")
+            extra_attributes.append("default=''")
         elif field.type == "text":
             dtype = "sa.Text"
+            extra_attributes.append("nullable=False")
+            extra_attributes.append("default=''")
         elif field.type == "integer":
             dtype = "sa.Integer"
         elif field.type == "date":
@@ -37,10 +46,17 @@ def print_model(config):
             dtype = "sa.LargeBinary"
         elif field.type == "info":
             continue # ignore this type
+        # Default
         else:
-            dtype = "sa.Text"
-        out.append("%s = sa.Column('%s', %s)" %
-                   (name, name, dtype))
+            log.warning(("No type found for '%s' using default 'sa.String'. "
+                         % field.name))
+            dtype = "sa.String"
+            extra_attributes.append("nullable=False")
+            extra_attributes.append("default=''")
+
+        out.append(column_format % (name, name,
+                                    dtype, ", ".join(extra_attributes)))
+
     print "\n".join(out)
 
 def main (config, action):
