@@ -19,7 +19,6 @@ def print_model(config):
     for field in _get_fields(config):
         name = field.name
         extra_attributes = []
-        column_format = "%s = sa.Column('%s', %s, %s)"
         if field.type == "string":
             dtype = "sa.String"
             extra_attributes.append("nullable=False")
@@ -54,8 +53,13 @@ def print_model(config):
             extra_attributes.append("nullable=False")
             extra_attributes.append("default=''")
 
-        out.append(column_format % (name, name,
-                                    dtype, ", ".join(extra_attributes)))
+        if extra_attributes:
+            column_format = "%s = sa.Column('%s', %s, %s)"
+            out.append(column_format % (name, name,
+                                        dtype, ", ".join(extra_attributes)))
+        else:
+            column_format = "%s = sa.Column('%s', %s)"
+            out.append(column_format % (name, name, dtype))
 
     print "\n".join(out)
 
