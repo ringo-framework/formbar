@@ -73,7 +73,7 @@ class Form(object):
 
     def __init__(self, config, item=None, dbsession=None, translate=None,
                  change_page_callback={}, renderers={}, request=None,
-                 csrf_token=None, eval_url=None, url_prefix=""):
+                 csrf_token=None, eval_url=None, url_prefix="", locale=None):
         """Initialize the form with ``Form`` configuration instance and
         optional an SQLAlchemy mapped object.
 
@@ -100,6 +100,8 @@ class Form(object):
         depending on the result of the evaluation and the error message in
         the data attribute in case the evaluation fails.
         :url_prefix: Prefix which can be used for all URL in the form.
+        :locale: String of the locale of the form. Used for proper
+        display of the date and number functions.
         """
         self._config = config
         self._item = item
@@ -110,6 +112,11 @@ class Form(object):
         self._eval_url = eval_url
         if self._url_prefix:
             self._eval_url = self._url_prefix + self._eval_url
+
+        if locale:
+            self._locale = locale
+        else:
+            self._locale = "en"
 
         if translate:
             self._translate = translate
@@ -434,7 +441,10 @@ class Form(object):
                 return None
             try:
                 #@TODO: Support other dateformats that ISO8601
-                y, m, d = value.split('-')
+                if self._locale == "de":
+                    d, m, y = value.split('.')
+                else:
+                    y, m, d = value.split('-')
                 y = int(y)
                 m = int(m)
                 d = int(d)
@@ -561,10 +571,16 @@ class Form(object):
                         serialized = "%02d:%02d:%02d" % (d.hour, d.minute, d.second)
                     elif ftype == "datetime":
                         value = get_local_datetime(value)
-                        dateformat = "yyyy-MM-dd HH:mm:ss"
+                        if self._locale == "de":
+                            dateformat = "dd.MM.yyyy HH:mm:ss"
+                        else:
+                            dateformat = "yyyy-MM-dd HH:mm:ss"
                         serialized = format_datetime(value, format=dateformat)
                     elif ftype == "date":
-                        dateformat = "yyyy-MM-dd"
+                        if self._locale == "de":
+                            dateformat = "dd.MM.yyyy"
+                        else:
+                            dateformat = "yyyy-MM-dd"
                         serialized = format_date(value, format=dateformat)
                     else:
                         serialized = value
