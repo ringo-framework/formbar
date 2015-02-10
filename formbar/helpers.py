@@ -14,8 +14,10 @@ def get_css_files():
     return css
 
 def get_js_files():
-    files = ['js/bootstrap-datepicker.js', 'js/formbar.js', 'js/ace/ace.js', 
-             'js/ace/ext-language_tools.js', 'js/ace/mode-xml.js', 
+    files = ['js/bootstrap-datepicker.js',
+             'js/locales/bootstrap-datepicker.de.js',
+             'js/formbar.js', 'js/ace/ace.js',
+             'js/ace/ext-language_tools.js', 'js/ace/mode-xml.js',
              'js/ace/snippets/xml.js', 'js/ace/snippets/text.js']
     js = []
     for filename in files:
