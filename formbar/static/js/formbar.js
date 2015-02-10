@@ -1,11 +1,12 @@
 /* ATTENTION: This file is created with mako and includes some attribute which
  * are inserted dynamically */
+var language = window.navigator.userLanguage || window.navigator.language;
 
 $( document ).ready(function() {
     $('.formbar-tooltip').tooltip();
     $('.formbar-datepicker').datepicker({
-        format: 'yyyy-mm-dd',
-        todayBtn: "linked"
+        language: language,
+        todayBtn: "linked",
     });
 
     /*
@@ -17,7 +18,8 @@ $( document ).ready(function() {
       var page = $(this).attr('href').split('#p')[1];
       var item = $(this).attr('formbar-item');
       var itemid = $(this).attr('formbar-itemid');
-      $.get('/set_current_form_page', 
+      var baseurl = $(this).attr('formbar-baseurl');
+      $.get(baseurl+'/set_current_form_page', 
             {
                 page: page,
                 item: item,
@@ -30,7 +32,8 @@ $( document ).ready(function() {
       var page = $(this).attr('href').split('#p')[1];
       var item = $(this).attr('formbar-item');
       var itemid = $(this).attr('formbar-itemid');
-      $.get('/set_current_form_page', 
+      var baseurl = $(this).attr('formbar-baseurl');
+      $.get(baseurl+'/set_current_form_page', 
             {
                 page: page,
                 item: item,
@@ -66,6 +69,7 @@ $( document ).ready(function() {
     $('div.formbar-form input.email').keypress(function(key) {
         /* Only allow a-z0-9-_@. (48-58 and "-") */
         var cc = key.charCode;
+        console.log(cc)
         if ((cc < 97 || cc > 122) && (cc < 48 || cc > 57) && cc != 0 && cc != 45 && cc != 64 && cc != 95 && cc != 46){
             return false;
         }
@@ -100,21 +104,16 @@ function evaluate(element) {
                           + 'select[name='+tfield+'], '
                           + 'div[name='+tfield+'], '
                           + 'textarea[name='+tfield+']');
-            // In case of a radio field the result if the selection is a list
-            // of fields. So we need to get the selected item.
-            if (field.length > 1) {
-                field = field.filter(':checked');
-            }
             value = field.val();
             // If we can not get a value from an input fields the field my
             // be readonly. So get the value from the readonly element.
             // First try to get the unexpaned value, if there is no
             // value get the textvalue of the field. (Which is usually
             // the expanded value).
-            if (!value && $(field).attr("value")) {
-                value = $(field).attr("value");
+            if (!value) {
+                value = field.attr("value");
             }
-            if (!value && field.attr("readonly")) {
+            if (!value) {
                 value = field.text();
             }
             if (value.indexOf("[") < 0) {
@@ -153,7 +152,7 @@ function evaluate(element) {
             });
             return result;
         } else {
-            return false;
+            return eval(eval_expr);
         }
     } catch (e) {
         console.log(e);
@@ -195,7 +194,7 @@ function evaluateFields() {
     for (var i = fieldsToEvaluate.length - 1; i >= 0; i--){
         var field = fieldsToEvaluate[i];
         var id = field['attributes'][1].value;
-        var result = evaluate(field);
+        var result = evaluate(field)
         if (result) {
             $('#'+id).text(result);
         }
