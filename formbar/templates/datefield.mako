@@ -1,3 +1,9 @@
+<%
+if field._form._locale == "de":
+  placeholder = "TT.MM.JJJJ"
+else:
+  placeholder = "YYYY-MM-DD"
+%>
 % if field.is_readonly():
   <div class="readonlyfield" name="${field.name}">
     % if field.get_previous_value() is not None:
@@ -9,6 +15,6 @@
 % else:
   <div class="input-group date date formbar-datepicker">
     <input type="text"  name="${field.name}" value="${field.get_value()}"
-    class="form-control ${field.type}" placeholder="YYYY-MM-DD"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+    class="form-control ${field.type}" placeholder="${placeholder}"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
   </div>
 % endif
