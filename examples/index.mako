@@ -43,6 +43,7 @@
   <script src="js/jquery.js"></script>
   <script src="bootstrap/js/bootstrap.min.js"></script>
   <script src="js/bootstrap-datepicker.js"></script>
+  <script src="js/locales/bootstrap-datepicker.de.js"></script>
   <script src="js/formbar.js"></script>
   <script>
     $('#formbar-page-1').show();
