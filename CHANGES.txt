@@ -14,6 +14,8 @@ TODO
 - Do not show any value in the password field.
 - Set requirement to brabbel >= 0.2.6
 - Improve generation of model generation based on form definition.
+- Added option configure a locale for the form. This is needed to render form
+  elements like the datepicker with the correct locale settings.
 
 0.9.4
 =====
