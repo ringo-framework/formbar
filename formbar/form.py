@@ -196,7 +196,7 @@ class Form(object):
         """
         filtered = {}
         for fieldname, field in self.fields.iteritems():
-            if values.has_key(fieldname):
+            if fieldname in values:
                 filtered[fieldname] = values[fieldname]
         return filtered
 
@@ -213,7 +213,8 @@ class Form(object):
         deserialized = {}
         for fieldname, value in self._filter_values(data).iteritems():
             field = self.fields.get(fieldname)
-            deserialized[fieldname] = self._to_python(field, data.get(field.name))
+            deserialized[fieldname] = self._to_python(field,
+                                                      data.get(field.name))
         log.debug("Deserialized values: %s" % deserialized)
         return deserialized
 
@@ -279,7 +280,8 @@ class Form(object):
 
         errors = {}
         for field in self.fields.values():
-            if page is not None and field.name not in fields_on_page: continue
+            if page is not None and field.name not in fields_on_page:
+                continue
             if len(field.get_errors()) > 0:
                 errors[field.name] = field.get_errors()
         return errors
@@ -300,7 +302,8 @@ class Form(object):
 
         warnings = {}
         for field in self.fields.values():
-            if page is not None and field.name not in fields_on_page: continue
+            if page is not None and field.name not in fields_on_page:
+                continue
             if len(field.get_warnings()) > 0:
                 warnings[field.name] = field.get_warnings()
         return warnings
@@ -375,13 +378,14 @@ class Form(object):
         try:
             mapper = sa.orm.object_mapper(self._item)
             relation_properties = filter(
-                lambda p: isinstance(p, sa.orm.properties.RelationshipProperty),
+                lambda p: isinstance(p,
+                                     sa.orm.properties.RelationshipProperty),
                 mapper.iterate_properties)
             for prop in relation_properties:
                 relation_names[prop.key] = prop
         except sa.orm.exc.UnmappedInstanceError:
             if not self._item:
-                pass # The form is not mapped to an item.
+                pass  # The form is not mapped to an item.
             else:
                 raise
 
@@ -464,7 +468,9 @@ class Form(object):
                 h = int(h)
                 m = int(m)
                 s = int(s)
-                converted = datetime.timedelta(hours=h, minutes=m, seconds=s).total_seconds()
+                converted = datetime.timedelta(hours=h,
+                                               minutes=m,
+                                               seconds=s).total_seconds()
             except ValueError:
                 msg = "Value '%s' must be in format 'HH:MM:SS'" % value
                 self._add_error(field.name, msg)
@@ -488,12 +494,13 @@ class Form(object):
                 M = int(M)
                 s = int(s)
                 converted = datetime.datetime(y, m, d, h, M, s)
-		# Convert datetime to UTC and remove tzinfo because SQLAlchemy
-		# fails when trying to store offset-aware datetimes if the date
-		# column isn't prepared. As storing dates in UTC is a good idea
-		# anyway this is the default.
+                # Convert datetime to UTC and remove tzinfo because
+                # SQLAlchemy fails when trying to store offset-aware
+                # datetimes if the date column isn't prepared. As
+                # storing dates in UTC is a good idea anyway this is the
+                # default.
                 converted = get_utc_datetime(converted)
-		converted = converted.replace(tzinfo=None)
+                converted = converted.replace(tzinfo=None)
             except:
                 log.exception("e")
                 msg = "%s is not a valid datetime format." % value
@@ -568,7 +575,8 @@ class Form(object):
                     if ftype == "time":
                         td = datetime.timedelta(seconds=int(value))
                         d = datetime.datetime(1, 1, 1) + td
-                        serialized = "%02d:%02d:%02d" % (d.hour, d.minute, d.second)
+                        serialized = "%02d:%02d:%02d" % (d.hour,
+                                                         d.minute, d.second)
                     elif ftype == "datetime":
                         value = get_local_datetime(value)
                         if self._locale == "de":
@@ -705,16 +713,18 @@ class Field(object):
             try:
                 # Special logic for ringo items.
                 if (self.renderer.render_type == "info"
-                    and hasattr(self._form._item, "get_value")):
+                   and hasattr(self._form._item, "get_value")):
                     value = self._form._item.get_value(value.strip("$"),
                                                        expand=True)
                 else:
                     value = getattr(self._form._item, value.strip("$"))
             except IndexError, e:
-                log.error("Error while accessing attribute '%s': %s" % (value, e))
+                log.error("Error while accessing attribute '%s': %s"
+                          % (value, e))
                 value = None
             except AttributeError, e:
-                log.error("Error while accessing attribute '%s': %s" % (value, e))
+                log.error("Error while accessing attribute '%s': %s"
+                          % (value, e))
                 value = None
         self.value = value
 
@@ -802,11 +812,11 @@ class Field(object):
             # % marks attributes of the current fields item in case of
             # selections. Is used to iterate over the items in the selection.
             if x.startswith("%"):
-                key =  x.strip("%")
+                key = x.strip("%")
                 value = getattr(item, key)
             # @ marks the item of the current fields form item.
             elif x.startswith("@"):
-                key =  x.strip("@")
+                key = x.strip("@")
                 value = getattr(self._form._item, key)
             # $ special attributes of the current form.
             elif x.startswith("$"):
@@ -831,7 +841,8 @@ class Field(object):
 
             if value is not None:
                 if isinstance(value, list):
-                    value = "[%s]" % ",".join("'%s'" % unicode(v) for v in value)
+                    value = "[%s]" % ",".join("'%s'"
+                                              % unicode(v) for v in value)
                     expr_str = expr_str.replace(x, value)
                 else:
                     expr_str = expr_str.replace(x, "'%s'" % str(value))
@@ -887,7 +898,8 @@ class Field(object):
         if self.get_type() == 'manytoone':
             options.append(("None", "", True))
         user_defined_options = self._config.options
-        if isinstance(user_defined_options, list) and len(user_defined_options) > 0:
+        if (isinstance(user_defined_options, list)
+           and len(user_defined_options) > 0):
             for option in user_defined_options:
                 # TODO: Filter user defined options too (ti) <2014-02-19 23:46>
                 options.append((option[0], option[1], True))
