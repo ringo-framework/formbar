@@ -336,6 +336,10 @@ class Field(Config):
         """Flag to enable or disable the automcomplete feature for this
         field. Defaults to enabled autocompletion"""
 
+        self.autofocus = entity.attrib.get('autofocus', 'false') == 'true'
+        """Flag to enable focusing the field on pageload. Note that only
+        one field in the form can have the autofocus attribute."""
+
         self.value = entity.attrib.get('value', "")
         """Default value of the field. Note that this value might be
         overwritten while rendering the form if the field is within the

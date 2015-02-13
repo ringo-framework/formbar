@@ -75,6 +75,7 @@ expr        Expression which is used to calculate the value of the field.
 value       Default value of the field. Supports expressions. The default value might get overwritten on rendering.
 readonly    Flag to indicate that the field should be rendered as readonly field. Default is ``false``.
 required    Flag to indicate that the is a required field. Default is ``false``.
+autofocus   Flag to mark the field to be focused on pageload. Only one field per form can be focused. Default is ``false``.
 desired     Flag to indicate that the is a desired field. Default is ``false``.
 tags        Comma separated list of tags for this field.
 =========   ===========

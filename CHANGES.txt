@@ -7,6 +7,10 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.9.6
+=====
+- Added autofocus attribute in field configuration (Textfield only yet)
+
 0.9.5
 =====
 - Add special logic for ringo items when rendererd in info fields. In this

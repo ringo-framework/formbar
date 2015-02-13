@@ -7,5 +7,5 @@
     % endif
   </div>
 % else:
-  <input class="form-control ${field.type}" type="text" id="${field.id}" name="${field.name}" value="${field.get_value()}"/>
+  <input class="form-control ${field.type}" type="text" id="${field.id}" name="${field.name}" value="${field.get_value()}" ${field.autofocus and 'autofocus'}/>
 % endif
