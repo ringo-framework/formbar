@@ -104,7 +104,23 @@ function evaluate(element) {
                           + 'select[name='+tfield+'], '
                           + 'div[name='+tfield+'], '
                           + 'textarea[name='+tfield+']');
-            value = field.val();
+            // Get value from field depending on field type
+            switch (field.attr("type")) {
+                case 'radio':
+                    value = $('input[name='+tfield+']:checked').val();
+                    break;
+                case 'checkbox':
+                    var allVals = [];
+                    $('input[name='+tfield+']:checked').each(function() {
+                        if ($(this).val() != "") {
+                            allVals.push($(this).val());
+                        }
+                    });
+                    value = '[' + allVals.join() + ']';
+                    break;
+                default:
+                    value = field.val();
+            }
             // If we can not get a value from an input fields the field my
             // be readonly. So get the value from the readonly element.
             // First try to get the unexpaned value, if there is no
@@ -115,15 +131,6 @@ function evaluate(element) {
             }
             if (!value) {
                 value = field.text();
-            }
-            if (value.indexOf("[") < 0) {
-                if (!value) {
-                    value = "None";
-                } else {
-                    if (!$.isNumeric(value)) {
-                        value = "'"+value+"'";
-                    }
-                }
             }
             eval_expr += " "+value;
         } else {
