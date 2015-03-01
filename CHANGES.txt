@@ -10,6 +10,7 @@ TODO
 0.9.6
 =====
 - Added autofocus attribute in field configuration (Textfield only yet)
+- Fixed getting values from checkbox and radio fields.
 
 0.9.5
 =====
