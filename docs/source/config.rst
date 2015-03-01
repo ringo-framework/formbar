@@ -555,11 +555,14 @@ also the options which should be available in the dropdown menu. For
 SQLAlchemy mapped items the options are automatically determined from the
 underlying data model::
 
-        <renderer type="dropdown">
-           <option value="1">Option 1</option>
-           <option value="2">Option 2</option>
-           <option value="3">Option 3</option>
-        </renderer>
+        <entity>
+           <renderer type="dropdown"/>
+           <options>
+              <option value="1">Option 1</option>
+              <option value="2">Option 2</option>
+              <option value="3">Option 3</option>
+           </options>
+        </entity>
 
 =========   ===========
 Attribute   Description
