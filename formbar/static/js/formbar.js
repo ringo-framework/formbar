@@ -1,8 +1,27 @@
 /* ATTENTION: This file is created with mako and includes some attribute which
  * are inserted dynamically */
-var language = window.navigator.userLanguage || window.navigator.language;
+var language = null;
+
+function getBrowserLanguage() {
+    var form = $('div.formbar-form form');
+    var eval_url = $(form).attr("evalurl"); 
+    var language = undefined;
+    $.ajax({ 
+        url: eval_url,
+        async: false,
+        data: {rule: "True"},
+        success: function(data) {
+                language = data.params.locale
+            },
+        error: function(data) {
+                language = window.navigator.userLanguage || window.navigator.language
+            }
+    });
+    return language;
+}
 
 $( document ).ready(function() {
+    language = getBrowserLanguage();
     $('.formbar-tooltip').tooltip();
     $('.formbar-datepicker').datepicker({
         language: language,
