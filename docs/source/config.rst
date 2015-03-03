@@ -69,7 +69,7 @@ name        Used as name attribute in the rendered field. Defines the
             name of this attribute in the model.
 label       The field will be rendered with this label.
 number      A small number which is rendered in front of the label.
-type        Defines the python datatype which will be used on deserialisation of the submitted value. Defines the datatype of the model. Possible values are ``string`` (default), ``text``, ``integer``, ``float``, ``date``, ``datetime``, ``email``.
+type        Defines the python datatype which will be used on deserialisation of the submitted value. Defines the datatype of the model. Possible values are ``string`` (default), ``text``, ``integer``, ``float``, ``date``, ``datetime``, ``email``, ``boolean``.
 css         Value will be rendered as class attribute in the rendered field.
 expr        Expression which is used to calculate the value of the field.
 value       Default value of the field. Supports expressions. The default value might get overwritten on rendering.
