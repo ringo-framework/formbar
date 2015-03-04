@@ -5,6 +5,9 @@ var language = null;
 function getBrowserLanguage() {
     var form = $('div.formbar-form form');
     var eval_url = $(form).attr("evalurl"); 
+    if (!eval_url) {
+        return window.navigator.userLanguage || window.navigator.language
+    }
     var language = undefined;
     $.ajax({ 
         url: eval_url,
@@ -79,9 +82,9 @@ $( document ).ready(function() {
         }
     });
     $('div.formbar-form input.date').keypress(function(key) {
-        /* Only allow 0-9 (48-58 and "-") */
+        /* Only allow 0-9 (48-58 and "-./") */
         var cc = key.charCode;
-        if ((cc < 48 || cc > 57) && cc != 0 && cc != 45){
+        if ((cc < 48 || cc > 57) && cc != 0 && (cc != 45 && cc != 46 && cc != 47)){
             return false;
         }
     });
