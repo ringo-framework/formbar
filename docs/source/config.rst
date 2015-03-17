@@ -527,22 +527,24 @@ filter          Expression which must evaluate to True if the option shoul be sh
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
 =============== ===========
 
-.. note::
-   Filtering is only possible for SQLAlchemy mapped items.
-
 Filtering can be done by defining a expression in the filter attribute. This
 expression is later evaluated by the rule system of formbar. The expression
 must evaluate to true and is evaluated for every option. The expression uses a
 two special variables begining with 
 
-1. ``%``.  Variables begining with % marks the
-name of an attribute of the current options item. The variable will be
-replaced by the value of the attribute of the current item in the option for
-every option before evaluating.
+1. ``%``.  Variables beginning with % marks the options of the selection. A
+   single ``%`` can be used on userdefined options to access the value of the
+   option. For SQLAlchemy based options comming from the database ``%`` can be
+   used to access a attribute of the option. E.g '%id' will access the id
+   attribute of the option.  The variable will be replaced by the value of the
+   attribute of the current item in the option for every option before
+   evaluating.
 2. ``@``. Varaible beginning with @ marks the name of an attribute of
 the parents form item.
 
-Both variables support accessing related items through the dot-syntax:: 
+3. ``$``. Varaible beginning with $ marks the name of field in the form.
+
+All variables support accessing related items through the dot-syntax::
         
         <renderer type="selection" filter="%foo eq @bar.baz">
 
