@@ -809,11 +809,21 @@ class Field(object):
     def _build_filter_rule(self, expr_str, item):
         t = expr_str.split(" ")
         for x in t:
-            # % marks attributes of the current fields item in case of
-            # selections. Is used to iterate over the items in the selection.
+            # % marks the options in the selection field. It is used to
+            # iterate over the options in the selection. I case the
+            # options are SQLAlchemy based options the variable can be
+            # used to access a attribute of the item. E.g. %id will
+            # access the id of the current option item. For user defined
+            # options "%" can be used to iterate over the user defined
+            # options. In this case the value is the value of the
+            # option.
             if x.startswith("%"):
                 key = x.strip("%")
-                value = getattr(item, key)
+                if len(key) == 0:
+                    # User defined option
+                    value = item[1]
+                else:
+                    value = getattr(item, key)
             # @ marks the item of the current fields form item.
             elif x.startswith("@"):
                 key = x.strip("@")
