@@ -873,17 +873,34 @@ class Field(object):
         return []
 
     def filter_options(self, options):
+        """Will return a of tuples with options. The given options can
+        be either a list of SQLAlchemy mapped items (In case the options
+        come directly from the database) or a list of tuples with option
+        name and values. (In case of userdefined options in the form)
+
+        :options: List of items or tuples
+        :returns: List of tuples.
+
+        """
         filtered_options = []
         for option in options:
-            if self._config.renderer and self._config.renderer.filter:
-                rule = self._build_filter_rule(
-                    self._config.renderer.filter, option)
-                if rule.evaluate({}):
-                    filtered_options.append((option, option.id, True))
-                else:
-                    filtered_options.append((option, option.id, False))
+            if isinstance(option, tuple):
+                # User defined options
+                o_value = option[1]
+                o_label = option[0]
             else:
-                filtered_options.append((option, option.id, True))
+                # Options loaded from the database
+                o_value = option.id
+                o_label = option
+            if self._config.renderer and self._config.renderer.filter:
+                rule = self._build_filter_rule(self._config.renderer.filter,
+                                               option)
+                if rule.evaluate({}):
+                    filtered_options.append((o_label, o_value, True))
+                else:
+                    filtered_options.append((o_label, o_value, False))
+            else:
+                filtered_options.append((o_label, o_value, True))
         return filtered_options
 
     def get_options(self):
@@ -910,9 +927,8 @@ class Field(object):
         user_defined_options = self._config.options
         if (isinstance(user_defined_options, list)
            and len(user_defined_options) > 0):
-            for option in user_defined_options:
-                # TODO: Filter user defined options too (ti) <2014-02-19 23:46>
-                options.append((option[0], option[1], True))
+            for option in self.filter_options(user_defined_options):
+                options.append((option[0], option[1], option[2]))
         elif isinstance(user_defined_options, str):
             for option in self._form.merged_data.get(user_defined_options):
                 options.append((option[0], option[1], True))
