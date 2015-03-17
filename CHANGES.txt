@@ -13,6 +13,7 @@ TODO
 - Fixed getting values from checkbox and radio fields.
 - Fixed getting accepted language from browser. Now using locale setting from
   evaluate response.
+- Implement filtering on userdefined rules
 
 0.9.5
 =====
