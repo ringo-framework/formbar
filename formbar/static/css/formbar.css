@@ -1,5 +1,4 @@
 /* Formbar Style */
-
 /* Make all field elements expand to 100% on default */
 .formbar-form input, .formbar-form select,.formbar-form textarea {
   /*width: 100%; */
@@ -152,6 +151,15 @@ button {
   display: block;
 }
 
+
+// Fits for large screens
+//.formbar-outline.affix {
+//  position: fixed;
+//  width: 262px;
+//  top: 10px;
+//  z-index:10;
+//}
+
 // Media depended affix CSS.
 @media(max-width:767px){
   .formbar-outline.affix {
@@ -172,13 +180,19 @@ button {
 @media(min-width:992px){
   .formbar-outline.affix {
     width: 213px;
+  }
 }
 @media(min-width:1200px){
   .formbar-outline.affix {
     width: 290px;
+  }
 }
 
 /* Bootstrap overwrites */
 .formbar-conditional .list-group-item {
     border-top-width: 1px !important;
+}
+
+a.list-group-item.selected {
+    background-color: #f5f5f5 !important;
 }

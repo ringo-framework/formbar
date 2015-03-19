@@ -30,7 +30,11 @@ $( document ).ready(function() {
         language: language,
         todayBtn: "linked",
     });
-
+    $('.list-group-item').on('click',function(e){
+        var previous = $(this).closest(".list-group").children(".selected");
+        previous.removeClass('selected'); // previous list-item
+        $(e.target).addClass('selected'); // activated list-item
+    });
     /*
     * Set hidden form field "formbar-page" to the value of the currently
     * selected page. This value will be used to set the currently selected
