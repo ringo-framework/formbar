@@ -54,7 +54,7 @@
 </%def>
 
 <%def name="render_outline_element(form, page)">
-  <a href="#${page.attrib.get('id')}" class="list-group-item" formbar-baseurl="${form._request.application_url}" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${_(page.attrib.get('label'))}
+  <a href="#${page.attrib.get('id')}" class="list-group-item" formbar-baseurl="${form._url_prefix}" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${_(page.attrib.get('label'))}
   <span class="label label-danger pull-right">${len(form.get_errors(page)) or ""}</span>
   <span class="label label-warning pull-right">${len(form.get_warnings(page)) or ""}</span>
   </a>
