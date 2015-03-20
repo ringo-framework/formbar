@@ -119,6 +119,7 @@ function evaluate(element) {
     var eval_url = $(form).attr("evalurl"); 
 
     var eval_expr = "";
+    var eval_expr_valid = true;
     // Build evaluation string
     for (var j = 0; j <= tokens.length - 1; j++) {
         var tfield = null;
@@ -158,13 +159,18 @@ function evaluate(element) {
             if (!value) {
                 value = field.text();
             }
+            // If here is still no value the expression will not be valid
+            // E.g "== '2'"
+            if (!value) {
+                eval_expr_valid = false;
+            }
             eval_expr += " "+value;
         } else {
             eval_expr += " "+tokens[j];
         }
     }
     try {
-        if (eval_url) {
+        if (eval_url && eval_expr_valid) {
             var result = false;
             $.ajax({
                 type: "GET",
@@ -185,7 +191,7 @@ function evaluate(element) {
             });
             return result;
         } else {
-            return eval(eval_expr);
+            return false;
         }
     } catch (e) {
         console.log(e);
