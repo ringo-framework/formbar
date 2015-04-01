@@ -119,7 +119,6 @@ function evaluate(element) {
     var eval_url = $(form).attr("evalurl"); 
 
     var eval_expr = "";
-    var eval_expr_valid = true;
     // Build evaluation string
     for (var j = 0; j <= tokens.length - 1; j++) {
         var tfield = null;
@@ -159,10 +158,10 @@ function evaluate(element) {
             if (!value) {
                 value = field.text();
             }
-            // If here is still no value the expression will not be valid
-            // E.g "== '2'"
+            // If here is still no value we will set it to None. Otherwise the
+            // the expression will not be valid E.g "== '2'"
             if (!value) {
-                eval_expr_valid = false;
+                value = "None"
             }
             eval_expr += " "+value;
         } else {
@@ -170,7 +169,7 @@ function evaluate(element) {
         }
     }
     try {
-        if (eval_url && eval_expr_valid) {
+        if (eval_url) {
             var result = false;
             $.ajax({
                 type: "GET",
