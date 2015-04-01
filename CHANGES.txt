@@ -14,7 +14,8 @@ TODO
 - Fixed getting accepted language from browser. Now using locale setting from
   evaluate response.
 - Implement filtering on userdefined rules
-- Added some client side checks if the eval_expr will be valid.
+- If no value can be get from a field then set the value to "None" in
+  expressions to ensure the expression is valid.
 
 0.9.5
 =====
