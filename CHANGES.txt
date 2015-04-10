@@ -16,6 +16,8 @@ TODO
 - Implement filtering on userdefined rules
 - If no value can be get from a field then set the value to "None" in
   expressions to ensure the expression is valid.
+- Removed datutils dependency as it is not py3 ready. Actually only the
+  python-dateutil library is needed.
 
 0.9.5
 =====

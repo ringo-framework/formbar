@@ -24,7 +24,7 @@ setup(name='formbar',
     install_requires=['brabbel>=0.2.6',
                       'sqlalchemy',
                       'babel',
-                      'dateutils',
+                      'python-dateutil',
                       'mako'],
     # Used for the example server
     tests_require=['nose', 'coverage'],
