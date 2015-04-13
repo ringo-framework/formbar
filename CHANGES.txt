@@ -7,8 +7,8 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
-0.9.6
-=====
+0.9.7 (alias 0.9.6)
+===================
 - Added autofocus attribute in field configuration (Textfield only yet)
 - Fixed getting values from checkbox and radio fields.
 - Fixed getting accepted language from browser. Now using locale setting from
