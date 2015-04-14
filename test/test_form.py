@@ -52,24 +52,24 @@ class TestFormValidation(unittest.TestCase):
         pass
 
     def test_form_unknown_field(self):
-        values = {'unknown': 'test', 'integer': '15', 'date': '1998-02-01'}
+        values = {'default': 'test', 'integer': '15', 'date': '1998-02-01', 'float': '10.0', 'select': '1'}
         self.form.validate(values)
         # Check that the unknown field has been filtered out as it was
         # not part of the form.
         self.assertEqual(self.form.data.has_key('unknown'), False)
 
     def test_form_validate_fail(self):
-        values = {'default': 'test', 'integer': '15', 'date': '1998-02-01'}
+        values = {'default': 'test', 'integer': '15', 'date': '1998-02-01', 'float': '10.0', 'select': '1'}
         self.assertEqual(self.form.validate(values), False)
 
     def test_form_validate_fail_checkvalues(self):
-        values = {'default': 'test', 'integer': '15', 'date': '1998-02-01'}
+        values = {'default': 'test', 'integer': '15', 'date': '1998-02-01', 'float': '10.0', 'select': '1'}
         self.assertEqual(self.form.validate(values), False)
         self.assertEqual(self.form.submitted_data['integer'], '15')
         self.assertEqual(self.form.submitted_data['date'], '1998-02-01')
 
     def test_form_validate_ok(self):
-        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
+        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01', 'float': '10.0', 'select': '1'}
         validator = Validator('integer',
                               'Error message',
                               external_validator)
@@ -77,7 +77,7 @@ class TestFormValidation(unittest.TestCase):
         self.assertEqual(self.form.validate(values), True)
 
     def test_form_validate_ext_validator_fail(self):
-        values = {'default': 'test', 'integer': '15', 'date': '1998-02-01'}
+        values = {'default': 'test', 'integer': '15', 'date': '1998-02-01', 'float': '10.0', 'select': '1'}
         validator = Validator('integer',
                               'Error message',
                               external_validator)
@@ -85,37 +85,35 @@ class TestFormValidation(unittest.TestCase):
         self.assertEqual(self.form.validate(values), False)
 
     def test_form_validate_ext_validator_ok(self):
-        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
+        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01', 'float': '10.0', 'select': '1'}
         self.assertEqual(self.form.validate(values), True)
 
     def test_form_deserialize_int(self):
-        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
+        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01', 'float': '10.0', 'select': '1'}
         self.form.validate(values)
         self.assertEqual(self.form.data['integer'], 16)
 
     def test_form_deserialize_float(self):
-        values = {'default': 'test', 'integer': '16',
-                  'date': '1998-02-01', 'float': '87.5'}
+        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01', 'float': '87.5', 'select': '1'}
         self.assertEqual(self.form.validate(values), True)
         self.assertEqual(self.form.data['float'], 87.5)
 
     def test_form_deserialize_date(self):
-        values = {'default': 'test', 'integer': '16',
-                  'float': '87.5', 'date': '1998-02-01'}
+        values = {'default': 'test', 'integer': '16', 'float': '87.5', 'date': '1998-02-01', 'select': '1'}
         self.form.validate(values)
         self.assertEqual(self.form.data['date'], datetime.date(1998, 2, 1))
 
     def test_form_deserialize_string(self):
-        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01', 'float': '99'}
+        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01', 'float': '99', 'select': '1'}
         self.form.validate(values)
         self.assertEqual(self.form.data['default'], 'test')
 
     def test_form_save(self):
-        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
+        values = {'select': '2', 'default': 'test', 'integer': '16', 'date': '1998-02-01', 'float': '1'}
         self.assertEqual(self.form.validate(values), True)
 
     def test_form_warnings(self):
-        values = {'select': '2', 'default': 'test', 'integer': '16', 'date': '1998-02-01'}
+        values = {'select': '2', 'default': 'test', 'integer': '16', 'date': '1998-02-01', 'float': ''}
         self.form.validate(values)
         warnings = self.form.get_warnings()
         self.assertEqual(len(warnings), 2)
