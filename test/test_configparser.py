@@ -44,7 +44,7 @@ class TestFormParser(unittest.TestCase):
 
     def test_get_fields(self):
         self.assertTrue(isinstance(self.cform.get_fields(), dict))
-        self.assertEqual(len(self.cform.get_fields().items()), 7)
+        self.assertEqual(len(list(self.cform.get_fields().items())), 7)
 
     def test_get_field_e1(self):
         field = self.cform.get_field(self.cform._id2name['e1'])

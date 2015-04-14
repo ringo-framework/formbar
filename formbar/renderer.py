@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 import logging
 import difflib
 
@@ -23,7 +25,7 @@ def get_renderer(field, translate):
     if renderer is not None:
         # if there is a external Renderer defined for the given renderer
         # type then use this one.
-        if field._form.external_renderers.has_key(renderer.render_type):
+        if renderer.render_type in field._form.external_renderers:
             return field._form.external_renderers.get(renderer.render_type)(field, translate)
         if renderer.render_type == "textarea":
             return TextareaFieldRenderer(field, translate)
@@ -244,8 +246,8 @@ class FieldRenderer(Renderer):
         out = []
         mode = None
         d = difflib.Differ()
-        old = unicode(newvalue).split(" ")
-        new = unicode(oldvalue).split(" ")
+        old = str(newvalue).split(" ")
+        new = str(oldvalue).split(" ")
         diff = d.compare(old, new)
         for x in diff:
             if x[0:2] == "+ " and mode != "new":

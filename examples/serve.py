@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 from sqlalchemy.orm import scoped_session
 from wsgiref.simple_server import make_server
@@ -64,5 +65,5 @@ if __name__ == '__main__':
     config.add_static_view('js', 'js', cache_max_age=3600)
     app = config.make_wsgi_app()
     server = make_server('127.0.0.1', 8080, app)
-    print "Server is available on http://127.0.0.1:8080"
+    print("Server is available on http://127.0.0.1:8080")
     server.serve_forever()

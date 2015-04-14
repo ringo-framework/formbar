@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import logging
 from formbar.config import Config, Field, parse
 import sys, argparse
@@ -61,14 +62,14 @@ def print_model(config):
             column_format = "%s = sa.Column('%s', %s)"
             out.append(column_format % (name, name, dtype))
 
-    print "\n".join(out)
+    print("\n".join(out))
 
 def main (config, action):
     config_tree = _get_config(config)
     if action == "model":
         print_model(config_tree)
     else:
-        print "nothing to do"
+        print("nothing to do")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate various informations from a form configuration file')

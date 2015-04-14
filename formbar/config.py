@@ -1,3 +1,4 @@
+from builtins import object
 import gettext
 import logging
 import xml.etree.ElementTree as ET
@@ -23,7 +24,7 @@ def parse(xml):
     :returns: DOM of the parsed XML
 
     """
-    if isinstance(xml, unicode):
+    if isinstance(xml, str):
         xml = xml.encode("utf-8")
     return ET.fromstring(xml)
 
@@ -268,7 +269,7 @@ class Form(Config):
         fields = self.get_fields()
         try:
             return fields[name]
-        except KeyError, e:
+        except KeyError as e:
             log.error('Tried to get field "%s"'
                       ' which is not included in the form' % name)
             raise e

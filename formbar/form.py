@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 import logging
 import re
 import datetime
@@ -178,7 +180,7 @@ class Form(object):
         values = {}
         if not self._item:
             return values
-        for name, field in self._config.get_fields().iteritems():
+        for name, field in self._config.get_fields().items():
             try:
                 values[name] = getattr(self._item, name)
             except AttributeError:
@@ -195,7 +197,7 @@ class Form(object):
 
         """
         filtered = {}
-        for fieldname, field in self.fields.iteritems():
+        for fieldname, field in self.fields.items():
             if fieldname in values:
                 filtered[fieldname] = values[fieldname]
         return filtered
@@ -211,7 +213,7 @@ class Form(object):
 
         """
         deserialized = {}
-        for fieldname, value in self._filter_values(data).iteritems():
+        for fieldname, value in self._filter_values(data).items():
             field = self.fields.get(fieldname)
             deserialized[fieldname] = self._to_python(field,
                                                       data.get(field.name))
@@ -230,7 +232,7 @@ class Form(object):
 
         """
         serialized = {}
-        for fieldname, value in self._filter_values(data).iteritems():
+        for fieldname, value in self._filter_values(data).items():
             field = self.fields.get(fieldname)
             #if field and not field.is_readonly():
             #    # Only add the value if the field is not marked as readonly
@@ -246,20 +248,20 @@ class Form(object):
 
         """
         fields = {}
-        for name, field in self._config.get_fields().iteritems():
+        for name, field in self._config.get_fields().items():
             fields[name] = Field(self, field, self._translate)
         return fields
 
     def has_errors(self):
         """Returns True if one of the fields in the form has errors"""
-        for field in self.fields.values():
+        for field in list(self.fields.values()):
             if len(field.get_errors()) > 0:
                 return True
         return False
 
     def has_warnings(self):
         """Returns True if one of the fields in the form has warnings"""
-        for field in self.fields.values():
+        for field in list(self.fields.values()):
             if len(field.get_warnings()) > 0:
                 return True
         return False
@@ -279,7 +281,7 @@ class Form(object):
             fields_on_page = self._config.get_fields(page)
 
         errors = {}
-        for field in self.fields.values():
+        for field in list(self.fields.values()):
             if page is not None and field.name not in fields_on_page:
                 continue
             if len(field.get_errors()) > 0:
@@ -301,7 +303,7 @@ class Form(object):
             fields_on_page = self._config.get_fields(page)
 
         warnings = {}
-        for field in self.fields.values():
+        for field in list(self.fields.values()):
             if page is not None and field.name not in fields_on_page:
                 continue
             if len(field.get_warnings()) > 0:
@@ -337,7 +339,7 @@ class Form(object):
             item_values = self.loaded_data
         # Merge the items_values with the extra provided values. Extra
         # values will overwrite the item_values.
-        values = dict(item_values.items() + values.items())
+        values = dict(list(item_values.items()) + list(values.items()))
         self.merged_data = values
 
         # Set current and previous values of the fields in the form.
@@ -377,10 +379,8 @@ class Form(object):
         relation_names = {}
         try:
             mapper = sa.orm.object_mapper(self._item)
-            relation_properties = filter(
-                lambda p: isinstance(p,
-                                     sa.orm.properties.RelationshipProperty),
-                mapper.iterate_properties)
+            relation_properties = [p for p in mapper.iterate_properties if isinstance(p,
+                                     sa.orm.properties.RelationshipProperty)]
             for prop in relation_properties:
                 relation_names[prop.key] = prop
         except sa.orm.exc.UnmappedInstanceError:
@@ -454,7 +454,7 @@ class Form(object):
                 d = int(d)
                 try:
                     converted = datetime.date(y, m, d)
-                except ValueError, e:
+                except ValueError as e:
                     msg = "%s is an invalid date (%s)" % (value, e)
                     self._add_error(field.name, msg)
             except:
@@ -558,7 +558,7 @@ class Form(object):
         try:
             if value is None:
                 serialized = ""
-            elif isinstance(value, basestring):
+            elif isinstance(value, str):
                 serialized = value
             elif isinstance(value, list):
                 vl = []
@@ -636,7 +636,7 @@ class Form(object):
         fields_to_check = self._config.get_fields(values=converted,
                                                   reload_fields=True,
                                                   evaluate=True)
-        for fieldname, field in fields_to_check.iteritems():
+        for fieldname, field in fields_to_check.items():
             field = self.fields[fieldname]
             for rule in field.get_rules():
                 if rule.mode == "pre":
@@ -678,7 +678,7 @@ class Form(object):
         if self._item is not None:
             # TODO: Iterate over fields here. Fields should know their value
             # and if they are a relation or not (torsten) <2013-07-24 23:24>
-            for key, value in self.data.iteritems():
+            for key, value in self.data.items():
                 setattr(self._item, key, value)
             # If the item has no id, then we assume it is a new item. So
             # add it to the database session.
@@ -718,11 +718,11 @@ class Field(object):
                                                        expand=True)
                 else:
                     value = getattr(self._form._item, value.strip("$"))
-            except IndexError, e:
+            except IndexError as e:
                 log.error("Error while accessing attribute '%s': %s"
                           % (value, e))
                 value = None
-            except AttributeError, e:
+            except AttributeError as e:
                 log.error("Error while accessing attribute '%s': %s"
                           % (value, e))
                 value = None
@@ -795,7 +795,7 @@ class Field(object):
             options = self.get_options()
             for opt in options:
                 for v in value:
-                    if unicode(v) == unicode(opt[1]):
+                    if str(v) == str(opt[1]):
                         ex_values.append("%s" % opt[0])
             return ", ".join(ex_values)
         else:
@@ -852,7 +852,7 @@ class Field(object):
             if value is not None:
                 if isinstance(value, list):
                     value = "[%s]" % ",".join("'%s'"
-                                              % unicode(v) for v in value)
+                                              % str(v) for v in value)
                     expr_str = expr_str.replace(x, value)
                 else:
                     expr_str = expr_str.replace(x, "'%s'" % str(value))

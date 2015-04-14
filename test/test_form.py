@@ -56,7 +56,7 @@ class TestFormValidation(unittest.TestCase):
         self.form.validate(values)
         # Check that the unknown field has been filtered out as it was
         # not part of the form.
-        self.assertEqual(self.form.data.has_key('unknown'), False)
+        self.assertEqual('unknown' in self.form.data, False)
 
     def test_form_validate_fail(self):
         values = {'default': 'test', 'integer': '15', 'date': '1998-02-01', 'float': '10.0', 'select': '1'}
@@ -122,7 +122,7 @@ class TestFormValidation(unittest.TestCase):
         self.assertRaises(StateError, self.form.save)
 
     def test_form_fields(self):
-        self.assertEqual(len(self.form.fields.values()), 7)
+        self.assertEqual(len(list(self.form.fields.values())), 7)
 
     def test_generated_rules(self):
         num_rules = 0
