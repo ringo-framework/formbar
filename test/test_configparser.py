@@ -194,7 +194,7 @@ class TestFieldConfig(unittest.TestCase):
         self.assertEqual(self.cfield.renderer.body, None)
 
     def test_html_renderer(self):
-        self.assertEqual(self.hfield.renderer.body.strip(), "<div>Test</div>")
+        self.assertEqual(self.hfield.renderer.body.strip(), b"<div>Test</div>")
 
     def test_tags_default(self):
         self.assertEqual(self.dfield.tags, [])
