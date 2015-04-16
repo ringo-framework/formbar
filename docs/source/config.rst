@@ -143,6 +143,7 @@ expr        Expression which is used to validate the value if the field.
 msg         The message which is displayed if the evaluation of the rule fails.
 mode        Point in validation when this rules gets evaluations. ``post`` (default) means after the deserialisation of the value and ``pre`` is before deserialisation.
 triggers    Flag which defines which type of message a the rule will trigger if the evaluation fails. Be be ``error`` (default) or ``warning``.
+validator   Name of the validator which is used instead of the expr.
 =========   ===========
 
 .. _help:
@@ -724,3 +725,17 @@ must be added to the form::
                               'Error message',
                               external_validator)
         self.form.add_validator(validator)
+
+Using Formbar predefined validators
+===================================
+Formbar already comes with some validator functions which can be used to
+do some more complex validations. This is often more easy then writing
+long rules.
+
+If you want to use a predefined validator you can use the usual
+:ref:`rule` sytanx::
+
+    <rule validator="validatorname" msg="Error message" type="warning"/>
+
+The value of the `validator` attribute defines the validator which is
+used to evaluate the rule instead on an expression.
