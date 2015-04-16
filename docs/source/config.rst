@@ -689,7 +689,7 @@ errors which happened while rendering::
 =========   ===========
 Attribute   Description
 =========   ===========
-rows        Number of rows of the texteare. Default is 3.
+rows        Number of rows of the textarea. Default is 3.
 url         URL which is called to renderer the form.
 =========   ===========
 
@@ -700,7 +700,7 @@ Write custom renderes
 Formbar makes it easy to create a custom renderer. All you need to to is
 to overwrite the :class:`.FieldRenderer` class. In most cases you only
 need to provide a new Template for your field which handles to main
-rendering. As expamle see :class:`.InfoFieldRenderer` how to set a new
+rendering. As example see :class:`.InfoFieldRenderer` how to set a new
 template.
 
 .. _external_validator:
