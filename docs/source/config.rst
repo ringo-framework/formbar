@@ -707,4 +707,20 @@ template.
 
 Write external validators
 =========================
-Write me!
+A external validator is a simple python callable of the following form::
+
+    def external_validator(field, data):
+        return 16 == data[field]
+
+The value 'data' is the converted value dictionary of the form and
+contains all values of the form. The value 'field' defines the name of
+the field for which this validation belongs to and also determines on
+which field the error message will be shown.
+
+The function should return True or False on validation. The validator
+must be added to the form::
+
+        validator = Validator('fieldname',
+                              'Error message',
+                              external_validator)
+        self.form.add_validator(validator)
