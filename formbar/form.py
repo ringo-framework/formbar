@@ -473,7 +473,6 @@ class Form(object):
             except ValueError:
                 msg = "Value '%s' must be in format 'HH:MM:SS'" % value
                 self._add_error(field.name, msg)
-            return self.hms_convert(field, value, is_type_time=False)
         elif dtype == 'datetime':
             if not value:
                 return None
