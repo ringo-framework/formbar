@@ -110,6 +110,16 @@ class TestFormValidation(unittest.TestCase):
         self.form.validate(values)
         self.assertEqual(self.form.data['default'], 'test')
 
+    def test_form_deserialize_time(self):
+        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01', 'float': '99', 'time': '00:12:11'}
+        self.form.validate(values)
+        self.assertEqual(self.form.data['time'], 731)
+
+    def test_form_deserialize_interval(self):
+        values = {'default': 'test', 'integer': '16', 'date': '1998-02-01', 'float': '99', 'interval': '00:12:11'}
+        self.form.validate(values)
+        self.assertEqual(self.form.data['interval'], datetime.timedelta(0, 731))
+
     def test_form_save(self):
         values = {'default': 'test', 'integer': '16', 'date': '1998-02-01'}
         self.assertEqual(self.form.validate(values), True)
@@ -124,7 +134,7 @@ class TestFormValidation(unittest.TestCase):
         self.assertRaises(StateError, self.form.save)
 
     def test_form_fields(self):
-        self.assertEqual(len(self.form.fields.values()), 7)
+        self.assertEqual(len(self.form.fields.values()), 9)
 
     def test_generated_rules(self):
         num_rules = 0
