@@ -4,9 +4,13 @@ import datetime
 import sqlalchemy as sa
 from babel.dates import format_datetime, format_date
 from formbar.renderer import FormRenderer, get_renderer
-from formbar.helpers import get_local_datetime, get_utc_datetime
+from formbar.helpers import get_local_datetime
 from formbar.rules import Rule
-from formbar.converters import to_timedelta
+from formbar.converters import (
+    to_timedelta, to_date, to_datetime,
+    from_timedelta
+)
+
 
 log = logging.getLogger(__name__)
 
@@ -442,22 +446,8 @@ class Form(object):
                 msg = "%s is not a file value." % value
                 self._add_error(field.name, msg)
         elif dtype == 'date':
-            if not value:
-                return None
             try:
-                #@TODO: Support other dateformats that ISO8601
-                if self._locale == "de":
-                    d, m, y = value.split('.')
-                else:
-                    y, m, d = value.split('-')
-                y = int(y)
-                m = int(m)
-                d = int(d)
-                try:
-                    converted = datetime.date(y, m, d)
-                except ValueError, e:
-                    msg = "%s is an invalid date (%s)" % (value, e)
-                    self._add_error(field.name, msg)
+                return to_date(value, self._locale)
             except:
                 msg = "%s is not a valid date format." % value
                 self._add_error(field.name, msg)
@@ -474,32 +464,8 @@ class Form(object):
                 msg = "Value '%s' must be in format 'HH:MM:SS'" % value
                 self._add_error(field.name, msg)
         elif dtype == 'datetime':
-            if not value:
-                return None
             try:
-                tmpdate = value.split(' ')
-                # Time is optional. If not provided set time to 00:00:00
-                if len(tmpdate) == 2:
-                    date, time = value.split(' ')
-                else:
-                    date = tmpdate[0]
-                    time = "00:00:00"
-                y, m, d = date.split('-')
-                y = int(y)
-                m = int(m)
-                d = int(d)
-                h, M, s = time.split(':')
-                h = int(h)
-                M = int(M)
-                s = int(s)
-                converted = datetime.datetime(y, m, d, h, M, s)
-                # Convert datetime to UTC and remove tzinfo because
-                # SQLAlchemy fails when trying to store offset-aware
-                # datetimes if the date column isn't prepared. As
-                # storing dates in UTC is a good idea anyway this is the
-                # default.
-                converted = get_utc_datetime(converted)
-                converted = converted.replace(tzinfo=None)
+                return to_datetime(value, self._locale)
             except:
                 log.exception("e")
                 msg = "%s is not a valid datetime format." % value
@@ -573,9 +539,9 @@ class Form(object):
                 except AttributeError:
                     if ftype == "time":
                         td = datetime.timedelta(seconds=int(value))
-                        d = datetime.datetime(1, 1, 1) + td
-                        serialized = "%02d:%02d:%02d" % (d.hour,
-                                                         d.minute, d.second)
+                        serialized = from_timedelta(td)
+                    elif ftype == "interval":
+                        serialized = from_timedelta(value)
                     elif ftype == "datetime":
                         value = get_local_datetime(value)
                         if self._locale == "de":
@@ -627,6 +593,7 @@ class Form(object):
             except AttributeError:
                 self.submitted_data = submitted
             unvalidated = self.submitted_data
+        print(unvalidated) 
         converted = self.deserialize(unvalidated)
 
         # Validate the fields. Ignore fields which are disabled in
