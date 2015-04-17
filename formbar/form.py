@@ -235,9 +235,6 @@ class Form(object):
         serialized = {}
         for fieldname, value in self._filter_values(data).iteritems():
             field = self.fields.get(fieldname)
-            #if field and not field.is_readonly():
-            #    # Only add the value if the field is not marked as readonly
-            #    serialized[fieldname] = self._from_python(field, value)
             serialized[fieldname] = from_python(field, value)
         log.debug("Serialized values: %s" % serialized)
         return serialized
