@@ -6,6 +6,7 @@ from babel.dates import format_datetime, format_date
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.helpers import get_local_datetime, get_utc_datetime
 from formbar.rules import Rule
+from formbar.converters import to_timedelta
 
 log = logging.getLogger(__name__)
 
@@ -461,19 +462,18 @@ class Form(object):
                 msg = "%s is not a valid date format." % value
                 self._add_error(field.name, msg)
         elif dtype == 'time':
-            if not value:
-                return None
             try:
-                h, m, s = value.split(':')
-                h = int(h)
-                m = int(m)
-                s = int(s)
-                converted = datetime.timedelta(hours=h,
-                                               minutes=m,
-                                               seconds=s).total_seconds()
+                return to_timedelta(value).total_seconds()
             except ValueError:
                 msg = "Value '%s' must be in format 'HH:MM:SS'" % value
                 self._add_error(field.name, msg)
+        elif dtype == 'interval':
+            try:
+                return to_timedelta(value)
+            except ValueError:
+                msg = "Value '%s' must be in format 'HH:MM:SS'" % value
+                self._add_error(field.name, msg)
+            return self.hms_convert(field, value, is_type_time=False)
         elif dtype == 'datetime':
             if not value:
                 return None
