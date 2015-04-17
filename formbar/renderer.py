@@ -61,6 +61,8 @@ def get_renderer(field, translate):
             return FileFieldRenderer(field, translate)
         elif dtype == "time":
             return TimeFieldRenderer(field, translate)
+        elif dtype == "interval":
+            return TimeFieldRenderer(field, translate)
         elif dtype == "email":
             return EmailFieldRenderer(field, translate)
     return TextFieldRenderer(field, translate)
