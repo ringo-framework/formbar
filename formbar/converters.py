@@ -124,6 +124,66 @@ def to_datetime(value, locale=None):
         raise DeserializeException(msg)
 
 
+def to_string(value):
+    try:
+        # Actually all submitted values are strings.
+        return value
+    except ValueError:
+        msg = "%s is not a string value." % value
+        raise DeserializeException(msg)
+
+
+def to_integer(value):
+    if not value:
+        return None
+    try:
+        return int(value)
+    except ValueError:
+        msg = "%s is not a integer value." % value
+        raise DeserializeException(msg)
+
+
+def to_float(value):
+    if not value:
+        return None
+    try:
+        return float(value)
+    except ValueError:
+        msg = "%s is not a float value." % value
+        raise DeserializeException(msg)
+
+
+def to_email(value):
+    # TODO: Really check the email. Ask the server mailsserver
+    # if the adress is known. (ti) <2014-08-04 16:31>
+    if not value:
+        return ""
+    if not re.match(r"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$", value):
+        msg = "%s is not valid email address." % value
+        raise DeserializeException(msg)
+    return value
+
+
+def to_boolean(value):
+    if not value:
+        return None
+    try:
+        return value in ['True', '1', 't']
+    except ValueError:
+        msg = "%s is not a boolean value." % value
+        raise DeserializeException(msg)
+
+
+def to_file(value):
+    try:
+        return value.file.read()
+    except AttributeError:
+        return None
+    except ValueError:
+        msg = "%s is not a file value." % value
+        raise DeserializeException(msg)
+
+
 def from_python(field, value):
     """Will return the serialised version of the value the given field
     and value.
@@ -205,54 +265,17 @@ def to_python(field, value):
     converted = ""
     dtype = field.get_type()
     if dtype in ['string', 'text']:
-        try:
-            converted = value
-        except ValueError:
-            msg = "%s is not a string value." % value
-            raise DeserializeException(msg)
+        return to_string(value)
     elif dtype == 'integer':
-        if not value:
-            return None
-        try:
-            converted = int(value)
-        except ValueError:
-            msg = "%s is not a integer value." % value
-            raise DeserializeException(msg)
+        return to_integer(value)
     elif dtype == 'float':
-        if not value:
-            return None
-        try:
-            converted = float(value)
-        except ValueError:
-            msg = "%s is not a float value." % value
-            raise DeserializeException(msg)
+        return to_float(value)
     elif dtype == 'email':
-        # TODO: Really check the email. Ask the server mailsserver
-        # if the adress is known. (ti) <2014-08-04 16:31>
-        if not value:
-            return ""
-        if not re.match(r"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$", value):
-            msg = "%s is not valid email address." % value
-            field._form._add_error(field.name, msg)
-        else:
-            converted = value
+        return to_email(value)
     elif dtype == 'boolean':
-        if not value:
-            return None
-        try:
-            converted = value in ['True', '1', 't']
-        except ValueError:
-            msg = "%s is not a boolean value." % value
-            raise DeserializeException(msg)
+        return to_boolean(value)
     elif dtype == 'file':
-        try:
-            # filename = value.filename
-            converted = value.file.read()
-        except AttributeError:
-            return None
-        except ValueError:
-            msg = "%s is not a file value." % value
-            raise DeserializeException(msg)
+        return to_file(value)
     elif dtype == 'date':
         return to_date(value, field._form._locale)
     elif dtype == 'time':
