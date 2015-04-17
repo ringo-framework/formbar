@@ -593,7 +593,6 @@ class Form(object):
             except AttributeError:
                 self.submitted_data = submitted
             unvalidated = self.submitted_data
-        print(unvalidated) 
         converted = self.deserialize(unvalidated)
 
         # Validate the fields. Ignore fields which are disabled in
