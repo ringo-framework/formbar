@@ -1,14 +1,11 @@
 import logging
 import re
-import datetime
 import sqlalchemy as sa
-from babel.dates import format_datetime, format_date
 from formbar.renderer import FormRenderer, get_renderer
-from formbar.helpers import get_local_datetime
 from formbar.rules import Rule
 from formbar.converters import (
     to_timedelta, to_date, to_datetime,
-    from_timedelta
+    from_python
 )
 
 
@@ -240,7 +237,7 @@ class Form(object):
             #if field and not field.is_readonly():
             #    # Only add the value if the field is not marked as readonly
             #    serialized[fieldname] = self._from_python(field, value)
-            serialized[fieldname] = self._from_python(field, value)
+            serialized[fieldname] = from_python(field, value)
         log.debug("Serialized values: %s" % serialized)
         return serialized
 
@@ -509,58 +506,6 @@ class Form(object):
         log.debug("Converted value '%s' (%s) of field '%s' (%s)"
                   % (converted, type(converted), field.name, dtype))
         return converted
-
-    def _from_python(self, field, value):
-        """@todo: Docstring for _from_python.
-
-        :field: @todo
-        :value: @todo
-        :returns: @todo
-
-        """
-        serialized = ""
-        ftype = field.get_type()
-        try:
-            if value is None:
-                serialized = ""
-            elif isinstance(value, basestring):
-                serialized = value
-            elif isinstance(value, list):
-                vl = []
-                for v in value:
-                    try:
-                        vl.append(v.id)
-                    except AttributeError:
-                        vl.append(v)
-                serialized = vl
-            else:
-                try:
-                    serialized = value.id
-                except AttributeError:
-                    if ftype == "time":
-                        td = datetime.timedelta(seconds=int(value))
-                        serialized = from_timedelta(td)
-                    elif ftype == "interval":
-                        serialized = from_timedelta(value)
-                    elif ftype == "datetime":
-                        value = get_local_datetime(value)
-                        if self._locale == "de":
-                            dateformat = "dd.MM.yyyy HH:mm:ss"
-                        else:
-                            dateformat = "yyyy-MM-dd HH:mm:ss"
-                        serialized = format_datetime(value, format=dateformat)
-                    elif ftype == "date":
-                        if self._locale == "de":
-                            dateformat = "dd.MM.yyyy"
-                        else:
-                            dateformat = "yyyy-MM-dd"
-                        serialized = format_date(value, format=dateformat)
-                    else:
-                        serialized = value
-        except AttributeError:
-            log.warning('Can not get value for field "%s". '
-                        'The field is no attribute of the item' % field.name)
-        return serialized
 
     def validate(self, submitted):
         """Returns True if the validation succeeds else False.
