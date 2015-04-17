@@ -921,8 +921,9 @@ class Field(object):
         the SQLAlchemy model and which are loaded from the database.
         """
         options = []
+        _ = self._form._translate
         if self.get_type() == 'manytoone':
-            options.append(("None", "", True))
+            options.append((_("no selection"), "", True))
         user_defined_options = self._config.options
         if (isinstance(user_defined_options, list)
            and len(user_defined_options) > 0):
