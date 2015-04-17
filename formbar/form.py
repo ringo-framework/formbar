@@ -3,7 +3,7 @@ import sqlalchemy as sa
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule
 from formbar.converters import (
-    from_python, to_python
+    DeserializeException, from_python, to_python
 )
 
 
@@ -213,8 +213,11 @@ class Form(object):
         deserialized = {}
         for fieldname, value in self._filter_values(data).iteritems():
             field = self.fields.get(fieldname)
-            deserialized[fieldname] = to_python(field,
-                                                data.get(field.name))
+            try:
+                deserialized[fieldname] = to_python(field,
+                                                    data.get(field.name))
+            except DeserializeException as ex:
+                self._add_error(field.name, ex.msg)
         log.debug("Deserialized values: %s" % deserialized)
         return deserialized
 
