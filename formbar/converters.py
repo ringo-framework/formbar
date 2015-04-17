@@ -15,6 +15,11 @@ from formbar.helpers import get_local_datetime, get_utc_datetime
 log = logging.getLogger(__name__)
 
 
+class DeserializeException(Exception):
+    """Exception for errors on deserialization."""
+    pass
+
+
 def from_timedelta(value):
     """Will return the serialised value for a given timedelta in
     'HH:MM:SS' format."""
@@ -30,14 +35,18 @@ def to_timedelta(value):
     exception is raised."""
     if not value:
         return None
-    h, m, s = value.split(':')
-    h = int(h)
-    m = int(m)
-    s = int(s)
-    converted = datetime.timedelta(hours=h,
-                                   minutes=m,
-                                   seconds=s)
-    return converted
+    try:
+        h, m, s = value.split(':')
+        h = int(h)
+        m = int(m)
+        s = int(s)
+        converted = datetime.timedelta(hours=h,
+                                       minutes=m,
+                                       seconds=s)
+        return converted
+    except ValueError:
+        msg = "Value '%s' must be in format 'HH:MM:SS'" % value
+        raise DeserializeException(msg)
 
 
 def _split_date(value, locale=None):
@@ -63,8 +72,12 @@ def to_date(value, locale=None):
     """
     if not value:
         return None
-    y, m, d = _split_date(value, locale)
-    return datetime.date(y, m, d)
+    try:
+        y, m, d = _split_date(value, locale)
+        return datetime.date(y, m, d)
+    except:
+        msg = "%s is not a valid date format." % value
+        raise DeserializeException(msg)
 
 
 def _split_time(value):
@@ -86,25 +99,29 @@ def to_datetime(value, locale=None):
     """
     if not value:
         return None
-    tmpdate = value.split(' ')
-    # Time is optional. If not provided set time to 00:00:00
-    if len(tmpdate) == 2:
-        date, time = value.split(' ')
-    else:
-        date = tmpdate[0]
-        time = "00:00:00"
+    try:
+        tmpdate = value.split(' ')
+        # Time is optional. If not provided set time to 00:00:00
+        if len(tmpdate) == 2:
+            date, time = value.split(' ')
+        else:
+            date = tmpdate[0]
+            time = "00:00:00"
 
-    y, m, d = _split_date(date, locale)
-    h, M, s = _split_time(time)
-    converted = datetime.datetime(y, m, d, h, M, s)
-    # Convert datetime to UTC and remove tzinfo because
-    # SQLAlchemy fails when trying to store offset-aware
-    # datetimes if the date column isn't prepared. As
-    # storing dates in UTC is a good idea anyway this is the
-    # default.
-    converted = get_utc_datetime(converted)
-    converted = converted.replace(tzinfo=None)
-    return converted
+        y, m, d = _split_date(date, locale)
+        h, M, s = _split_time(time)
+        converted = datetime.datetime(y, m, d, h, M, s)
+        # Convert datetime to UTC and remove tzinfo because
+        # SQLAlchemy fails when trying to store offset-aware
+        # datetimes if the date column isn't prepared. As
+        # storing dates in UTC is a good idea anyway this is the
+        # default.
+        converted = get_utc_datetime(converted)
+        converted = converted.replace(tzinfo=None)
+        return converted
+    except:
+        msg = "%s is not a valid datetime format." % value
+        raise DeserializeException(msg)
 
 
 def from_python(field, value):
@@ -192,7 +209,7 @@ def to_python(field, value):
             converted = value
         except ValueError:
             msg = "%s is not a string value." % value
-            field._form._add_error(field.name, msg)
+            raise DeserializeException(msg)
     elif dtype == 'integer':
         if not value:
             return None
@@ -200,7 +217,7 @@ def to_python(field, value):
             converted = int(value)
         except ValueError:
             msg = "%s is not a integer value." % value
-            field._form._add_error(field.name, msg)
+            raise DeserializeException(msg)
     elif dtype == 'float':
         if not value:
             return None
@@ -208,7 +225,7 @@ def to_python(field, value):
             converted = float(value)
         except ValueError:
             msg = "%s is not a float value." % value
-            field._form._add_error(field.name, msg)
+            raise DeserializeException(msg)
     elif dtype == 'email':
         # TODO: Really check the email. Ask the server mailsserver
         # if the adress is known. (ti) <2014-08-04 16:31>
@@ -226,7 +243,7 @@ def to_python(field, value):
             converted = value in ['True', '1', 't']
         except ValueError:
             msg = "%s is not a boolean value." % value
-            field._form._add_error(field.name, msg)
+            raise DeserializeException(msg)
     elif dtype == 'file':
         try:
             # filename = value.filename
@@ -235,32 +252,15 @@ def to_python(field, value):
             return None
         except ValueError:
             msg = "%s is not a file value." % value
-            field._form._add_error(field.name, msg)
+            raise DeserializeException(msg)
     elif dtype == 'date':
-        try:
-            return to_date(value, field._form._locale)
-        except:
-            msg = "%s is not a valid date format." % value
-            field._form._add_error(field.name, msg)
+        return to_date(value, field._form._locale)
     elif dtype == 'time':
-        try:
-            return to_timedelta(value).total_seconds()
-        except ValueError:
-            msg = "Value '%s' must be in format 'HH:MM:SS'" % value
-            field._form._add_error(field.name, msg)
+        return to_timedelta(value).total_seconds()
     elif dtype == 'interval':
-        try:
-            return to_timedelta(value)
-        except ValueError:
-            msg = "Value '%s' must be in format 'HH:MM:SS'" % value
-            field._form._add_error(field.name, msg)
+        return to_timedelta(value)
     elif dtype == 'datetime':
-        try:
-            return to_datetime(value, field._form._locale)
-        except:
-            log.exception("e")
-            msg = "%s is not a valid datetime format." % value
-            field._form._add_error(field.name, msg)
+        return to_datetime(value, field._form._locale)
     # Reltation handling
     elif dtype == 'manytoone':
         try:
@@ -273,7 +273,7 @@ def to_python(field, value):
                 converted = value
         except ValueError:
             msg = "Reference value '%s' must be of type integer" % value
-            field._form._add_error(field.name, msg)
+            raise DeserializeException(msg)
     elif dtype in ['onetomany', 'manytomany']:
         if not value:
             return []
@@ -296,7 +296,7 @@ def to_python(field, value):
             converted = values
         except ValueError:
             msg = "Reference value '%s' must be of type integer" % value
-            field._form._add_error(field.name, msg)
+            raise DeserializeException(msg)
     log.debug("Converted value '%s' (%s) of field '%s' (%s)"
               % (converted, type(converted), field.name, dtype))
     return converted
