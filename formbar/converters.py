@@ -124,6 +124,42 @@ def to_datetime(value, locale=None):
         raise DeserializeException(msg)
 
 
+def to_manytomany(clazz, id, db):
+    if not id:
+        return []
+    # In case the there is only one linked item, the value
+    # is a string value und not a list. In this case we
+    # need to put the value into a list to make the loading
+    # and reasinging of items work. Otherwise a item with id
+    # 670 will be converted into a list containing 6, 7, 0
+    # which will relink different items!
+    if not isinstance(id, list):
+        id = [id]
+    try:
+        values = []
+        for v in [v for v in id if v != ""]:
+            values.append(db.query(clazz).filter(clazz.id == int(v)).one())
+        return values
+    except ValueError:
+        msg = "Reference value '%s' must be of type integer" % id
+        raise DeserializeException(msg)
+
+
+def to_onetomany(clazz, id, db):
+    return to_manytomany(clazz, id, db)
+
+
+def to_manytoone(clazz, id, db):
+    try:
+        if id in ("", None):
+            return None
+        else:
+            return db.query(clazz).filter(clazz.id == int(id)).one()
+    except ValueError:
+        msg = "Reference value '%s' must be of type integer" % id
+        raise DeserializeException(msg)
+
+
 def to_string(value):
     try:
         # Actually all submitted values are strings.
@@ -262,7 +298,6 @@ def to_python(field, value):
         else:
             raise
 
-    converted = ""
     dtype = field.get_type()
     if dtype in ['string', 'text']:
         return to_string(value)
@@ -286,40 +321,11 @@ def to_python(field, value):
         return to_datetime(value, field._form._locale)
     # Reltation handling
     elif dtype == 'manytoone':
-        try:
-            db = field._form._dbsession
-            rel = relation_names[field.name].mapper.class_
-            if value in ("", None):
-                converted = None
-            else:
-                value = db.query(rel).filter(rel.id == int(value)).one()
-                converted = value
-        except ValueError:
-            msg = "Reference value '%s' must be of type integer" % value
-            raise DeserializeException(msg)
-    elif dtype in ['onetomany', 'manytomany']:
-        if not value:
-            return []
-
-        # In case the there is only one linked item, the value
-        # is a string value und not a list. In this case we
-        # need to put the value into a list to make the loading
-        # and reasinging of items work. Otherwise a item with id
-        # 670 will be converted into a list containing 6, 7, 0
-        # which will relink different items!
-        if not isinstance(value, list):
-            value = [value]
-
-        try:
-            values = []
-            db = field._form._dbsession
-            rel = relation_names[field.name].mapper.class_
-            for v in [v for v in value if v != ""]:
-                values.append(db.query(rel).filter(rel.id == int(v)).one())
-            converted = values
-        except ValueError:
-            msg = "Reference value '%s' must be of type integer" % value
-            raise DeserializeException(msg)
-    log.debug("Converted value '%s' (%s) of field '%s' (%s)"
-              % (converted, type(converted), field.name, dtype))
-    return converted
+        rel = relation_names[field.name].mapper.class_
+        return to_manytoone(rel, value, field._form._dbsession)
+    elif dtype == 'onetomany':
+        rel = relation_names[field.name].mapper.class_
+        return to_onetomany(rel, value, field._form._dbsession)
+    elif dtype in 'manytomany':
+        rel = relation_names[field.name].mapper.class_
+        return to_manytomany(rel, value, field._form._dbsession)
