@@ -23,9 +23,11 @@ class DeserializeException(Exception):
 def from_timedelta(value):
     """Will return the serialised value for a given timedelta in
     'HH:MM:SS' format."""
-    d = datetime.datetime(1, 1, 1) + value
-    converted = "%02d:%02d:%02d" % (d.hour,
-                                    d.minute, d.second)
+    seconds = value.total_seconds()
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    converted = "%02d:%02d:%02d" % (hours, minutes, seconds)
     return converted
 
 
