@@ -219,7 +219,7 @@ function evaluateConditionals() {
         var result = evaluate(conditional);
         if (result) {
             if (readonly) {
-                $(conditional).animate({opacity:'1.0'}, 1500);
+                $(conditional).animate({opacity:'1.0'}, 500);
                 $(conditional).find('input, textarea').attr('readonly', false);
                 $(conditional).find('select').attr('disabled', false);
             }
@@ -229,7 +229,7 @@ function evaluateConditionals() {
         }
         else {
             if (readonly) {
-                $(conditional).animate({opacity:'0.4'}, 1500);
+                $(conditional).animate({opacity:'0.4'}, 500);
                 $(conditional).find('input, textarea').attr('readonly', true);
                 $(conditional).find('select').attr('disabled', true);
             }
