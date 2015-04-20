@@ -111,6 +111,19 @@ $( document ).ready(function() {
     $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateConditionals);
 });
 
+function convertValue(value, field) {
+    var cvalue = value;
+    // Poor mans data conversion. In case that the datatype
+    // (formbar datatype) is string, than out the value into single
+    // quotes. Please note that the datatype attribute is currently only
+    // renderered for the following fields:
+    //  * radio
+    if (field.attr("datatype") && field.attr("datatype") == "string") {
+        cvalue = "'"+value+"'"
+    }
+    return cvalue;
+}
+
 function evaluate(element) {
     var expr = element.getAttribute("expr");
     var tokens = expr.split(" ");
@@ -133,19 +146,19 @@ function evaluate(element) {
             // Get value from field depending on field type
             switch (field.attr("type")) {
                 case 'radio':
-                    value = $('input[name='+tfield+']:checked').val();
+                    value = convertValue($('input[name='+tfield+']:checked').val(), field);
                     break;
                 case 'checkbox':
                     var allVals = [];
                     $('input[name='+tfield+']:checked').each(function() {
                         if ($(this).val() != "") {
-                            allVals.push($(this).val());
+                            allVals.push(convertValue($(this).val(), field));
                         }
                     });
                     value = '[' + allVals.join() + ']';
                     break;
                 default:
-                    value = field.val();
+                    value = convertValue(field.val(), field);
             }
             // If we can not get a value from an input fields the field my
             // be readonly. So get the value from the readonly element.
@@ -153,10 +166,10 @@ function evaluate(element) {
             // value get the textvalue of the field. (Which is usually
             // the expanded value).
             if (!value) {
-                value = field.attr("value");
+                value = convertValue(field.attr("value"), field);
             }
             if (!value) {
-                value = field.text();
+                value = convertValue(field.text(), field);
             }
             // If here is still no value we will set it to None. Otherwise the
             // the expression will not be valid E.g "== '2'"
