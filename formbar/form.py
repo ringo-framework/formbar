@@ -570,7 +570,7 @@ class Field(object):
             return ", ".join(ex_values)
         else:
             if value:
-                return value
+                return from_python(self, value)
             elif default:
                 return default
             else:
