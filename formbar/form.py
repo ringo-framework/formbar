@@ -236,7 +236,7 @@ class Form(object):
                 deserialized[fieldname] = to_python(field,
                                                     data.get(field.name))
             except DeserializeException as ex:
-                self._add_error(field.name, ex.msg)
+                self._add_error(field.name, ex.message)
         log.debug("Deserialized values: %s" % deserialized)
         return deserialized
 
