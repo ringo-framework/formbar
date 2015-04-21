@@ -37,22 +37,41 @@ class StateError(Error):
 
 
 class Validator(object):
-    """Docstring for Validator"""
+    """Validator class for external validators. External validators can
+    be used to implement more complicated validations on the converted
+    data in the form. The validator has access to all submitted values
+    of the form. Validation happens on the converted pythonic values
+    from the submitted formdata. Additionally a context can be provided
+    to the validator to provide additional data needed for the
+    validation."""
 
-    def __init__(self, field, error, callback):
-        """@todo: to be defined
+    def __init__(self, field, error, callback, context=None, triggers="error"):
+        """Initialize a new Validator
 
-        :field: @todo
-        :error: @todo
-        :callback: @todo
+        :field: Name of the field which should be validated.
+        :error: Error message which should be show at the field when
+                validation fails.
+        :callback: Python callable which actually will do the check.
+        :context: Add additional data which can be provided to the callback.
+        :triggers: Set what kind of error message will be generated.
+                   Everything else than "error" will trigger a warning
+                   message. Default to error.
 
         """
         self._field = field
         self._error = error
         self._callback = callback
+        self._context = context
+        self._triggers = triggers
 
     def check(self, data):
-        return self._callback(self._field, data)
+        """Checker method which will call the callback of the validator
+        to actually do the validation on the provided data. Will return
+        True or False."""
+        try:
+            return self._callback(self._field, data)
+        except TypeError:
+            return self._callback(self._field, data, self._context)
 
 
 class Form(object):
@@ -422,7 +441,10 @@ class Form(object):
         # Custom validation. User defined external validators.
         for validator in self.external_validators:
             if not validator.check(converted):
-                self._add_error(validator._field, validator._error)
+                if validator._triggers == "error":
+                    self._add_error(validator._field, validator._error)
+                else:
+                    self._add_warning(validator._field, validator._error)
 
         # If the form is valid. Save the converted and validated data
         # into the data dictionary.
