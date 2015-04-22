@@ -114,7 +114,7 @@
       % endif
     % else:
       % if child.tag == "field":
-        ${form.get_field(form._config._id2name[child.attrib.get('ref')]).render()}
+        ${form.get_field(form._config._id2name[child.attrib.get('ref')]).render() | n}
       % elif child.tag == "snippet":
         <% ref = child.attrib.get('ref') %>
         % if ref:
