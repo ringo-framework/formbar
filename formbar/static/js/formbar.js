@@ -165,10 +165,7 @@ function evaluate(element) {
             // First try to get the unexpaned value, if there is no
             // value get the textvalue of the field. (Which is usually
             // the expanded value).
-            if (!value) {
-                value = convertValue(field.attr("value"), field);
-            }
-            if (!value) {
+            if (!value && field.is("div")) {
                 value = convertValue(field.text(), field);
             }
             // If here is still no value we will set it to None. Otherwise the
