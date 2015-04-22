@@ -1,6 +1,5 @@
 import logging
 import sqlalchemy as sa
-from markupsafe import escape
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule
 from formbar.converters import (
@@ -575,7 +574,7 @@ class Field(object):
         self.previous_value = value
 
     def get_value(self, default=None, expand=False):
-        return escape(self._get_value(self.value, default, expand))
+        return self._get_value(self.value, default, expand)
 
     def get_previous_value(self, default=None, expand=False):
         return self._get_value(self.previous_value, default, expand)
