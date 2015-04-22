@@ -4,7 +4,8 @@ import difflib
 from mako.lookup import TemplateLookup
 from formbar import template_dir
 
-template_lookup = TemplateLookup(directories=[template_dir])
+template_lookup = TemplateLookup(directories=[template_dir],
+                                 default_filters=['h'])
 
 log = logging.getLogger(__name__)
 
