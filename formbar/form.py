@@ -1,7 +1,7 @@
 import logging
 import sqlalchemy as sa
 from formbar.renderer import FormRenderer, get_renderer
-from formbar.rules import Rule
+from formbar.rules import Rule, Expression
 from formbar.converters import (
     DeserializeException, from_python, to_python
 )
@@ -500,8 +500,16 @@ class Field(object):
 
         # Set default value
         value = getattr(self._config, "value")
-        if value and value.startswith("$"):
-            # value is a field. Try to get the value of the field.
+
+        # If value begins with '%' then consider the following string as
+        # a brabbel expression and set the value of the default value to
+        # the result of the evaluation of the expression.
+        if value and value.startswith("%"):
+            form_values = self._form._get_data_from_item()
+            value = Expression(value.strip("%")).evaluate(values=form_values)
+        # If value begins with '$' then consider the string as attribute
+        # name of the item in the form and get the value
+        elif value and value.startswith("$"):
             try:
                 # Special logic for ringo items.
                 if (self.renderer.render_type == "info"
