@@ -29,6 +29,8 @@ $( document ).ready(function() {
     $('.formbar-datepicker').datepicker({
         language: language,
         todayBtn: "linked",
+        showOnFocus: false,
+        autoclose: true
     });
     $('.list-group-item').on('click',function(e){
         var previous = $(this).closest(".list-group").children(".selected");
