@@ -83,6 +83,33 @@ desired     Flag to indicate that the is a desired field. Default is ``false``.
 tags        Comma separated list of tags for this field.
 =========   ===========
 
+Defaults
+^^^^^^^^
+You can set a default for the field in case there is no value for the
+field. The default value can be set by using the ``value`` attribute of
+the entity.
+
+You can provide a default value by
+
+1. Given in plain string value
+2. Accessing an attribute of the SA mapped item. This supports dot
+   separated attribute names of the item to access related items::
+
+        ... value="$foo.bar.baz"
+
+   "$" represents the current form item. So foo is an attribute of it and
+   bar is an attribute of foo.
+
+3. Using expressions. The default value can be calculated by using a
+   expression::
+
+        ... value="% date('today')"
+
+   The expample will set the value to the current date.
+   "%" is used to say formbar that the following string must be
+   considered as an expression. The Expression will evaluated with the
+   values of the current form item.
+
 Options
 -------
 Options are used to define available options for a entity in case it is an selection. The options my be defined in different ways.
