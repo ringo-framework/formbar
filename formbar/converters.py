@@ -49,6 +49,9 @@ def to_timedelta(value):
     except ValueError:
         msg = "Value '%s' must be in format 'HH:MM:SS'" % value
         raise DeserializeException(msg)
+    except OverflowError:
+        msg = "Value '%s' is too large'" % value
+        raise DeserializeException(msg)
 
 
 def _split_date(value, locale=None):
