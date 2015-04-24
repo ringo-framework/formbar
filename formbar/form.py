@@ -397,7 +397,11 @@ class Form(object):
         further constraint defined in the database if the form is
         instanciated with an SQLAlchemy mapped item.
         3. Postvalidation. Custom rules that are checked after the type
-        conversation was done.
+        conversation was done. Note: Postevaluation is only done for
+        successfull converted values.
+        4. External Validators. External defined checks done on teh
+        converted values. Note: Validators are only called for
+        successfull converted values
 
         All errors are stored in the errors dictionary through the
         process of validation. After the validation finished the values
@@ -430,6 +434,9 @@ class Form(object):
             for rule in field.get_rules():
                 if rule.mode == "pre":
                     result = rule.evaluate(unvalidated)
+                elif fieldname not in converted:
+                    # Ignore rule if the value can't be converted.
+                    continue
                 else:
                     result = rule.evaluate(converted)
                 if not result:
@@ -440,6 +447,9 @@ class Form(object):
 
         # Custom validation. User defined external validators.
         for validator in self.external_validators:
+            if validator._field not in converted:
+                # Ignore validator if the value can't be converted.
+                continue
             if not validator.check(converted):
                 if validator._triggers == "error":
                     self._add_error(validator._field, validator._error)
