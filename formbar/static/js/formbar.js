@@ -168,7 +168,8 @@ function evaluate(element) {
             // value get the textvalue of the field. (Which is usually
             // the expanded value).
             if (!value && field.is("div")) {
-                value = convertValue(field.text(), field);
+                value = field.attr("value") || field.text()
+                value = convertValue(value, field);
             }
             // If here is still no value we will set it to None. Otherwise the
             // the expression will not be valid E.g "== '2'"
