@@ -288,6 +288,15 @@ def to_python(field, value):
     :value: Serialized version of the value
     :returns: Instance of a python type
     """
+
+    # Remove trailing and leading whitespaces before converting the
+    # value
+    if isinstance(value, unicode):
+        # FIXME: Check why here are other types can unicode? Maybe this
+        # is after loading an item from the database which already has
+        # converted values? (ti) <2015-04-29 10:53>
+        value = value.strip()
+
     relation_names = {}
     try:
         mapper = sa.orm.object_mapper(field._form._item)
