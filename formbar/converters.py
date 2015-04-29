@@ -10,7 +10,7 @@ import re
 import sqlalchemy as sa
 from babel.dates import format_datetime, format_date
 from formbar.helpers import get_local_datetime, get_utc_datetime
-
+from datetime import timedelta
 
 log = logging.getLogger(__name__)
 
@@ -33,19 +33,26 @@ def from_timedelta(value):
 
 def to_timedelta(value):
     """Will return a python timedelta for the given value in
-    'HH:MM:SS' format. If the value can not be converted and
+    'HH:MM:SS', 'HH:MM' or 'MM' format. 
+    If the value can not be converted and
     exception is raised."""
     if not value:
         return None
     try:
-        h, m, s = value.split(':')
-        h = int(h)
-        m = int(m)
-        s = int(s)
-        converted = datetime.timedelta(hours=h,
-                                       minutes=m,
-                                       seconds=s)
-        return converted
+        ncolon = value.count(":")
+        if ncolon == 2:
+            interval  = value.split(":")
+            hours = int(interval[0])
+            minutes = int(interval[1])
+            seconds = int(interval[2])
+            return timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        elif ncolon == 1:
+            interval  = value.split(":")
+            hours = int(interval[0])
+            minutes = int(interval[1])
+            return timedelta(hours=hours, minutes=minutes)
+        elif ncolon == 0:
+            return timedelta(minutes=int(value))
     except ValueError:
         msg = "Value '%s' must be in format 'HH:MM:SS'" % value
         raise DeserializeException(msg)
