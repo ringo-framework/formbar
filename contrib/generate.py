@@ -33,6 +33,8 @@ def print_model(config):
             dtype = "sa.Date"
         elif field.type == "datetime":
             dtype = "sa.DateTime"
+        elif field.type == "interval":
+            dtype = "sa.Interval"
         elif field.type == "float":
             dtype = "sa.Float"
         elif field.type == "number":

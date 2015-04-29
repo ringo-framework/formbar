@@ -6,7 +6,8 @@ from formbar import template_dir
 from formbar.rules import Rule
 
 
-template_lookup = TemplateLookup(directories=[template_dir])
+template_lookup = TemplateLookup(directories=[template_dir],
+                                 default_filters=['h'])
 
 log = logging.getLogger(__name__)
 
@@ -62,6 +63,8 @@ def get_renderer(field, translate):
         elif dtype == "file":
             return FileFieldRenderer(field, translate)
         elif dtype == "time":
+            return TimeFieldRenderer(field, translate)
+        elif dtype == "interval":
             return TimeFieldRenderer(field, translate)
         elif dtype == "email":
             return EmailFieldRenderer(field, translate)

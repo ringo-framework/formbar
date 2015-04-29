@@ -1,11 +1,11 @@
 import logging
-import re
-import datetime
 import sqlalchemy as sa
-from babel.dates import format_datetime, format_date
 from formbar.renderer import FormRenderer, get_renderer
-from formbar.helpers import get_local_datetime, get_utc_datetime
-from formbar.rules import Rule
+from formbar.rules import Rule, Expression
+from formbar.converters import (
+    DeserializeException, from_python, to_python
+)
+
 
 log = logging.getLogger(__name__)
 
@@ -37,22 +37,41 @@ class StateError(Error):
 
 
 class Validator(object):
-    """Docstring for Validator"""
+    """Validator class for external validators. External validators can
+    be used to implement more complicated validations on the converted
+    data in the form. The validator has access to all submitted values
+    of the form. Validation happens on the converted pythonic values
+    from the submitted formdata. Additionally a context can be provided
+    to the validator to provide additional data needed for the
+    validation."""
 
-    def __init__(self, field, error, callback):
-        """@todo: to be defined
+    def __init__(self, field, error, callback, context=None, triggers="error"):
+        """Initialize a new Validator
 
-        :field: @todo
-        :error: @todo
-        :callback: @todo
+        :field: Name of the field which should be validated.
+        :error: Error message which should be show at the field when
+                validation fails.
+        :callback: Python callable which actually will do the check.
+        :context: Add additional data which can be provided to the callback.
+        :triggers: Set what kind of error message will be generated.
+                   Everything else than "error" will trigger a warning
+                   message. Default to error.
 
         """
         self._field = field
         self._error = error
         self._callback = callback
+        self._context = context
+        self._triggers = triggers
 
     def check(self, data):
-        return self._callback(self._field, data)
+        """Checker method which will call the callback of the validator
+        to actually do the validation on the provided data. Will return
+        True or False."""
+        try:
+            return self._callback(self._field, data)
+        except TypeError:
+            return self._callback(self._field, data, self._context)
 
 
 class Form(object):
@@ -213,8 +232,11 @@ class Form(object):
         deserialized = {}
         for fieldname, value in self._filter_values(data).iteritems():
             field = self.fields.get(fieldname)
-            deserialized[fieldname] = self._to_python(field,
-                                                      data.get(field.name))
+            try:
+                deserialized[fieldname] = to_python(field,
+                                                    data.get(field.name))
+            except DeserializeException as ex:
+                self._add_error(field.name, ex.message)
         log.debug("Deserialized values: %s" % deserialized)
         return deserialized
 
@@ -232,10 +254,7 @@ class Form(object):
         serialized = {}
         for fieldname, value in self._filter_values(data).iteritems():
             field = self.fields.get(fieldname)
-            #if field and not field.is_readonly():
-            #    # Only add the value if the field is not marked as readonly
-            #    serialized[fieldname] = self._from_python(field, value)
-            serialized[fieldname] = self._from_python(field, value)
+            serialized[fieldname] = from_python(field, value)
         log.debug("Serialized values: %s" % serialized)
         return serialized
 
@@ -367,236 +386,6 @@ class Form(object):
         else:
             field.add_warning(warning)
 
-    def _to_python(self, field, value):
-        """Returns a value of python datatype converted from the
-        stringvalue depending of the fields datatype
-
-        :field: configuration of the field
-        :value: value to be converted
-        """
-        relation_names = {}
-        try:
-            mapper = sa.orm.object_mapper(self._item)
-            relation_properties = filter(
-                lambda p: isinstance(p,
-                                     sa.orm.properties.RelationshipProperty),
-                mapper.iterate_properties)
-            for prop in relation_properties:
-                relation_names[prop.key] = prop
-        except sa.orm.exc.UnmappedInstanceError:
-            if not self._item:
-                pass  # The form is not mapped to an item.
-            else:
-                raise
-
-        converted = ""
-        dtype = field.get_type()
-        if dtype in ['string', 'text']:
-            try:
-                converted = value
-            except ValueError:
-                msg = "%s is not a string value." % value
-                self._add_error(field.name, msg)
-        elif dtype == 'integer':
-            if not value:
-                return None
-            try:
-                converted = int(value)
-            except ValueError:
-                msg = "%s is not a integer value." % value
-                self._add_error(field.name, msg)
-        elif dtype == 'float':
-            if not value:
-                return None
-            try:
-                converted = float(value)
-            except ValueError:
-                msg = "%s is not a float value." % value
-                self._add_error(field.name, msg)
-        elif dtype == 'email':
-            # TODO: Really check the email. Ask the server mailsserver
-            # if the adress is known. (ti) <2014-08-04 16:31>
-            if not value:
-                return ""
-            if not re.match(r"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$", value):
-                msg = "%s is not valid email address." % value
-                self._add_error(field.name, msg)
-            else:
-                converted = value
-        elif dtype == 'boolean':
-            if not value:
-                return None
-            try:
-                converted = value in ['True', '1', 't']
-            except ValueError:
-                msg = "%s is not a boolean value." % value
-                self._add_error(field.name, msg)
-        elif dtype == 'file':
-            try:
-                # filename = value.filename
-                converted = value.file.read()
-            except AttributeError:
-                return None
-            except ValueError:
-                msg = "%s is not a file value." % value
-                self._add_error(field.name, msg)
-        elif dtype == 'date':
-            if not value:
-                return None
-            try:
-                #@TODO: Support other dateformats that ISO8601
-                if self._locale == "de":
-                    d, m, y = value.split('.')
-                else:
-                    y, m, d = value.split('-')
-                y = int(y)
-                m = int(m)
-                d = int(d)
-                try:
-                    converted = datetime.date(y, m, d)
-                except ValueError, e:
-                    msg = "%s is an invalid date (%s)" % (value, e)
-                    self._add_error(field.name, msg)
-            except:
-                msg = "%s is not a valid date format." % value
-                self._add_error(field.name, msg)
-        elif dtype == 'time':
-            if not value:
-                return None
-            try:
-                h, m, s = value.split(':')
-                h = int(h)
-                m = int(m)
-                s = int(s)
-                converted = datetime.timedelta(hours=h,
-                                               minutes=m,
-                                               seconds=s).total_seconds()
-            except ValueError:
-                msg = "Value '%s' must be in format 'HH:MM:SS'" % value
-                self._add_error(field.name, msg)
-        elif dtype == 'datetime':
-            if not value:
-                return None
-            try:
-                tmpdate = value.split(' ')
-                # Time is optional. If not provided set time to 00:00:00
-                if len(tmpdate) == 2:
-                    date, time = value.split(' ')
-                else:
-                    date = tmpdate[0]
-                    time = "00:00:00"
-                y, m, d = date.split('-')
-                y = int(y)
-                m = int(m)
-                d = int(d)
-                h, M, s = time.split(':')
-                h = int(h)
-                M = int(M)
-                s = int(s)
-                converted = datetime.datetime(y, m, d, h, M, s)
-                # Convert datetime to UTC and remove tzinfo because
-                # SQLAlchemy fails when trying to store offset-aware
-                # datetimes if the date column isn't prepared. As
-                # storing dates in UTC is a good idea anyway this is the
-                # default.
-                converted = get_utc_datetime(converted)
-                converted = converted.replace(tzinfo=None)
-            except:
-                log.exception("e")
-                msg = "%s is not a valid datetime format." % value
-                self._add_error(field.name, msg)
-        # Reltation handling
-        elif dtype == 'manytoone':
-            try:
-                db = self._dbsession
-                rel = relation_names[field.name].mapper.class_
-                if value in ("", None):
-                    converted = None
-                else:
-                    value = db.query(rel).filter(rel.id == int(value)).one()
-                    converted = value
-            except ValueError:
-                msg = "Reference value '%s' must be of type integer" % value
-                self._add_error(field.name, msg)
-        elif dtype in ['onetomany', 'manytomany']:
-            if not value:
-                return []
-
-            # In case the there is only one linked item, the value
-            # is a string value und not a list. In this case we
-            # need to put the value into a list to make the loading
-            # and reasinging of items work. Otherwise a item with id
-            # 670 will be converted into a list containing 6, 7, 0
-            # which will relink different items!
-            if not isinstance(value, list):
-                value = [value]
-
-            try:
-                values = []
-                db = self._dbsession
-                rel = relation_names[field.name].mapper.class_
-                for v in [v for v in value if v != ""]:
-                    values.append(db.query(rel).filter(rel.id == int(v)).one())
-                converted = values
-            except ValueError:
-                msg = "Reference value '%s' must be of type integer" % value
-                self._add_error(field.name, msg)
-        log.debug("Converted value '%s' (%s) of field '%s' (%s)"
-                  % (converted, type(converted), field.name, dtype))
-        return converted
-
-    def _from_python(self, field, value):
-        """@todo: Docstring for _from_python.
-
-        :field: @todo
-        :value: @todo
-        :returns: @todo
-
-        """
-        serialized = ""
-        ftype = field.get_type()
-        try:
-            if value is None:
-                serialized = ""
-            elif isinstance(value, basestring):
-                serialized = value
-            elif isinstance(value, list):
-                vl = []
-                for v in value:
-                    try:
-                        vl.append(v.id)
-                    except AttributeError:
-                        vl.append(v)
-                serialized = vl
-            else:
-                try:
-                    serialized = value.id
-                except AttributeError:
-                    if ftype == "time":
-                        td = datetime.timedelta(seconds=int(value))
-                        d = datetime.datetime(1, 1, 1) + td
-                        serialized = "%02d:%02d:%02d" % (d.hour,
-                                                         d.minute, d.second)
-                    elif ftype == "datetime":
-                        value = get_local_datetime(value)
-                        if self._locale == "de":
-                            dateformat = "dd.MM.yyyy HH:mm:ss"
-                        else:
-                            dateformat = "yyyy-MM-dd HH:mm:ss"
-                        serialized = format_datetime(value, format=dateformat)
-                    elif ftype == "date":
-                        if self._locale == "de":
-                            dateformat = "dd.MM.yyyy"
-                        else:
-                            dateformat = "yyyy-MM-dd"
-                        serialized = format_date(value, format=dateformat)
-                    else:
-                        serialized = value
-        except AttributeError:
-            log.warning('Can not get value for field "%s". '
-                        'The field is no attribute of the item' % field.name)
-        return serialized
-
     def validate(self, submitted):
         """Returns True if the validation succeeds else False.
         Validation of the data happens in three stages:
@@ -608,7 +397,11 @@ class Form(object):
         further constraint defined in the database if the form is
         instanciated with an SQLAlchemy mapped item.
         3. Postvalidation. Custom rules that are checked after the type
-        conversation was done.
+        conversation was done. Note: Postevaluation is only done for
+        successfull converted values.
+        4. External Validators. External defined checks done on teh
+        converted values. Note: Validators are only called for
+        successfull converted values
 
         All errors are stored in the errors dictionary through the
         process of validation. After the validation finished the values
@@ -641,6 +434,9 @@ class Form(object):
             for rule in field.get_rules():
                 if rule.mode == "pre":
                     result = rule.evaluate(unvalidated)
+                elif fieldname not in converted:
+                    # Ignore rule if the value can't be converted.
+                    continue
                 else:
                     result = rule.evaluate(converted)
                 if not result:
@@ -651,8 +447,14 @@ class Form(object):
 
         # Custom validation. User defined external validators.
         for validator in self.external_validators:
+            if validator._field not in converted:
+                # Ignore validator if the value can't be converted.
+                continue
             if not validator.check(converted):
-                self._add_error(validator._field, validator._error)
+                if validator._triggers == "error":
+                    self._add_error(validator._field, validator._error)
+                else:
+                    self._add_warning(validator._field, validator._error)
 
         # If the form is valid. Save the converted and validated data
         # into the data dictionary.
@@ -708,8 +510,16 @@ class Field(object):
 
         # Set default value
         value = getattr(self._config, "value")
-        if value and value.startswith("$"):
-            # value is a field. Try to get the value of the field.
+
+        # If value begins with '%' then consider the following string as
+        # a brabbel expression and set the value of the default value to
+        # the result of the evaluation of the expression.
+        if value and value.startswith("%"):
+            form_values = self._form._get_data_from_item()
+            value = Expression(value.strip("%")).evaluate(values=form_values)
+        # If value begins with '$' then consider the string as attribute
+        # name of the item in the form and get the value
+        elif value and value.startswith("$"):
             try:
                 # Special logic for ringo items.
                 if (self.renderer.render_type == "info"
@@ -800,7 +610,7 @@ class Field(object):
             return ", ".join(ex_values)
         else:
             if value:
-                return value
+                return from_python(self, value)
             elif default:
                 return default
             else:
@@ -922,8 +732,9 @@ class Field(object):
         the SQLAlchemy model and which are loaded from the database.
         """
         options = []
+        _ = self._form._translate
         if self.get_type() == 'manytoone':
-            options.append(("None", "", True))
+            options.append((_("no selection"), "", True))
         user_defined_options = self._config.options
         if (isinstance(user_defined_options, list)
            and len(user_defined_options) > 0):

@@ -209,7 +209,18 @@ class Form(Config):
             if len(child) > 0:
                 if child.tag == "if":
                     rule = Rule(child.attrib.get('expr'))
-                    if evaluate and not rule.evaluate(values):
+                    try:
+                        if evaluate and not rule.evaluate(values):
+                            continue
+                    except TypeError:
+                        # FIXME: This error can happen if the rule
+                        # refers to values which are not contained in
+                        # the provided values dictionary. The value
+                        # might be missing because the converting of the
+                        # value failed or the value was missing at
+                        # all.(e.g the field was a selection field and
+                        # was "disabled" in a conditional. In this case
+                        # the value is not sent. (ti) <2015-04-28 16:52>
                         continue
                     for elem in self.walk(child, values, evaluate):
                         yield elem

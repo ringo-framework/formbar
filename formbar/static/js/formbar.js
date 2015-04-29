@@ -29,6 +29,8 @@ $( document ).ready(function() {
     $('.formbar-datepicker').datepicker({
         language: language,
         todayBtn: "linked",
+        showOnFocus: false,
+        autoclose: true
     });
     $('.list-group-item').on('click',function(e){
         var previous = $(this).closest(".list-group").children(".selected");
@@ -111,6 +113,19 @@ $( document ).ready(function() {
     $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateConditionals);
 });
 
+function convertValue(value, field) {
+    var cvalue = value;
+    // Poor mans data conversion. In case that the datatype
+    // (formbar datatype) is string, than out the value into single
+    // quotes. Please note that the datatype attribute is currently only
+    // renderered for the following fields:
+    //  * radio
+    if (field.attr("datatype") && field.attr("datatype") == "string") {
+        cvalue = "'"+value+"'"
+    }
+    return cvalue;
+}
+
 function evaluate(element) {
     var expr = element.getAttribute("expr");
     var tokens = expr.split(" ");
@@ -133,30 +148,28 @@ function evaluate(element) {
             // Get value from field depending on field type
             switch (field.attr("type")) {
                 case 'radio':
-                    value = $('input[name='+tfield+']:checked').val();
+                    value = convertValue($('input[name='+tfield+']:checked').val(), field);
                     break;
                 case 'checkbox':
                     var allVals = [];
                     $('input[name='+tfield+']:checked').each(function() {
                         if ($(this).val() != "") {
-                            allVals.push($(this).val());
+                            allVals.push(convertValue($(this).val(), field));
                         }
                     });
                     value = '[' + allVals.join() + ']';
                     break;
                 default:
-                    value = field.val();
+                    value = convertValue(field.val(), field);
             }
             // If we can not get a value from an input fields the field my
             // be readonly. So get the value from the readonly element.
             // First try to get the unexpaned value, if there is no
             // value get the textvalue of the field. (Which is usually
             // the expanded value).
-            if (!value) {
-                value = field.attr("value");
-            }
-            if (!value) {
-                value = field.text();
+            if (!value && field.is("div")) {
+                value = field.attr("value") || field.text()
+                value = convertValue(value, field);
             }
             // If here is still no value we will set it to None. Otherwise the
             // the expression will not be valid E.g "== '2'"
@@ -206,7 +219,7 @@ function evaluateConditionals() {
         var result = evaluate(conditional);
         if (result) {
             if (readonly) {
-                $(conditional).animate({opacity:'1.0'}, 1500);
+                $(conditional).animate({opacity:'1.0'}, 500);
                 $(conditional).find('input, textarea').attr('readonly', false);
                 $(conditional).find('select').attr('disabled', false);
             }
@@ -216,7 +229,7 @@ function evaluateConditionals() {
         }
         else {
             if (readonly) {
-                $(conditional).animate({opacity:'0.4'}, 1500);
+                $(conditional).animate({opacity:'0.4'}, 500);
                 $(conditional).find('input, textarea').attr('readonly', true);
                 $(conditional).find('select').attr('disabled', true);
             }

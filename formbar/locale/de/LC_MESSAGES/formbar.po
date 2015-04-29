@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: formbar 0.8.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-02-11 13:03+0100\n"
+"POT-Creation-Date: 2015-04-17 13:44+0200\n"
 "PO-Revision-Date: 2015-02-11 13:06+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de <LL@li.org>\n"
@@ -17,19 +17,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: formbar/config.py:382
+#: formbar/config.py:386
 msgid "This field is required. You must provide a value"
 msgstr "Dieses Feld wird verlangt. Sie müssen ein Wert angeben."
 
-#: formbar/config.py:387
+#: formbar/config.py:391
 msgid "This field is desired. Pleas provide a value"
 msgstr "Dieses Feld ist erwünscht. Bitte geben Sie einen Wert an."
 
-#: formbar/renderer.py:158
+#: formbar/form.py:926
+msgid "no selection"
+msgstr "keine Auswahl"
+
+#: formbar/renderer.py:160
 msgid "Submit"
 msgstr "Speichern"
 
-#: formbar/renderer.py:160
+#: formbar/renderer.py:162
 msgid "Reset"
 msgstr "Zurücksetzen"
 

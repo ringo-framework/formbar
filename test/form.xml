@@ -34,6 +34,8 @@
         <div>Test</div>
       </renderer>
     </entity>
+    <entity id="e10" name="time" type="time"/>
+    <entity id="e11" name="interval" type="interval"/>
   </source>
   <form id="userform1">
     <row>
@@ -65,6 +67,8 @@
       <col><field ref="e0"/></col>
       <col><field ref="e8"/></col>
       <col><field ref="e9"/></col>
+      <col><field ref="e10"/></col>
+      <col><field ref="e11"/></col>
     </row>
     <row>
       <col><field ref="e3"/></col>

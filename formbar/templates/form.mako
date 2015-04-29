@@ -129,7 +129,7 @@
           if mode == "readonly":
             field.readonly = True
         %>
-        ${field.render()}
+        ${field.render() | n}
       % elif child.tag == "snippet":
         <% ref = child.attrib.get('ref') %>
         % if ref:
