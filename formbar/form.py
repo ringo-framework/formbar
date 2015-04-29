@@ -426,9 +426,9 @@ class Form(object):
             unvalidated = self.loaded_data
         else:
             try:
-                self.submitted_data = submitted.mixed()
+                self.submitted_data = remove_ws(submitted.mixed())
             except AttributeError:
-                self.submitted_data = submitted
+                self.submitted_data = remove_ws(submitted)
             unvalidated = self.submitted_data
         converted = self.deserialize(unvalidated)
 
