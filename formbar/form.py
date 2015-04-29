@@ -10,6 +10,15 @@ from formbar.converters import (
 log = logging.getLogger(__name__)
 
 
+def remove_ws(data):
+    """Helper function which removes trailing and leading whitespaces
+    for all values in the given dictionary."""
+    clean = {}
+    for key in data:
+        clean[key] = data[key].strip()
+    return clean
+
+
 def get_attributes(cls):
     return [prop.key for prop in sa.orm.class_mapper(cls).iterate_properties
             if isinstance(prop, sa.orm.ColumnProperty)
