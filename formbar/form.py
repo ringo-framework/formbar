@@ -432,10 +432,12 @@ class Form(object):
             unvalidated = self.loaded_data
         else:
             try:
-                self.submitted_data = remove_ws(submitted.mixed())
+                unvalidated = submitted.mixed()
             except AttributeError:
-                self.submitted_data = remove_ws(submitted)
-            unvalidated = self.submitted_data
+                unvalidated = submitted
+            unvalidated = remove_ws(unvalidated)
+            log.debug("Submitted data: %s" % unvalidated)
+            self.submitted_data = unvalidated
         converted = self.deserialize(unvalidated)
 
         # Validate the fields. Ignore fields which are disabled in
