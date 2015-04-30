@@ -12,10 +12,16 @@ log = logging.getLogger(__name__)
 
 def remove_ws(data):
     """Helper function which removes trailing and leading whitespaces
-    for all values in the given dictionary."""
+    for all values in the given dictionary. The dictionary usually
+    contains the submitted data."""
     clean = {}
     for key in data:
-        clean[key] = data[key].strip()
+        if isinstance(data[key], unicode):
+            # This may happen for lists e.g when sumitting multiple
+            # selection in checkboxes.
+            clean[key] = data[key].strip()
+        else:
+            clean[key] = data[key]
     return clean
 
 
