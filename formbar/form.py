@@ -401,7 +401,7 @@ class Form(object):
         else:
             field.add_warning(warning)
 
-    def validate(self, submitted):
+    def validate(self, submitted=None):
         """Returns True if the validation succeeds else False.
         Validation of the data happens in three stages:
 
