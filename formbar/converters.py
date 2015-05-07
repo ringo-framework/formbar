@@ -182,7 +182,7 @@ def to_string(value):
 
 
 def to_integer(value):
-    if not value:
+    if value == "":
         return None
     try:
         return int(value)
@@ -192,7 +192,7 @@ def to_integer(value):
 
 
 def to_float(value):
-    if not value:
+    if value == "":
         return None
     try:
         return float(value)
