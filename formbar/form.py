@@ -245,11 +245,32 @@ class Form(object):
 
         """
         deserialized = {}
+
+
+        # Load relations of the item. Those are needed to deserialize
+        # the relations.
+        relation_names = {}
+        try:
+            mapper = sa.orm.object_mapper(self._item)
+            relation_properties = filter(
+                lambda p: isinstance(p,
+                                     sa.orm.properties.RelationshipProperty),
+                mapper.iterate_properties)
+            for prop in relation_properties:
+                relation_names[prop.key] = prop
+        except sa.orm.exc.UnmappedInstanceError:
+            if not self._item:
+                pass  # The form is not mapped to an item.
+            else:
+                raise
+
         for fieldname, value in self._filter_values(data).iteritems():
             field = self.fields.get(fieldname)
             try:
+                serialized = data.get(field.name)
                 deserialized[fieldname] = to_python(field,
-                                                    data.get(field.name))
+                                                    serialized,
+                                                    relation_names)
             except DeserializeException as ex:
                 self._add_error(field.name, ex.message)
         log.debug("Deserialized values: %s" % deserialized)

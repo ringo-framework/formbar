@@ -287,7 +287,7 @@ def from_python(field, value):
     return serialized
 
 
-def to_python(field, value):
+def to_python(field, value, relation_names):
     """Will return a instance of a python value of the value the given
     field and value.
 
@@ -295,21 +295,6 @@ def to_python(field, value):
     :value: Serialized version of the value
     :returns: Instance of a python type
     """
-
-    relation_names = {}
-    try:
-        mapper = sa.orm.object_mapper(field._form._item)
-        relation_properties = filter(
-            lambda p: isinstance(p,
-                                 sa.orm.properties.RelationshipProperty),
-            mapper.iterate_properties)
-        for prop in relation_properties:
-            relation_names[prop.key] = prop
-    except sa.orm.exc.UnmappedInstanceError:
-        if not field._form._item:
-            pass  # The form is not mapped to an item.
-        else:
-            raise
 
     dtype = field.get_type()
     if dtype in ['string', 'text']:
