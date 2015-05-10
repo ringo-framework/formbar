@@ -135,6 +135,7 @@ def to_datetime(value, locale=None):
         msg = "%s is not a valid datetime format." % value
         raise DeserializeException(msg)
 
+
 def to_integer_list(value):
     if not value:
         return []
@@ -146,22 +147,34 @@ def to_integer_list(value):
         # 670 will be converted into a list containing 6, 7, 0
         # which will relink different items!
         value = [value]
-    return map(to_integer, [v for v in value if v != ""])
+    return map(to_integer, [v for v in value if v not in ("", None)])
 
 
-def to_manytomany(clazz, ids, db):
-    values = []
-    for id in ids:
-        values.append(db.query(clazz).filter(clazz.id == id).one())
-    return values
+def to_manytomany(clazz, ids, db, selected):
+    # The selected values must be in a list. So make sure they are a
+    # list.
+    if not isinstance(selected, list):
+        selected = [selected]
+    selected_ids = set(map(lambda s: s.id, selected))
+
+    # Determine which items need to be added or removed from the
+    # relation.
+    add_ids = set(ids).difference(selected_ids)
+    delete_ids = selected_ids.difference(ids)
+    new_items = filter(lambda x: x.id not in delete_ids, selected)
+    for id in add_ids:
+        new_items.append(db.query(clazz).filter(clazz.id == id).one())
+    return new_items
 
 
-def to_onetomany(clazz, ids, db):
-    return to_manytomany(clazz, ids, db)
+def to_onetomany(clazz, ids, db, selected):
+    return to_manytomany(clazz, ids, db, selected)
 
 
-def to_manytoone(clazz, id, db):
-    return db.query(clazz).filter(clazz.id == id).one()
+def to_manytoone(clazz, id, db, selected):
+    if not selected or selected.id != id:
+        return db.query(clazz).filter(clazz.id == id).one()
+    return selected
 
 
 def to_string(value):
@@ -315,12 +328,22 @@ def to_python(field, value, relation_names):
         if value in ("", None):
             return None
         value = to_integer(value)
-        return to_manytoone(rel, value, field._form._dbsession)
+        db = field._form._dbsession
+        selected = getattr(field._form._item, field.name)
+        return to_manytoone(rel, value, db, selected)
     elif dtype == 'onetomany':
         rel = relation_names[field.name].mapper.class_
         value = to_integer_list(value)
-        return to_onetomany(rel, value, field._form._dbsession)
+        if not value:
+            return value
+        db = field._form._dbsession
+        selected = getattr(field._form._item, field.name)
+        return to_onetomany(rel, value, db, selected)
     elif dtype in 'manytomany':
         rel = relation_names[field.name].mapper.class_
         value = to_integer_list(value)
-        return to_manytomany(rel, value, field._form._dbsession)
+        if not value:
+            return value
+        db = field._form._dbsession
+        selected = getattr(field._form._item, field.name)
+        return to_manytomany(rel, value, db, selected)
