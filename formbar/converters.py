@@ -135,41 +135,33 @@ def to_datetime(value, locale=None):
         msg = "%s is not a valid datetime format." % value
         raise DeserializeException(msg)
 
-
-def to_manytomany(clazz, id, db):
-    if not id:
+def to_integer_list(value):
+    if not value:
         return []
-    # In case the there is only one linked item, the value
-    # is a string value und not a list. In this case we
-    # need to put the value into a list to make the loading
-    # and reasinging of items work. Otherwise a item with id
-    # 670 will be converted into a list containing 6, 7, 0
-    # which will relink different items!
-    if not isinstance(id, list):
-        id = [id]
-    try:
-        values = []
-        for v in [v for v in id if v != ""]:
-            values.append(db.query(clazz).filter(clazz.id == int(v)).one())
-        return values
-    except ValueError:
-        msg = "Reference value '%s' must be of type integer" % id
-        raise DeserializeException(msg)
+    elif not isinstance(value, list):
+        # In case the there is only one linked item, the value
+        # is a string value und not a list. In this case we
+        # need to put the value into a list to make the loading
+        # and reasinging of items work. Otherwise a item with id
+        # 670 will be converted into a list containing 6, 7, 0
+        # which will relink different items!
+        value = [value]
+    return map(to_integer, [v for v in value if v != ""])
 
 
-def to_onetomany(clazz, id, db):
-    return to_manytomany(clazz, id, db)
+def to_manytomany(clazz, ids, db):
+    values = []
+    for id in ids:
+        values.append(db.query(clazz).filter(clazz.id == id).one())
+    return values
+
+
+def to_onetomany(clazz, ids, db):
+    return to_manytomany(clazz, ids, db)
 
 
 def to_manytoone(clazz, id, db):
-    try:
-        if id in ("", None):
-            return None
-        else:
-            return db.query(clazz).filter(clazz.id == int(id)).one()
-    except ValueError:
-        msg = "Reference value '%s' must be of type integer" % id
-        raise DeserializeException(msg)
+    return db.query(clazz).filter(clazz.id == id).one()
 
 
 def to_string(value):
@@ -320,10 +312,15 @@ def to_python(field, value, relation_names):
     # Reltation handling
     elif dtype == 'manytoone':
         rel = relation_names[field.name].mapper.class_
+        if value in ("", None):
+            return None
+        value = to_integer(value)
         return to_manytoone(rel, value, field._form._dbsession)
     elif dtype == 'onetomany':
         rel = relation_names[field.name].mapper.class_
+        value = to_integer_list(value)
         return to_onetomany(rel, value, field._form._dbsession)
     elif dtype in 'manytomany':
         rel = relation_names[field.name].mapper.class_
+        value = to_integer_list(value)
         return to_manytomany(rel, value, field._form._dbsession)
