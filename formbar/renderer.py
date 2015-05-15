@@ -1,5 +1,6 @@
 import logging
 import difflib
+from webhelpers.html import literal
 
 from mako.lookup import TemplateLookup
 from formbar import template_dir
@@ -115,7 +116,7 @@ class FormRenderer(Renderer):
         if not self._form._config.readonly and buttons:
             html.append(self._render_form_buttons())
         html.append(self._render_form_end())
-        return "".join(html)
+        return literal("".join(html))
 
     def _render_form_start(self):
         html = []
