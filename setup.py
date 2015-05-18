@@ -25,7 +25,9 @@ setup(name='formbar',
                       'sqlalchemy',
                       'babel',
                       'python-dateutil',
-                      'mako'],
+                      'mako',
+                      'webhelpers'
+                      ],
     # Used for the example server
     tests_require=['nose', 'coverage'],
     extras_require={'examples':  ["pyramid"]},
