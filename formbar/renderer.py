@@ -219,17 +219,20 @@ class FieldRenderer(Renderer):
 
     def _render_label(self):
         template = template_lookup.get_template("label.mako")
-        values = self._get_template_values()
+        values = {'field': self._field,
+                  '_': self.translate}
         return template.render(**values)
 
     def _render_errors(self):
         template = template_lookup.get_template("errors.mako")
-        values = self._get_template_values()
+        values = {'field': self._field,
+                  '_': self.translate}
         return template.render(**values)
 
     def _render_help(self):
         template = template_lookup.get_template("help.mako")
-        values = self._get_template_values()
+        values = {'field': self._field,
+                  '_': self.translate}
         return template.render(**values)
 
     def _render_diff(self, newvalue, oldvalue):

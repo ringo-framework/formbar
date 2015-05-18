@@ -320,6 +320,10 @@ class Field(Config):
         this option is ignored if the form is used to render an
         SQLAlchemy mapped item."""
 
+        self.placeholder = entity.attrib.get('placeholder')
+        """Defines a placeholder for this field that overrides the default
+        placeholder."""
+
         self.css = entity.attrib.get('css', '')
         """A string which will be added to the class tag of the form"""
 

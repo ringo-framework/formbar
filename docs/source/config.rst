@@ -76,6 +76,7 @@ type        Defines the python datatype which will be used on deserialisation
 css         Value will be rendered as class attribute in the rendered field.
 expr        Expression which is used to calculate the value of the field.
 value       Default value of the field. Supports expressions. The default value might get overwritten on rendering.
+placeholder Custom placeholder that overrides the default of a field. For now only usable for ``interval``.
 readonly    Flag to indicate that the field should be rendered as readonly field. Default is ``false``.
 required    Flag to indicate that the is a required field. Default is ``false``.
 autofocus   Flag to mark the field to be focused on pageload. Only one field per form can be focused. Default is ``false``.

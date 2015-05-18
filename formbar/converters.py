@@ -10,7 +10,7 @@ import re
 import sqlalchemy as sa
 from babel.dates import format_datetime, format_date
 from formbar.helpers import get_local_datetime, get_utc_datetime
-
+from datetime import timedelta
 
 log = logging.getLogger(__name__)
 
@@ -33,19 +33,26 @@ def from_timedelta(value):
 
 def to_timedelta(value):
     """Will return a python timedelta for the given value in
-    'HH:MM:SS' format. If the value can not be converted and
+    'HH:MM:SS', 'HH:MM' or 'MM' format. 
+    If the value can not be converted and
     exception is raised."""
     if not value:
         return None
     try:
-        h, m, s = value.split(':')
-        h = int(h)
-        m = int(m)
-        s = int(s)
-        converted = datetime.timedelta(hours=h,
-                                       minutes=m,
-                                       seconds=s)
-        return converted
+        ncolon = value.count(":")
+        if ncolon == 2:
+            interval  = value.split(":")
+            hours = int(interval[0])
+            minutes = int(interval[1])
+            seconds = int(interval[2])
+            return timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        elif ncolon == 1:
+            interval  = value.split(":")
+            hours = int(interval[0])
+            minutes = int(interval[1])
+            return timedelta(hours=hours, minutes=minutes)
+        elif ncolon == 0:
+            return timedelta(minutes=int(value))
     except ValueError:
         msg = "Value '%s' must be in format 'HH:MM:SS'" % value
         raise DeserializeException(msg)
@@ -129,40 +136,45 @@ def to_datetime(value, locale=None):
         raise DeserializeException(msg)
 
 
-def to_manytomany(clazz, id, db):
-    if not id:
+def to_integer_list(value):
+    if not value:
         return []
-    # In case the there is only one linked item, the value
-    # is a string value und not a list. In this case we
-    # need to put the value into a list to make the loading
-    # and reasinging of items work. Otherwise a item with id
-    # 670 will be converted into a list containing 6, 7, 0
-    # which will relink different items!
-    if not isinstance(id, list):
-        id = [id]
-    try:
-        values = []
-        for v in [v for v in id if v != ""]:
-            values.append(db.query(clazz).filter(clazz.id == int(v)).one())
-        return values
-    except ValueError:
-        msg = "Reference value '%s' must be of type integer" % id
-        raise DeserializeException(msg)
+    elif not isinstance(value, list):
+        # In case the there is only one linked item, the value
+        # is a string value und not a list. In this case we
+        # need to put the value into a list to make the loading
+        # and reasinging of items work. Otherwise a item with id
+        # 670 will be converted into a list containing 6, 7, 0
+        # which will relink different items!
+        value = [value]
+    return map(to_integer, [v for v in value if v not in ("", None)])
 
 
-def to_onetomany(clazz, id, db):
-    return to_manytomany(clazz, id, db)
+def to_manytomany(clazz, ids, db, selected):
+    # The selected values must be in a list. So make sure they are a
+    # list.
+    if not isinstance(selected, list):
+        selected = [selected]
+    selected_ids = set(map(lambda s: s.id, selected))
+
+    # Determine which items need to be added or removed from the
+    # relation.
+    add_ids = set(ids).difference(selected_ids)
+    delete_ids = selected_ids.difference(ids)
+    new_items = filter(lambda x: x.id not in delete_ids, selected)
+    for id in add_ids:
+        new_items.append(db.query(clazz).filter(clazz.id == id).one())
+    return new_items
 
 
-def to_manytoone(clazz, id, db):
-    try:
-        if id in ("", None):
-            return None
-        else:
-            return db.query(clazz).filter(clazz.id == int(id)).one()
-    except ValueError:
-        msg = "Reference value '%s' must be of type integer" % id
-        raise DeserializeException(msg)
+def to_onetomany(clazz, ids, db, selected):
+    return to_manytomany(clazz, ids, db, selected)
+
+
+def to_manytoone(clazz, id, db, selected):
+    if not selected or selected.id != id:
+        return db.query(clazz).filter(clazz.id == id).one()
+    return selected
 
 
 def to_string(value):
@@ -175,7 +187,7 @@ def to_string(value):
 
 
 def to_integer(value):
-    if not value:
+    if value == "":
         return None
     try:
         return int(value)
@@ -185,7 +197,7 @@ def to_integer(value):
 
 
 def to_float(value):
-    if not value:
+    if value == "":
         return None
     try:
         return float(value)
@@ -280,7 +292,7 @@ def from_python(field, value):
     return serialized
 
 
-def to_python(field, value):
+def to_python(field, value, relation_names):
     """Will return a instance of a python value of the value the given
     field and value.
 
@@ -288,20 +300,6 @@ def to_python(field, value):
     :value: Serialized version of the value
     :returns: Instance of a python type
     """
-    relation_names = {}
-    try:
-        mapper = sa.orm.object_mapper(field._form._item)
-        relation_properties = filter(
-            lambda p: isinstance(p,
-                                 sa.orm.properties.RelationshipProperty),
-            mapper.iterate_properties)
-        for prop in relation_properties:
-            relation_names[prop.key] = prop
-    except sa.orm.exc.UnmappedInstanceError:
-        if not field._form._item:
-            pass  # The form is not mapped to an item.
-        else:
-            raise
 
     dtype = field.get_type()
     if dtype in ['string', 'text']:
@@ -327,10 +325,25 @@ def to_python(field, value):
     # Reltation handling
     elif dtype == 'manytoone':
         rel = relation_names[field.name].mapper.class_
-        return to_manytoone(rel, value, field._form._dbsession)
+        if value in ("", None):
+            return None
+        value = to_integer(value)
+        db = field._form._dbsession
+        selected = getattr(field._form._item, field.name)
+        return to_manytoone(rel, value, db, selected)
     elif dtype == 'onetomany':
         rel = relation_names[field.name].mapper.class_
-        return to_onetomany(rel, value, field._form._dbsession)
+        value = to_integer_list(value)
+        if not value:
+            return value
+        db = field._form._dbsession
+        selected = getattr(field._form._item, field.name)
+        return to_onetomany(rel, value, db, selected)
     elif dtype in 'manytomany':
         rel = relation_names[field.name].mapper.class_
-        return to_manytomany(rel, value, field._form._dbsession)
+        value = to_integer_list(value)
+        if not value:
+            return value
+        db = field._form._dbsession
+        selected = getattr(field._form._item, field.name)
+        return to_manytomany(rel, value, db, selected)

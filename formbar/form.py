@@ -10,6 +10,21 @@ from formbar.converters import (
 log = logging.getLogger(__name__)
 
 
+def remove_ws(data):
+    """Helper function which removes trailing and leading whitespaces
+    for all values in the given dictionary. The dictionary usually
+    contains the submitted data."""
+    clean = {}
+    for key in data:
+        if isinstance(data[key], unicode):
+            # This may happen for lists e.g when sumitting multiple
+            # selection in checkboxes.
+            clean[key] = data[key].strip()
+        else:
+            clean[key] = data[key]
+    return clean
+
+
 def get_attributes(cls):
     return [prop.key for prop in sa.orm.class_mapper(cls).iterate_properties
             if isinstance(prop, sa.orm.ColumnProperty)
@@ -230,11 +245,32 @@ class Form(object):
 
         """
         deserialized = {}
+
+
+        # Load relations of the item. Those are needed to deserialize
+        # the relations.
+        relation_names = {}
+        try:
+            mapper = sa.orm.object_mapper(self._item)
+            relation_properties = filter(
+                lambda p: isinstance(p,
+                                     sa.orm.properties.RelationshipProperty),
+                mapper.iterate_properties)
+            for prop in relation_properties:
+                relation_names[prop.key] = prop
+        except sa.orm.exc.UnmappedInstanceError:
+            if not self._item:
+                pass  # The form is not mapped to an item.
+            else:
+                raise
+
         for fieldname, value in self._filter_values(data).iteritems():
             field = self.fields.get(fieldname)
             try:
+                serialized = data.get(field.name)
                 deserialized[fieldname] = to_python(field,
-                                                    data.get(field.name))
+                                                    serialized,
+                                                    relation_names)
             except DeserializeException as ex:
                 self._add_error(field.name, ex.message)
         log.debug("Deserialized values: %s" % deserialized)
@@ -386,7 +422,7 @@ class Form(object):
         else:
             field.add_warning(warning)
 
-    def validate(self, submitted):
+    def validate(self, submitted=None):
         """Returns True if the validation succeeds else False.
         Validation of the data happens in three stages:
 
@@ -417,10 +453,12 @@ class Form(object):
             unvalidated = self.loaded_data
         else:
             try:
-                self.submitted_data = submitted.mixed()
+                unvalidated = submitted.mixed()
             except AttributeError:
-                self.submitted_data = submitted
-            unvalidated = self.submitted_data
+                unvalidated = submitted
+            unvalidated = remove_ws(unvalidated)
+            log.debug("Submitted data: %s" % unvalidated)
+            self.submitted_data = unvalidated
         converted = self.deserialize(unvalidated)
 
         # Validate the fields. Ignore fields which are disabled in
