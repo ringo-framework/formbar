@@ -403,7 +403,7 @@ class Field(Config):
             self.rules.append(Rule(expr, msg, mode))
         if self.desired:
             expr = "bool($%s)" % self.name
-            msg = _("This field is desired. Pleas provide a value")
+            msg = _("This field is desired. Please provide a value")
             mode = "pre"
             triggers = "warning"
             self.rules.append(Rule(expr, msg, mode, triggers))
