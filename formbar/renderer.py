@@ -4,6 +4,8 @@ from webhelpers.html import literal
 
 from mako.lookup import TemplateLookup
 from formbar import template_dir
+from formbar.rules import Rule
+
 
 template_lookup = TemplateLookup(directories=[template_dir],
                                  default_filters=['h'])
@@ -142,7 +144,8 @@ class FormRenderer(Renderer):
     def _render_form_body(self, render_outline):
         values = {'form': self._form,
                   '_': self.translate,
-                  'render_outline': render_outline}
+                  'render_outline': render_outline,
+                  'Rule': Rule}
         return self.template.render(**values)
 
     def _render_form_buttons(self):

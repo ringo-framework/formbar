@@ -7,6 +7,10 @@ TODO
   references. So the source fields are the default and can be modified by the
   reference.
 
+0.10.0
+======
+- Implemented serveside evaluation of conditionals while rendering.
+
 0.9.8
 =====
 - Started to improve client side rule evaluation. In case the input element

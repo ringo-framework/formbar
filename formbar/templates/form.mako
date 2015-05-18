@@ -43,11 +43,13 @@
       % endif
     % elif child.tag == "page":
       ${self.render_outline_element(form, child)}
-    % elif child.tag == "if" and child[0].tag == "page":
-      <div class="formbar-conditional ${child.attrib.get('type')}" expr="${child.attrib.get('expr')}">
+    % elif child.tag == "if" and child[0].tag == "page" and child.attrib.get("static") != "true":
+        <div class="formbar-conditional ${child.attrib.get('type')}" expr="${child.attrib.get('expr')}">
     % endif
-    ${self.render_recursive_outline(form, child)}
-    % if child.tag == "if" and child[0].tag == "page":
+    % if child.attrib.get("static") != "true" or Rule(child.attrib.get("expr")).evaluate(form.data):
+      ${self.render_recursive_outline(form, child)}
+    % endif:
+    % if child.tag == "if" and child[0].tag == "page" and child.attrib.get("static") != "true":
       </div>
     % endif
   % endfor
@@ -60,8 +62,12 @@
   </a>
 </%def>
 
-<%def name="render_recursive(elem)">
+<%def name="render_recursive(elem, mode='')">
   % for child in elem:
+    <%
+      if mode == 'hide':
+        continue
+    %>
     % if len(child) > 0:
       % if child.tag == "page" and not render_outline:
         <h1 class="page">${_(child.attrib.get("label"))}</h1>
@@ -89,10 +95,14 @@
       % elif child.tag == "td":
         <td colspan="${child.attrib.get('colspan', '')}" class="${child.attrib.get('class', '')}" rowspan="${child.attrib.get('rowspan', '')}" width="${child.attrib.get('width', '')}">
       ## Conditionals
-      % elif child.tag == "if":
-        <div class="formbar-conditional ${child.attrib.get('type')}" expr="${child.attrib.get('expr')}">
+      % elif child.tag == "if" and child.attrib.get("static") != "true":
+          <div class="formbar-conditional ${child.attrib.get('type')}" expr="${child.attrib.get('expr')}">
       % endif
-      ${self.render_recursive(child)}
+      % if child.attrib.get("static") != "true" or Rule(child.attrib.get("expr")).evaluate(form.data):
+        ${self.render_recursive(child, mode)}
+      % else:
+        ${self.render_recursive(child, child.attrib.get('type', 'hide'))}
+      % endif
       % if child.tag == "fieldset":
         </fieldset>
       % elif child.tag == "col":
@@ -109,12 +119,17 @@
         </th>
       % elif child.tag == "td":
         </td>
-      % elif child.tag == "if":
+      % elif child.tag == "if" and child.attrib.get("static") != "true":
         </div>
       % endif
     % else:
       % if child.tag == "field":
-        ${form.get_field(form._config._id2name[child.attrib.get('ref')]).render() | n}
+        <%
+          field = form.get_field(form._config._id2name[child.attrib.get('ref')])
+          if mode == "readonly":
+            field.readonly = True
+        %>
+        ${field.render() | n}
       % elif child.tag == "snippet":
         <% ref = child.attrib.get('ref') %>
         % if ref:
