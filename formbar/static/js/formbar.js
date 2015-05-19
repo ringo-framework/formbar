@@ -139,7 +139,7 @@ function evaluate(element) {
         var tfield = null;
         var value = null;
         if (tokens[j].indexOf("$") >= 0) {
-            tfield = tokens[j].replace('$', '');
+            tfield = tokens[j].replace('$', '').replace('.', '\\.');
             // Select field
             var field = $('input[name='+tfield+'], '
                           + 'select[name='+tfield+'], '
