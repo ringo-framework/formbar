@@ -10,9 +10,18 @@ TODO
 0.9.8
 =====
 - Implemented serveside evaluation of conditionals while rendering.
+- Added interval type.
+- Added placeholder config variable
+- Implemented brabbel expressions in default value using "%" (Usefull to get
+  the current date.)
+- Moved converters for serialisation and deserialisation into its own module
+  (converters.py)
 - Started to improve client side rule evaluation. In case the input element
   has the datatype attribute set then try to convert the value of the field
   into the right representation for rule evaluation.
+- Started to improve performance on form initialisation. First store the
+  fields in a dictionary per page to make the access to fields on a specific
+  page faster.
 
 0.9.7 (alias 0.9.6)
 ===================
