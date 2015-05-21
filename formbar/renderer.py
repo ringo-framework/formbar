@@ -194,7 +194,7 @@ class FormRenderer(Renderer):
         html = []
         html.append('</form>')
         html.append('</div>')
-        return cgi.escape("".join(html))
+        return "".join(html)
 
 
 class FieldRenderer(Renderer):
