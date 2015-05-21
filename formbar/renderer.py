@@ -1,4 +1,5 @@
 import logging
+import cgi
 import difflib
 from webhelpers.html import literal
 
@@ -123,14 +124,13 @@ class FormRenderer(Renderer):
     def _render_form_start(self):
         html = []
         html.append('<div class="formbar-form">')
-        attr = {'id': self._form._config.id,
-                'css': self._form._config.css,
-                'action': self._form._config.action,
-                'method': self._form._config.method,
-                'autocomplete': self._form._config.autocomplete,
-                'enctype': self._form._config.enctype,
-                'evalurl': self._form._eval_url or "",
-                '_': self.translate}
+        attr = {'id': cgi.escape(self._form._config.id),
+                'css': cgi.escape(self._form._config.css),
+                'action': cgi.escape(self._form._config.action),
+                'method': cgi.escape(self._form._config.method),
+                'autocomplete': cgi.escape(self._form._config.autocomplete),
+                'enctype': cgi.escape(self._form._config.enctype),
+                'evalurl': cgi.escape(self._form._eval_url or "")}
         html.append('<form id="%(id)s" class="%(css)s" role="form" '
                     'method="%(method)s" action="%(action)s" '
                     'autocomplete="%(autocomplete)s" enctype="%(enctype)s" '
@@ -138,7 +138,7 @@ class FormRenderer(Renderer):
         # Add hidden field with csrf_token if this is not None.
         if self._form._csrf_token:
             html.append('<input type="hidden" name="csrf_token" value="%s"/>'
-                        % self._form._csrf_token)
+                        % cgi.escape(self._form._csrf_token))
         return "".join(html)
 
     def _render_form_body(self, render_outline):
@@ -162,21 +162,24 @@ class FormRenderer(Renderer):
         # form.
         if len(self._form._config._buttons) == 0:
             html.append('<button type="submit" '
-                        'class="btn btn-default">%s</button>' % _('Submit'))
+                        'class="btn btn-default">%s</button>' 
+                        % cgi.escape(_('Submit')))
             html.append('<button type="reset" '
-                        'class="btn btn-default">%s</button>' % _('Reset'))
+                        'class="btn btn-default">%s</button>' 
+                        % cgi.escape(_('Reset')))
         else:
             for b in self._form._config._buttons:
                 if b.attrib.get("icon"):
-                    icon = '<i class="%s"/>' % b.attrib.get("icon")
+                    icon = '<i class="%s"/>' % cgi.escape(b.attrib.get("icon"))
                 else:
                     icon = ""
                 attr = {
-                    'type': b.attrib.get("type") or "submit",
-                    'value': b.attrib.get("value") or "",
-                    'class': "btn btn-%s" % (b.attrib.get("class") or "default"),
+                    'type': cgi.escape(b.attrib.get("type") or "submit"),
+                    'value': cgi.escape(b.attrib.get("value") or ""),
+                    'class': "btn btn-%s" % (cgi.escape(b.attrib.get("class") 
+                                                        or "default")),
                     'icon': icon,
-                    'label': _(b.text) or "XXX"
+                    'label': cgi.escape(_(b.text) or "XXX")
                 }
                 html.append('<button type="%(type)s" name="_%(type)s"'
                             ' value="%(value)s" class="%(class)s">'
@@ -191,7 +194,7 @@ class FormRenderer(Renderer):
         html = []
         html.append('</form>')
         html.append('</div>')
-        return "".join(html)
+        return cgi.escape("".join(html))
 
 
 class FieldRenderer(Renderer):
