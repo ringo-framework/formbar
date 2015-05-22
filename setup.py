@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import multiprocessing
 import sys, os
 
-version = '0.9.7'
+version = '0.9.8'
 
 setup(name='formbar',
     version=version,
@@ -29,7 +29,7 @@ setup(name='formbar',
                       'webhelpers'
                       ],
     # Used for the example server
-    tests_require=['nose', 'coverage'],
+    tests_require=["nose"],
     extras_require={'examples':  ["pyramid"]},
     setup_requires=["hgtools"],
     entry_points="""
