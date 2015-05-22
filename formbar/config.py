@@ -158,7 +158,7 @@ class Form(Config):
 
         self._buttons = self.get_buttons()
         """Buttons of the form"""
-        self._fields = self.get_fields()
+        self._fields = self.init_fields()
         self._initialized = True
         """Dictionary with all fields in the form. The name of the field is the
         key in the dictionary"""
@@ -209,7 +209,18 @@ class Form(Config):
             if len(child) > 0:
                 if child.tag == "if":
                     rule = Rule(child.attrib.get('expr'))
-                    if evaluate and not rule.evaluate(values):
+                    try:
+                        if evaluate and not rule.evaluate(values):
+                            continue
+                    except TypeError:
+                        # FIXME: This error can happen if the rule
+                        # refers to values which are not contained in
+                        # the provided values dictionary. The value
+                        # might be missing because the converting of the
+                        # value failed or the value was missing at
+                        # all.(e.g the field was a selection field and
+                        # was "disabled" in a conditional. In this case
+                        # the value is not sent. (ti) <2015-04-28 16:52>
                         continue
                     for elem in self.walk(child, values, evaluate):
                         yield elem
@@ -225,37 +236,62 @@ class Form(Config):
             elif child.tag == "field":
                 yield child
 
+    def init_fields(self, values=None, evaluate=False):
+        """Will initialise (or reinitialize) the fields in the form. The
+        fields are stored in a dictionary per page to make the access to
+        the fields on a page faster (e.g get_errors and get_warnings
+        will check the fields on a certain page for errors).
+       
+        The attribute ``values`` and ``evaluate`` are used for
+        evaluating the rules on initialisation to only include relevant
+        fields.
+        """
+        if values is None:
+            values = {}
+        fields = {}
+        pages = self.get_pages()
+        if len(pages) == 0:
+            pages.append(self._tree)
+        for page in pages:
+            page_id = page.attrib.get("id")
+            fields[page_id] = {}
+            for node in self.walk(page, values, evaluate):
+                ref = node.attrib.get('ref')
+                entity = self._parent.get_element('entity', ref)
+                field = Field(entity)
+                # Inherit readonly flag to all fields in this field.
+                if self.readonly:
+                    field.readonly = self.readonly
+                fields[page_id][field.name] = field
+                self._id2name[ref] = field.name
+        return fields
+
+
     def get_fields(self, root=None, values={},
                    reload_fields=False, evaluate=False):
         """Returns a dictionary of included fields in the form. Fields fetched
         by searching all field elements in the form or snippets and
         "subsnippets" in the forms.
 
-        :returns: A dictionary with the configured fields in the form. The name
-        of the field is the key of the dictionary.
+        :returns: A dictionary with the configured fields in the form.
+        The name of the field is the key of the dictionary.
         """
 
         # Are the fields already initialized? Ignore cache if we get
         # fields for a particular page
-        if self._initialized and root is None and reload_fields is False:
-            return self._fields
-
-        # Get all fields for the form.
-        fields = {}
+        if not self._initialized or reload_fields is True:
+            self._fields = self.init_fields(values, evaluate)
 
         if root is None:
-            root = self._tree
-
-        for node in self.walk(root, values, evaluate):
-            ref = node.attrib.get('ref')
-            entity = self._parent.get_element('entity', ref)
-            field = Field(entity)
-            # Inherit readonly flag to all fields in this field.
-            if self.readonly:
-                field.readonly = self.readonly
-            fields[field.name] = field
-            self._id2name[ref] = field.name
-        return fields
+            # if root is None then we must return all fields.
+            fields = {}
+            for page in self._fields:
+                for field in self._fields[page]:
+                    fields[field] = self._fields[page][field]
+            return fields
+        else:
+            page_id = root.attrib.get("id")
+            return self._fields[page_id]
 
     def get_field(self, name):
         """Returns the field with the name from the form. If the field can not
@@ -308,6 +344,10 @@ class Field(Config):
         converting the submitted data into a python value. Note that
         this option is ignored if the form is used to render an
         SQLAlchemy mapped item."""
+
+        self.placeholder = entity.attrib.get('placeholder')
+        """Defines a placeholder for this field that overrides the default
+        placeholder."""
 
         self.css = entity.attrib.get('css', '')
         """A string which will be added to the class tag of the form"""
@@ -388,7 +428,7 @@ class Field(Config):
             self.rules.append(Rule(expr, msg, mode))
         if self.desired:
             expr = "bool($%s)" % self.name
-            msg = _("This field is desired. Pleas provide a value")
+            msg = _("This field is desired. Please provide a value")
             mode = "pre"
             triggers = "warning"
             self.rules.append(Rule(expr, msg, mode, triggers))

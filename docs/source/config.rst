@@ -69,16 +69,47 @@ name        Used as name attribute in the rendered field. Defines the
             name of this attribute in the model.
 label       The field will be rendered with this label.
 number      A small number which is rendered in front of the label.
-type        Defines the python datatype which will be used on deserialisation of the submitted value. Defines the datatype of the model. Possible values are ``string`` (default), ``text``, ``integer``, ``float``, ``date``, ``datetime``, ``email``, ``boolean``.
+type        Defines the python datatype which will be used on deserialisation
+            of the submitted value. Defines the datatype of the model. Possible values are
+            ``string`` (default), ``text``, ``integer``, ``float``, ``date``,
+            ``datetime``, ``email``, ``boolean``, ``time``, ``interval``.
 css         Value will be rendered as class attribute in the rendered field.
 expr        Expression which is used to calculate the value of the field.
 value       Default value of the field. Supports expressions. The default value might get overwritten on rendering.
+placeholder Custom placeholder that overrides the default of a field. For now only usable for ``interval``.
 readonly    Flag to indicate that the field should be rendered as readonly field. Default is ``false``.
 required    Flag to indicate that the is a required field. Default is ``false``.
 autofocus   Flag to mark the field to be focused on pageload. Only one field per form can be focused. Default is ``false``.
 desired     Flag to indicate that the is a desired field. Default is ``false``.
 tags        Comma separated list of tags for this field.
 =========   ===========
+
+Defaults
+^^^^^^^^
+You can set a default for the field in case there is no value for the
+field. The default value can be set by using the ``value`` attribute of
+the entity.
+
+You can provide a default value by
+
+1. Given in plain string value
+2. Accessing an attribute of the SA mapped item. This supports dot
+   separated attribute names of the item to access related items::
+
+        ... value="$foo.bar.baz"
+
+   "$" represents the current form item. So foo is an attribute of it and
+   bar is an attribute of foo.
+
+3. Using expressions. The default value can be calculated by using a
+   expression::
+
+        ... value="% date('today')"
+
+   The expample will set the value to the current date.
+   "%" is used to say formbar that the following string must be
+   considered as an expression. The Expression will evaluated with the
+   values of the current form item.
 
 Options
 -------
@@ -431,6 +462,7 @@ Attribute      Description
 ============   ===========
 type           Effect of the conditional if the condition evaluates to false.  Defaults to ``hide``.
 expr           The expression which will be evaluated.
+static         Flag disable dynamic clientsided evaluation of the conditional. Defaults to ``false``.
 ============   ===========
 
 Conditionals are evaluated using JavaScript on the client side. Formbar also
@@ -689,7 +721,7 @@ errors which happened while rendering::
 =========   ===========
 Attribute   Description
 =========   ===========
-rows        Number of rows of the texteare. Default is 3.
+rows        Number of rows of the textarea. Default is 3.
 url         URL which is called to renderer the form.
 =========   ===========
 
@@ -700,11 +732,27 @@ Write custom renderes
 Formbar makes it easy to create a custom renderer. All you need to to is
 to overwrite the :class:`.FieldRenderer` class. In most cases you only
 need to provide a new Template for your field which handles to main
-rendering. As expamle see :class:`.InfoFieldRenderer` how to set a new
+rendering. As example see :class:`.InfoFieldRenderer` how to set a new
 template.
 
 .. _external_validator:
 
 Write external validators
 =========================
-Write me!
+A external validator is a simple python callable of the following form::
+
+    def external_validator(field, data):
+        return 16 == data[field]
+
+The value 'data' is the converted value dictionary of the form and
+contains all values of the form. The value 'field' defines the name of
+the field for which this validation belongs to and also determines on
+which field the error message will be shown.
+
+The function should return True or False on validation. The validator
+must be added to the form::
+
+        validator = Validator('fieldname',
+                              'Error message',
+                              external_validator)
+        self.form.add_validator(validator)

@@ -44,7 +44,7 @@ class TestFormParser(unittest.TestCase):
 
     def test_get_fields(self):
         self.assertTrue(isinstance(self.cform.get_fields(), dict))
-        self.assertEqual(len(self.cform.get_fields().items()), 7)
+        self.assertEqual(len(self.cform.get_fields().items()), 9)
 
     def test_get_field_e1(self):
         field = self.cform.get_field(self.cform._id2name['e1'])
@@ -105,6 +105,7 @@ class TestFieldConfig(unittest.TestCase):
         self.ifield = self.form.get_field('integer')
         self.sfield = self.form2.get_field('name')
         self.hfield = self.form.get_field('html')
+        self.tfield = self.form.get_field('interval')
 
     def test_get_field_mission(self):
         self.assertRaises(KeyError, self.form.get_field, 'missing')
@@ -201,9 +202,6 @@ class TestFieldConfig(unittest.TestCase):
 
     def test_tags_custom(self):
         self.assertEqual(self.hfield.tags, ["tag1", "tag2"])
-
-    def test_help_custom(self):
-        self.assertEqual(self.cfield.help, 'This is my helptext')
 
 if __name__ == '__main__':
     unittest.main()

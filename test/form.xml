@@ -8,7 +8,7 @@
       <rule expr="$integer ge 16" msg="Integer must be greated than 15" mode="post"/>
     </entity>
     <entity id="e3" name="float" label="Float field" type="float" desired="true">
-      <rule expr="$float lt 100" msg="Float must be lower than 100" mode="post"/>
+      <rule expr="$float lt 100.0" msg="Float must be lower than 100" mode="post"/>
       <help>This is is a very long helptext which should span over
       multiple rows. Further the will check if there are further html
       tags allowed.</help>
@@ -34,6 +34,8 @@
         <div>Test</div>
       </renderer>
     </entity>
+    <entity id="e10" name="time" type="time"/>
+    <entity id="e11" name="interval" type="interval"/>
   </source>
   <form id="userform1">
     <row>
@@ -65,6 +67,8 @@
       <col><field ref="e0"/></col>
       <col><field ref="e8"/></col>
       <col><field ref="e9"/></col>
+      <col><field ref="e10"/></col>
+      <col><field ref="e11"/></col>
     </row>
     <row>
       <col><field ref="e3"/></col>

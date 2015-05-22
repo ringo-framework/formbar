@@ -12,9 +12,9 @@ else:
   % if option[2]:
     <label class="radio-inline">
       % if option[1] in selected:
-        <input type="radio" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" checked="checked" ${readonly}/>
+        <input type="radio" id="${field.id}-${num}" datatype="${field.get_type()}" name="${field.name}" value="${option[1]}" checked="checked" ${readonly}/>
       % else:
-        <input type="radio" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" ${readonly}/>
+        <input type="radio" id="${field.id}-${num}" datatype="${field.get_type()}" name="${field.name}" value="${option[1]}" ${readonly}/>
       % endif
       ${_(option[0])}
     </label>
@@ -22,6 +22,6 @@ else:
       <br/>
     % endif
   % elif not field.renderer.remove_filtered == "true":
-    <input type="hidden" id="${field.id}" name="${field.name}" value="${option[1]}"/>
+    <input type="hidden" id="${field.id}" datatype="${field.get_type()}" name="${field.name}" value="${option[1]}"/>
   % endif
 % endfor
