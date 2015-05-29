@@ -1,23 +1,14 @@
-TODO
-====
-
-- Added Testcases for i18n.
-- Added Testcases Custom renderers.
-- Allow to redefine some attribute of the source fields in the fields
-  references. So the source fields are the default and can be modified by the
-  reference.
-
 0.9.8
 =====
-- Implemented serveside evaluation of conditionals while rendering.
+- Implemented server side evaluation of conditionals while rendering.
 - Added interval type.
-- Added placeholder config variable
-- Implemented brabbel expressions in default value using "%" (Usefull to get
+- Added placeholder configuration variable
+- Implemented brabbel expressions in default value using "%" (Useful to get
   the current date.)
 - Moved converters for serialisation and deserialisation into its own module
   (converters.py)
 - Started to improve client side rule evaluation. In case the input element
-  has the datatype attribute set then try to convert the value of the field
+  has the data type attribute set then try to convert the value of the field
   into the right representation for rule evaluation.
 - Started to improve performance on form initialisation. First store the
   fields in a dictionary per page to make the access to fields on a specific
@@ -29,7 +20,7 @@ TODO
 - Fixed getting values from checkbox and radio fields.
 - Fixed getting accepted language from browser. Now using locale setting from
   evaluate response.
-- Implement filtering on userdefined rules
+- Implement filtering on user defined rules
 - If no value can be get from a field then set the value to "None" in
   expressions to ensure the expression is valid.
 - Removed datutils dependency as it is not py3 ready. Actually only the
