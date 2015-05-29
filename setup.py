@@ -31,7 +31,7 @@ setup(name='formbar',
     # Used for the example server
     tests_require=['nose', 'coverage'],
     extras_require={'examples':  ["pyramid"]},
-    setup_requires=["hgtools"],
+    setup_requires=[],
     entry_points="""
     # -*- Entry points: -*-
     [babel.extractors]
