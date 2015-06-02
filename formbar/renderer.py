@@ -1,7 +1,6 @@
 import logging
-import cgi
 import difflib
-from webhelpers.html import literal
+from webhelpers.html import literal, HTML, escape
 
 from mako.lookup import TemplateLookup
 from formbar import template_dir
@@ -123,23 +122,22 @@ class FormRenderer(Renderer):
 
     def _render_form_start(self):
         html = []
-        html.append('<div class="formbar-form">')
-        attr = {'id': cgi.escape(self._form._config.id),
-                'css': cgi.escape(self._form._config.css),
-                'action': cgi.escape(self._form._config.action),
-                'method': cgi.escape(self._form._config.method),
-                'autocomplete': cgi.escape(self._form._config.autocomplete),
-                'enctype': cgi.escape(self._form._config.enctype),
-                'evalurl': cgi.escape(self._form._eval_url or "")}
-        html.append('<form id="%(id)s" class="%(css)s" role="form" '
-                    'method="%(method)s" action="%(action)s" '
-                    'autocomplete="%(autocomplete)s" enctype="%(enctype)s" '
-                    'evalurl="%(evalurl)s">' % attr)
+        html.append(HTML.tag("div", class_="formbar-form", _closed=False))
+        html.append(HTML.tag("form", _closed=False,
+                             id=self._form._config.id,
+                             class_=self._form._config.css,
+                             action=self._form._config.action,
+                             method=self._form._config.method,
+                             autocomplete=self._form._config.autocomplete,
+                             enctype=self._form._config.enctype,
+                             evalurl=self._form._eval_url or ""))
         # Add hidden field with csrf_token if this is not None.
         if self._form._csrf_token:
-            html.append('<input type="hidden" name="csrf_token" value="%s"/>'
-                        % cgi.escape(self._form._csrf_token))
-        return "".join(html)
+            html.append(HTML.tag("input",
+                                 type="hidden",
+                                 name="csrf_token",
+                                 value=self._form._csrf_token))
+        return literal("").join(html)
 
     def _render_form_body(self, render_outline):
         values = {'form': self._form,
@@ -151,50 +149,41 @@ class FormRenderer(Renderer):
     def _render_form_buttons(self):
         _ = self.translate
         html = []
-        html.append('<div class="row row-fluid">')
+        html.append(HTML.tag("div", _closed=False, class_="row row-fluid"))
         if len(self._form._config.get_pages()) > 0:
-            html.append('<div class="col-sm-3 span3 button-pane"></div>')
-            html.append('<div class="col-sm-9 span9 button-pane">')
+            html.append(HTML.tag("div",
+                                 class_="col-sm-3 span3 button-pane"))
+            html.append(HTML.tag("div", _closed=False,
+                                 class_="col-sm-9 span9 button-pane"))
         else:
-            html.append('<div class="col-sm-12 span12 button-pane well-small">')
+            html.append(HTML.tag("div", _closed=False,
+                                 class_="col-sm-12 span12 button-pane well-small"))
 
         # Render default buttons if no buttons have been defined for the
         # form.
         if len(self._form._config._buttons) == 0:
-            html.append('<button type="submit" '
-                        'class="btn btn-default">%s</button>' 
-                        % cgi.escape(_('Submit')))
-            html.append('<button type="reset" '
-                        'class="btn btn-default">%s</button>' 
-                        % cgi.escape(_('Reset')))
+            html.append(HTML.tag("button", type="submit", 
+                                 class_="btn btn-default", c=_('Submit')))
+            html.append(HTML.tag("button", type="reset", 
+                                 class_="btn btn-default", c=_('Reset')))
         else:
             for b in self._form._config._buttons:
+                html.append(HTML.tag("button", _closed=False,
+                                     type=b.attrib.get("type") or "submit",
+                                     value=b.attrib.get("value") or "",
+                                     class_=b.attrib.get("class") or "btn btn-default"))
                 if b.attrib.get("icon"):
-                    icon = '<i class="%s"/>' % cgi.escape(b.attrib.get("icon"))
-                else:
-                    icon = ""
-                attr = {
-                    'type': cgi.escape(b.attrib.get("type") or "submit"),
-                    'value': cgi.escape(b.attrib.get("value") or ""),
-                    'class': "btn btn-%s" % (cgi.escape(b.attrib.get("class") 
-                                                        or "default")),
-                    'icon': icon,
-                    'label': cgi.escape(_(b.text) or "XXX")
-                }
-                html.append('<button type="%(type)s" name="_%(type)s"'
-                            ' value="%(value)s" class="%(class)s">'
-                            '%(icon)s %(label)s</button>'
-                            % (attr))
-        # Else render defined buttons.
-        html.append('</div>')
-        html.append('</div>')
-        return "".join(html)
+                    html.append(HTML.tag("i", class_=b.attrib.get("icon"), c=_(b.text)))
+                html.append(_(b.text))
+        html.append(HTML.tag("/div", _closed=False))
+        html.append(HTML.tag("/div", _closed=False))
+        return literal("").join(html)
 
     def _render_form_end(self):
         html = []
-        html.append('</form>')
-        html.append('</div>')
-        return "".join(html)
+        html.append(HTML.tag("/form", _closed=False))
+        html.append(HTML.tag("/div", _closed=False))
+        return literal("").join(html)
 
 
 class FieldRenderer(Renderer):
