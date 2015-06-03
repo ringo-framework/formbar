@@ -171,6 +171,7 @@ class FormRenderer(Renderer):
             for b in self._form._config._buttons:
                 html.append(HTML.tag("button", _closed=False,
                                      type=b.attrib.get("type") or "submit",
+                                     name="_%s" % b.attrib.get("type") or "submit",
                                      value=b.attrib.get("value") or "",
                                      class_=b.attrib.get("class") or "btn btn-default"))
                 if b.attrib.get("icon"):
