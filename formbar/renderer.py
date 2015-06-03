@@ -118,13 +118,14 @@ class FormRenderer(Renderer):
         if not self._form._config.readonly and buttons:
             html.append(self._render_form_buttons())
         html.append(self._render_form_end())
-        return literal("".join(html))
+        return literal("").join(html)
 
     def _render_form_start(self):
         html = []
         html.append(HTML.tag("div", class_="formbar-form", _closed=False))
         html.append(HTML.tag("form", _closed=False,
                              id=self._form._config.id,
+                             role="form",
                              class_=self._form._config.css,
                              action=self._form._config.action,
                              method=self._form._config.method,
@@ -144,7 +145,7 @@ class FormRenderer(Renderer):
                   '_': self.translate,
                   'render_outline': render_outline,
                   'Rule': Rule}
-        return self.template.render(**values)
+        return literal(self.template.render(**values))
 
     def _render_form_buttons(self):
         _ = self.translate
