@@ -215,19 +215,19 @@ class FieldRenderer(Renderer):
         template = template_lookup.get_template("label.mako")
         values = {'field': self._field,
                   '_': self.translate}
-        return template.render(**values)
+        return literal(template.render(**values))
 
     def _render_errors(self):
         template = template_lookup.get_template("errors.mako")
         values = {'field': self._field,
                   '_': self.translate}
-        return template.render(**values)
+        return literal(template.render(**values))
 
     def _render_help(self):
         template = template_lookup.get_template("help.mako")
         values = {'field': self._field,
                   '_': self.translate}
-        return template.render(**values)
+        return literal(template.render(**values))
 
     def _render_diff(self, newvalue, oldvalue):
         """Will return a HTML string showing the differences between the old and
@@ -253,26 +253,28 @@ class FieldRenderer(Renderer):
         for x in diff:
             if x[0:2] == "+ " and mode != "new":
                 if mode:
-                    out.append("</span>")
+                    out.append(HTML.tag("/span", _closed=False))
                     mode = None
-                out.append('<span class="formbar-new-value">')
+                out.append(HTML.tag("span", _closed=False,
+                                    class_="formbar-new-value"))
                 mode = "new"
             elif x[0:2] == "- " and mode != "del":
                 if mode:
-                    out.append("</span>")
+                    out.append(HTML.tag("/span", _closed=False))
                     mode = None
-                out.append('<span class="formbar-del-value">')
+                out.append(HTML.tag("span", _closed=False,
+                                    class_="formbar-del-value"))
                 mode = "del"
             elif x[0:2] == "  ":
                 if mode:
-                    out.append("</span>")
+                    out.append(HTML.tag("/span", _closed=False))
                     mode = None
             elif x[0:2] == "? ":
                 continue
             out.append("%s " % "".join(x[2::]))
         if mode:
-            out.append("</span>")
-        return "".join(out)
+            out.append(HTML.tag("/span", _closed=False))
+        return literal("").join(out)
 
 
     def _get_template_values(self):
@@ -287,39 +289,48 @@ class FieldRenderer(Renderer):
         html = []
         has_errors = len(self._field.get_errors())
         has_warnings = len(self._field.get_warnings())
-        html.append('<div class="form-group %s %s">' % ((has_errors and 'has-error'), (has_warnings and 'has-warning')))
+        class_options = ((has_errors and 'has-error'),
+                         (has_warnings and 'has-warning'))
+        html.append(HTML.tag("div", _closed=False,
+                             class_=("form-group %s %s" % class_options)))
         values = self._get_template_values()
         if self.label_width > 0 and self.label_position in ["left", "right"]:
             label_width = self.label_width
             label_align = self.label_align
             field_width = 12-self.label_width
-            html.append('<div class="row">')
+            html.append(HTML.tag("div", _closed=False, class_="row"))
             if self.label_position == "left":
-                html.append('<div class="col-sm-%s" align="%s">' % (label_width, label_align))
+                html.append(HTML.tag("div", _closed=False,
+                                     class_=("col-sm-%s" % label_width),
+                                     align=("%s" % label_align)))
                 html.append(self._render_label())
-                html.append('</div>')
-                html.append('<div class="col-sm-%s">' % field_width)
-                html.append(self.template.render(**values))
+                html.append(HTML.tag("/div", _closed=False))
+                html.append(HTML.tag("div", _closed=False,
+                                     class_=("col-sm-%s" % field_width)))
+                html.append(literal(self.template.render(**values)))
                 html.append(self._render_errors())
                 html.append(self._render_help())
-                html.append('</div>')
+                html.append(HTML.tag("/div", _closed=False))
             else:
-                html.append('<div class="col-sm-%s">' % field_width)
-                html.append(self.template.render(**values))
+                html.append(HTML.tag("div", _closed=False,
+                                     class_=("col-sm-%s" % field_width)))
+                html.append(literal(self.template.render(**values)))
                 html.append(self._render_errors())
                 html.append(self._render_help())
-                html.append('</div>')
-                html.append('<div class="col-sm-%s" align="%s">' % (label_width, label_align))
+                html.append(HTML.tag("/div", _closed=False))
+                html.append(HTML.tag("div", _closed=False,
+                                     class_=("col-sm-%s" % label_width),
+                                     align=("%s" % label_align)))
                 html.append(self._render_label())
-                html.append('</div>')
-            html.append("</div>")
+                html.append(HTML.tag("/div", _closed=False))
+            html.append(HTML.tag("/div", _closed=False))
         else:
             html.append(self._render_label())
-            html.append(self.template.render(**values))
+            html.append(literal(self.template.render(**values)))
             html.append(self._render_errors())
             html.append(self._render_help())
-        html.append('</div>')
-        return "".join(html)
+        html.append(HTML.tag("/div", _closed=False))
+        return literal("").join(html)
 
 class InfoFieldRenderer(FieldRenderer):
     """A Renderer to render simple fa_field elements"""
@@ -391,8 +402,8 @@ class HiddenFieldRenderer(FieldRenderer):
     def render(self):
         html = []
         values = self._get_template_values()
-        html.append(self.template.render(**values))
-        return "".join(html)
+        html.append(literal(self.template.render(**values)))
+        return literal("").join(html)
 
 class HTMLRenderer(FieldRenderer):
     """A Renderer to render generic HTML"""
@@ -405,7 +416,7 @@ class HTMLRenderer(FieldRenderer):
         html = []
         values = self._get_template_values()
         html.append(self._render_label())
-        html.append(self.template.render(**values))
+        html.append(literal(self.template.render(**values)))
         return "".join(html)
 
 
