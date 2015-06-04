@@ -418,7 +418,7 @@ class HTMLRenderer(FieldRenderer):
         values = self._get_template_values()
         html.append(self._render_label())
         html.append(literal(self.template.render(**values)))
-        return "".join(html)
+        return literal("").join(html)
 
 
 class OptionFieldRenderer(FieldRenderer):
