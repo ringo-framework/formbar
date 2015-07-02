@@ -94,16 +94,6 @@ $( document ).ready(function() {
             return false;
         }
     });
-    $('div.formbar-form input.email').keypress(function(key) {
-        /* Only allow a-z0-9-_@. (48-58 and "-") */
-        var cc = key.charCode;
-        console.log(cc)
-        if ((cc < 97 || cc > 122) && (cc < 48 || cc > 57) && cc != 0 && cc != 45 && cc != 64 && cc != 95 && cc != 46){
-            return false;
-        }
-    });
-
-
     /*
      * Evaluate when values in the form changes
     */
