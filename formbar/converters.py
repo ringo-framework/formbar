@@ -187,12 +187,25 @@ def to_string(value):
 
 
 def to_integer(value):
+    """Converts a given string value into a 4 byte integer value. If
+    the given value is larger the a 4 byte integer a OverflowError is
+    raised."""
     if value == "":
         return None
     try:
-        return int(value)
+        value = int(value)
+        # Range for value taken from
+        # http://www.postgresql.org/docs/9.1/static/datatype-numeric.html
+        # for integer type.
+        if -2147483648 <= value <= 2147483647:
+            return value
+        else:
+            raise OverflowError
     except ValueError:
         msg = "%s is not a integer value." % value
+        raise DeserializeException(msg)
+    except OverflowError:
+        msg = "Value '%s' is too large'" % value
         raise DeserializeException(msg)
 
 
