@@ -1,3 +1,9 @@
+0.9.9
+=====
+- Relaxed email validation. Removed client side checks for input values and
+  removed server side validation of the local part of an email address.
+- Fixed (workaround) getting default values for checkboxes in mako template.
+
 0.9.8
 =====
 - Implemented server side evaluation of conditionals while rendering.
