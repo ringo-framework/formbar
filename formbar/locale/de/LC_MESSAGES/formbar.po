@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: formbar 0.8.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-05-12 09:02+0200\n"
+"POT-Creation-Date: 2015-07-07 16:54+0200\n"
 "PO-Revision-Date: 2015-02-11 13:06+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de <LL@li.org>\n"
@@ -17,23 +17,73 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: formbar/config.py:401
+#: formbar/config.py:426
 msgid "This field is required. You must provide a value"
 msgstr "Dieses Feld ist verpflichtend. Sie müssen einen Wert angeben."
 
-#: formbar/config.py:406
+#: formbar/config.py:431
 msgid "This field is desired. Please provide a value"
 msgstr "Dieses Feld ist erwünscht. Bitte geben Sie einen Wert an."
+
+#: formbar/converters.py:65
+#, python-format
+msgid "Value '%s' must be in format 'HH:MM:SS'"
+msgstr "Wert '%s' muss im Format 'HH:MM:SS' vorliegen"
+
+#: formbar/converters.py:68
+#, python-format
+msgid "Value '%s' is too large"
+msgstr "Wert '%s' ist zu groß"
+
+#: formbar/converters.py:99
+#, python-format
+msgid "%s is not a valid date format."
+msgstr "%s ist kein valides Format für ein Datum."
+
+#: formbar/converters.py:143
+#, python-format
+msgid "%s is not a valid datetime format."
+msgstr "%s ist kein valides Format für ein Datum/Zeit."
+
+#: formbar/converters.py:193
+#, python-format
+msgid "%s is not a string value."
+msgstr "%s is keine Zeichenkette."
+
+#: formbar/converters.py:213
+#, python-format
+msgid "%s is not a integer value."
+msgstr "%s ist kein Ganzzahlenwert."
+
+#: formbar/converters.py:226
+#, python-format
+msgid "%s is not a float value."
+msgstr "%s is kein Fließkommawert."
+
+#: formbar/converters.py:236
+#, python-format
+msgid "%s is not valid email address."
+msgstr "%s ist keine valide E-Mail-Adresse."
+
+#: formbar/converters.py:247
+#, python-format
+msgid "%s is not a boolean value."
+msgstr "%s ist kein boolescher Wert."
+
+#: formbar/converters.py:257
+#, python-format
+msgid "%s is not a file value."
+msgstr "%s ist keine Datei."
 
 #: formbar/form.py:775
 msgid "no selection"
 msgstr "keine Auswahl"
 
-#: formbar/renderer.py:161
+#: formbar/renderer.py:167
 msgid "Submit"
 msgstr "Speichern"
 
-#: formbar/renderer.py:163
+#: formbar/renderer.py:169
 msgid "Reset"
 msgstr "Zurücksetzen"
 
@@ -63,6 +113,4 @@ msgstr ""
 #: formbar/templates/label.mako:9
 msgid "Required field"
 msgstr "Pflichtfeld"
-
-#~ msgstr "Dieses Feld ist erwünscht. Bitte geben Sie einen Wert an."
 
