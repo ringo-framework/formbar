@@ -1,3 +1,9 @@
+0.9.10
+======
+- Enabled translation of the error messages while type conversion to python.
+- Limit integer data type to 4byte (which is the value for integer datatype in
+  a postgres database.)
+
 0.9.9
 =====
 - Relaxed email validation. Removed client side checks for input values and
