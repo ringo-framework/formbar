@@ -274,7 +274,17 @@ def from_python(field, value):
         if value is None:
             serialized = ""
         elif isinstance(value, basestring):
-            serialized = value
+            # Special handling for multiple values (multiselect in
+            # checkboxes eg.) which has be converted into a string by
+            # SQLAalchemy automatically. eg the python value "['1',
+            # '2']" will be converted into the _string_ "{1,2,''}". In
+            # this case we need to convert the value back into a list.
+            if value.startswith("{") and value.endswith("}"):
+                serialized = []
+                for v in value.strip("{").strip("}").split(","):
+                    serialized.append(from_python(field, v))
+            else:
+                serialized = value
         elif isinstance(value, list):
             vl = []
             for v in value:
@@ -323,6 +333,15 @@ def to_python(field, value, relation_names):
     """
 
     dtype = field.get_type()
+    if isinstance(value, list) and dtype not in ['manytomany',
+                                                 'manytoone',
+                                                 'onetomany']:
+        # Special handling for multiple values (multiselect in
+        # checkboxes eg.)
+        tmp_list = []
+        for v in value:
+            tmp_list.append(to_python(field, v, relation_names))
+        return tmp_list
     if dtype in ['string', 'text']:
         return to_string(value)
     elif dtype == 'integer':
