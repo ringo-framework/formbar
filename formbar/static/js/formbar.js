@@ -47,7 +47,7 @@ $( document ).ready(function() {
       var item = $(this).attr('formbar-item');
       var itemid = $(this).attr('formbar-itemid');
       var baseurl = $(this).attr('formbar-baseurl');
-      $.get(baseurl+'/set_current_form_page', 
+      $.get(url_prefix + baseurl.replace(/^\//, '') + 'set_current_form_page', 
             {
                 page: page,
                 item: item,
@@ -61,7 +61,7 @@ $( document ).ready(function() {
       var item = $(this).attr('formbar-item');
       var itemid = $(this).attr('formbar-itemid');
       var baseurl = $(this).attr('formbar-baseurl');
-      $.get(baseurl+'/set_current_form_page', 
+      $.get(url_prefix + baseurl.replace(/^\//, '') + 'set_current_form_page', 
             {
                 page: page,
                 item: item,
