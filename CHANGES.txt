@@ -1,3 +1,9 @@
+0.9.11
+======
+- Performance Improvement: Do not evaluate all conditionals when a values
+  changes in the form. Only evalute the conditionals which are affacted by the
+  change.
+
 0.9.10
 ======
 - Enabled translation of the error messages while type conversion to python.
