@@ -14,10 +14,18 @@ from datetime import timedelta
 
 log = logging.getLogger(__name__)
 
+# Dummy translation function.
+_ = lambda x: x
+
 
 class DeserializeException(Exception):
     """Exception for errors on deserialization."""
-    pass
+    def __init__(self, msg, value):
+        self.value = value
+        self.message = msg
+
+    def __str__(self):
+        return self.message % self.value
 
 
 def from_timedelta(value):
@@ -54,11 +62,11 @@ def to_timedelta(value):
         elif ncolon == 0:
             return timedelta(minutes=int(value))
     except ValueError:
-        msg = "Value '%s' must be in format 'HH:MM:SS'" % value
-        raise DeserializeException(msg)
+        msg = _("Value '%s' must be in format 'HH:MM:SS'")
+        raise DeserializeException(msg, value)
     except OverflowError:
-        msg = "Value '%s' is too large'" % value
-        raise DeserializeException(msg)
+        msg = _("Value '%s' is too large")
+        raise DeserializeException(msg, value)
 
 
 def _split_date(value, locale=None):
@@ -88,8 +96,8 @@ def to_date(value, locale=None):
         y, m, d = _split_date(value, locale)
         return datetime.date(y, m, d)
     except:
-        msg = "%s is not a valid date format." % value
-        raise DeserializeException(msg)
+        msg = _("%s is not a valid date format.")
+        raise DeserializeException(msg, value)
 
 
 def _split_time(value):
@@ -132,8 +140,8 @@ def to_datetime(value, locale=None):
         converted = converted.replace(tzinfo=None)
         return converted
     except:
-        msg = "%s is not a valid datetime format." % value
-        raise DeserializeException(msg)
+        msg = _("%s is not a valid datetime format.")
+        raise DeserializeException(msg, value)
 
 
 def to_integer_list(value):
@@ -182,18 +190,31 @@ def to_string(value):
         # Actually all submitted values are strings.
         return value
     except ValueError:
-        msg = "%s is not a string value." % value
-        raise DeserializeException(msg)
+        msg = _("%s is not a string value.")
+        raise DeserializeException(msg, value)
 
 
 def to_integer(value):
+    """Converts a given string value into a 4 byte integer value. If
+    the given value is larger the a 4 byte integer a OverflowError is
+    raised."""
     if value == "":
         return None
     try:
-        return int(value)
+        value = int(value)
+        # Range for value taken from
+        # http://www.postgresql.org/docs/9.1/static/datatype-numeric.html
+        # for integer type.
+        if -2147483648 <= value <= 2147483647:
+            return value
+        else:
+            raise OverflowError
     except ValueError:
-        msg = "%s is not a integer value." % value
-        raise DeserializeException(msg)
+        msg = _("%s is not a integer value.")
+        raise DeserializeException(msg, value)
+    except OverflowError:
+        msg = "Value '%s' is too large"
+        raise DeserializeException(msg, value)
 
 
 def to_float(value):
@@ -202,8 +223,8 @@ def to_float(value):
     try:
         return float(value)
     except ValueError:
-        msg = "%s is not a float value." % value
-        raise DeserializeException(msg)
+        msg = _("%s is not a float value.")
+        raise DeserializeException(msg, value)
 
 
 def to_email(value):
@@ -211,9 +232,9 @@ def to_email(value):
     # if the adress is known. (ti) <2014-08-04 16:31>
     if not value:
         return ""
-    if not re.match(r"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$", value):
-        msg = "%s is not valid email address." % value
-        raise DeserializeException(msg)
+    if not re.match(r"^.+@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$", value):
+        msg = _("%s is not valid email address.")
+        raise DeserializeException(msg, value)
     return value
 
 
@@ -223,8 +244,8 @@ def to_boolean(value):
     try:
         return value in ['True', '1', 't']
     except ValueError:
-        msg = "%s is not a boolean value." % value
-        raise DeserializeException(msg)
+        msg = _("%s is not a boolean value.")
+        raise DeserializeException(msg, value)
 
 
 def to_file(value):
@@ -233,8 +254,8 @@ def to_file(value):
     except AttributeError:
         return None
     except ValueError:
-        msg = "%s is not a file value." % value
-        raise DeserializeException(msg)
+        msg = _("%s is not a file value.")
+        raise DeserializeException(msg, value)
 
 
 def from_python(field, value):
@@ -253,7 +274,17 @@ def from_python(field, value):
         if value is None:
             serialized = ""
         elif isinstance(value, basestring):
-            serialized = value
+            # Special handling for multiple values (multiselect in
+            # checkboxes eg.) which has be converted into a string by
+            # SQLAalchemy automatically. eg the python value "['1',
+            # '2']" will be converted into the _string_ "{1,2,''}". In
+            # this case we need to convert the value back into a list.
+            if value.startswith("{") and value.endswith("}"):
+                serialized = []
+                for v in value.strip("{").strip("}").split(","):
+                    serialized.append(from_python(field, v))
+            else:
+                serialized = value
         elif isinstance(value, list):
             vl = []
             for v in value:
@@ -302,6 +333,15 @@ def to_python(field, value, relation_names):
     """
 
     dtype = field.get_type()
+    if isinstance(value, list) and dtype not in ['manytomany',
+                                                 'manytoone',
+                                                 'onetomany']:
+        # Special handling for multiple values (multiselect in
+        # checkboxes eg.)
+        tmp_list = []
+        for v in value:
+            tmp_list.append(to_python(field, v, relation_names))
+        return tmp_list
     if dtype in ['string', 'text']:
         return to_string(value)
     elif dtype == 'integer':

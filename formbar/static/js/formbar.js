@@ -1,6 +1,7 @@
 /* ATTENTION: This file is created with mako and includes some attribute which
  * are inserted dynamically */
 var language = null;
+var fields2Conditionals = {};
 
 function getBrowserLanguage() {
     var form = $('div.formbar-form form');
@@ -94,24 +95,37 @@ $( document ).ready(function() {
             return false;
         }
     });
-    $('div.formbar-form input.email').keypress(function(key) {
-        /* Only allow a-z0-9-_@. (48-58 and "-") */
-        var cc = key.charCode;
-        console.log(cc)
-        if ((cc < 97 || cc > 122) && (cc < 48 || cc > 57) && cc != 0 && cc != 45 && cc != 64 && cc != 95 && cc != 46){
-            return false;
-        }
-    });
-
-
     /*
      * Evaluate when values in the form changes
     */
+    mapFieldsToConditionals();
     evaluateFields();
     evaluateConditionals();
     $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateFields);
-    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateConditionals);
+    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateConditionalsOnChange);
 });
+
+function mapFieldsToConditionals() {
+    var fieldsToEvaluate = $('.formbar-conditional');
+    for (var i = fieldsToEvaluate.length - 1; i >= 0; i--) {
+        var conditional = fieldsToEvaluate[i];
+        var tokens = conditional.getAttribute("expr").split(" ");
+        for (var j = 0; j <= tokens.length - 1; j++) {
+            var fieldname = null;
+            var id = null;
+            if (tokens[j].indexOf("$") >= 0) {
+                fieldname = tokens[j].replace('$', '');
+                if (fields2Conditionals[fieldname] == undefined ) {
+                    fields2Conditionals[fieldname] = [];
+                }
+                id = conditional.getAttribute("id");
+                if (fields2Conditionals[fieldname].indexOf(id) < 0) {
+                    fields2Conditionals[fieldname].push(id);
+                }
+            }
+        }
+    }
+}
 
 function convertValue(value, field) {
     var cvalue = value;
@@ -214,31 +228,45 @@ function evaluate(element) {
 function evaluateConditionals() {
     var fieldsToEvaluate = $('.formbar-conditional');
     for (var i = fieldsToEvaluate.length - 1; i >= 0; i--) {
-        var conditional = fieldsToEvaluate[i];
-        var readonly = $(conditional).attr('class').indexOf('readonly') >= 0;
-        var result = evaluate(conditional);
-        if (result) {
-            if (readonly) {
-                $(conditional).animate({opacity:'1.0'}, 500);
-                $(conditional).find('input, textarea').attr('readonly', false);
-                $(conditional).find('select').attr('disabled', false);
-            }
-            else {
-                $(conditional).show();
-            }
+        evaluateConditional(fieldsToEvaluate[i]);
+    }
+}
+
+function evaluateConditional(conditional) {
+    var readonly = $(conditional).attr('class').indexOf('readonly') >= 0;
+    var result = evaluate(conditional);
+    if (result) {
+        if (readonly) {
+            $(conditional).animate({opacity:'1.0'}, 500);
+            $(conditional).find('input, textarea').attr('readonly', false);
+            $(conditional).find('select').attr('disabled', false);
         }
         else {
-            if (readonly) {
-                $(conditional).animate({opacity:'0.4'}, 500);
-                $(conditional).find('input, textarea').attr('readonly', true);
-                $(conditional).find('select').attr('disabled', true);
-            }
-            else {
-                $(conditional).hide();
-            }
+            $(conditional).show();
+        }
+    }
+    else {
+        if (readonly) {
+            $(conditional).animate({opacity:'0.4'}, 500);
+            $(conditional).find('input, textarea').attr('readonly', true);
+            $(conditional).find('select').attr('disabled', true);
+        }
+        else {
+            $(conditional).hide();
         }
     }
 }
+
+function evaluateConditionalsOnChange() {
+    var fieldname = this.getAttribute("name")
+    var conditionals = fields2Conditionals[fieldname];
+    if (conditionals != undefined) {
+        for (var j = 0; j <= conditionals.length - 1; j++) {
+            evaluateConditional(document.getElementById(conditionals[j]));
+        }
+    }
+}
+
 
 function evaluateFields() {
     var fieldsToEvaluate = $('.formbar-evaluate');

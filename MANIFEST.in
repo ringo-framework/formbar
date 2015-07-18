@@ -1,3 +1,9 @@
-include README.rst
+include README.rst *.txt COPYING
 recursive-include docs *
 recursive-include examples *
+recursive-include contrib *
+recursive-include test *.xml
+recursive-include formbar/locale *.po *.mo *.pot
+recursive-include formbar/static *
+recursive-include formbar/templates *.mako
+global-exclude *.orig

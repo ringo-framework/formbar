@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import multiprocessing
 import sys, os
 
-version = '0.9.8'
+version = '0.9.11'
 
 setup(name='formbar',
     version=version,
@@ -17,7 +17,7 @@ setup(name='formbar',
     author='Torsten Irl\xc3\xa4nder',
     author_email='torsten@irlaender.de',
     url='https://bitbucket.org/ti/formbar',
-    license='GPL',
+    license='GNU General Public License v2 or later (GPLv2+)',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
@@ -31,7 +31,7 @@ setup(name='formbar',
     # Used for the example server
     tests_require=["nose"],
     extras_require={'examples':  ["pyramid"]},
-    setup_requires=["hgtools"],
+    setup_requires=[],
     entry_points="""
     # -*- Entry points: -*-
     [babel.extractors]

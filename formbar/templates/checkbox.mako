@@ -1,6 +1,9 @@
 <%
 readonly = (field.is_readonly() and "disabled") or ""
-selected = field.get_value()
+## TODO: field should return a field specific value. So we do not need to
+## handle the special case here if there is no value set. (ti) <2015-07-07
+## 14:50> 
+selected = field.get_value() or []
 %>
 % for num, option in enumerate(options):
   ## Depending if the options has passed the configured filter the

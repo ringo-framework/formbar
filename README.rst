@@ -94,7 +94,7 @@ Online documentation can be found `here <https://formbar.readthedocs.org`_
 
 Licence
 -------
-Formbar is Free Software and licensed under GPL version 2.
+Formbar is Free Software and licensed under GPL version >= 2.
 
 Project state
 -------------

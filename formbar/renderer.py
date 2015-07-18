@@ -1,7 +1,6 @@
 import logging
-import cgi
 import difflib
-from webhelpers.html import literal
+from webhelpers.html import literal, HTML, escape
 
 from mako.lookup import TemplateLookup
 from formbar import template_dir
@@ -119,82 +118,74 @@ class FormRenderer(Renderer):
         if not self._form._config.readonly and buttons:
             html.append(self._render_form_buttons())
         html.append(self._render_form_end())
-        return literal("".join(html))
+        return literal("").join(html)
 
     def _render_form_start(self):
         html = []
-        html.append('<div class="formbar-form">')
-        attr = {'id': cgi.escape(self._form._config.id),
-                'css': cgi.escape(self._form._config.css),
-                'action': cgi.escape(self._form._config.action),
-                'method': cgi.escape(self._form._config.method),
-                'autocomplete': cgi.escape(self._form._config.autocomplete),
-                'enctype': cgi.escape(self._form._config.enctype),
-                'evalurl': cgi.escape(self._form._eval_url or "")}
-        html.append('<form id="%(id)s" class="%(css)s" role="form" '
-                    'method="%(method)s" action="%(action)s" '
-                    'autocomplete="%(autocomplete)s" enctype="%(enctype)s" '
-                    'evalurl="%(evalurl)s">' % attr)
+        html.append(HTML.tag("div", class_="formbar-form", _closed=False))
+        html.append(HTML.tag("form", _closed=False,
+                             id=self._form._config.id,
+                             role="form",
+                             class_=self._form._config.css,
+                             action=self._form._config.action,
+                             method=self._form._config.method,
+                             autocomplete=self._form._config.autocomplete,
+                             enctype=self._form._config.enctype,
+                             evalurl=self._form._eval_url or ""))
         # Add hidden field with csrf_token if this is not None.
         if self._form._csrf_token:
-            html.append('<input type="hidden" name="csrf_token" value="%s"/>'
-                        % cgi.escape(self._form._csrf_token))
-        return "".join(html)
+            html.append(HTML.tag("input",
+                                 type="hidden",
+                                 name="csrf_token",
+                                 value=self._form._csrf_token))
+        return literal("").join(html)
 
     def _render_form_body(self, render_outline):
         values = {'form': self._form,
                   '_': self.translate,
                   'render_outline': render_outline,
                   'Rule': Rule}
-        return self.template.render(**values)
+        return literal(self.template.render(**values))
 
     def _render_form_buttons(self):
         _ = self.translate
         html = []
-        html.append('<div class="row row-fluid">')
+        html.append(HTML.tag("div", _closed=False, class_="row row-fluid"))
         if len(self._form._config.get_pages()) > 0:
-            html.append('<div class="col-sm-3 span3 button-pane"></div>')
-            html.append('<div class="col-sm-9 span9 button-pane">')
+            html.append(HTML.tag("div",
+                                 class_="col-sm-3 span3 button-pane"))
+            html.append(HTML.tag("div", _closed=False,
+                                 class_="col-sm-9 span9 button-pane"))
         else:
-            html.append('<div class="col-sm-12 span12 button-pane well-small">')
+            html.append(HTML.tag("div", _closed=False,
+                                 class_="col-sm-12 span12 button-pane well-small"))
 
         # Render default buttons if no buttons have been defined for the
         # form.
         if len(self._form._config._buttons) == 0:
-            html.append('<button type="submit" '
-                        'class="btn btn-default">%s</button>' 
-                        % cgi.escape(_('Submit')))
-            html.append('<button type="reset" '
-                        'class="btn btn-default">%s</button>' 
-                        % cgi.escape(_('Reset')))
+            html.append(HTML.tag("button", type="submit", 
+                                 class_="btn btn-default", c=_('Submit')))
+            html.append(HTML.tag("button", type="reset", 
+                                 class_="btn btn-default", c=_('Reset')))
         else:
             for b in self._form._config._buttons:
+                html.append(HTML.tag("button", _closed=False,
+                                     type=b.attrib.get("type") or "submit",
+                                     name="_%s" % b.attrib.get("type") or "submit",
+                                     value=b.attrib.get("value") or "",
+                                     class_=b.attrib.get("class") or "btn btn-default"))
                 if b.attrib.get("icon"):
-                    icon = '<i class="%s"/>' % cgi.escape(b.attrib.get("icon"))
-                else:
-                    icon = ""
-                attr = {
-                    'type': cgi.escape(b.attrib.get("type") or "submit"),
-                    'value': cgi.escape(b.attrib.get("value") or ""),
-                    'class': "btn btn-%s" % (cgi.escape(b.attrib.get("class") 
-                                                        or "default")),
-                    'icon': icon,
-                    'label': cgi.escape(_(b.text) or "XXX")
-                }
-                html.append('<button type="%(type)s" name="_%(type)s"'
-                            ' value="%(value)s" class="%(class)s">'
-                            '%(icon)s %(label)s</button>'
-                            % (attr))
-        # Else render defined buttons.
-        html.append('</div>')
-        html.append('</div>')
-        return "".join(html)
+                    html.append(HTML.tag("i", class_=b.attrib.get("icon"), c=_(b.text)))
+                html.append(_(b.text))
+        html.append(HTML.tag("/div", _closed=False))
+        html.append(HTML.tag("/div", _closed=False))
+        return literal("").join(html)
 
     def _render_form_end(self):
         html = []
-        html.append('</form>')
-        html.append('</div>')
-        return "".join(html)
+        html.append(HTML.tag("/form", _closed=False))
+        html.append(HTML.tag("/div", _closed=False))
+        return literal("").join(html)
 
 
 class FieldRenderer(Renderer):
@@ -225,19 +216,19 @@ class FieldRenderer(Renderer):
         template = template_lookup.get_template("label.mako")
         values = {'field': self._field,
                   '_': self.translate}
-        return template.render(**values)
+        return literal(template.render(**values))
 
     def _render_errors(self):
         template = template_lookup.get_template("errors.mako")
         values = {'field': self._field,
                   '_': self.translate}
-        return template.render(**values)
+        return literal(template.render(**values))
 
     def _render_help(self):
         template = template_lookup.get_template("help.mako")
         values = {'field': self._field,
                   '_': self.translate}
-        return template.render(**values)
+        return literal(template.render(**values))
 
     def _render_diff(self, newvalue, oldvalue):
         """Will return a HTML string showing the differences between the old and
@@ -263,26 +254,28 @@ class FieldRenderer(Renderer):
         for x in diff:
             if x[0:2] == "+ " and mode != "new":
                 if mode:
-                    out.append("</span>")
+                    out.append(HTML.tag("/span", _closed=False))
                     mode = None
-                out.append('<span class="formbar-new-value">')
+                out.append(HTML.tag("span", _closed=False,
+                                    class_="formbar-new-value"))
                 mode = "new"
             elif x[0:2] == "- " and mode != "del":
                 if mode:
-                    out.append("</span>")
+                    out.append(HTML.tag("/span", _closed=False))
                     mode = None
-                out.append('<span class="formbar-del-value">')
+                out.append(HTML.tag("span", _closed=False,
+                                    class_="formbar-del-value"))
                 mode = "del"
             elif x[0:2] == "  ":
                 if mode:
-                    out.append("</span>")
+                    out.append(HTML.tag("/span", _closed=False))
                     mode = None
             elif x[0:2] == "? ":
                 continue
             out.append("%s " % "".join(x[2::]))
         if mode:
-            out.append("</span>")
-        return "".join(out)
+            out.append(HTML.tag("/span", _closed=False))
+        return literal("").join(out)
 
 
     def _get_template_values(self):
@@ -297,39 +290,48 @@ class FieldRenderer(Renderer):
         html = []
         has_errors = len(self._field.get_errors())
         has_warnings = len(self._field.get_warnings())
-        html.append('<div class="form-group %s %s">' % ((has_errors and 'has-error'), (has_warnings and 'has-warning')))
+        class_options = ((has_errors and 'has-error'),
+                         (has_warnings and 'has-warning'))
+        html.append(HTML.tag("div", _closed=False,
+                             class_=("form-group %s %s" % class_options)))
         values = self._get_template_values()
         if self.label_width > 0 and self.label_position in ["left", "right"]:
             label_width = self.label_width
             label_align = self.label_align
             field_width = 12-self.label_width
-            html.append('<div class="row">')
+            html.append(HTML.tag("div", _closed=False, class_="row"))
             if self.label_position == "left":
-                html.append('<div class="col-sm-%s" align="%s">' % (label_width, label_align))
+                html.append(HTML.tag("div", _closed=False,
+                                     class_=("col-sm-%s" % label_width),
+                                     align=("%s" % label_align)))
                 html.append(self._render_label())
-                html.append('</div>')
-                html.append('<div class="col-sm-%s">' % field_width)
-                html.append(self.template.render(**values))
+                html.append(HTML.tag("/div", _closed=False))
+                html.append(HTML.tag("div", _closed=False,
+                                     class_=("col-sm-%s" % field_width)))
+                html.append(literal(self.template.render(**values)))
                 html.append(self._render_errors())
                 html.append(self._render_help())
-                html.append('</div>')
+                html.append(HTML.tag("/div", _closed=False))
             else:
-                html.append('<div class="col-sm-%s">' % field_width)
-                html.append(self.template.render(**values))
+                html.append(HTML.tag("div", _closed=False,
+                                     class_=("col-sm-%s" % field_width)))
+                html.append(literal(self.template.render(**values)))
                 html.append(self._render_errors())
                 html.append(self._render_help())
-                html.append('</div>')
-                html.append('<div class="col-sm-%s" align="%s">' % (label_width, label_align))
+                html.append(HTML.tag("/div", _closed=False))
+                html.append(HTML.tag("div", _closed=False,
+                                     class_=("col-sm-%s" % label_width),
+                                     align=("%s" % label_align)))
                 html.append(self._render_label())
-                html.append('</div>')
-            html.append("</div>")
+                html.append(HTML.tag("/div", _closed=False))
+            html.append(HTML.tag("/div", _closed=False))
         else:
             html.append(self._render_label())
-            html.append(self.template.render(**values))
+            html.append(literal(self.template.render(**values)))
             html.append(self._render_errors())
             html.append(self._render_help())
-        html.append('</div>')
-        return "".join(html)
+        html.append(HTML.tag("/div", _closed=False))
+        return literal("").join(html)
 
 class InfoFieldRenderer(FieldRenderer):
     """A Renderer to render simple fa_field elements"""
@@ -401,8 +403,8 @@ class HiddenFieldRenderer(FieldRenderer):
     def render(self):
         html = []
         values = self._get_template_values()
-        html.append(self.template.render(**values))
-        return "".join(html)
+        html.append(literal(self.template.render(**values)))
+        return literal("").join(html)
 
 class HTMLRenderer(FieldRenderer):
     """A Renderer to render generic HTML"""
@@ -415,8 +417,8 @@ class HTMLRenderer(FieldRenderer):
         html = []
         values = self._get_template_values()
         html.append(self._render_label())
-        html.append(self.template.render(**values))
-        return "".join(html)
+        html.append(literal(self.template.render(**values)))
+        return literal("").join(html)
 
 
 class OptionFieldRenderer(FieldRenderer):

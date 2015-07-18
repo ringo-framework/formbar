@@ -246,7 +246,6 @@ class Form(object):
         """
         deserialized = {}
 
-
         # Load relations of the item. Those are needed to deserialize
         # the relations.
         relation_names = {}
@@ -272,7 +271,8 @@ class Form(object):
                                                     serialized,
                                                     relation_names)
             except DeserializeException as ex:
-                self._add_error(field.name, ex.message)
+                self._add_error(field.name,
+                                self._translate(ex.message) % ex.value)
         log.debug("Deserialized values: %s" % deserialized)
         return deserialized
 
