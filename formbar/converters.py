@@ -61,6 +61,9 @@ def to_timedelta(value):
             return timedelta(hours=hours, minutes=minutes)
         elif ncolon == 0:
             return timedelta(minutes=int(value))
+        else:
+            msg = _("Value '%s' must be in format 'HH:MM:SS'")
+            raise DeserializeException(msg, value)
     except ValueError:
         msg = _("Value '%s' must be in format 'HH:MM:SS'")
         raise DeserializeException(msg, value)
