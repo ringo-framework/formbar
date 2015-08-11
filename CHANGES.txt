@@ -1,3 +1,7 @@
+Next version
+============
+- Fixed type detection for VARCHAR fields.
+
 0.9.12
 ======
 - Raise deserialisation error when time format ist wrong.
