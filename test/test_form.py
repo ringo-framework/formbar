@@ -151,6 +151,10 @@ class TestFormValidation(unittest.TestCase):
     def test_form_fields(self):
         self.assertEqual(len(self.form.fields.values()), 9)
 
+    def test_form_field_select_options(self):
+        selfield = self.form.get_field('select')
+        self.assertEqual(len(selfield.get_options()), 4)
+
     def test_generated_rules(self):
         num_rules = 0
         fields = self.form.fields
