@@ -227,6 +227,8 @@ align       The alignment of the text in the label. This only applies for labels
 align       The width of the label in cols. The whole field including the label can be deived into 12 cols. If the label has e.g 4 cols the field will automatically take the remaining 8 cols. This only applies for labels with position set to "left" or "right".
 =========   ===========
 
+.. _layout:
+
 Layout
 ======
 The form directive is the place where the form definition and layout happens.
@@ -756,3 +758,39 @@ must be added to the form::
                               'Error message',
                               external_validator)
         self.form.add_validator(validator)
+
+
+Includes
+========
+Includes are used to include the content of a different file into the current
+configuration. The included file may contain :ref:`entity` definition or parts
+of the :ref:`layout` like a single :ref:`snippet`. The include will be
+replaced with the content of the of the included file.
+
+A include can be placed at any location of the form configuration and looks
+like this::
+
+        <include src="path/to/form/config.xml"/>
+
+=========   ===========
+Attribute   Description
+=========   ===========
+src         Location of the configuration file which should be included
+=========   ===========
+
+Examples
+--------
+
+.. rubric:: Include options
+Includes can be handy to outsource parts of the form definition into its own
+file. This is especially usefull when the outsourced parts are potentially
+reused in multiple places. Think of a long list of options within a entity::
+
+        <entity id="country" name="country" type="integer">
+            <options>
+                <include src="./countries.xml"/>
+            </option>
+        </entity>
+
+This way you can keep your form definiton clean and short and maintain the
+countries in a separate file.
