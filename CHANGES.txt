@@ -1,5 +1,7 @@
 Next version
 ============
+- Added include function. Includes can be used to include the content of a
+  another configuration file in a form configuration.
 
 0.9.13
 ======
