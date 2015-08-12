@@ -14,10 +14,10 @@ def load(path):
     the file located in path and than returns the parsed content."""
     with open(path) as f:
         data = f.read()
-        return parse(data)
+        return parse(data, path)
 
 
-def parse(xml):
+def parse(xml, path=None):
     """Returns the parsed XML. This is a helper function to be used in
     connection with loading the configuration files.
     :xml: XML string to be parsed
@@ -26,7 +26,9 @@ def parse(xml):
     """
     if isinstance(xml, unicode):
         xml = xml.encode("utf-8")
-    return ET.fromstring(xml)
+    tree = ET.fromstring(xml)
+    tree = handle_includes(tree, path)
+    return tree
 
 
 def handle_includes(tree, path):
