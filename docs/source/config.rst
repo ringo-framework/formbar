@@ -778,6 +778,15 @@ Attribute   Description
 src         Location of the configuration file which should be included
 =========   ===========
 
+The include file must be a valid XML file. The content of the include file can
+be wrapped into a `configuration` tag::
+
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <configuration>
+                ... Content ...
+        </configuration>
+
+
 Examples
 --------
 
@@ -789,8 +798,18 @@ reused in multiple places. Think of a long list of options within a entity::
         <entity id="country" name="country" type="integer">
             <options>
                 <include src="./countries.xml"/>
+                <option value="4">Value 4</option>
             </option>
         </entity>
+
+The include file looks like this::
+
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <configuration>
+            <option value="1">Value 1</option>
+            <option value="2">Value 2</option>
+            <option value="3">Value 3</option>
+        </configuration>
 
 This way you can keep your form definiton clean and short and maintain the
 countries in a separate file.
