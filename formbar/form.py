@@ -605,7 +605,7 @@ class Field(object):
             try:
                 column = self.sa_property.columns[0]
                 dtype = str(column.type)
-                if dtype in ["VARCHAR", "TEXT"]:
+                if dtype == "TEXT" or dtype.find("VARCHAR") > -1:
                     return "string"
                 elif dtype == "DATE":
                     return "date"
