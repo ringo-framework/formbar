@@ -1,3 +1,4 @@
+import os
 import gettext
 import logging
 import xml.etree.ElementTree as ET
@@ -26,6 +27,42 @@ def parse(xml):
     if isinstance(xml, unicode):
         xml = xml.encode("utf-8")
     return ET.fromstring(xml)
+
+
+def handle_includes(tree, path):
+    """Will replace all include element with the content of the include
+    file.
+
+    :tree: ElementTree
+    :returns: ElementTree
+
+    """
+    if path:
+        basepath = os.path.dirname(path)
+    else:
+        basepath = ""
+
+    # Workaroutn for missing support of getting parent elements. See
+    # http://stackoverflow.com/questions/2170610/access-elementtree-node-parent-node/2170994
+    parent_map = {c:p for p in tree.iter() for c in p}
+    # handle includes in form
+    for include_placeholder in tree.findall(".//include"):
+        include_path = include_placeholder.attrib["src"]
+        if not os.path.isabs(include_path):
+            include_path = os.path.join(basepath,
+                                        include_placeholder.attrib["src"])
+        include_tree = load(include_path)
+        parent = parent_map[include_placeholder]
+        index = parent._children.index(include_placeholder)
+        # Check if the content to be included is wrapped in a
+        # 'configuration' section.
+        if include_tree.tag == "configuration":
+            parent.remove(parent._children[index])
+            for child in include_tree:
+                parent.append(child)
+        else:
+            parent._children[index] = include_tree
+    return tree
 
 
 class Config(object):
