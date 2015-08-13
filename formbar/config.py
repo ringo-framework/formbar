@@ -27,7 +27,24 @@ def parse(xml, path=None):
     if isinstance(xml, unicode):
         xml = xml.encode("utf-8")
     tree = ET.fromstring(xml)
+    tree = handle_inheritance(tree, path)
     tree = handle_includes(tree, path)
+    return tree
+
+
+def handle_inheritance(tree, path=None):
+    """Will build a form based on a parent form. Will replace elements
+    overwritten in the inherited form and add new elements.
+
+    :tree: ElementTree
+    :path: Path of the loaded form
+    :returns: ElementTree
+
+    """
+    if path:
+        basepath = os.path.dirname(path)
+    else:
+        basepath = ""
     return tree
 
 
@@ -36,6 +53,7 @@ def handle_includes(tree, path):
     file.
 
     :tree: ElementTree
+    :path: Path of the loaded form
     :returns: ElementTree
 
     """
