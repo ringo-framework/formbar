@@ -39,6 +39,23 @@ class User(Base):
         return "<User('%s','%s', '%s')>" % (self.name, self.fullname,
                                             self.password)
 
+class TestInheritedForm(unittest.TestCase):
+
+    def setUp(self):
+        tree = load(os.path.join(test_dir, 'inherited.xml'))
+        config = Config(tree)
+        form_config = config.get_form('customform')
+        self.form = Form(form_config)
+
+    def test_form_init(self):
+        pass
+
+    def test_string_field(self):
+        field = self.form.get_field("string")
+        self.assertEqual(field.label, "Inherited String field")
+
+    def test_form_fields(self):
+        self.assertEqual(len(self.form.fields.values()), 10)
 
 class TestFormValidation(unittest.TestCase):
 
