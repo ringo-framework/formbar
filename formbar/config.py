@@ -45,7 +45,45 @@ def handle_inheritance(tree, path=None):
         basepath = os.path.dirname(path)
     else:
         basepath = ""
-    return tree
+
+    if not "inherits" in tree.attrib:
+        return tree
+
+    inherit_path = tree.attrib["inherits"]
+    if not os.path.isabs(inherit_path):
+        inherit_path = os.path.join(basepath,
+                                    inherit_path)
+    ptree = load(inherit_path)
+
+    # Workaroutn for missing support of getting parent elements. See
+    # http://stackoverflow.com/questions/2170610/access-elementtree-node-parent-node/2170994
+    tree_parent_map = {c:p for p in tree.iter() for c in p}
+    ptree_parent_map = {c:p for p in ptree.iter() for c in p}
+
+    for element in tree.getiterator():
+        if not "id" in element.attrib:
+            continue
+        # Is there a an element with the same id in the ptree?
+        xpath = ".//*[@id='%s']" % element.attrib["id"]
+        pelement = ptree.find(xpath)
+        if pelement is not None:
+            # Replace the parent element with the one in inherited
+            # element.
+            pparent = ptree_parent_map[pelement]
+            pindex = pparent._children.index(pelement)
+            pparent._children[pindex] = element
+        else:
+            # Add the element to the parent tree
+            # 1. First get the parent of the new element and get the
+            # same element from the parent tree.
+            parent = tree_parent_map[element]
+            if "id" in parent.attrib:
+                xpath = "%s[id='%s']" % (parent.tag, parent.attrib["id"])
+            else:
+                xpath = "%s" % parent.tag
+            pelement = ptree.find(xpath)
+            pelement.append(element)
+    return ptree
 
 
 def handle_includes(tree, path):
