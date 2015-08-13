@@ -8,7 +8,6 @@ log = logging.getLogger(__name__)
 _ = gettext.gettext
 
 
-
 def load(path):
     """Return the parsed XML form the given file. The function will load
     the file located in path and than returns the parsed content."""
@@ -336,7 +335,7 @@ class Form(Config):
         fields are stored in a dictionary per page to make the access to
         the fields on a page faster (e.g get_errors and get_warnings
         will check the fields on a certain page for errors).
-       
+
         The attribute ``values`` and ``evaluate`` are used for
         evaluating the rules on initialisation to only include relevant
         fields.
@@ -360,7 +359,6 @@ class Form(Config):
                 fields[page_id][field.name] = field
                 self._id2name[ref] = field.name
         return fields
-
 
     def get_fields(self, root=None, values={},
                    reload_fields=False, evaluate=False):
@@ -456,7 +454,7 @@ class Field(Config):
         is already set by the underlying FormAlchemy library by checking
         if the database field is 'NOT NULL'. Defaults to False"""
 
-        self.desired= entity.attrib.get('desired', 'false') == 'true'
+        self.desired = entity.attrib.get('desired', 'false') == 'true'
         """Flag to mark the field as a desired field. If this tag is
         set an additional rule will be added to the field and an star
         symbol is rendered at the label of the field. Defaults to
@@ -534,7 +532,6 @@ class Field(Config):
             mode = rule.attrib.get('mode')
             triggers = rule.attrib.get('triggers')
             self.rules.append(Rule(expr, msg, mode, triggers))
-
 
 
 class Renderer(Config):
