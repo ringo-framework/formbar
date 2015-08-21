@@ -142,13 +142,17 @@ def format_rst(tree_dict, form_layout):
             print(u':Pflichtstatus: {}'.
                     format(tree_dict[entity].get('requirement_level')))
             # Options
-            print(u':Wertebereich:')
-            print(reindent(tabulate(tree_dict[entity]['option'],
-                    ('Wert', 'Option'), tablefmt='rst')))
+            options = tree_dict[entity]['option']
+            if options:
+                print(u':Wertebereich:')
+                print(reindent(tabulate(options,
+                        ('Wert', 'Option'), tablefmt='rst')))
+            else:
+                print(u':Wertebereich: Kein')
             # Rule
             print(u':F-Contraints: {}'.
                     format(tree_dict[entity]['rule']['meta'].get('description',
-                        'FEHLT!'), tablefmt='rst'))
+                        'Keine'), tablefmt='rst'))
             # Changes
             changes = tree_dict[entity]['meta'].get('change')
             if changes:
@@ -160,7 +164,7 @@ def format_rst(tree_dict, form_layout):
             # Print custom/free-form fields
             for free_label, free_text in tree_dict[entity]['meta'].get('free', []):
                 print(u':{}: {}'.format(free_label, free_text))
-            print('\n')
+            print()
 
 
 def main(config, format):
