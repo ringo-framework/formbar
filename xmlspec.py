@@ -93,7 +93,7 @@ def walk(tree, node, elements=None):
                 #print('DEBUG B', n.tag, n.attrib)
                 snippet = tree.find("snippet[@id='{}']".format(n.attrib.get('ref')))
                 #print('DEBUG C', snippet.tag, snippet.attrib)
-                elements.extend(walk(tree, snippet, elements))
+                elements = walk(tree, snippet, elements)
     return elements
 
 
