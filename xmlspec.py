@@ -58,7 +58,7 @@ def get_tree_dict(tree):
         for m in e.findall('metadata/meta'):
             mtype = m.attrib.get('type')
             if not mtype in dict[id]['meta']:  # init list
-                dict[id]['meta'][mtype] = []  # XXX Add headers?
+                dict[id]['meta'][mtype] = []
             if mtype == 'free':
                 dict[id]['meta'][mtype].append((m.attrib.get('label'), m.text))
             else:
@@ -85,19 +85,17 @@ def walk(tree, node, elements=None):
         elements = []
     for n in node.iter('*'):
         if n.tag in ['field', 'section', 'page', 'subsection']:
-            #print('DEBUG A', n.tag, n.attrib)
             elements.append(n)
         elif n.tag == 'snippet':
             # find referenced snippet and start recursion
             if 'ref' in n.attrib:
-                #print('DEBUG B', n.tag, n.attrib)
                 snippet = tree.find("snippet[@id='{}']".format(n.attrib.get('ref')))
-                #print('DEBUG C', snippet.tag, snippet.attrib)
                 elements = walk(tree, snippet, elements)
     return elements
 
 
 def list_forms(tree):
+    """ Return list of all forms defined in Formbar XML """
     form_nodes = tree.iter('form')
     form_ids = []
     for f in form_nodes:
@@ -105,6 +103,7 @@ def list_forms(tree):
     return
 
 def parse_form(tree, form='update'):
+    """ Return list of all (relevant) form items in document order """
     start_node = tree.find("form[@id='{}']".format(form))
     ordered_list = walk(tree, start_node)
     return ordered_list
@@ -174,7 +173,7 @@ def format_rst(tree_dict, form_layout):
 
 def main(config, format):
     tree = ET.parse(config)
-    #forms = list_forms(config)
+    #forms = list_forms(config)  # disabled because we hard-coded the 'update' form below
     form_layout = parse_form(tree, 'update')
     tree_dict = get_tree_dict(tree)
     if format == 'json':
@@ -192,6 +191,7 @@ if __name__ == '__main__':
     parser.add_argument('--rst', action='store_true', dest='format_rst',
             default=True, help='Output in RST format (default)')
     args = parser.parse_args()
+    # FIXME: not checking for mutual exclusive options etc.
     if args.format_json:
         format = 'json'
     else:
