@@ -15,9 +15,8 @@ def reindent(s, numSpaces=3):
     return s
 
 
-def get_tree_dict(config):
+def get_tree_dict(tree):
     """ Parse XML; return a dict """
-    tree = ET.parse(config)
     dict = {}
     dict['root_metadata'] = {}
     # root document info
@@ -98,16 +97,14 @@ def walk(node, tree, elements=None):
     return elements
 
 
-def list_forms(config):
-    tree = ET.parse(config)
+def list_forms(tree):
     form_nodes = tree.iter('form')
     form_ids = []
     for f in form_nodes:
         form_ids.append(f.attrib.get('id'))
     return
 
-def parse_form(config, form):
-    tree = ET.parse(config)
+def parse_form(tree, form):
     start_node = tree.find("form[@id='{}']".format(form))
     ordered_list = walk(start_node, tree)
     for e in ordered_list:
@@ -161,12 +158,11 @@ def format_rst(tree_dict):
 
 
 def main(config, format):
+    tree = ET.parse(config)
     # tmp
     #forms = list_forms(config)
-    parse_form(config, 'update')
-    return
-    #
-    tree_dict = get_tree_dict(config)
+    form_layout = parse_form(tree, 'update')
+    tree_dict = get_tree_dict(tree)
     if format == 'json':
         pprint(tree_dict)
     elif format == 'rst':
