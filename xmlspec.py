@@ -81,6 +81,39 @@ def get_tree_dict(config):
                             )
     return dict
 
+def walk(node, tree, elements=None):
+    if elements is None:
+        elements = []
+    for n in node.iter('*'):
+        if n.tag in ['field', 'section', 'page', 'subsection']:
+            #print('DEBUG A', n.tag, n.attrib)
+            elements.append(n)
+        elif n.tag == 'snippet':
+            # find referenced snippet and start recursion
+            if 'ref' in n.attrib:
+                #print('DEBUG B', n.tag, n.attrib)
+                snippet = tree.find("snippet[@id='{}']".format(n.attrib.get('ref')))
+                #print('DEBUG C', snippet.tag, snippet.attrib)
+                elements.extend(walk(snippet, tree, elements))
+    return elements
+
+
+def list_forms(config):
+    tree = ET.parse(config)
+    form_nodes = tree.iter('form')
+    form_ids = []
+    for f in form_nodes:
+        form_ids.append(f.attrib.get('id'))
+    return
+
+def parse_form(config, form):
+    tree = ET.parse(config)
+    start_node = tree.find("form[@id='{}']".format(form))
+    ordered_list = walk(start_node, tree)
+    for e in ordered_list:
+        print(e.tag, e.attrib)
+    return ordered_list
+
 
 def format_rst(tree_dict):
     """ Print an RST document to stdout """
@@ -128,6 +161,11 @@ def format_rst(tree_dict):
 
 
 def main(config, format):
+    # tmp
+    #forms = list_forms(config)
+    parse_form(config, 'update')
+    return
+    #
     tree_dict = get_tree_dict(config)
     if format == 'json':
         pprint(tree_dict)
