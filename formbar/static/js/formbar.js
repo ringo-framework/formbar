@@ -99,10 +99,18 @@ $( document ).ready(function() {
      * Evaluate when values in the form changes
     */
     mapFieldsToConditionals();
-    evaluateFields();
-    evaluateConditionals();
-    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateFields);
-    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateConditionalsOnChange);
+    function evaluate(){
+        evaluateFields();
+        evaluateConditionals();
+    }
+    evaluate()
+    $('div.formbar-form form textarea, div.formbar-form form select, div.formbar-form form input').change(evaluate);
+    //detection of user stoppy typing in input text fields
+    var timer = null;
+    $('div.formbar-form form input:text').keydown(function(){
+        clearTimeout(timer); 
+        timer = setTimeout(evaluate, 750)
+    });
 });
 
 function mapFieldsToConditionals() {
