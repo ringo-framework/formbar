@@ -80,7 +80,7 @@ def get_tree_dict(tree):
                             )
     return dict
 
-def walk(node, tree, elements=None):
+def walk(tree, node, elements=None):
     if elements is None:
         elements = []
     for n in node.iter('*'):
@@ -93,7 +93,7 @@ def walk(node, tree, elements=None):
                 #print('DEBUG B', n.tag, n.attrib)
                 snippet = tree.find("snippet[@id='{}']".format(n.attrib.get('ref')))
                 #print('DEBUG C', snippet.tag, snippet.attrib)
-                elements.extend(walk(snippet, tree, elements))
+                elements.extend(walk(tree, snippet, elements))
     return elements
 
 
@@ -104,9 +104,9 @@ def list_forms(tree):
         form_ids.append(f.attrib.get('id'))
     return
 
-def parse_form(tree, form):
+def parse_form(tree, form='update'):
     start_node = tree.find("form[@id='{}']".format(form))
-    ordered_list = walk(start_node, tree)
+    ordered_list = walk(tree, start_node)
     return ordered_list
 
 
