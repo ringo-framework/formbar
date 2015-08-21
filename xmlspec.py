@@ -107,66 +107,64 @@ def list_forms(tree):
 def parse_form(tree, form):
     start_node = tree.find("form[@id='{}']".format(form))
     ordered_list = walk(start_node, tree)
-    for e in ordered_list:
-        print(e.tag, e.attrib)
     return ordered_list
 
 
-def format_rst(tree_dict):
+def format_rst(tree_dict, form_layout):
     """ Print an RST document to stdout """
-    for entity in tree_dict:
-        if entity == 'root_metadata':
-            # e.g. create preamble
-            continue
-        # Section titlle
-        sec_title = tree_dict[entity]['name']
-        sec_underline = '-' * len(sec_title)
-        print('{}\n{}'.format(sec_title, sec_underline))
-        #
-        print(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
-        print(u':Name: ``{}``'.format(tree_dict[entity]['name']))
-        print(u':Tabelle: <TODO>')
-        print(u':Modell: <TODO>')
-        print(u':Teil: <TODO>')
-        print(u':Abschnitt: <TODO>')
-        print(u':Label: {}'.format(tree_dict[entity].get('label')))
-        print(u':ID: {}'.format(tree_dict[entity]['id']))
-        print(u':Datentyp: {}'.format(tree_dict[entity].get('type')))
-        print(u':Darstellung: {}'.format(tree_dict[entity]['renderer']))
-        print(u':Pflichtstatus: {}'.
-                format(tree_dict[entity].get('requirement_level')))
-        # Options
-        print(u':Wertebereich:')
-        print(reindent(tabulate(tree_dict[entity]['option'],
-                ('Wert', 'Option'), tablefmt='rst')))
-        # Rule
-        print(u':F-Contraints: {}'.
-                format(tree_dict[entity]['rule']['meta'].get('description',
-                    'FEHLT!'), tablefmt='rst'))
-        # Changes
-        changes = tree_dict[entity]['meta'].get('change')
-        if changes:
-            print(u':Änderungen/Begründungen:')
-            print(reindent(tabulate(tree_dict[entity]['meta'].get('change'),
-                    ('Datum', u'Begründung'), tablefmt='rst')))
-        else:
-            print(u':Änderungen/Begründungen: Keine')
-        # Print custom/free-form fields
-        for free_label, free_text in tree_dict[entity]['meta'].get('free', []):
-            print(u':{}: {}'.format(free_label, free_text))
-        print('\n')
+    for item in form_layout:
+        #if item.tag in ['page', 'section', 'subsection']:
+        #    struct = item.attrib.get('label')
+        if item.tag == 'field':
+            entity = item.attrib.get('ref')
+            # Section title
+            sec_title = tree_dict[entity]['name']
+            sec_underline = '-' * len(sec_title)
+            print('{}\n{}'.format(sec_title, sec_underline))
+            #
+            print(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
+            print(u':Name: ``{}``'.format(tree_dict[entity]['name']))
+            print(u':Tabelle: <TODO>')
+            print(u':Modell: <TODO>')
+            print(u':Teil: <TODO>')
+            print(u':Abschnitt: <TODO>')
+            print(u':Label: {}'.format(tree_dict[entity].get('label')))
+            print(u':ID: {}'.format(tree_dict[entity]['id']))
+            print(u':Datentyp: {}'.format(tree_dict[entity].get('type')))
+            print(u':Darstellung: {}'.format(tree_dict[entity]['renderer']))
+            print(u':Pflichtstatus: {}'.
+                    format(tree_dict[entity].get('requirement_level')))
+            # Options
+            print(u':Wertebereich:')
+            print(reindent(tabulate(tree_dict[entity]['option'],
+                    ('Wert', 'Option'), tablefmt='rst')))
+            # Rule
+            print(u':F-Contraints: {}'.
+                    format(tree_dict[entity]['rule']['meta'].get('description',
+                        'FEHLT!'), tablefmt='rst'))
+            # Changes
+            changes = tree_dict[entity]['meta'].get('change')
+            if changes:
+                print(u':Änderungen/Begründungen:')
+                print(reindent(tabulate(tree_dict[entity]['meta'].get('change'),
+                        ('Datum', u'Begründung'), tablefmt='rst')))
+            else:
+                print(u':Änderungen/Begründungen: Keine')
+            # Print custom/free-form fields
+            for free_label, free_text in tree_dict[entity]['meta'].get('free', []):
+                print(u':{}: {}'.format(free_label, free_text))
+            print('\n')
 
 
 def main(config, format):
     tree = ET.parse(config)
-    # tmp
     #forms = list_forms(config)
     form_layout = parse_form(tree, 'update')
     tree_dict = get_tree_dict(tree)
     if format == 'json':
         pprint(tree_dict)
     elif format == 'rst':
-        format_rst(tree_dict)
+        format_rst(tree_dict, form_layout)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
