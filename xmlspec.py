@@ -117,7 +117,12 @@ def format_rst(tree_dict, form_layout):
     subsection = ''
     for item in form_layout:
         if item.tag == 'page':
-            page = item.attrib.get('label')
+            new_page = item.attrib.get('label')
+            if new_page != page:  # Print page title (chapter in RST)
+                print(new_page)
+                print('=' * len(new_page))
+                print()
+            page = new_page
         elif item.tag == 'section':
             section = item.attrib.get('label')
         elif item.tag == 'subsection':
