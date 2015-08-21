@@ -112,10 +112,17 @@ def parse_form(tree, form):
 
 def format_rst(tree_dict, form_layout):
     """ Print an RST document to stdout """
+    page = ''
+    section = ''
+    subsection = ''
     for item in form_layout:
-        #if item.tag in ['page', 'section', 'subsection']:
-        #    struct = item.attrib.get('label')
-        if item.tag == 'field':
+        if item.tag == 'page':
+            page = item.attrib.get('label')
+        elif item.tag == 'section':
+            section = item.attrib.get('label')
+        elif item.tag == 'subsection':
+            subsection = item.attrib.get('label')
+        elif item.tag == 'field':
             entity = item.attrib.get('ref')
             # Section title
             sec_title = tree_dict[entity]['name']
@@ -126,8 +133,8 @@ def format_rst(tree_dict, form_layout):
             print(u':Name: ``{}``'.format(tree_dict[entity]['name']))
             print(u':Tabelle: <TODO>')
             print(u':Modell: <TODO>')
-            print(u':Teil: <TODO>')
-            print(u':Abschnitt: <TODO>')
+            print(u':Teil: {}'.format(section))
+            print(u':Abschnitt: {}'.format(subsection))
             print(u':Label: {}'.format(tree_dict[entity].get('label')))
             print(u':ID: {}'.format(tree_dict[entity]['id']))
             print(u':Datentyp: {}'.format(tree_dict[entity].get('type')))
