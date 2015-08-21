@@ -175,11 +175,11 @@ def format_rst(tree_dict, form_layout):
 def main(config, format):
     tree = ET.parse(config)
     #forms = list_forms(config)  # disabled because we hard-coded the 'update' form below
-    form_layout = parse_form(tree, 'update')
     tree_dict = get_tree_dict(tree)
     if format == 'json':
         pprint(tree_dict)
     elif format == 'rst':
+        form_layout = parse_form(tree, 'update')
         format_rst(tree_dict, form_layout)
 
 if __name__ == '__main__':
