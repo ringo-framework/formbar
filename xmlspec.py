@@ -100,7 +100,8 @@ def list_forms(tree):
     form_ids = []
     for f in form_nodes:
         form_ids.append(f.attrib.get('id'))
-    return
+    return form_ids
+
 
 def parse_form(tree, form='update'):
     """ Return list of all (relevant) form items in document order """
