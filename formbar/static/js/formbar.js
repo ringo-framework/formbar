@@ -104,7 +104,7 @@ $( document ).ready(function() {
         evaluateConditionals();
     }
     evaluate()
-    $('div.formbar-form form textarea, div.formbar-form form select, div.formbar-form form input').change(evaluate);
+    $('div.formbar-form form textarea, div.formbar-form form select, div.formbar-form form input').not(":text").change(evaluate);
     //detection of user stoppy typing in input text fields
     var timer = null;
     $('div.formbar-form form input:text').keydown(function(){
