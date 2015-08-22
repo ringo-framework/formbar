@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 from tabulate import tabulate
 from pprint import pprint
 
+RST_SECTION_INDICATORS = ('=', '-')
 
 def reindent(s, numSpaces=3):
     s = s.split('\n')
@@ -119,7 +120,6 @@ def get_tree_dict(tree):
                             )
     return dict
 
-
 def format_rst(tree_dict, form_layout=None):
     """ Print an RST document to stdout """
     page = ''
@@ -136,7 +136,7 @@ def format_rst(tree_dict, form_layout=None):
             new_page = item.attrib.get('label')
             if new_page != page:  # Print page title (chapter in RST)
                 print(new_page)
-                print('=' * len(new_page))
+                print(RST_SECTION_INDICATORS[0] * len(new_page))
                 print()
             page = new_page
         elif item.tag == 'section':
@@ -151,7 +151,7 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     """ Print RST formatted information for a single entity """
     # Section title
     sec_title = tree_dict[entity]['name']
-    sec_underline = '-' * len(sec_title)
+    sec_underline = RST_SECTION_INDICATORS[1] * len(sec_title)
     print('{}\n{}'.format(sec_title, sec_underline))
     #
     print(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
