@@ -15,6 +15,45 @@ def reindent(s, numSpaces=3):
     return s
 
 
+def walk(tree, node, elements=None):
+    """
+    Return a list of (relevant) elements of a given node.
+    Follow refs recursively if necessary.
+    """
+    if elements is None:
+        elements = []
+    try:
+        for n in node.iter('*'):
+            if n.tag in ['field', 'section', 'page', 'subsection']:
+                elements.append(n)
+            elif n.tag == 'snippet':
+                # find referenced snippet and start recursion
+                if 'ref' in n.attrib:
+                    snippet = tree.find("snippet[@id='{}']".format(n.attrib.get('ref')))
+                    elements = walk(tree, snippet, elements)
+    except AttributeError:
+        pass
+    return elements
+
+
+def list_forms(tree):
+    """ Return list of all forms defined in Formbar XML """
+    form_nodes = tree.iter('form')
+    form_ids = []
+    for f in form_nodes:
+        form_ids.append(f.attrib.get('id'))
+    return form_ids
+
+
+def parse_form(tree, form='update'):
+    """ Return list of all (relevant) form items in document order """
+    start_node = tree.find("form[@id='{}']".format(form))
+    if start_node is None:
+        return []
+    ordered_list = walk(tree, start_node)
+    return ordered_list
+
+
 def get_tree_dict(tree):
     """ Parse XML; return a dict """
     dict = {}
@@ -79,44 +118,6 @@ def get_tree_dict(tree):
                                 (rule_meta.attrib.get('date'), rule_meta.text)
                             )
     return dict
-
-def walk(tree, node, elements=None):
-    """
-    Return a list of (relevant) elements of a given node.
-    Follow refs recursively if necessary.
-    """
-    if elements is None:
-        elements = []
-    try:
-        for n in node.iter('*'):
-            if n.tag in ['field', 'section', 'page', 'subsection']:
-                elements.append(n)
-            elif n.tag == 'snippet':
-                # find referenced snippet and start recursion
-                if 'ref' in n.attrib:
-                    snippet = tree.find("snippet[@id='{}']".format(n.attrib.get('ref')))
-                    elements = walk(tree, snippet, elements)
-    except AttributeError:
-        pass
-    return elements
-
-
-def list_forms(tree):
-    """ Return list of all forms defined in Formbar XML """
-    form_nodes = tree.iter('form')
-    form_ids = []
-    for f in form_nodes:
-        form_ids.append(f.attrib.get('id'))
-    return form_ids
-
-
-def parse_form(tree, form='update'):
-    """ Return list of all (relevant) form items in document order """
-    start_node = tree.find("form[@id='{}']".format(form))
-    if start_node is None:
-        return []
-    ordered_list = walk(tree, start_node)
-    return ordered_list
 
 
 def format_rst(tree_dict, form_layout=None):
