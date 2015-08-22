@@ -128,7 +128,7 @@ def format_rst(tree_dict, form_layout=None):
     if form_layout is None:
         for entity in tree_dict:
             if entity != 'root_metadata':
-                format_rst_entity(tree_dict, entity, page, section, subsection)
+                format_rst_entity(tree_dict, entity, section, subsection)
         return
     for item in form_layout:
         if item.tag == 'page':
@@ -145,9 +145,9 @@ def format_rst(tree_dict, form_layout=None):
             subsection = item.attrib.get('label')
         elif item.tag == 'field':
             entity = item.attrib.get('ref')
-            format_rst_entity(tree_dict, entity, page, section, subsection)
+            format_rst_entity(tree_dict, entity, section, subsection)
 
-def format_rst_entity(tree_dict, entity, page='', section='', subsection=''):
+def format_rst_entity(tree_dict, entity, section='', subsection=''):
     """ Print RST formatted information for a single entity """
     # Section title
     sec_title = tree_dict[entity]['name']
