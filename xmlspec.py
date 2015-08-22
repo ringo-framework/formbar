@@ -122,10 +122,14 @@ def get_tree_dict(tree):
 
 def format_rst(tree_dict, form_layout=None):
     """ Print an RST document to stdout """
+    format_rst_intro(tree_dict)
     page = ''
     section = ''
     subsection = ''
     if form_layout is None:
+        page = 'Entities'
+        print(page)
+        print(RST_SECTION_INDICATORS[0] * len(page), '\n')
         for entity in tree_dict:
             if entity != 'root_metadata':
                 format_rst_entity(tree_dict, entity, section, subsection)
@@ -146,6 +150,23 @@ def format_rst(tree_dict, form_layout=None):
         elif item.tag == 'field':
             entity = item.attrib.get('ref')
             format_rst_entity(tree_dict, entity, section, subsection)
+
+
+def format_rst_intro(tree_dict):
+    node = 'root_metadata'
+    title = 'Präambel'
+    if tree_dict[node]:
+        print(title)
+        print(RST_SECTION_INDICATORS[0] * len(title), '\n')
+    if 'intro' in tree_dict[node]:
+        intro = tree_dict[node]['intro']
+        print(intro, '\n')
+    if 'comment' in tree_dict[node]:
+        print(':Kommentare:')
+        print(reindent(tabulate(tree_dict[node]['comment'],
+                ('Datum', 'Kommentar'), tablefmt='rst')))
+        print()
+
 
 def format_rst_entity(tree_dict, entity, section='', subsection=''):
     """ Print RST formatted information for a single entity """
