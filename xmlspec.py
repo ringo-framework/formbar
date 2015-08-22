@@ -81,16 +81,23 @@ def get_tree_dict(tree):
     return dict
 
 def walk(tree, node, elements=None):
+    """
+    Return a list of (relevant) elements of a given node.
+    Follow refs recursively if necessary.
+    """
     if elements is None:
         elements = []
-    for n in node.iter('*'):
-        if n.tag in ['field', 'section', 'page', 'subsection']:
-            elements.append(n)
-        elif n.tag == 'snippet':
-            # find referenced snippet and start recursion
-            if 'ref' in n.attrib:
-                snippet = tree.find("snippet[@id='{}']".format(n.attrib.get('ref')))
-                elements = walk(tree, snippet, elements)
+    try:
+        for n in node.iter('*'):
+            if n.tag in ['field', 'section', 'page', 'subsection']:
+                elements.append(n)
+            elif n.tag == 'snippet':
+                # find referenced snippet and start recursion
+                if 'ref' in n.attrib:
+                    snippet = tree.find("snippet[@id='{}']".format(n.attrib.get('ref')))
+                    elements = walk(tree, snippet, elements)
+    except AttributeError:
+        pass
     return elements
 
 
@@ -106,15 +113,22 @@ def list_forms(tree):
 def parse_form(tree, form='update'):
     """ Return list of all (relevant) form items in document order """
     start_node = tree.find("form[@id='{}']".format(form))
+    if start_node is None:
+        return []
     ordered_list = walk(tree, start_node)
     return ordered_list
 
 
-def format_rst(tree_dict, form_layout):
+def format_rst(tree_dict, form_layout=None):
     """ Print an RST document to stdout """
     page = ''
     section = ''
     subsection = ''
+    if form_layout is None:
+        for entity in tree_dict:
+            if entity != 'root_metadata':
+                format_rst_entity(tree_dict, entity, page, section, subsection)
+        return
     for item in form_layout:
         if item.tag == 'page':
             new_page = item.attrib.get('label')
@@ -129,47 +143,50 @@ def format_rst(tree_dict, form_layout):
             subsection = item.attrib.get('label')
         elif item.tag == 'field':
             entity = item.attrib.get('ref')
-            # Section title
-            sec_title = tree_dict[entity]['name']
-            sec_underline = '-' * len(sec_title)
-            print('{}\n{}'.format(sec_title, sec_underline))
-            #
-            print(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
-            print(u':Name: ``{}``'.format(tree_dict[entity]['name']))
-            print(u':Tabelle: <TODO>')
-            print(u':Modell: <TODO>')
-            print(u':Teil: {}'.format(section))
-            print(u':Abschnitt: {}'.format(subsection))
-            print(u':Label: {}'.format(tree_dict[entity].get('label')))
-            print(u':ID: {}'.format(tree_dict[entity]['id']))
-            print(u':Datentyp: {}'.format(tree_dict[entity].get('type')))
-            print(u':Darstellung: {}'.format(tree_dict[entity]['renderer']))
-            print(u':Pflichtstatus: {}'.
-                    format(tree_dict[entity].get('requirement_level')))
-            # Options
-            options = tree_dict[entity]['option']
-            if options:
-                print(u':Wertebereich:')
-                print(reindent(tabulate(options,
-                        ('Wert', 'Option'), tablefmt='rst')))
-            else:
-                print(u':Wertebereich: Kein')
-            # Rule
-            print(u':F-Contraints: {}'.
-                    format(tree_dict[entity]['rule']['meta'].get('description',
-                        'Keine'), tablefmt='rst'))
-            # Changes
-            changes = tree_dict[entity]['meta'].get('change')
-            if changes:
-                print(u':Änderungen/Begründungen:')
-                print(reindent(tabulate(tree_dict[entity]['meta'].get('change'),
-                        ('Datum', u'Begründung'), tablefmt='rst')))
-            else:
-                print(u':Änderungen/Begründungen: Keine')
-            # Print custom/free-form fields
-            for free_label, free_text in tree_dict[entity]['meta'].get('free', []):
-                print(u':{}: {}'.format(free_label, free_text))
-            print()
+            format_rst_entity(tree_dict, entity, page, section, subsection)
+
+def format_rst_entity(tree_dict, entity, page, section, subsection):
+    # Section title
+    sec_title = tree_dict[entity]['name']
+    sec_underline = '-' * len(sec_title)
+    print('{}\n{}'.format(sec_title, sec_underline))
+    #
+    print(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
+    print(u':Name: ``{}``'.format(sec_title))
+    print(u':Tabelle: <TODO>')
+    print(u':Modell: <TODO>')
+    print(u':Teil: {}'.format(section))
+    print(u':Abschnitt: {}'.format(subsection))
+    print(u':Label: {}'.format(tree_dict[entity].get('label')))
+    print(u':ID: {}'.format(tree_dict[entity]['id']))
+    print(u':Datentyp: {}'.format(tree_dict[entity].get('type')))
+    print(u':Darstellung: {}'.format(tree_dict[entity]['renderer']))
+    print(u':Pflichtstatus: {}'.
+            format(tree_dict[entity].get('requirement_level')))
+    # Options
+    options = tree_dict[entity]['option']
+    if options:
+        print(u':Wertebereich:')
+        print(reindent(tabulate(options,
+                ('Wert', 'Option'), tablefmt='rst')))
+    else:
+        print(u':Wertebereich: Kein')
+    # Rule
+    print(u':F-Contraints: {}'.
+            format(tree_dict[entity]['rule']['meta'].get('description',
+                'Keine'), tablefmt='rst'))
+    # Changes
+    changes = tree_dict[entity]['meta'].get('change')
+    if changes:
+        print(u':Änderungen/Begründungen:')
+        print(reindent(tabulate(tree_dict[entity]['meta'].get('change'),
+                ('Datum', u'Begründung'), tablefmt='rst')))
+    else:
+        print(u':Änderungen/Begründungen: Keine')
+    # Print custom/free-form fields
+    for free_label, free_text in tree_dict[entity]['meta'].get('free', []):
+        print(u':{}: {}'.format(free_label, free_text))
+    print()
 
 
 def main(config, format):
@@ -180,7 +197,10 @@ def main(config, format):
         pprint(tree_dict)
     elif format == 'rst':
         form_layout = parse_form(tree, 'update')
-        format_rst(tree_dict, form_layout)
+        if form_layout:
+            format_rst(tree_dict, form_layout)
+        else:
+            format_rst(tree_dict, None)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
