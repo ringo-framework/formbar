@@ -132,6 +132,7 @@ def format_rst(tree_dict, form_layout=None):
         return
     for item in form_layout:
         if item.tag == 'page':
+            # Print an RST section title to indicate Formbar form pages
             new_page = item.attrib.get('label')
             if new_page != page:  # Print page title (chapter in RST)
                 print(new_page)
@@ -146,7 +147,8 @@ def format_rst(tree_dict, form_layout=None):
             entity = item.attrib.get('ref')
             format_rst_entity(tree_dict, entity, page, section, subsection)
 
-def format_rst_entity(tree_dict, entity, page, section, subsection):
+def format_rst_entity(tree_dict, entity, page='', section='', subsection=''):
+    """ Print RST formatted information for a single entity """
     # Section title
     sec_title = tree_dict[entity]['name']
     sec_underline = '-' * len(sec_title)
