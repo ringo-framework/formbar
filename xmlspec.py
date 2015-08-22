@@ -216,14 +216,14 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     print()
 
 
-def main(config, format):
-    tree = ET.parse(config)
+def main(args):
+    tree = ET.parse(args.config)
     #forms = list_forms(config)  # disabled because we hard-coded the 'update' form below
     tree_dict = get_tree_dict(tree)
-    if format == 'json':
+    if args.format_json:
         pprint(tree_dict)
-    elif format == 'rst':
-        form_layout = parse_form(tree, 'update')
+    elif args.format_rst:
+        form_layout = parse_form(tree, args.form)
         if form_layout:
             format_rst(tree_dict, form_layout)
         else:
@@ -234,16 +234,14 @@ if __name__ == '__main__':
             description='Convert a Formbar XML specification file into various formats.')
     parser.add_argument('config', metavar='config', type=file,
             help='A form configuration file')
-    parser.add_argument('--json', action='store_true', dest='format_json',
-            default=False, help='Output in JSON format')
+    parser.add_argument('--form', action='store', default='update',
+            help="Choose which form to parse (defaut: 'update')")
     parser.add_argument('--rst', action='store_true', dest='format_rst',
             default=True, help='Output in RST format (default)')
+    parser.add_argument('--json', action='store_true', dest='format_json',
+            default=False, help='Output in JSON format')
     args = parser.parse_args()
     # FIXME: not checking for mutual exclusive options etc.
-    if args.format_json:
-        format = 'json'
-    else:
-        format = 'rst'
-    main(args.config, format)
+    main(args)
 
 # vim: set expandtab:
