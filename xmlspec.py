@@ -11,11 +11,13 @@ RST_SECTION_INDICATORS = ('=', '-')
 
 
 def rst_title(title, level):
+    """ Return title as an RST header of specified level """
     return '{title}\n{underline}\n'.format(title=title,
             underline=RST_SECTION_INDICATORS[level] * len(title))
 
 
 def reindent(s, numSpaces=3):
+    """ Re-indent a multi-line string by a number of spaces (used for tables) """
     s = s.split('\n')
     s = [(' ' * numSpaces) + line for line in s]
     s = '\n'.join(s)
@@ -155,6 +157,7 @@ def format_rst(tree_dict, form_layout=None):
 
 
 def format_rst_intro(tree_dict):
+    """ Print form root metadata in RST format """
     node = 'root_metadata'
     title = 'Präambel'
     if tree_dict[node]:
