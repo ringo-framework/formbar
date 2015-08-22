@@ -9,6 +9,12 @@ from pprint import pprint
 
 RST_SECTION_INDICATORS = ('=', '-')
 
+
+def rst_title(title, level):
+    return '{title}\n{underline}\n'.format(title=title,
+            underline=RST_SECTION_INDICATORS[level] * len(title))
+
+
 def reindent(s, numSpaces=3):
     s = s.split('\n')
     s = [(' ' * numSpaces) + line for line in s]
@@ -127,9 +133,7 @@ def format_rst(tree_dict, form_layout=None):
     section = ''
     subsection = ''
     if form_layout is None:
-        page = 'Entities'
-        print(page)
-        print(RST_SECTION_INDICATORS[0] * len(page), '\n')
+        print(rst_title('Entities', 0))
         for entity in tree_dict:
             if entity != 'root_metadata':
                 format_rst_entity(tree_dict, entity, section, subsection)
@@ -139,9 +143,7 @@ def format_rst(tree_dict, form_layout=None):
             # Print an RST section title to indicate Formbar form pages
             new_page = item.attrib.get('label')
             if new_page != page:  # Print page title (chapter in RST)
-                print(new_page)
-                print(RST_SECTION_INDICATORS[0] * len(new_page))
-                print()
+                print(rst_title(new_page, 0))
             page = new_page
         elif item.tag == 'section':
             section = item.attrib.get('label')
@@ -156,8 +158,7 @@ def format_rst_intro(tree_dict):
     node = 'root_metadata'
     title = 'Präambel'
     if tree_dict[node]:
-        print(title)
-        print(RST_SECTION_INDICATORS[0] * len(title), '\n')
+        print(rst_title(title, 0))
     if 'intro' in tree_dict[node]:
         intro = tree_dict[node]['intro']
         print(intro, '\n')
@@ -171,12 +172,11 @@ def format_rst_intro(tree_dict):
 def format_rst_entity(tree_dict, entity, section='', subsection=''):
     """ Print RST formatted information for a single entity """
     # Section title
-    sec_title = tree_dict[entity]['name']
-    sec_underline = RST_SECTION_INDICATORS[1] * len(sec_title)
-    print('{}\n{}'.format(sec_title, sec_underline))
+    name = tree_dict[entity]['name']
+    print(rst_title(name, 1,))
     #
     print(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
-    print(u':Name: ``{}``'.format(sec_title))
+    print(u':Name: ``{}``'.format(name))
     print(u':Tabelle: <TODO>')
     print(u':Modell: <TODO>')
     print(u':Teil: {}'.format(section))
