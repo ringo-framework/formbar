@@ -175,17 +175,17 @@ def format_rst_intro(tree_dict):
 def format_rst_entity(tree_dict, entity, section='', subsection=''):
     """ Print RST formatted information for a single entity """
     # Section title
-    name = tree_dict[entity]['name']
+    name = tree_dict[entity]['id']
     print(rst_title(name, 1,))
     #
+    print(u':Label: {}'.format(tree_dict[entity].get('label')))
     print(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
+    print(u':ID: ``{}``'.format(tree_dict[entity]['id']))
     print(u':Name: ``{}``'.format(name))
     print(u':Tabelle: <TODO>')
     print(u':Modell: <TODO>')
     print(u':Teil: {}'.format(section))
     print(u':Abschnitt: {}'.format(subsection))
-    print(u':Label: {}'.format(tree_dict[entity].get('label')))
-    print(u':ID: {}'.format(tree_dict[entity]['id']))
     print(u':Datentyp: {}'.format(tree_dict[entity].get('type')))
     print(u':Darstellung: {}'.format(tree_dict[entity]['renderer']))
     print(u':Pflichtstatus: {}'.
@@ -205,7 +205,7 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     if rule_desc:
         rule = rule_desc
     elif rule_expr:
-        rule = rule_expr
+        rule = '``{}``'.format(rule_expr)
     else:
         rule = 'Keine'
     print(u':F-Contsraints: {}'.format(rule))
