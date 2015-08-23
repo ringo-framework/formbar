@@ -208,7 +208,7 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
         rule = rule_expr
     else:
         rule = 'Keine'
-    print(u':F-Contraints: {}'.format(rule))
+    print(u':F-Contsraints: {}'.format(rule))
     # Changes
     changes = tree_dict[entity]['meta'].get('change')
     if changes:
