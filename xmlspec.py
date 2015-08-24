@@ -7,12 +7,12 @@ import xml.etree.ElementTree as ET
 from tabulate import tabulate
 from pprint import pprint
 
-RST_SECTION_INDICATORS = ('=', '-')
+RST_SECTION_INDICATORS = (u'*', u'-', u"'", u"`")
 
 
 def rst_title(title, level):
     """ Return title as an RST header of specified level """
-    return '{title}\n{underline}\n'.format(title=title,
+    return u'{title}\n{underline}\n'.format(title=title,
             underline=RST_SECTION_INDICATORS[level] * len(title))
 
 
@@ -148,9 +148,15 @@ def format_rst(tree_dict, form_layout=None):
                 print(rst_title(new_page, 0))
             page = new_page
         elif item.tag == 'section':
-            section = item.attrib.get('label')
+            new_section = item.attrib.get('label')
+            if new_section != section:  # Print section title (chapter in RST)
+                print(rst_title(new_section, 1))
+            section = new_section
         elif item.tag == 'subsection':
-            subsection = item.attrib.get('label')
+            new_subsection = item.attrib.get('label')
+            if new_section != subsection:  # Print subsection title (chapter in RST)
+                print(rst_title(new_subsection, 2))
+            subsection = new_subsection
         elif item.tag == 'field':
             entity = item.attrib.get('ref')
             format_rst_entity(tree_dict, entity, section, subsection)
@@ -176,7 +182,7 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     """ Print RST formatted information for a single entity """
     # Section title
     name = tree_dict[entity]['id']
-    print(rst_title(name, 1,))
+    print(rst_title(name, 3,))
     #
     print(u':Label: {}'.format(tree_dict[entity].get('label')))
     print(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
