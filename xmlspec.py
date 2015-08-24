@@ -7,13 +7,28 @@ import xml.etree.ElementTree as ET
 from tabulate import tabulate
 from pprint import pprint
 
-RST_SECTION_INDICATORS = (u'*', u'-', u"'", u"`")
+
+# Set RST section headers
+#
+# Sphinx convention: http://sphinx-doc.org/rest.html
+#
+#    # with overline, for parts
+#    * with overline, for chapters
+#    =, for sections
+#    -, for subsections
+#    ^, for subsubsections
+#    ", for paragraphs
+#
+RST_SECTION_INDICATORS = (u'*', u'=', u'-', u'^', u'"')
 
 
 def rst_title(title, level):
     """ Return title as an RST header of specified level """
-    return u'{title}\n{underline}\n'.format(title=title,
-            underline=RST_SECTION_INDICATORS[level] * len(title))
+    underline = RST_SECTION_INDICATORS[level] * len(title)
+    if level == 0:  # Additional overline for certain high levels
+        return '\n'.join([underline, title, underline])
+    else:
+        return '\n'.join([title, underline])
 
 
 def reindent(s, numSpaces=3):
