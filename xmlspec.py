@@ -180,7 +180,6 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     #
     print(u':Label: {}'.format(tree_dict[entity].get('label')))
     print(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
-    print(u':ID: ``{}``'.format(tree_dict[entity]['id']))
     print(u':Name: ``{}``'.format(name))
     print(u':Tabelle: <TODO>')
     print(u':Modell: <TODO>')
