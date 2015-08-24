@@ -234,15 +234,9 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
         out.append(u':Wertebereich: Kein')
     # Rule
     rule_expr = tree_dict[entity]['rule'].get('expr')
-    rule_desc = tree_dict[entity]['rule']['meta'].get('description')
-    # Print meta description if available, else print rule expression verbatim
-    if rule_desc:
-        rule = rule_desc
-    elif rule_expr:
-        rule = '``{}``'.format(rule_expr)
-    else:
-        rule = 'Keine'
-    out.append(u':F-Contsraints: {}'.format(rule))
+    out.append(u':F-Contsraints (Ausdruck): {}'.format(rule_expr))
+    rule_desc = tree_dict[entity]['rule']['meta'].get('description', u'NOT FOUND')
+    out.append(u':F-Contsraints (Beschreibung): {}'.format(rule_desc))
     # Changes
     changes = tree_dict[entity]['meta'].get('change')
     if changes:
