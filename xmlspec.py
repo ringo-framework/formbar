@@ -32,7 +32,9 @@ def rst_title(title, level):
 
 
 def reindent(s, numSpaces=3):
-    """ Re-indent a multi-line string by a number of spaces (used for tables) """
+    """
+    Re-indent a multi-line string by a number of spaces (used for tables)
+    """
     s = s.split('\n')
     s = [(' ' * numSpaces) + line for line in s]
     s = '\n'.join(s)
@@ -53,7 +55,8 @@ def walk(tree, node, elements=None):
             elif n.tag == 'snippet':
                 # find referenced snippet and start recursion
                 if 'ref' in n.attrib:
-                    snippet = tree.find("snippet[@id='{}']".format(n.attrib.get('ref')))
+                    snippet = tree.find(
+                            "snippet[@id='{}']".format(n.attrib.get('ref')))
                     elements = walk(tree, snippet, elements)
     except AttributeError:
         pass
@@ -92,8 +95,8 @@ def get_tree_dict(tree):
             else:  # potentially multiple items
                 if not mtype in dict['root_metadata']:  # init list
                     dict['root_metadata'][mtype] = []
-                dict['root_metadata'][mtype].append((root_meta.attrib.get('date'),
-                        root_meta.text))
+                dict['root_metadata'][mtype].append(
+                        (root_meta.attrib.get('date'), root_meta.text))
     # Individual entities
     for e in tree.iter('entity'):
         id = e.attrib.get('id')
@@ -152,7 +155,8 @@ def format_rst(tree_dict, form_layout=None):
         out.append(rst_title('Entities', 0))
         for entity in tree_dict:
             if entity != 'root_metadata':
-                out.append(format_rst_entity(tree_dict, entity, section, subsection))
+                out.append(format_rst_entity(tree_dict, entity, section,
+                        subsection))
         return '\n'.join(out)
     for item in form_layout:
         if item.tag == 'page':
@@ -178,7 +182,8 @@ def format_rst(tree_dict, form_layout=None):
             subsection = new_subsection
         elif item.tag == 'field':
             entity = item.attrib.get('ref')
-            out.append(format_rst_entity(tree_dict, entity, section, subsection))
+            out.append(format_rst_entity(tree_dict, entity, section,
+                    subsection))
     return '\n'.join(out)
 
 
@@ -234,7 +239,8 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     rule_expr = tree_dict[entity]['rule'].get('expr')
     out.append(u':F-Contsraints (Ausdruck): ``{}``'.format(rule_expr))
     if rule_expr:
-        rule_desc = tree_dict[entity]['rule']['meta'].get('description', u'NOT FOUND')
+        rule_desc = tree_dict[entity]['rule']['meta'].get(
+                'description', u'NOT FOUND')
         out.append(u':F-Contsraints (Beschreibung): {}'.format(rule_desc))
     # Changes
     changes = tree_dict[entity]['meta'].get('change')
@@ -267,7 +273,8 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-            description='Convert a Formbar XML specification file into various formats.')
+            description='Convert a Formbar XML specification ' +
+                    'file into various formats.')
     parser.add_argument('config', metavar='config', type=file,
             help='A form configuration file')
     parser.add_argument('--form', action='store', default='update',
