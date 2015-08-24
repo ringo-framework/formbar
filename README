@@ -90,3 +90,10 @@ The following metadata attributes will be read from root metadata:
     at the top of the RST document (may appear multiple times).
 
 .. vim: ft=rst expandtab :
+
+
+TODO
+----
+
+* Translate pages, sections and subsections
+* Handle multiple occurrences of items that should be unique (use newest by date)
