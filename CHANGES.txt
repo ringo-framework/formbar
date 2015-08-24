@@ -1,3 +1,8 @@
+Upcoming
+========
+Detection of user stopped typing in text renderers after 750ms for auto rule
+evaluation.
+
 0.10
 ====
 
