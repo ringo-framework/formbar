@@ -1,0 +1,92 @@
+XMLSpec
+=======
+
+``xmlspec.py`` parses Formbar XML configuration files in order to convert them
+to different formats.  Its main purpose is to convert the XML data into a
+human-readable form specification in RST format.
+
+Formbar XML format
+------------------
+
+``xmlspec.py`` will evaluate the following Formbar nodes:
+
+* ``entity``
+
+    * ``option``
+    * ``renderer``
+    * ``rule``
+
+* ``form``
+* ``snippet``
+
+Additional Metadata Read by ``xmlspec.py``
+------------------------------------------
+
+General
+'''''''
+
+``xmlspec.py`` will also read additional metadata from Formbar forms which are
+otherwise unused by Formbar.  The metadata nodes have the following format:
+
+.. code-block::
+
+    <metadata>
+        <meta attrib="example" date="YYYYMMDD"></meta>
+    </metadata>
+
+``<entity>`` and ``<rule>`` nodes may have metadata associated with them.
+
+Furthermore, the main ``<configuration>`` element may contain metadata (*root
+metadata*) which is relevant to the whole document.  This information will be
+formatted as a preamble to the RST output.
+
+Metadata
+''''''''
+
+All meta items should contain a ``date`` attribute in the format ``YYYYMMDD``.
+
+Entities
+````````
+
+The following metadata attributes will be read from entities:
+
+``change``
+    Required additional attributes: ``date``
+
+    Documentation of change made to the element (may appear multiple times)
+
+``free``
+    Required additional attributes: ``date``, ``label``
+
+    General purpose metadata field which allows custom labels (may appear
+    multiple times).
+
+Rules
+`````
+
+The following metadata attributes will be read from rules:
+
+``desc``
+    Required additional attributes: ``date``
+
+    Plain-language description of the rule (unique).
+
+
+Document metadata (``<configuration>``/Root Metadata)
+`````````````````````````````````````````````````````
+
+The following metadata attributes will be read from root metadata:
+
+``intro``
+    Required additional attributes: ``date``
+
+    An introductory text applicable to the whole document which will be printed
+    at the top of the RST document (unique).
+
+``comment``
+    Required additional attributes: ``date``
+
+    Comments which are applicable to the whole document which will be printed
+    at the top of the RST document (may appear multiple times).
+
+.. vim: ft=rst expandtab :
