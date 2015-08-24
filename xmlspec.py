@@ -165,7 +165,7 @@ def format_rst(tree_dict, form_layout=None):
 def format_rst_intro(tree_dict):
     """ Print form root metadata in RST format """
     node = 'root_metadata'
-    title = 'Präambel'
+    title = u'Präambel'
     if tree_dict[node]:
         print(rst_title(title, 0))
     if 'intro' in tree_dict[node]:
@@ -219,7 +219,7 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     if changes:
         print(u':Änderungen/Begründungen:')
         print(reindent(tabulate(tree_dict[entity]['meta'].get('change'),
-                ('Datum', u'Begründung'), tablefmt='rst')))
+                (u'Datum', u'Begründung'), tablefmt='rst')))
     else:
         print(u':Änderungen/Begründungen: Keine')
     # Print custom/free-form fields
