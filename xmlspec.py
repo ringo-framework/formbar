@@ -130,77 +130,82 @@ def get_tree_dict(tree):
 
 def format_rst(tree_dict, form_layout=None):
     """ Print an RST document to stdout """
-    format_rst_intro(tree_dict)
+    out = []
+    out.append(format_rst_intro(tree_dict))
     page = ''
     section = ''
     subsection = ''
     if form_layout is None:
-        print(rst_title('Entities', 0))
+        out.append(rst_title('Entities', 0))
         for entity in tree_dict:
             if entity != 'root_metadata':
-                format_rst_entity(tree_dict, entity, section, subsection)
-        return
+                out.append(format_rst_entity(tree_dict, entity, section, subsection))
+        return '\n'.join(out)
     for item in form_layout:
         if item.tag == 'page':
             # Print an RST section title to indicate Formbar form pages
             new_page = item.attrib.get('label')
             if new_page != page:  # Print page title (chapter in RST)
-                print(rst_title(new_page, 0))
+                out.append(rst_title(new_page, 0))
             page = new_page
         elif item.tag == 'section':
             new_section = item.attrib.get('label')
             if new_section != section:  # Print section title (chapter in RST)
-                print(rst_title(new_section, 1))
+                out.append(rst_title(new_section, 1))
             section = new_section
         elif item.tag == 'subsection':
             new_subsection = item.attrib.get('label')
             if new_section != subsection:  # Print subsection title (chapter in RST)
-                print(rst_title(new_subsection, 2))
+                out.append(rst_title(new_subsection, 2))
             subsection = new_subsection
         elif item.tag == 'field':
             entity = item.attrib.get('ref')
-            format_rst_entity(tree_dict, entity, section, subsection)
+            out.append(format_rst_entity(tree_dict, entity, section, subsection))
+    return '\n'.join(out)
 
 
 def format_rst_intro(tree_dict):
     """ Print form root metadata in RST format """
+    out = []
     node = 'root_metadata'
     title = u'Präambel'
     if tree_dict[node]:
-        print(rst_title(title, 0))
+        out.append(rst_title(title, 0))
     if 'intro' in tree_dict[node]:
         intro = tree_dict[node]['intro']
-        print(intro, '\n')
+        out.append(intro + '\n')
     if 'comment' in tree_dict[node]:
-        print(':Kommentare:')
-        print(reindent(tabulate(tree_dict[node]['comment'],
+        out.append(':Kommentare:')
+        out.append(reindent(tabulate(tree_dict[node]['comment'],
                 ('Datum', 'Kommentar'), tablefmt='rst')))
-        print()
+        out.append(u'\n')
+    return '\n'.join(out)
 
 
 def format_rst_entity(tree_dict, entity, section='', subsection=''):
     """ Print RST formatted information for a single entity """
+    out = []
     # Section title
     name = tree_dict[entity]['id']
-    print(rst_title(name, 3,))
+    out.append(rst_title(name, 3,))
     #
-    print(u':Label: {}'.format(tree_dict[entity].get('label')))
-    print(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
-    print(u':Name: ``{}``'.format(name))
-    print(u':Teil: {}'.format(section))
-    print(u':Abschnitt: {}'.format(subsection))
-    print(u':Datentyp: {}'.format(tree_dict[entity].get('type')))
-    print(u':Darstellung: {}'.format(tree_dict[entity]['renderer']))
-    print(u':Pflichtstatus: {}'.
+    out.append(u':Label: {}'.format(tree_dict[entity].get('label')))
+    out.append(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
+    out.append(u':Name: ``{}``'.format(name))
+    out.append(u':Teil: {}'.format(section))
+    out.append(u':Abschnitt: {}'.format(subsection))
+    out.append(u':Datentyp: {}'.format(tree_dict[entity].get('type')))
+    out.append(u':Darstellung: {}'.format(tree_dict[entity]['renderer']))
+    out.append(u':Pflichtstatus: {}'.
             format(tree_dict[entity].get('requirement_level')))
     # Options
     options = tree_dict[entity]['option']
     if options:
-        print(u':Wertebereich:')
-        print(reindent(tabulate(options,
+        out.append(u':Wertebereich:')
+        out.append(reindent(tabulate(options,
                 ('Wert', 'Option'), tablefmt='rst')))
     else:
-        print(u':Wertebereich: Kein')
+        out.append(u':Wertebereich: Kein')
     # Rule
     rule_expr = tree_dict[entity]['rule'].get('expr')
     rule_desc = tree_dict[entity]['rule']['meta'].get('description')
@@ -211,19 +216,20 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
         rule = '``{}``'.format(rule_expr)
     else:
         rule = 'Keine'
-    print(u':F-Contsraints: {}'.format(rule))
+    out.append(u':F-Contsraints: {}'.format(rule))
     # Changes
     changes = tree_dict[entity]['meta'].get('change')
     if changes:
-        print(u':Änderungen/Begründungen:')
-        print(reindent(tabulate(tree_dict[entity]['meta'].get('change'),
+        out.append(u':Änderungen/Begründungen:')
+        out.append(reindent(tabulate(tree_dict[entity]['meta'].get('change'),
                 (u'Datum', u'Begründung'), tablefmt='rst')))
     else:
-        print(u':Änderungen/Begründungen: Keine')
+        out.append(u':Änderungen/Begründungen: Keine')
     # Print custom/free-form fields
     for free_label, free_text in tree_dict[entity]['meta'].get('free', []):
-        print(u':{}: {}'.format(free_label, free_text))
-    print()
+        out.append(u':{}: {}'.format(free_label, free_text))
+    out.append(u'\n')
+    return '\n'.join(out)
 
 
 def main(args):
@@ -235,9 +241,9 @@ def main(args):
     elif args.format_rst:
         form_layout = parse_form(tree, args.form)
         if form_layout:
-            format_rst(tree_dict, form_layout)
+            print(format_rst(tree_dict, form_layout))
         else:
-            format_rst(tree_dict, None)
+            print(format_rst(tree_dict, None))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
