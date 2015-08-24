@@ -241,9 +241,10 @@ def main(args):
     elif args.format_rst:
         form_layout = parse_form(tree, args.form)
         if form_layout:
-            print(format_rst(tree_dict, form_layout))
+            rst = format_rst(tree_dict, form_layout)
         else:
-            print(format_rst(tree_dict, None))
+            rst = format_rst(tree_dict, None)
+        print(rst.encode('utf-8'))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
