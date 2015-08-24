@@ -247,7 +247,7 @@ if __name__ == '__main__':
     parser.add_argument('config', metavar='config', type=file,
             help='A form configuration file')
     parser.add_argument('--form', action='store', default='update',
-            help="Choose which form to parse (defaut: 'update')")
+            help="Choose which form to parse (default: 'update')")
     parser.add_argument('--rst', action='store_true', dest='format_rst',
             default=True, help='Output in RST format (default)')
     parser.add_argument('--json', action='store_true', dest='format_json',
