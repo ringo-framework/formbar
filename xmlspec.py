@@ -106,10 +106,8 @@ def get_tree_dict(tree):
         elif 'desired' in dict[id]:
             dict[id]['requirement_level'] = 'Forderfeld'
         # Renderer
-        try:
-            dict[id]['renderer'] = e.find('renderer').attrib.get('type')
-        except AttributeError:
-            dict[id]['renderer'] = 'NOT FOUND'
+        e.find('renderer')
+        dict[id]['renderer'] = e.attrib.get('type')
         # Options
         dict[id]['option'] = []
         for opt in e.findall('options/option'):
