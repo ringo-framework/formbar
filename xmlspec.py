@@ -187,8 +187,6 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     print(u':Label: {}'.format(tree_dict[entity].get('label')))
     print(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
     print(u':Name: ``{}``'.format(name))
-    print(u':Tabelle: <TODO>')
-    print(u':Modell: <TODO>')
     print(u':Teil: {}'.format(section))
     print(u':Abschnitt: {}'.format(subsection))
     print(u':Datentyp: {}'.format(tree_dict[entity].get('type')))
