@@ -107,7 +107,7 @@ $( document ).ready(function() {
     $('div.formbar-form form textarea, div.formbar-form form select, div.formbar-form form input').not(":text").change(evaluate);
     //detection of user stoppy typing in input text fields
     var timer = null;
-    $('div.formbar-form form input:text').keydown(function(){
+    $('div.formbar-form form input:text').not('.date').keydown(function(){
         clearTimeout(timer); 
         timer = setTimeout(evaluate, 750)
     });
