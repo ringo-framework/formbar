@@ -145,6 +145,11 @@ def get_tree_dict(tree):
                     dict[id]['rule']['meta'][mtype].append(
                                 (rule_meta.attrib.get('date'), rule_meta.text)
                             )
+        # Help
+        try:
+            dict[id]['help'] = e.find('help').text
+        except AttributeError:
+            dict[id]['help'] = None
     return dict
 
 def format_rst(tree_dict, form_layout=None, title=None):
@@ -231,6 +236,7 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     out.append(u':Darstellung: {}'.format(tree_dict[entity]['renderer']))
     out.append(u':Pflichtstatus: {}'.
             format(tree_dict[entity].get('requirement_level')))
+    out.append(u':Help: {}'.format(tree_dict[entity]['help']))
     # Options
     options = tree_dict[entity]['option']
     if options:
