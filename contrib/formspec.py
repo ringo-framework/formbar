@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+import os
 import argparse
 import xml.etree.ElementTree as ET
 from tabulate import tabulate
@@ -19,13 +20,13 @@ from pprint import pprint
 #    ^, for subsubsections
 #    ", for paragraphs
 #
-RST_SECTION_INDICATORS = (u'*', u'=', u'-', u'^', u'"')
+RST_SECTION_INDICATORS = (u'#', u'*', u'=', u'-', u'^', u'"')
 
 
 def rst_title(title, level):
     """ Return title as an RST header of specified level """
     underline = RST_SECTION_INDICATORS[level] * len(title)
-    if level == 0:  # Additional overline for certain high levels
+    if level in [0, 1]:  # Additional overline for certain high levels
         return '\n'.join([underline, title, underline])
     else:
         return '\n'.join([title, underline])
@@ -144,15 +145,16 @@ def get_tree_dict(tree):
                             )
     return dict
 
-def format_rst(tree_dict, form_layout=None):
+def format_rst(tree_dict, form_layout=None, title=None):
     """ Print an RST document to stdout """
     out = []
+    out.append(rst_title(title, 0))
     out.append(format_rst_intro(tree_dict))
     page = ''
     section = ''
     subsection = ''
     if form_layout is None:
-        out.append(rst_title('Entities', 0))
+        out.append(rst_title('Entities', 1))
         for entity in tree_dict:
             if entity != 'root_metadata':
                 out.append(format_rst_entity(tree_dict, entity, section,
@@ -163,7 +165,7 @@ def format_rst(tree_dict, form_layout=None):
             # Print an RST section title to indicate Formbar form pages
             new_page = item.attrib.get('label')
             if new_page != page:
-                out.append(rst_title(new_page, 0))
+                out.append(rst_title(new_page, 1))
             page = new_page
             # reset section and subsection for new page
             section = ''
@@ -171,14 +173,14 @@ def format_rst(tree_dict, form_layout=None):
         elif item.tag == 'section':
             new_section = item.attrib.get('label')
             if new_section != section:
-                out.append(rst_title(new_section, 1))
+                out.append(rst_title(new_section, 2))
             section = new_section
             # reset subsection for new page
             subsection = ''
         elif item.tag == 'subsection':
             new_subsection = item.attrib.get('label')
             if new_section != subsection:
-                out.append(rst_title(new_subsection, 2))
+                out.append(rst_title(new_subsection, 3))
             subsection = new_subsection
         elif item.tag == 'field':
             entity = item.attrib.get('ref')
@@ -193,7 +195,7 @@ def format_rst_intro(tree_dict):
     node = 'root_metadata'
     title = u'Präambel'
     if tree_dict[node]:
-        out.append(rst_title(title, 0))
+        out.append(rst_title(title, 1))
     if 'intro' in tree_dict[node]:
         intro = tree_dict[node]['intro']
         out.append(intro + '\n')
@@ -211,11 +213,11 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     # Section title
     name = tree_dict[entity]['id']
     if section == '':
-        section_lvl = 1
-    else:
         section_lvl = 2
+    else:
+        section_lvl = 3
         if subsection != '':
-            section_lvl = 3
+            section_lvl = 4
     out.append(rst_title(name, section_lvl))
     #
     out.append(u':Label: {}'.format(tree_dict[entity].get('label')))
@@ -264,19 +266,25 @@ def main(args):
     if args.format_json:
         pprint(tree_dict)
     elif args.format_rst:
+        if args.title is None:
+            title = os.path.basename(args.config)
+        else:
+            title = args.title
         form_layout = parse_form(tree, args.form)
         if form_layout:
-            rst = format_rst(tree_dict, form_layout)
+            rst = format_rst(tree_dict, form_layout, title)
         else:
-            rst = format_rst(tree_dict, None)
+            rst = format_rst(tree_dict, None, title)
         print(rst.encode('utf-8'))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
             description='Convert a Formbar XML specification ' +
                     'file into various formats.')
-    parser.add_argument('config', metavar='config', type=file,
+    parser.add_argument('config', metavar='config',
             help='A form configuration file')
+    parser.add_argument('--title', action='store',
+            help="Choose title of the topmost rst heading (default: The filename)")
     parser.add_argument('--form', action='store', default='update',
             help="Choose which form to parse (default: 'update')")
     parser.add_argument('--rst', action='store_true', dest='format_rst',
