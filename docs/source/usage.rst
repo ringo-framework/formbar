@@ -137,15 +137,15 @@ Generate specification
 =======================
 
 You can generate a specification based on the form configuration and
-additional :ref:`metadata` by using the `xmlspec.py` command.
+additional :ref:`metadata` by using the `formspec.py` command.
 
-``xmlspec.py`` parses Formbar XML configuration files in order to convert them
+``formspec.py`` parses Formbar XML configuration files in order to convert them
 to different formats.  Its main purpose is to convert the XML data into a
 human-readable form specification in RST format.
 
 A specification is generated per form. The command can be invoked like this::
 
-        python formbar/contrib/xmlspec.py --title Foo --form update /path/to/foo.xml > foo.rst
+        python formbar/contrib/formspec.py --title Foo --form update /path/to/foo.xml > foo.rst
 
 
 The `--title` parameter is optional. It will set the topmost heading of the
