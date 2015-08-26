@@ -1,10 +1,7 @@
-Upcoming
-========
-Detection of user stopped typing in text renderers after 750ms for auto rule
-evaluation.
-
 0.10
 ====
+- Modified "onchange" event for textfield. Detect if user stopped typing in
+  a textfield and trigger evaluation of rules after 750ms automatically.
 
 0.9.13
 ======
