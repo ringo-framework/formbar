@@ -132,3 +132,24 @@ Saving data
 Saving of the converted data after validation is usually done in the
 application and **not** by formbar. Although formbar provides a :func:`.save`
 method for mapped SQLAlchemy items but this method is deprecated.
+
+Generate specification
+=======================
+
+You can generate a specification based on the form configuration and
+additional :ref:`metadata` by using the `xmlspec.py` command.
+
+``xmlspec.py`` parses Formbar XML configuration files in order to convert them
+to different formats.  Its main purpose is to convert the XML data into a
+human-readable form specification in RST format.
+
+A specification is generated per form. The command can be invoked like this::
+
+        python formbar/contrib/xmlspec.py --title Foo --form update /path/to/foo.xml > foo.rst
+
+
+The `--title` parameter is optional. It will set the topmost heading of the
+specification to the given titel. Otherwise the name of the form will be used.
+
+The `--form` parameter is optional. On default the "update" form will be used
+to generate the specification.

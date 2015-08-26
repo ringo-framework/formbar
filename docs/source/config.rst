@@ -61,28 +61,23 @@ renderer.
 Each entity can optional have a :ref:`renderer`, :ref:`rule` or :ref:`help`
 element.
 
-=========   ===========
-Attribute   Description
-=========   ===========
-id          Used to refer to this entity in the form. Requiered. Must be unique.
-name        Used as name attribute in the rendered field. Defines the 
-            name of this attribute in the model.
-label       The field will be rendered with this label.
-number      A small number which is rendered in front of the label.
-type        Defines the python datatype which will be used on deserialisation
-            of the submitted value. Defines the datatype of the model. Possible values are
-            ``string`` (default), ``text``, ``integer``, ``float``, ``date``,
-            ``datetime``, ``email``, ``boolean``, ``time``, ``interval``.
-css         Value will be rendered as class attribute in the rendered field.
-expr        Expression which is used to calculate the value of the field.
-value       Default value of the field. Supports expressions. The default value might get overwritten on rendering.
-placeholder Custom placeholder that overrides the default of a field. For now only usable for ``interval``.
-readonly    Flag to indicate that the field should be rendered as readonly field. Default is ``false``.
-required    Flag to indicate that the is a required field. Default is ``false``.
-autofocus   Flag to mark the field to be focused on pageload. Only one field per form can be focused. Default is ``false``.
-desired     Flag to indicate that the is a desired field. Default is ``false``.
-tags        Comma separated list of tags for this field.
-=========   ===========
+===========   ===========
+Attribute     Description
+===========   ===========
+id            Used to refer to this entity in the form. Requiered. Must be unique.
+name          Used as name attribute in the rendered field. Defines the name of this attribute in the model.
+label         The field will be rendered with this label.
+number        A small number which is rendered in front of the label.
+type          Defines the python datatype which will be used on deserialisation of the submitted value. Defines the datatype of the model. Possible values are ``string`` (default), ``text``, ``integer``, ``float``, ``date``, ``datetime``, ``email``, ``boolean``, ``time``, ``interval``.  css         Value will be rendered as class attribute in the rendered field.
+expr          Expression which is used to calculate the value of the field.
+value         Default value of the field. Supports expressions. The default value might get overwritten on rendering.
+placeholder   Custom placeholder that overrides the default of a field. For now only usable for ``interval``.
+readonly      Flag to indicate that the field should be rendered as readonly field. Default is ``false``.
+required      Flag to indicate that the is a required field. Default is ``false``.
+autofocus     Flag to mark the field to be focused on pageload. Only one field per form can be focused. Default is ``false``.
+desired       Flag to indicate that the is a desired field. Default is ``false``.
+tags          Comma separated list of tags for this field.
+===========   ===========
 
 Defaults
 ^^^^^^^^
@@ -724,6 +719,104 @@ Attribute   Description
 rows        Number of rows of the textarea. Default is 3.
 url         URL which is called to renderer the form.
 =========   ===========
+
+.. _metadata:
+
+Metadata (Specification)
+========================
+You can add add metadata information to ``configuration``, ``entity``,
+``option``, ``renderer``, ``rule``, ``form``, ``snippet`` elements of the
+form.
+
+Metadata can be used to build some kind of specification of the form. This
+data can be used by the ``formspec.py`` command to generate a specification of
+the form.
+
+Every metadata block will look like this::
+
+    <metadata>
+        <meta attrib="example" date="YYYYMMDD"></meta>
+    </metadata>
+
+=========   ===========
+Attribute   Description
+=========   ===========
+attrib      Classification of the metaattribute. 
+label       Optional. Used for the `free` classification to provide a label.
+date        Date of the entry
+=========   ===========
+
+The following classification are available: 
+
+`change`
+    Documentation of change made to the element (may appear multiple times)
+
+`comment`
+    Additional comments to the element. 
+
+    Comments which are applicable to the whole document which will be printed
+    at the top of the RST document (may appear multiple times).
+
+`desc`
+    General plain-language description of the element(unique).
+
+`free`
+    Required additional attributes: ``label``
+
+    General purpose metadata field which allows custom labels (may appear
+    multiple times).
+
+`intro`
+    An introductory text applicable to the whole document which will be printed
+    at the top of the RST document (unique).
+
+
+All meta items must contain a ``date`` attribute in the format ``YYYYMMDD``.
+
+Entities
+--------
+
+Example::
+
+        <entity>
+          <metadata>
+            <meta attrib="change" date="20150820">Customer request: Changed label of field to Foo</meta>
+            <meta attrib="change" date="20150826">Customer request: Changed label of field to Bar</meta>
+          </metadata>
+        </entity>
+
+Rules
+-----
+
+Example::
+
+        <entity>
+          <rule>
+            <metadata>
+              <meta attrib="desc" date="20150820">Is True when Foo is larger than Bar</meta>
+              <meta attrib="change" date="20150826">Customer request: Added rule to check value of Foo</meta>
+            </metadata>
+          </rule>
+        </entity>
+
+Document metadata (``<configuration>``/Root Metadata)
+-----------------------------------------------------
+The main ``<configuration>`` element may contain metadata (*root metadata*)
+which is relevant to the whole document.  This information will be formatted
+as a preamble to the RST output
+
+Example::
+
+        <configuration>
+          <metadata>
+            <meta attrib="intro" date="20150820">This text will be rendererd as preamble.</meta>
+            <meta attrib="comment" date="20150826">Adapted all labels to fullfill gender mainstreaming requirements.</meta>
+          </metadata>
+          <source>
+           ...
+          </source>
+          ...
+        </entity>
 
 .. _custom_renderer:
 
