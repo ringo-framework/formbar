@@ -110,8 +110,10 @@ def get_tree_dict(tree):
         elif 'desired' in dict[id]:
             dict[id]['requirement_level'] = 'Forderfeld'
         # Renderer
-        e.find('renderer')
-        dict[id]['renderer'] = e.attrib.get('type')
+        try:
+            dict[id]['renderer'] = e.find('renderer').attrib.get('type')
+        except AttributeError:
+            dict[id]['renderer'] = 'NOT FOUND'
         # Options
         dict[id]['option'] = []
         for opt in e.findall('options/option'):
@@ -143,6 +145,11 @@ def get_tree_dict(tree):
                     dict[id]['rule']['meta'][mtype].append(
                                 (rule_meta.attrib.get('date'), rule_meta.text)
                             )
+        # Help
+        try:
+            dict[id]['help'] = e.find('help').text
+        except AttributeError:
+            dict[id]['help'] = None
     return dict
 
 def format_rst(tree_dict, form_layout=None, title=None):
@@ -229,6 +236,7 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     out.append(u':Darstellung: {}'.format(tree_dict[entity]['renderer']))
     out.append(u':Pflichtstatus: {}'.
             format(tree_dict[entity].get('requirement_level')))
+    out.append(u':Help: {}'.format(tree_dict[entity]['help']))
     # Options
     options = tree_dict[entity]['option']
     if options:
@@ -239,11 +247,11 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
         out.append(u':Wertebereich: Kein')
     # Rule
     rule_expr = tree_dict[entity]['rule'].get('expr')
-    out.append(u':F-Contsraints (Ausdruck): ``{}``'.format(rule_expr))
+    out.append(u':F-Constraints (Ausdruck): ``{}``'.format(rule_expr))
     if rule_expr:
         rule_desc = tree_dict[entity]['rule']['meta'].get(
                 'description', u'NOT FOUND')
-        out.append(u':F-Contsraints (Beschreibung): {}'.format(rule_desc))
+        out.append(u':F-Constraints (Beschreibung): {}'.format(rule_desc))
     # Changes
     changes = tree_dict[entity]['meta'].get('change')
     if changes:
