@@ -1,5 +1,9 @@
 0.10
 ====
+- Added support for metadata sections in the form configuration. This metadata
+  is used together with the entity, and layout sections to generate a
+  specification of the forms.
+- Added formspec.py command to generate the speficication. 
 
 0.9.13
 ======
