@@ -123,6 +123,9 @@ def get_tree_dict(tree):
         dict[id]['option'] = []
         for opt in e.findall('options/option'):
             option_value = opt.attrib.get('value')
+            # explicitly state NULL for clarity of output
+            if option_value is '':
+                option_value = 'NULL'
             option_text = opt.text
             dict[id]['option'].append((option_value, option_text))
         # Metadata
