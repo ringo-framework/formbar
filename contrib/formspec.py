@@ -157,7 +157,7 @@ def get_tree_dict(tree):
         try:
             dict[id]['help'] = e.find('help').text
         except AttributeError:
-            dict[id]['help'] = None
+            dict[id]['help'] = 'Keine'
     return dict
 
 def format_rst(tree_dict, form_layout=None, title=None):
@@ -240,11 +240,11 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     out.append(u':Name: ``{}``'.format(name))
     out.append(u':Teil: {}'.format(section))
     out.append(u':Abschnitt: {}'.format(subsection))
-    out.append(u':Datentyp: {}'.format(tree_dict[entity].get('type')))
+    out.append(u':Datentyp: {}'.format(tree_dict[entity].get('type', 'Nicht angegeben')))
     out.append(u':Darstellung: {}'.format(tree_dict[entity]['renderer']))
     out.append(u':Pflichtstatus: {}'.
-            format(tree_dict[entity].get('requirement_level')))
-    out.append(u':Help: {}'.format(tree_dict[entity]['help']))
+            format(tree_dict[entity].get('requirement_level', 'Kein')))
+    out.append(u':Hilfe: {}'.format(tree_dict[entity]['help']))
     # Options
     options = tree_dict[entity]['option']
     if options:
@@ -255,11 +255,13 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
         out.append(u':Wertebereich: Kein')
     # Rule
     rule_expr = tree_dict[entity]['rule'].get('expr')
-    out.append(u':F-Constraints (Ausdruck): ``{}``'.format(rule_expr))
     if rule_expr:
+        out.append(u':F-Constraints (Ausdruck): ``{}``'.format(rule_expr))
         rule_desc = tree_dict[entity]['rule']['meta'].get(
                 'description', u'NOT FOUND')
         out.append(u':F-Constraints (Beschreibung): {}'.format(rule_desc))
+    else:
+        out.append(u':F-Constraints: Keine')
     # Changes
     changes = tree_dict[entity]['meta'].get('change')
     if changes:
