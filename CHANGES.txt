@@ -1,9 +1,14 @@
-0.10
+0.11
 ====
 - Added support for metadata sections in the form configuration. This metadata
   is used together with the entity, and layout sections to generate a
   specification of the forms.
 - Added formspec.py command to generate the speficication. 
+
+0.10
+====
+- Modified "onchange" event for textfield. Detect if user stopped typing in
+  a textfield and trigger evaluation of rules after 750ms automatically.
 
 0.9.13
 ======

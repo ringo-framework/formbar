@@ -99,17 +99,22 @@ $( document ).ready(function() {
      * Evaluate when values in the form changes
     */
     mapFieldsToConditionals();
-    function evaluate(){
-        evaluateFields();
-        evaluateConditionals();
-    }
-    evaluate()
-    $('div.formbar-form form textarea, div.formbar-form form select, div.formbar-form form input').not(":text").change(evaluate);
+    evaluateFields();
+    evaluateConditionals();
+    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(evaluateFields);
+    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(function(event) {
+        evaluateConditionalsOnChange(this);
+        });
+
     //detection of user stoppy typing in input text fields
     var timer = null;
     $('div.formbar-form form input:text').keydown(function(){
-        clearTimeout(timer); 
-        timer = setTimeout(evaluate, 750)
+        clearTimeout(timer);
+        function evaluate(obj){
+            evaluateFields();
+            evaluateConditionalsOnChange(obj);
+        }
+        timer = setTimeout(evaluate, 750, this)
     });
 });
 
@@ -265,8 +270,9 @@ function evaluateConditional(conditional) {
     }
 }
 
-function evaluateConditionalsOnChange() {
-    var fieldname = this.getAttribute("name")
+// passing context as parameter until better solution is found
+function evaluateConditionalsOnChange(obj) {
+    var fieldname = obj.getAttribute("name")
     var conditionals = fields2Conditionals[fieldname];
     if (conditionals != undefined) {
         for (var j = 0; j <= conditionals.length - 1; j++) {
