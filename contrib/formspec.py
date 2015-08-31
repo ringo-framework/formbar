@@ -7,6 +7,7 @@ import argparse
 import xml.etree.ElementTree as ET
 from tabulate import tabulate
 from pprint import pprint
+from datetime import datetime
 
 
 # Set RST section headers
@@ -41,6 +42,10 @@ def reindent(s, numSpaces=3):
     s = '\n'.join(s)
     return s
 
+
+def convert_date(string):
+    dt = datetime.strptime(string, '%Y%m%d')
+    return dt.strftime('%d.%m.%Y')
 
 def walk(tree, node, elements=None):
     """
@@ -256,7 +261,10 @@ def format_rst_entity(tree_dict, entity, section='', subsection=''):
     changes = tree_dict[entity]['meta'].get('change')
     if changes:
         out.append(u':Änderungen/Begründungen:')
-        out.append(reindent(tabulate(tree_dict[entity]['meta'].get('change'),
+        ctable = []
+        for date, msg in changes:
+            ctable.append([convert_date(date), msg])
+        out.append(reindent(tabulate(ctable,
                 (u'Datum', u'Begründung'), tablefmt='rst')))
     else:
         out.append(u':Änderungen/Begründungen: Keine')
