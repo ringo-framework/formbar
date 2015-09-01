@@ -3,6 +3,7 @@
 
 from __future__ import print_function
 import os
+import gettext
 import argparse
 import xml.etree.ElementTree as ET
 from tabulate import tabulate
@@ -308,11 +309,16 @@ if __name__ == '__main__':
             help="Choose title of the topmost rst heading (default: The filename)")
     parser.add_argument('--form', action='store', default='update',
             help="Choose which form to parse (default: 'update')")
+    parser.add_argument('--translation', action='store',
+            help="Path to translation MO file")
     parser.add_argument('--rst', action='store_true', dest='format_rst',
             default=True, help='Output in RST format (default)')
     parser.add_argument('--json', action='store_true', dest='format_json',
             default=False, help='Output in JSON format')
     args = parser.parse_args()
+    gettext.bindtextdomain('formspec', args.translation)
+    gettext.textdomain('formspec')
+    _ = gettext.gettext
     # FIXME: not checking for mutual exclusive options etc.
     main(args)
 
