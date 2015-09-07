@@ -174,17 +174,17 @@ button {
     position: fixed;
     top: 0;
     z-index:10;
-    width: 126px;
+    width: 157.5px;
   }
 }
 @media(min-width:992px){
   .formbar-outline.affix {
-    width: 213px;
+    width: 212.5px;
   }
 }
 @media(min-width:1200px){
   .formbar-outline.affix {
-    width: 290px;
+    width: 262.5px;
   }
 }
 
