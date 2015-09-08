@@ -169,6 +169,7 @@ button {
     z-index:10;
   }
 }
+
 @media(min-width:768px){
   .formbar-outline.affix {
     position: fixed;
@@ -195,4 +196,8 @@ button {
 
 a.list-group-item.selected {
     background-color: #f5f5f5 !important;
+}
+
+.affix{
+    position: static;
 }
