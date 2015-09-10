@@ -1,37 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-from __future__ import print_function
 import os
-import gettext
 import argparse
-import xml.etree.ElementTree as ET
-from tabulate import tabulate
-from pprint import pprint
-from datetime import datetime
+import gettext
+from formbar.config import Config, parse
 
 
-# Set RST section headers
-#
-# Sphinx convention: http://sphinx-doc.org/rest.html
-#
-#    # with overline, for parts
-#    * with overline, for chapters
-#    =, for sections
-#    -, for subsections
-#    ^, for subsubsections
-#    ", for paragraphs
-#
-RST_SECTION_INDICATORS = (u'#', u'*', u'=', u'-', u'^', u'"')
-
-
-def rst_title(title, level):
-    """ Return title as an RST header of specified level """
-    underline = RST_SECTION_INDICATORS[level] * len(title)
-    if level in [0, 1]:  # Additional overline for certain high levels
-        return '\n'.join([underline, title, underline])
-    else:
-        return '\n'.join([title, underline])
+def _get_config(config):
+    return Config(parse(config.read()))
 
 
 def reindent(s, numSpaces=3):
@@ -44,282 +20,242 @@ def reindent(s, numSpaces=3):
     return s
 
 
-def convert_date(string):
-    dt = datetime.strptime(string, '%Y%m%d')
-    return dt.strftime('%d.%m.%Y')
+def render_page(element):
+    out = []
+    out.append("*"*len(_(element.attrib.get("label"))))
+    out.append(_(element.attrib.get("label")))
+    out.append("*"*len(_(element.attrib.get("label"))))
+    return "\n".join(out)
 
-def walk(tree, node, elements=None):
-    """
-    Return a list of (relevant) elements of a given node.
-    Follow refs recursively if necessary.
-    """
-    if elements is None:
-        elements = []
+
+def render_section(element):
+    out = []
+    out.append(_(element.attrib.get("label")))
+    out.append("="*len(_(element.attrib.get("label"))))
+    return "\n".join(out)
+
+
+def render_subsection(element):
+    out = []
+    out.append(_(element.attrib.get("label")))
+    out.append("-"*len(_(element.attrib.get("label"))))
+    return "\n".join(out)
+
+
+def _render_label(element):
+    key = _('Label')
+    value = _(element.attrib.get("label"))
     try:
-        for n in node.iter('*'):
-            if n.tag in ['field', 'section', 'page', 'subsection']:
-                elements.append(n)
-            elif n.tag == 'snippet':
-                # find referenced snippet and start recursion
-                if 'ref' in n.attrib:
-                    snippet = tree.find(
-                            "snippet[@id='{}']".format(n.attrib.get('ref')))
-                    elements = walk(tree, snippet, elements)
-    except AttributeError:
-        pass
+        if value:
+            value = value.encode("UTF-8")
+    except:
+        value = "ERROR: Could not convert Label"
+    return ":{key}: {value}".format(key=key, value=value)
+
+
+def _render_name(element):
+    key = _('Name')
+    value = element.attrib.get("name")
+    if value:
+        value = value.encode("UTF-8")
+    return ":{key}: {value}".format(key=key, value=value)
+
+
+def _render_type(element):
+    key = _('Type')
+    value = element.attrib.get("type", "string")
+    if value:
+        value = value.encode("UTF-8")
+    return ":{key}: {value}".format(key=key, value=value)
+
+
+def _render_id(element):
+    key = _('ID')
+    value = element.attrib.get("id")
+    if value:
+        value = value.encode("UTF-8")
+    return ":{key}: {value}".format(key=key, value=value)
+
+
+def _render_help(element):
+    key = _('Help')
+    value = element.find(".//help")
+    if value is not None:
+        value = _(value.text.encode("UTF-8"))
+        return ":{key}: {value}".format(key=key, value=value)
+    return ""
+
+
+def _render_renderer(element):
+    key = _('Renderer')
+    renderer = element.find("renderer")
+    if renderer is not None:
+        value = renderer.attrib.get("type")
+    else:
+        value = "text"
+    if value:
+        value = value.encode("UTF-8")
+    return ":{key}: {value}".format(key=key, value=value)
+
+
+def _render_rst_table(options):
+    out = []
+    # Determine length of bars
+    keys = options.keys()
+    keys.append(_('Option'))
+    values = options.values()
+    values.append(_('Value'))
+    mln = len(max(keys))
+    mlv = len(max(values))
+    out.append("%s %s" % (mlv*"=", mln*"="))
+    out.append("%s %s" % (_('Value').ljust(mlv), _('Option').ljust(mln)))
+    out.append("%s %s" % (mlv*"=", mln*"="))
+    for k in options:
+        name = k.encode("UTF-8").ljust(mlv)
+        value = options[k]
+        out.append("%s %s" % (value, name))
+    out.append("%s %s" % (mlv*"=", mln*"="))
+    return "\n".join(out)
+
+
+def _render_options(element):
+    """TODO: Docstring for _render_options.
+
+    :element: TODO
+    :returns: TODO
+
+    """
+    options = {}
+    for option in element.findall("options/option"):
+        name = _(option.text.encode("UTF-8"))
+        options[option.attrib.get('value')] = name
+    if options:
+        return reindent(_render_rst_table(options))
+    return ""
+
+
+def _render_rules(element):
+    out = []
+    rules = element.findall("rule")
+    if len(rules) == 0:
+        return ""
+    out.append(".. rubric:: {}".format(_("Rules")))
+    for num, rule in enumerate(rules):
+        key = "{0}.".format(num+1)
+        value = rule.attrib.get("expr")
+        msg = rule.attrib.get("expr")
+        if value:
+            value = value.encode("UTF-8")
+        if msg:
+            msg = msg.encode("UTF-8")
+        out.append("{key} {value} {msg}".format(key=key, value=value, msg=msg))
+        out.append(reindent(render_meta(rule)))
+    return "\n".join(out)
+
+
+def render_meta(element, header=None, metatype=None):
+    out = []
+    if metatype:
+        metaelements = element.findall("metadata/meta[@type='%s']" % metatype)
+    else:
+        metaelements = element.findall("metadata/meta")
+    if len(metaelements) == 0:
+        return ""
+
+    if header:
+        out.append(".. rubric:: {}".format(header))
+    for num, element in enumerate(metaelements):
+        value = element.text
+        date = element.attrib.get("date")
+        if value:
+            value = value.encode("UTF-8")
+        out.append("{num}. {date} {value}".format(num=num+1, date=date, value=value))
+    return "\n".join(out)
+
+
+def render_field(element):
+    out = []
+    title = element.attrib.get("name")
+    out.append(_(title))
+    out.append("^"*len(_(title)))
+    out.append(_render_label(element))
+    out.append(_render_name(element))
+    out.append(_render_type(element))
+    options = _render_options(element)
+    if options:
+        out.append(options)
+    out.append(_render_id(element))
+    out.append(_render_renderer(element))
+    rules = _render_rules(element)
+    if rules:
+        out.append(rules)
+    help_ = _render_help(element)
+    if help_:
+        out.append(help_)
+    changes = render_meta(element, _('Changes'), "change")
+    if changes:
+        out.append(changes)
+    comments = render_meta(element, _('Comments'), "comment")
+    if comments:
+        out.append(comments)
+    return "\n".join(out)
+
+
+def render_spec(config, title, form):
+    out = []
+    out.append("#"*len(title))
+    out.append(title)
+    out.append("#"*len(title))
+    for element in get_spec_elements(config, form):
+        if element.tag == "page":
+            out.append(render_page(element))
+        elif element.tag == "section":
+            out.append(render_section(element))
+        elif element.tag == "subsection":
+            out.append(render_subsection(element))
+        elif element.tag == "entity":
+            out.append(render_field(element))
+        out.append("")
+    return "\n".join(out)
+
+
+def get_spec_elements(config, form="update"):
+    form_config = config.get_form(form)
+    elements = []
+    for page in form_config.get_pages():
+        elements.append(page)
+        for element in form_config.walk(page, {}, include_layout=True):
+            if element.tag == "field":
+                ref = element.attrib.get('ref')
+                element = form_config._parent.get_element('entity', ref)
+            elements.append(element)
     return elements
 
 
-def list_forms(tree):
-    """ Return list of all forms defined in Formbar XML """
-    form_nodes = tree.iter('form')
-    form_ids = []
-    for f in form_nodes:
-        form_ids.append(f.attrib.get('id'))
-    return form_ids
-
-
-def parse_form(tree, form='update'):
-    """ Return list of all (relevant) form items in document order """
-    start_node = tree.find("form[@id='{}']".format(form))
-    if start_node is None:
-        return []
-    ordered_list = walk(tree, start_node)
-    return ordered_list
-
-
-def get_tree_dict(tree):
-    """ Parse XML; return a dict """
-    dict = {}
-    dict['root_metadata'] = {}
-    # root document info
-    root_metadata = tree.find('./metadata')
-    if root_metadata is not None:
-        for root_meta in root_metadata:
-            mtype = root_meta.attrib.get('type')
-            if mtype == 'intro':  # unique
-                dict['root_metadata'][mtype] = root_meta.text
-            else:  # potentially multiple items
-                if not mtype in dict['root_metadata']:  # init list
-                    dict['root_metadata'][mtype] = []
-                dict['root_metadata'][mtype].append(
-                        (root_meta.attrib.get('date'), root_meta.text))
-    # Individual entities
-    for e in tree.iter('entity'):
-        id = e.attrib.get('id')
-        dict[id] = {}
-        for name, value in e.attrib.items():
-            dict[id][name] = value
-        # Pflichtstatus
-        if 'required' in dict[id]:
-            dict[id]['requirement_level'] = 'Pflichtfeld'
-        elif 'desired' in dict[id]:
-            dict[id]['requirement_level'] = 'Forderfeld'
-        # Renderer
-        try:
-            dict[id]['renderer'] = e.find('renderer').attrib.get('type')
-        except AttributeError:
-            dict[id]['renderer'] = 'NOT FOUND'
-        # Options
-        dict[id]['option'] = []
-        for opt in e.findall('options/option'):
-            option_value = opt.attrib.get('value')
-            # explicitly state NULL for clarity of output
-            if option_value is '':
-                option_value = 'NULL'
-            option_text = opt.text
-            dict[id]['option'].append((option_value, option_text))
-        # Metadata
-        dict[id]['meta'] = {}
-        for m in e.findall('metadata/meta'):
-            mtype = m.attrib.get('type')
-            if not mtype in dict[id]['meta']:  # init list
-                dict[id]['meta'][mtype] = []
-            if mtype == 'free':
-                dict[id]['meta'][mtype].append((m.attrib.get('label'), m.text))
-            else:
-                dict[id]['meta'][mtype].append((m.attrib.get('date'), m.text))
-        # Rule
-        dict[id]['rule'] = {}
-        dict[id]['rule']['meta'] = {}
-        for r in e.findall('rule'):
-            for name, value in r.attrib.items():
-                dict[id]['rule'][name] = value
-            for rule_meta in r.findall('metadata/meta'):
-                mtype = rule_meta.attrib.get('type')
-                if mtype == 'description':  # 'description' is unique per rule
-                    dict[id]['rule']['meta'][mtype] = rule_meta.text
-                elif not mtype in dict[id]['rule']['meta']:  # init list
-                    dict[id]['rule']['meta'][mtype] = [('Datum', mtype)]
-                    dict[id]['rule']['meta'][mtype].append(
-                                (rule_meta.attrib.get('date'), rule_meta.text)
-                            )
-        # Help
-        try:
-            dict[id]['help'] = e.find('help').text
-        except AttributeError:
-            dict[id]['help'] = 'Keine'
-    return dict
-
-def format_rst(tree_dict, form_layout=None, title=None):
-    """ Print an RST document to stdout """
-    out = []
-    out.append(rst_title(title, 0))
-    out.append(format_rst_intro(tree_dict))
-    page = ''
-    section = ''
-    subsection = ''
-    if form_layout is None:
-        out.append(rst_title('Entities', 1))
-        for entity in tree_dict:
-            if entity != 'root_metadata':
-                out.append(format_rst_entity(tree_dict, entity, section,
-                        subsection))
-        return '\n'.join(out)
-    for item in form_layout:
-        if item.tag == 'page':
-            # Print an RST section title to indicate Formbar form pages
-            new_page = item.attrib.get('label')
-            if new_page != page:
-                out.append(rst_title(new_page, 1))
-            page = new_page
-            # reset section and subsection for new page
-            section = ''
-            subsection = ''
-        elif item.tag == 'section':
-            new_section = item.attrib.get('label')
-            if new_section != section:
-                out.append(rst_title(new_section, 2))
-            section = new_section
-            # reset subsection for new page
-            subsection = ''
-        elif item.tag == 'subsection':
-            new_subsection = item.attrib.get('label')
-            if new_section != subsection:
-                out.append(rst_title(new_subsection, 3))
-            subsection = new_subsection
-        elif item.tag == 'field':
-            entity = item.attrib.get('ref')
-            out.append(format_rst_entity(tree_dict, entity, section,
-                    subsection))
-    return '\n'.join(out)
-
-
-def format_rst_intro(tree_dict):
-    """ Print form root metadata in RST format """
-    out = []
-    node = 'root_metadata'
-    title = u'Präambel'
-    if tree_dict[node]:
-        out.append(rst_title(title, 1))
-    if 'intro' in tree_dict[node]:
-        intro = tree_dict[node]['intro']
-        out.append(intro + '\n')
-    if 'comment' in tree_dict[node]:
-        out.append(':Kommentare:')
-        out.append(reindent(tabulate(tree_dict[node]['comment'],
-                ('Datum', 'Kommentar'), tablefmt='rst')))
-        out.append(u'\n')
-    return '\n'.join(out)
-
-
-def format_rst_entity(tree_dict, entity, section='', subsection=''):
-    """ Print RST formatted information for a single entity """
-    out = []
-    # Section title
-    name = tree_dict[entity]['id']
-    if section == '':
-        section_lvl = 2
-    else:
-        section_lvl = 3
-        if subsection != '':
-            section_lvl = 4
-    out.append(rst_title(name, section_lvl))
-    #
-    out.append(u':Label: {}'.format(tree_dict[entity].get('label')))
-    out.append(u':Nummer: {}'.format(tree_dict[entity].get('number', '--')))
-    out.append(u':Name: ``{}``'.format(name))
-    out.append(u':Teil: {}'.format(section))
-    out.append(u':Abschnitt: {}'.format(subsection))
-    out.append(u':Datentyp: {}'.format(tree_dict[entity].get('type', 'Nicht angegeben')))
-    out.append(u':Darstellung: {}'.format(tree_dict[entity]['renderer']))
-    out.append(u':Pflichtstatus: {}'.
-            format(tree_dict[entity].get('requirement_level', 'Kein')))
-    out.append(u':Hilfe: {}'.format(tree_dict[entity]['help']))
-    # Options
-    options = tree_dict[entity]['option']
-    if options:
-        out.append(u':Wertebereich:')
-        out.append(reindent(tabulate(options,
-                ('Wert', 'Option'), tablefmt='rst')))
-    else:
-        out.append(u':Wertebereich: Kein')
-    # Rule
-    rule_expr = tree_dict[entity]['rule'].get('expr')
-    if rule_expr:
-        out.append(u':F-Constraints (Ausdruck): ``{}``'.format(rule_expr))
-        rule_desc = tree_dict[entity]['rule']['meta'].get(
-                'description', u'NOT FOUND')
-        out.append(u':F-Constraints (Beschreibung): {}'.format(rule_desc))
-    else:
-        out.append(u':F-Constraints: Keine')
-    # Changes
-    changes = tree_dict[entity]['meta'].get('change')
-    if changes:
-        out.append(u':Änderungen/Begründungen:')
-        ctable = []
-        for date, msg in changes:
-            ctable.append([convert_date(date), msg])
-        out.append(reindent(tabulate(ctable,
-                (u'Datum', u'Begründung'), tablefmt='rst')))
-    else:
-        out.append(u':Änderungen/Begründungen: Keine')
-    # Print custom/free-form fields
-    for free_label, free_text in tree_dict[entity]['meta'].get('free', []):
-        out.append(u':{}: {}'.format(free_label, free_text))
-    out.append(u'\n')
-    return '\n'.join(out)
-
-
 def main(args):
-    tree = ET.parse(args.config)
-    #forms = list_forms(config)  # disabled because we hard-coded the 'update' form below
-    tree_dict = get_tree_dict(tree)
-    if args.format_json:
-        pprint(tree_dict)
-    elif args.format_rst:
-        if args.title is None:
-            title = os.path.basename(args.config)
-        else:
-            title = args.title
-        form_layout = parse_form(tree, args.form)
-        if form_layout:
-            rst = format_rst(tree_dict, form_layout, title)
-        else:
-            rst = format_rst(tree_dict, None, title)
-        print(rst.encode('utf-8'))
+    config = _get_config(args.config)
+    title = args.title or os.path.basename(args.config.name)
+    print render_spec(config, title, args.form)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
             description='Convert a Formbar XML specification ' +
                     'file into various formats.')
     parser.add_argument('config', metavar='config',
-            help='A form configuration file')
+            type=argparse.FileType('rU'), help='A form configuration file')
     parser.add_argument('--title', action='store',
             help="Choose title of the topmost rst heading (default: The filename)")
     parser.add_argument('--form', action='store', default='update',
             help="Choose which form to parse (default: 'update')")
     parser.add_argument('--translation', action='store',
             help="Path to translation MO file")
-    parser.add_argument('--rst', action='store_true', dest='format_rst',
-            default=True, help='Output in RST format (default)')
-    parser.add_argument('--json', action='store_true', dest='format_json',
-            default=False, help='Output in JSON format')
     args = parser.parse_args()
-    gettext.bindtextdomain('formspec', args.translation)
-    gettext.textdomain('formspec')
-    _ = gettext.gettext
-    # FIXME: not checking for mutual exclusive options etc.
+    if args.translation:
+        gettext.bindtextdomain('formspec', args.translation)
+        gettext.textdomain('formspec')
+        _ = gettext.gettext
+    else:
+        _ = lambda x: x
     main(args)
 
 # vim: set expandtab:
