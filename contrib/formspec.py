@@ -152,7 +152,8 @@ def _render_rules(element):
         if msg:
             msg = msg.encode("UTF-8")
         out.append("{key} {value} {msg}".format(key=key, value=value, msg=msg))
-        out.append(reindent(render_meta(rule)))
+        out.append("")
+        out.append(reindent(render_meta(rule), 3))
     return "\n".join(out)
 
 
