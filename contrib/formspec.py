@@ -46,7 +46,7 @@ def _render_label(element):
     key = _('Label')
     value = _(element.attrib.get("label"))
     try:
-        if value:
+        if value and isinstance(value, unicode):
             value = value.encode("UTF-8")
     except:
         value = "ERROR: Could not convert Label"
