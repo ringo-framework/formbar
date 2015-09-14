@@ -100,21 +100,24 @@ def _render_renderer(element):
 
 def _render_rst_table(options):
     out = []
+    out.append("")
     # Determine length of bars
     keys = options.keys()
     keys.append(_('Option'))
     values = options.values()
     values.append(_('Value'))
-    mln = len(max(keys))
-    mlv = len(max(values))
-    out.append("%s %s" % (mlv*"=", mln*"="))
-    out.append("%s %s" % (_('Value').ljust(mlv), _('Option').ljust(mln)))
-    out.append("%s %s" % (mlv*"=", mln*"="))
+    mln = len(max(keys, key=len))
+    mlv = len(max(values, key=len))
+    out.append("%s %s" % (mln*"=", mlv*"="))
+    out.append("%s %s" % (_('Value').ljust(mln), _('Option').ljust(mlv)))
+    out.append("%s %s" % (mln*"=", mlv*"="))
     for k in options:
-        name = k.encode("UTF-8").ljust(mlv)
         value = options[k]
-        out.append("%s %s" % (value, name))
-    out.append("%s %s" % (mlv*"=", mln*"="))
+        k = k or "NULL"
+        name = k.encode("UTF-8").ljust(mln)
+        out.append("%s %s" % (name, value))
+    out.append("%s %s" % (mln*"=", mlv*"="))
+    out.append("")
     return "\n".join(out)
 
 
