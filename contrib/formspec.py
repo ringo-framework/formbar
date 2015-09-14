@@ -139,7 +139,7 @@ def _render_rules(element):
     rules = element.findall("rule")
     if len(rules) == 0:
         return ""
-    out.append(".. rubric:: {}".format(_("Rules")))
+    out.append("\n**{}**\n\n".format(_("Rules")))
     for num, rule in enumerate(rules):
         key = "{0}.".format(num+1)
         value = rule.attrib.get("expr")
@@ -163,7 +163,7 @@ def render_meta(element, header=None, metatype=None):
         return ""
 
     if header:
-        out.append(".. rubric:: {}".format(header))
+        out.append("\n**{}**\n\n".format(header))
     for num, element in enumerate(metaelements):
         value = element.text
         date = element.attrib.get("date")
@@ -176,8 +176,8 @@ def render_meta(element, header=None, metatype=None):
 def render_field(element):
     out = []
     title = element.attrib.get("name")
-    out.append(_(title))
-    out.append("^"*len(_(title)))
+    out.append("\n.. index:: {}\n".format(title))
+    out.append("\n.. rubric:: {}\n".format(title))
     out.append(_render_label(element))
     out.append(_render_name(element))
     out.append(_render_type(element))
