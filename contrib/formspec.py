@@ -215,6 +215,7 @@ def render_spec(config, title, form):
             out.append(render_subsection(element))
         elif element.tag == "entity":
             out.append(render_field(element))
+            out.append("\n-----\n")
         out.append("")
     return "\n".join(out)
 
