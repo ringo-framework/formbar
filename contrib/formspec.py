@@ -59,6 +59,23 @@ def _render_label(element):
     return ":{key}: {value}".format(key=key, value=value)
 
 
+def _render_required(element):
+    key = _('Pflichtstatus')
+    required = _(element.attrib.get("required"))
+    desired = _(element.attrib.get("desired"))
+    if not required and not desired:
+        value = ""
+    elif required:
+        value = "Pflichtfeld"
+    else:
+        value = "Forderfeld"
+    try:
+        if value and isinstance(value, unicode):
+            value = value.encode("UTF-8")
+    except:
+        value = "ERROR: Could not convert Label"
+    return ":{key}: {value}".format(key=key, value=value)
+
 def _render_name(element):
     key = _('Name')
     value = element.attrib.get("name")
@@ -190,6 +207,7 @@ def render_field(element):
     out.append("\n.. rubric:: {}\n".format(title))
     out.append(_render_label(element))
     out.append(_render_name(element))
+    out.append(_render_required(element))
     out.append(_render_type(element))
     options = _render_options(element)
     if options:
