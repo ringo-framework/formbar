@@ -224,16 +224,26 @@ def render_spec(config, title, form):
     return "\n".join(out)
 
 
+def get_fields(config, node):
+    elements = []
+    for element in config.walk(node, {}, include_layout=True):
+        if element.tag == "field":
+            ref = element.attrib.get('ref')
+            element = config._parent.get_element('entity', ref)
+        elements.append(element)
+    return elements
+
+
 def get_spec_elements(config, form="update"):
     form_config = config.get_form(form)
     elements = []
-    for page in form_config.get_pages():
-        elements.append(page)
-        for element in form_config.walk(page, {}, include_layout=True):
-            if element.tag == "field":
-                ref = element.attrib.get('ref')
-                element = form_config._parent.get_element('entity', ref)
-            elements.append(element)
+    pages = form_config.get_pages()
+    if len(pages) > 0:
+        for page in pages:
+            elements.append(page)
+            elements.extend(get_fields(form_config, page))
+    else:
+        elements.extend(get_fields(form_config, form_config._tree))
     return elements
 
 
