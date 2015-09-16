@@ -196,12 +196,12 @@ def render_field(element):
         out.append(options)
     out.append(_render_id(element))
     out.append(_render_renderer(element))
-    rules = _render_rules(element)
-    if rules:
-        out.append(rules)
     help_ = _render_help(element)
     if help_:
         out.append(help_)
+    rules = _render_rules(element)
+    if rules:
+        out.append(rules)
     changes = render_meta(element, _('Changes'), "change")
     if changes:
         out.append(changes)
