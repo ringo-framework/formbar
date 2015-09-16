@@ -5,6 +5,12 @@ import argparse
 import gettext
 from formbar.config import Config, parse
 
+def _(message):
+    result = gettext.gettext(message)
+    if isinstance(result, unicode):
+        result = result.encode("UTF-8")
+    return result
+
 
 def _get_config(config):
     return Config(parse(config.read()))
@@ -268,7 +274,6 @@ if __name__ == '__main__':
     if args.translation:
         gettext.bindtextdomain('formspec', args.translation)
         gettext.textdomain('formspec')
-        _ = gettext.gettext
     else:
         _ = lambda x: x
     main(args)
