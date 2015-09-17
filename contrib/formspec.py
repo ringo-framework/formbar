@@ -134,7 +134,7 @@ def _render_rst_table(options):
     out.append("%s %s" % (mln*"=", mlv*"="))
     out.append("%s %s" % (_('Value').ljust(mln), _('Option').ljust(mlv)))
     out.append("%s %s" % (mln*"=", mlv*"="))
-    for k in options:
+    for k in sorted(options):
         value = options[k]
         k = k or "NULL"
         name = k.encode("UTF-8").ljust(mln)
