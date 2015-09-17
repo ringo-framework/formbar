@@ -191,17 +191,20 @@ class Form(Config):
                 pages.extend(self.get_pages(s))
         return pages
 
-    def walk(self, root, values, evaluate=False):
+    def walk(self, root, values, evaluate=False, include_layout=False):
         """Will walk the tree recursivley and yields every field node.
-        If evaluate parameter is true, then the function will only
-        return fields which are relevant after the conditionals in the
-        form has been evaluated.
+        Optionally you can yield every layout elements too.  If evaluate
+        parameter is true, then the function will only return fields
+        which are relevant after the conditionals in the form has been
+        evaluated.
 
         :root: Root node
         :values: Dictionary with values which are used for evaluating
         conditionals.
         :evaluate: Flag to indicate if evaluation should be done on
         conditionals
+        :include_layout: Flag to indicate to include layout elements
+        too.
         :returns: yields field elements
 
         """
@@ -222,16 +225,21 @@ class Form(Config):
                         # was "disabled" in a conditional. In this case
                         # the value is not sent. (ti) <2015-04-28 16:52>
                         continue
-                    for elem in self.walk(child, values, evaluate):
+                    for elem in self.walk(child, values, evaluate, include_layout):
+                        yield elem
+                elif include_layout and child.tag in ["section",
+                                                      "subsection"]:
+                    yield child
+                    for elem in self.walk(child, values, evaluate, include_layout):
                         yield elem
                 else:
-                    for elem in self.walk(child, values, evaluate):
+                    for elem in self.walk(child, values, evaluate, include_layout):
                         yield elem
             elif child.tag == "snippet":
                 sref = child.attrib.get('ref')
                 if sref:
                     snippet = self._parent.get_element('snippet', sref)
-                    for elem in self.walk(snippet, values, evaluate):
+                    for elem in self.walk(snippet, values, evaluate, include_layout):
                         yield elem
             elif child.tag == "field":
                 yield child
