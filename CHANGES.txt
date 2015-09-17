@@ -1,6 +1,7 @@
 0.12
 ====
 - Extract text form button for internationalisation.
+- Fixed affix of outline sidebar on forms.
 
 0.11
 ====
