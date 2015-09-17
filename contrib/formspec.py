@@ -234,6 +234,7 @@ def render_spec(config, title, form):
     out.append("#"*len(title))
     out.append(title)
     out.append("#"*len(title))
+    out.append(render_meta(config._tree))
     for element in get_spec_elements(config, form):
         if element.tag == "page":
             out.append(render_page(element))
