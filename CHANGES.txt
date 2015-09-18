@@ -1,3 +1,9 @@
+0.13
+====
+- Added attribute to configure how to display the help on the field. Show help
+  on fields as tooltip per default. On behaviour can be reestablished by
+  setting the display attribute of the help to "text".
+
 0.12
 ====
 - Extract text form button for internationalisation.
