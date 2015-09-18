@@ -176,7 +176,15 @@ triggers    Flag which defines which type of message a the rule will trigger if 
 Help
 ----
 The help block can be used to add some information to the field for the user.
-The help will be rendererd below the field in the form.
+
+=========   ===========
+Attribute   Description
+=========   ===========
+display     Defines how and where to display the information on the field. Can be ``tooltip`` (default) or ``text``.
+=========   ===========
+
+Depending on the display attribute of the help the information is either shown
+as tooltip next to the label of the field or below the field as normal text.
 
 .. _renderer:
 
