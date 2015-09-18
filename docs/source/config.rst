@@ -550,7 +550,7 @@ the options are automatically determined from the underlying data model::
 =============== ===========
 Attribute       Description
 =============== ===========
-filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+filter          Expression which must evaluate to True if the option should be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
 =============== ===========
 
@@ -593,16 +593,17 @@ underlying data model::
            </options>
         </entity>
 
-=========   ===========
-Attribute   Description
-=========   ===========
-filter      Expression which must evaluate to True if the option shoul be shown in the Dropdown.
-=========   ===========
+=============== ===========
+Attribute       Description
+=============== ===========
+filter          Expression which must evaluate to True if the option should be shown in the Dropdown.
+remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+=============== ===========
 
 .. note::
    Filtering is only possible for SQLAlchemy mapped items.
 
-See filtering section of the :ref:`dropdown` renderer.
+See filtering section of the :ref:`selection` renderer.
 
 Radio
 -----

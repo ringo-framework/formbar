@@ -2,6 +2,7 @@
 ====
 - Extract text form button for internationalisation.
 - Fixed affix of outline sidebar on forms.
+- Implement remove_filtered for dropdown elements too.
 
 0.11
 ====
