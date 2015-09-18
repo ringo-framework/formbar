@@ -147,7 +147,7 @@ function convertValue(value, field) {
     // quotes. Please note that the datatype attribute is currently only
     // renderered for the following fields:
     //  * radio
-    if (field.attr("datatype") && field.attr("datatype") == "string") {
+    if ((field.attr("datatype") && field.attr("datatype") == "string") || (field.attr("type") && field.attr("type") == "text")) {
         cvalue = "'"+value+"'"
     }
     return cvalue;
