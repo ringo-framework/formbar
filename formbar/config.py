@@ -417,6 +417,7 @@ class Field(Config):
         self.help = None
         help = entity.find('help')
         if help is not None:
+            self.help_display = help.attrib.get("display", "tooltip")
             self.help = help.text
 
         # Renderer
