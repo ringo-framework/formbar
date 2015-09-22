@@ -6,6 +6,8 @@ import gettext
 from formbar.config import Config, parse
 
 def _(message):
+    if message == "":
+        return ""
     result = gettext.gettext(message)
     if isinstance(result, unicode):
         result = result.encode("UTF-8")
