@@ -38,6 +38,14 @@ $( document ).ready(function() {
         previous.removeClass('selected'); // previous list-item
         $(e.target).addClass('selected'); // activated list-item
     });
+
+    // If the form has pages and there are no input elements on the current
+    // form page, than hide the submit button.
+    selected_formpage = $('.formbar-page :visible');
+    if (selected_formpage.length > 0) {
+        toggleSubmit(selected_formpage);
+    }
+
     /*
     * Set hidden form field "formbar-page" to the value of the currently
     * selected page. This value will be used to set the currently selected
@@ -71,6 +79,10 @@ $( document ).ready(function() {
             function(data, status) {});
       $('.formbar-page').hide();
       $('#formbar-page-'+page).show();
+      // If there are no input elements on the current form page, than hide
+      // the submit button.
+      var formpage = $('#formbar-page-'+page);
+      toggleSubmit(formpage);
     });
 
     /* Restrict input depending on datatypes */
@@ -295,4 +307,13 @@ function evaluateFields() {
             $('#'+id).text('NaN');
         }
     }
+}
+
+function toggleSubmit(element) {
+  var button = $('.formbar-form :submit');
+  if ( element.find("input[type!='hidden']", "select", "textarea").length > 0) {
+      button.show();
+  } else {
+      button.hide();
+  }
 }

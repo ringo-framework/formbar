@@ -7,6 +7,7 @@
   that almost nobody is using a reset button in the forms. If you want
   to have a reset button than you need to define a custom button bar now
   in the form.
+- Hide submit buttons on pages of forms with no input elements.
 
 0.12
 ====
