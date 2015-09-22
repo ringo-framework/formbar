@@ -165,8 +165,6 @@ class FormRenderer(Renderer):
         if len(self._form._config._buttons) == 0:
             html.append(HTML.tag("button", type="submit", 
                                  class_="btn btn-default", c=_('Submit')))
-            html.append(HTML.tag("button", type="reset", 
-                                 class_="btn btn-default", c=_('Reset')))
         else:
             for b in self._form._config._buttons:
                 html.append(HTML.tag("button", _closed=False,

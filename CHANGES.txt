@@ -3,6 +3,10 @@
 - Added attribute to configure how to display the help on the field. Show help
   on fields as tooltip per default. On behaviour can be reestablished by
   setting the display attribute of the help to "text".
+- Remove default "Reset" form button. Asking people using forms shows
+  that almost nobody is using a reset button in the forms. If you want
+  to have a reset button than you need to define a custom button bar now
+  in the form.
 
 0.12
 ====
