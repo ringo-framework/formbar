@@ -182,11 +182,11 @@ def _render_rules(element):
     for num, rule in enumerate(rules):
         key = "{0}.".format(num+1)
         value = rule.attrib.get("expr")
-        msg = rule.attrib.get("expr")
+        msg = rule.attrib.get("msg", "")
         if value:
             value = value.encode("UTF-8")
         if msg:
-            msg = msg.encode("UTF-8")
+            msg = ": {}".format(msg.encode("UTF-8"))
         out.append("{key} {value} {msg}".format(key=key, value=value, msg=msg))
         out.append("")
         out.append(reindent(render_meta(rule), 3))
