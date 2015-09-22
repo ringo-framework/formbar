@@ -237,7 +237,9 @@ def render_spec(config, title, form):
     out.append(title)
     out.append("#"*len(title))
     out.append(render_meta(config._tree))
-    for element in get_spec_elements(config, form):
+    elements = get_spec_elements(config, form)
+    num_elements = len(elements)
+    for num, element in enumerate(elements):
         if element.tag == "page":
             out.append(render_page(element))
         elif element.tag == "section":
@@ -246,7 +248,8 @@ def render_spec(config, title, form):
             out.append(render_subsection(element))
         elif element.tag == "entity":
             out.append(render_field(element))
-            out.append("\n-----\n")
+            if num+1 < num_elements:
+                out.append("\n-----\n")
         out.append("")
     return "\n".join(out)
 
