@@ -89,6 +89,12 @@ def _render_name(element):
 def _render_type(element):
     key = _('Type')
     value = element.attrib.get("type", "string")
+    renderer = _get_renderer(element)
+    # Currently we do not have a relation datatype but the presence of a
+    # listing or link renderer is a strong indication that this field is
+    # a relation.
+    if renderer in ["listing", "link"]:
+        value = "relation"
     if value:
         value = value.encode("UTF-8")
     return ":{key}: {value}".format(key=key, value=value)
@@ -111,13 +117,18 @@ def _render_help(element):
     return ""
 
 
-def _render_renderer(element):
-    key = _('Renderer')
+def _get_renderer(element):
     renderer = element.find("renderer")
     if renderer is not None:
         value = renderer.attrib.get("type")
     else:
         value = "text"
+    return value
+
+
+def _render_renderer(element):
+    key = _('Renderer')
+    value = _get_renderer(element)
     if value:
         value = value.encode("UTF-8")
     return ":{key}: {value}".format(key=key, value=value)
