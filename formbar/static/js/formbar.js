@@ -311,7 +311,7 @@ function evaluateFields() {
 
 function toggleSubmit(element) {
   var button = $('.formbar-form :submit');
-  if ( element.find("input[type!='hidden']", "select", "textarea").filter(":visible").length > 0) {
+  if ( element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
       button.show();
   } else {
       button.hide();
