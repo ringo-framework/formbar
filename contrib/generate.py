@@ -32,12 +32,11 @@ def print_model(config):
             "boolean": "sa.Boolean",
             "blob": "sa.LargeBinary"
         }
-        datatype = "sa.String"
-        try:
-            datatype = datatypes.get(field)
-        except:
+        datatype = datatypes.get(field.type)
+        if datatype is None:   
             log.warning(("No type found for '%s' using default 'sa.String'. "
                          % field.name))
+            datatype = "sa.String"
         if datatype is not "sa.String" or datatype is not "sa.Text":
             col = "%s = sa.Column('%s', %s, nullable=False, default='')"
             return col % (field.name, field.name, datatype)
