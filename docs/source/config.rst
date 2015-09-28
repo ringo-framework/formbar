@@ -227,7 +227,7 @@ Attribute   Description
 =========   ===========
 position    The position of the label realtive to the field element. Can be "left", "top", "right". Defaults to "top".
 align       The alignment of the text in the label. This only applies for labels with position set to "left" or "right". Can be "left" and "right". Defaults to "left".
-align       The width of the label in cols. The whole field including the label can be deived into 12 cols. If the label has e.g 4 cols the field will automatically take the remaining 8 cols. This only applies for labels with position set to "left" or "right".
+width       The width of the label in cols. The whole field including the label can be deived into 12 cols. If the label has e.g 4 cols the field will automatically take the remaining 8 cols. This only applies for labels with position set to "left" or "right".
 =========   ===========
 
 Layout
