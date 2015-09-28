@@ -37,7 +37,7 @@ def print_model(config):
             log.warning(("No type found for '%s' using default 'sa.String'. "
                          % field.name))
             datatype = "sa.String"
-        if datatype is not "sa.String" or datatype is not "sa.Text":
+        if datatype is "sa.String" or datatype is "sa.Text":
             col = "%s = sa.Column('%s', %s, nullable=False, default='')"
             return col % (field.name, field.name, datatype)
         else:
