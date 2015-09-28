@@ -1,3 +1,7 @@
+/****************************************************************************
+ *                                 Headings                                *
+ ****************************************************************************/
+
 .formbar-form h1.page {
   font-size: 30px;
   margin-top: 5px;
@@ -34,6 +38,27 @@
   margin-bottom: 10px;
 }
 
+/****************************************************************************
+ *                                   Form                                   *
+ ****************************************************************************/
+
+button {
+  margin-right: 15px;
+}
+
+.button-pane {
+  margin: 10px 0px;
+}
+
+
+/****************************************************************************
+ *                                  Fields                                  *
+ ****************************************************************************/
+
+/************
+ *  Labels  *
+ ************/
+
 label {
     display: inline;
 }
@@ -60,6 +85,11 @@ label.checkbox, label.radio {
     margin-top: 0.1em;
     margin-bottom: 0;
 }
+
+/********************
+ *  Field elements  *
+ ********************/
+
 
 /* Formbar Style */
 /* Make all field elements expand to 100% on default */
@@ -91,7 +121,10 @@ div.readonlyfield {
   min-height: 14px;
 }
 
-/* Helptexts */
+/***************
+ *  Helptexts  *
+ ***************/
+
 .text-generic {
   padding: 0.5em;
 }
@@ -123,13 +156,9 @@ div.readonlyfield {
   color: #707070;
 }
 
-button {
-  margin-right: 15px;
-}
-
-.button-pane {
-  margin: 10px 0px;
-}
+/****************************************************************************
+ *                              Outline/Affix                               *
+ ****************************************************************************/
 
 .formbar-outline {
   margin-top: 10px;
@@ -142,14 +171,6 @@ button {
 .active {
   display: block;
 }
-
-// Fits for large screens
-//.formbar-outline.affix {
-//  position: fixed;
-//  width: 262px;
-//  top: 10px;
-//  z-index:10;
-//}
 
 // Media depended affix CSS.
 @media(max-width:767px){
@@ -188,6 +209,10 @@ a.list-group-item.selected {
     position: static;
 }
 
+/****************************************************************************
+ *                                   Misc                                   *
+ ****************************************************************************/
+
 .formbar-form table td {
   vertical-align: middle;
 }
@@ -200,15 +225,11 @@ a.list-group-item.selected {
   margin-bottom: 0px;
 }
 
+// used for the formbar editor
 .formbar-preview-window {
     margin-top: 5px;
     padding: 5px;
     background-color: #ffd9d9;
-}
-
-/* Bootstrap overwrites */
-.formbar-conditional .list-group-item {
-    border-top-width: 1px !important;
 }
 
 .formbar-new-value {
@@ -217,4 +238,9 @@ a.list-group-item.selected {
 
 .formbar-del-value {
     text-decoration: line-through;
+}
+
+/* Bootstrap overwrites */
+.formbar-conditional .list-group-item {
+    border-top-width: 1px !important;
 }
