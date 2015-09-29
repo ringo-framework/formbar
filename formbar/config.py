@@ -468,6 +468,10 @@ class Renderer(Config):
         - Textarea
         - HTML
         """
+        self.elements_indent = entity.attrib.get("indent") == "true"
+        """Optional if set to true the field and help elements will be
+        have a small indent. Currently only applies to the Radio
+        renderer if label alignment is 'top'."""
         self.label_position = "top"
         """Optional. If defined the label will placed left, top
         or right to the field.  Defaults to top"""

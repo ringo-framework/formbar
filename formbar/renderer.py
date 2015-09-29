@@ -288,10 +288,13 @@ class FieldRenderer(Renderer):
         html = []
         has_errors = len(self._field.get_errors())
         has_warnings = len(self._field.get_warnings())
+        has_indent = (self.elements_indent and
+                      self.label_position not in ["left", "right"])
         class_options = ((has_errors and 'has-error'),
-                         (has_warnings and 'has-warning'))
+                         (has_warnings and 'has-warning'),
+                         (has_indent and 'has-indent'))
         html.append(HTML.tag("div", _closed=False,
-                             class_=("form-group %s %s" % class_options)))
+                             class_=("form-group %s %s %s" % class_options)))
         values = self._get_template_values()
         if self.label_width > 0 and self.label_position in ["left", "right"]:
             label_width = self.label_width

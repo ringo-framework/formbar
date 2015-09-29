@@ -90,6 +90,12 @@ label.checkbox, label.radio {
  *  Field elements  *
  ********************/
 
+/* If indent is set for the renderer than indent all child elements of the
+ * form group except it is the main label (.form-control) */
+.form-group.has-indent > *:not(.control-label) {
+    margin-left: 18px;
+}
+
 .formbar-form textarea {
   height: auto !important;
 }

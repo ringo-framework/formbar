@@ -197,6 +197,13 @@ The default renderer is chosen depending on the datatype of the field and is a
 textfield for almost all normal datatypes. On relations (in SQLAlchemy mapped
 items) a selection field is used for the relations
 
+=========   ===========
+Attribute   Description
+=========   ===========
+type        Type of the renderer. See :ref:`formbar_renderers`
+indent      If set to true the field elements and help texts under the label will get a indent. This is only if the label position is set to top. Defaults to no indent.
+=========   ===========
+
 There are different types of :ref:`formbar_renderers` available coming with formed. You
 can define which renderer will be used by setting the *type* attribute::
 
@@ -205,7 +212,6 @@ can define which renderer will be used by setting the *type* attribute::
 But it is very easy to write your own custom renderer. See
 :ref:`custom_renderer` for more details on writing custom renderes and
 :ref:`conf_custom_renderer` on how to use them for rendering in your form.
-
 
 Label
 `````

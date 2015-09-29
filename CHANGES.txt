@@ -1,3 +1,8 @@
+0.14
+====
+- Added configuration attribute of the renderer to configure an indent of the
+  field element(s). 
+
 0.13
 ====
 - Added attribute to configure how to display the help on the field. Show help
