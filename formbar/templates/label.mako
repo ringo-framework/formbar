@@ -1,5 +1,5 @@
 <label class="control-label ${field.renderer.label_position} ${field.renderer.render_type}" for="${field.name}">
-  % if field.number:
+  % if field.number and field.renderer.number == "left":
     <sup>(${field.number})</sup>
   % endif
   % if field.label:
@@ -10,5 +10,8 @@
   % endif
   % if field.help is not None and field.help_display == "tooltip":
     <span data-toggle="tooltip" data-original-title="${_(field.help)}" class="formbar-tooltip glyphicon glyphicon-info-sign"></span>
+  % endif
+  % if field.number and field.renderer.number == "right":
+    <sup>(${field.number})</sup>
   % endif
 </label>

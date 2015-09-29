@@ -484,8 +484,12 @@ class Renderer(Config):
         Defaults to 2 cols. The Fieldwidth will be reduced by the label
         width. This only applies for lables which are positioned on the
         left or right side."""
+        self.number = "left"
+        """Optional. Position of the number in the label. Can be `left`
+        or `right`. Defaults to `left`"""
         label_config = entity.find('label')
         if label_config is not None:
+            self.number = label_config.attrib.get("number") or "left"
             self.label_position = label_config.attrib.get("position") or "top"
             if self.label_position == "left":
                 self.label_align = label_config.attrib.get("align") or "right"
