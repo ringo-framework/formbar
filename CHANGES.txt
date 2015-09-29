@@ -4,6 +4,9 @@
   field element(s). 
 - Added configuration attribute to the label to configure the position of the
   numbering in the label.
+- Changed margins and font sizes of headings in the form to make the form more
+  compact and improve the visual difference of the headings. Margins are
+  reduced and differences between headings are larger now.
 
 0.13
 ====
