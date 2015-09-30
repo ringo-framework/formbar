@@ -85,15 +85,15 @@ label span.indent {
 }
 
 label span.indent-sm {
-  width: 20px;
+  width: 30px;
 }
 
 label span.indent-md {
-  width: 40px;
+  width: 50px;
 }
 
 label span.indent-lg {
-  width: 60px;
+  width: 70px;
 }
 
 label span.indent-empty {
@@ -103,6 +103,7 @@ label span.indent-empty {
 label span.indent-symbol, label span.indent-number {
   font-size: 70%;
   letter-spacing: 1.5px;
+  padding-left: 4px;
 }
 
 label span.indent-bordered {
@@ -110,7 +111,6 @@ label span.indent-bordered {
   top: -2px;
   border-top: 1px solid;
   border-left: 1px solid;
-  padding-left: 4px;
 }
 
 label span.indent-number:not(.indent-borderd) {
@@ -137,13 +137,13 @@ label sup {
 /* If indent is set for the renderer than indent all child elements of the
  * form group except it is the main label (.form-control) */
 .form-group.indent-sm > *:not(.control-label) {
-    margin-left: 26px;
+    margin-left: 36px;
 }
 .form-group.indent-md > *:not(.control-label) {
-    margin-left: 46px;
+    margin-left: 56px;
 }
 .form-group.indent-lg > *:not(.control-label) {
-    margin-left: 66px;
+    margin-left: 76px;
 }
 
 .formbar-form textarea {
