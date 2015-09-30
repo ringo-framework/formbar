@@ -80,14 +80,63 @@ label.checkbox, label.radio {
     margin-bottom: 0;
 }
 
+label span.indent {
+  display: inline-block;
+}
+
+label span.indent-sm {
+  width: 20px;
+}
+
+label span.indent-md {
+  width: 40px;
+}
+
+label span.indent-lg {
+  width: 60px;
+}
+
+label span.indent-empty {
+  width: 0;
+}
+
+label span.indent-symbol, label span.indent-number {
+  font-size: 70%;
+  letter-spacing: 1.5px;
+}
+
+label span.indent-bordered {
+  position: relative;
+  top: -2px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+  padding-left: 4px;
+}
+
+label span.indent-number:not(.indent-borderd) {
+  position: relative;
+  top: -2px;
+}
+
+
+label sup {
+  letter-spacing: 1.5px;
+}
+
 /********************
  *  Field elements  *
  ********************/
 
 /* If indent is set for the renderer than indent all child elements of the
  * form group except it is the main label (.form-control) */
-.form-group.has-indent > *:not(.control-label) {
-    margin-left: 18px;
+.form-group.indent-sm > *:not(.control-label) {
+    margin-left: 26px;
+}
+.form-group.indent-md > *:not(.control-label) {
+    margin-left: 46px;
+}
+.form-group.indent-lg > *:not(.control-label) {
+    margin-left: 66px;
 }
 
 .formbar-form textarea {

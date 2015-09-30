@@ -288,11 +288,18 @@ class FieldRenderer(Renderer):
         html = []
         has_errors = len(self._field.get_errors())
         has_warnings = len(self._field.get_warnings())
-        has_indent = (self.elements_indent and
-                      self.label_position not in ["left", "right"])
+
+        # Handle indent. Set indent_with css only if the elements are
+        # actually have an indent and the lable position allows an
+        # indent.
+        indent_width = ""
+        if self.elements_indent \
+           and self.label_position not in ["left", "right"]:
+            indent_width = self.indent_width
+
         class_options = ((has_errors and 'has-error'),
                          (has_warnings and 'has-warning'),
-                         (has_indent and 'has-indent'))
+                         indent_width)
         html.append(HTML.tag("div", _closed=False,
                              class_=("form-group %s %s %s" % class_options)))
         values = self._get_template_values()

@@ -1,7 +1,7 @@
 0.14
 ====
-- Added configuration attribute to the renderer to configure an indent of the
-  field element(s). 
+- Added configuration attribute to the renderer to configure an indent and
+  styling of the field element(s).
 - Added configuration attribute to the label to configure the position of the
   numbering in the label.
 - Changed margins and font sizes of headings in the form to make the form more
