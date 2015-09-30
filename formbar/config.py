@@ -485,6 +485,9 @@ class Renderer(Config):
             self.indent_width = "indent-lg"
         if self.elements_indent.find("md") > -1:
             self.indent_width = "indent-md"
+        self.label_background = ""
+        """Optional. If defined the label will get a light background
+        color"""
         self.label_position = "top"
         """Optional. If defined the label will placed left, top
         or right to the field.  Defaults to top"""
@@ -504,12 +507,13 @@ class Renderer(Config):
         if label_config is not None:
             self.number = label_config.attrib.get("number") or "left"
             self.label_position = label_config.attrib.get("position") or "top"
+            if label_config.attrib.get("background") == "true":
+                self.label_background = "background"
             if self.label_position == "left":
                 self.label_align = label_config.attrib.get("align") or "right"
             elif self.label_position == "right":
                 self.label_align = label_config.attrib.get("align") or "left"
             self.label_width = int(label_config.attrib.get("width") or 2)
-
         # Warning! The body of the renderer may include all valid and
         # invalid html data including scripting. Use with caution here as
         # this may become a large security hole if some users inject

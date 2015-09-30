@@ -1,4 +1,4 @@
-<label class="control-label ${field.renderer.label_position} ${field.renderer.render_type}" for="${field.name}">
+<label class="control-label ${field.renderer.label_background} ${field.renderer.label_position} ${field.renderer.render_type}" for="${field.name}">
   % if field.renderer.elements_indent:
     <span class="indent ${field.renderer.indent_style} ${field.renderer.indent_border}  ${field.renderer.indent_width}">
       % if field.renderer.indent_style == "indent-symbol":

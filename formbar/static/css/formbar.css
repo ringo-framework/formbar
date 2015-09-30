@@ -118,6 +118,13 @@ label span.indent-number:not(.indent-borderd) {
   top: -2px;
 }
 
+label.control-label.background {
+	background-color: #F6F6F6;
+}
+
+label.control-label.background span.indent-number:not(.indent-borderd) {
+  padding-left: 4px;
+}
 
 label sup {
   letter-spacing: 1.5px;
