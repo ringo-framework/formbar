@@ -57,6 +57,10 @@ button {
  *  Labels  *
  ************/
 
+label span.label-content {
+  display: block;
+}
+
 label.left {
     display: block;
     margin-top: 0.5em;
@@ -81,23 +85,39 @@ label.checkbox, label.radio {
 }
 
 label span.indent {
-  display: inline-block;
+  float: left;
 }
 
-label span.indent-sm {
+label span.indent.indent-sm {
   width: 30px;
 }
 
-label span.indent-md {
+label span.indent.indent-md {
   width: 50px;
 }
 
-label span.indent-lg {
+label span.indent.indent-lg {
   width: 70px;
 }
 
-label span.indent-empty {
-  width: 0;
+label span.label-content.indent-empty {
+  margin-left: 0;
+}
+
+label span.label-content.indent-sm {
+  margin-left: 36px;
+}
+
+label span.label-content.indent-md {
+  margin-left: 56px;
+}
+
+label span.label-content.indent-lg {
+  margin-left: 76px;
+}
+
+label span.label-content.indent-empty {
+  margin-left: 0;
 }
 
 label span.indent-symbol, label span.indent-number {
@@ -107,14 +127,14 @@ label span.indent-symbol, label span.indent-number {
 }
 
 label span.indent-bordered {
-  position: relative;
+  position: static;
   top: -2px;
   border-top: 1px solid;
   border-left: 1px solid;
 }
 
 label span.indent-number:not(.indent-borderd) {
-  position: relative;
+  position: static;
   top: -2px;
 }
 
