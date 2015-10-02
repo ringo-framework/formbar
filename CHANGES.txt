@@ -1,3 +1,25 @@
+0.14
+====
+- Added configuration attribute to the renderer to configure an indent and
+  styling of the field element(s).
+- Added configuration attribute to the label to configure the position of the
+  numbering in the label.
+- Added configuration attribute to set a background for the label.
+- Changed margins and font sizes of headings in the form to make the form more
+  compact and improve the visual difference of the headings. Margins are
+  reduced and differences between headings are larger now.
+
+0.13
+====
+- Added attribute to configure how to display the help on the field. Show help
+  on fields as tooltip per default. On behaviour can be reestablished by
+  setting the display attribute of the help to "text".
+- Remove default "Reset" form button. Asking people using forms shows
+  that almost nobody is using a reset button in the forms. If you want
+  to have a reset button than you need to define a custom button bar now
+  in the form.
+- Hide submit buttons on pages of forms with no input elements.
+
 0.12
 ====
 - Extract text form button for internationalisation.

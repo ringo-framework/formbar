@@ -176,7 +176,15 @@ triggers    Flag which defines which type of message a the rule will trigger if 
 Help
 ----
 The help block can be used to add some information to the field for the user.
-The help will be rendererd below the field in the form.
+
+=========   ===========
+Attribute   Description
+=========   ===========
+display     Defines how and where to display the information on the field. Can be ``tooltip`` (default) or ``text``.
+=========   ===========
+
+Depending on the display attribute of the help the information is either shown
+as tooltip next to the label of the field or below the field as normal text.
 
 .. _renderer:
 
@@ -189,15 +197,21 @@ The default renderer is chosen depending on the datatype of the field and is a
 textfield for almost all normal datatypes. On relations (in SQLAlchemy mapped
 items) a selection field is used for the relations
 
+============ ===========
+Attribute    Description
+============ ===========
+type         Type of the renderer. See :ref:`formbar_renderers`
+indent       Style of indent of input elements. If set the field elements and help texts under the label will get an indent. This only applies if the label position is set to top. Defaults to no indent. Possible values are `empty`, `symbol` and `number`, `bg`. The style can be combined with the further attributes to define additional styling aspects linke border and width of the indent. Use `bordered` to get some additional visual indication of the indent and `sm`, `md`, `lg` to define the size of the indention.
+============ ===========
+
 There are different types of :ref:`formbar_renderers` available coming with formed. You
 can define which renderer will be used by setting the *type* attribute::
 
-        <renderer type="checkbox"/>
+        <renderer type="checkbox" indent="number-borderd-lg"/>
 
 But it is very easy to write your own custom renderer. See
 :ref:`custom_renderer` for more details on writing custom renderes and
 :ref:`conf_custom_renderer` on how to use them for rendering in your form.
-
 
 Label
 `````
@@ -214,13 +228,15 @@ The label tag is only used to configure the position, alignment and the
 width of the label. The text of the label is still configured in the
 entitiy.
 
-=========   ===========
-Attribute   Description
-=========   ===========
-position    The position of the label realtive to the field element. Can be "left", "top", "right". Defaults to "top".
-align       The alignment of the text in the label. This only applies for labels with position set to "left" or "right". Can be "left" and "right". Defaults to "left".
-align       The width of the label in cols. The whole field including the label can be deived into 12 cols. If the label has e.g 4 cols the field will automatically take the remaining 8 cols. This only applies for labels with position set to "left" or "right".
-=========   ===========
+==========   ===========
+Attribute    Description
+==========   ===========
+position     The position of the label realtive to the field element. Can be "left", "top", "right". Defaults to "top".
+align        The alignment of the text in the label. This only applies for labels with position set to "left" or "right". Can be "left" and "right". Defaults to "left".
+width        The width of the label in cols. The whole field including the label can be deived into 12 cols. If the label has e.g 4 cols the field will automatically take the remaining 8 cols. This only applies for labels with position set to "left" or "right".
+number       The position of the small number (if set) in the label. Can be `left` or `right` Defaults to `left`.
+background   Optional if set to true the label will get a light backgroud color.
+==========   ===========
 
 Layout
 ======

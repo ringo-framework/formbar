@@ -1,32 +1,74 @@
-/* Formbar Style */
-/* Make all field elements expand to 100% on default */
-.formbar-form input, .formbar-form select,.formbar-form textarea {
-  /*width: 100%; */
-  /* Fix width and height of the fields by setting it to the border-box modell
-   * (CSS3) Does not work in IE
-  height: 30px !important; */
-  box-sizing: border-box;
-  -webkit-box-sizing:border-box;
-  -moz-box-sizing: border-box;
+/****************************************************************************
+ *                                 Headings                                *
+ ****************************************************************************/
+
+.formbar-form h1.page {
+  font-size: 30px;
+  margin-top: 5px;
 }
 
-.formbar-preview-window {
-    margin-top: 5px;
-    padding: 5px;
-    background-color: #ffd9d9;
-}
-.formbar-form textarea {
-  height: auto !important;
+.formbar-form h2.section {
+  font-size: 28px;
 }
 
-label {
-    display: inline;
+.formbar-form h3.section {
+  font-size: 22px;
+  margin-bottom: 5px;
+}
+
+.formbar-form h4.section {
+  font-size: 15px;
+}
+
+.formbar-form fieldset {
+  margin-top: 15px;
+}
+
+.formbar-form fieldset legend {
+  margin-bottom: 10px;
+}
+
+.formbar-form fieldset fieldset legend {
+  margin-bottom: 7px;
+}
+
+.formbar-form fieldset fieldset fieldset legend {
+  margin-bottom: 4px;
+}
+
+/****************************************************************************
+ *                                   Form                                   *
+ ****************************************************************************/
+
+button {
+  margin-right: 15px;
+}
+
+.button-pane {
+  margin: 10px 0px;
+}
+
+
+/****************************************************************************
+ *                                  Fields                                  *
+ ****************************************************************************/
+
+/************
+ *  Labels  *
+ ************/
+
+label span.label-content {
+  display: block;
 }
 
 label.left {
     display: block;
     margin-top: 0.5em;
     margin-right: -20px;
+}
+
+label.left.radio {
+    padding-left: 0px;
 }
 
 label.right {
@@ -42,48 +84,90 @@ label.checkbox, label.radio {
     margin-bottom: 0;
 }
 
-.formbar-form table td {
-  vertical-align: middle;
+label span.indent {
+  float: left;
 }
 
-.formbar-form table td input {
-  margin-bottom: 0px;
+label span.indent.indent-sm {
+  width: 30px;
 }
 
-.formbar-form fieldset fieldset fieldset legend {
-  font-size: 14px;
-  margin-bottom: 4px;
+label span.indent.indent-md {
+  width: 50px;
 }
 
-.formbar-form fieldset fieldset legend {
-  font-size: 17px;
-  margin-bottom: 7px;
+label span.indent.indent-lg {
+  width: 70px;
 }
 
-.formbar-form fieldset legend {
-  font-size: 21px;
-  margin-bottom: 10px;
+label span.label-content.indent-empty {
+  margin-left: 0;
 }
 
-.formbar-form h1.page {
-  font-size: 30px;
-  margin-top: 5px;
+label span.label-content.indent-sm {
+  margin-left: 36px;
 }
 
-.formbar-form h2.section {
-  font-size: 28px;
+label span.label-content.indent-md {
+  margin-left: 56px;
 }
 
-.formbar-form h3.section {
-  font-size: 25px;
+label span.label-content.indent-lg {
+  margin-left: 76px;
 }
 
-.formbar-form h4.section {
-  font-size: 22px;
+label span.label-content.indent-empty {
+  margin-left: 0;
 }
 
-.formbar-form table td div.readonlyfield {
-  margin-bottom: 0px;
+label span.indent-symbol, label span.indent-number {
+  font-size: 70%;
+  letter-spacing: 1.5px;
+  padding-left: 4px;
+}
+
+label span.indent-bordered {
+  position: static;
+  top: -2px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+label span.indent-number:not(.indent-borderd) {
+  position: static;
+  top: -2px;
+}
+
+label.control-label.background {
+	background-color: #F6F6F6;
+}
+
+label.control-label.background span.indent-number:not(.indent-borderd) {
+  padding-left: 4px;
+}
+
+label sup {
+  letter-spacing: 1.5px;
+}
+
+/********************
+ *  Field elements  *
+ ********************/
+
+/* If indent is set for the renderer than indent all child elements of the
+ * form group except it is the main label (.form-control) */
+.form-group.indent-sm > *:not(.control-label) {
+    margin-left: 36px;
+}
+.form-group.indent-md > *:not(.control-label) {
+    margin-left: 56px;
+}
+.form-group.indent-lg > *:not(.control-label) {
+    margin-left: 76px;
+}
+
+.formbar-form textarea {
+  height: auto !important;
 }
 
 select[multiple], textarea {
@@ -100,9 +184,13 @@ div.readonlyfield {
   min-height: 14px;
 }
 
-/* Helptexts */
+/***************
+ *  Helptexts  *
+ ***************/
+
 .text-generic {
   padding: 0.5em;
+  margin-bottom: 0px;
 }
 
 .text-help {
@@ -118,22 +206,23 @@ div.readonlyfield {
   margin-bottom: 0px;
 }
 
-.formbar-new-value {
-    background: #edff76;
+.tooltip{
+  font-size: 0.9em;
+  font-weight: 200;
 }
 
-.formbar-del-value {
-    text-decoration: line-through;
+.tooltip-inner{
+  max-width:600px;
 }
 
-/* Button */
-button {
-  margin-right: 15px;
+// Give info sign another color to show that it is an independent function
+.glyphicon-info-sign{
+  color: #707070;
 }
 
-.button-pane {
-  margin: 10px 0px;
-}
+/****************************************************************************
+ *                              Outline/Affix                               *
+ ****************************************************************************/
 
 .formbar-outline {
   margin-top: 10px;
@@ -143,22 +232,9 @@ button {
   display: none;
 }
 
-.formbar-page h2 {
-  margin-top: 5px;
-}
-
 .active {
   display: block;
 }
-
-
-// Fits for large screens
-//.formbar-outline.affix {
-//  position: fixed;
-//  width: 262px;
-//  top: 10px;
-//  z-index:10;
-//}
 
 // Media depended affix CSS.
 @media(max-width:767px){
@@ -189,15 +265,46 @@ button {
   }
 }
 
-/* Bootstrap overwrites */
-.formbar-conditional .list-group-item {
-    border-top-width: 1px !important;
-}
-
 a.list-group-item.selected {
     background-color: #f5f5f5 !important;
 }
 
 .affix{
     position: static;
+}
+
+/****************************************************************************
+ *                                   Misc                                   *
+ ****************************************************************************/
+
+.formbar-form table td {
+  vertical-align: middle;
+}
+
+.formbar-form table td input {
+  margin-bottom: 0px;
+}
+
+.formbar-form table td div.readonlyfield {
+  margin-bottom: 0px;
+}
+
+// used for the formbar editor
+.formbar-preview-window {
+    margin-top: 5px;
+    padding: 5px;
+    background-color: #ffd9d9;
+}
+
+.formbar-new-value {
+    background: #edff76;
+}
+
+.formbar-del-value {
+    text-decoration: line-through;
+}
+
+/* Bootstrap overwrites */
+.formbar-conditional .list-group-item {
+    border-top-width: 1px !important;
 }

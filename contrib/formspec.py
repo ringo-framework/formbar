@@ -6,6 +6,8 @@ import gettext
 from formbar.config import Config, parse
 
 def _(message):
+    if message == "":
+        return ""
     result = gettext.gettext(message)
     if isinstance(result, unicode):
         result = result.encode("UTF-8")
@@ -87,6 +89,12 @@ def _render_name(element):
 def _render_type(element):
     key = _('Type')
     value = element.attrib.get("type", "string")
+    renderer = _get_renderer(element)
+    # Currently we do not have a relation datatype but the presence of a
+    # listing or link renderer is a strong indication that this field is
+    # a relation.
+    if renderer in ["listing", "link"]:
+        value = "relation"
     if value:
         value = value.encode("UTF-8")
     return ":{key}: {value}".format(key=key, value=value)
@@ -109,13 +117,18 @@ def _render_help(element):
     return ""
 
 
-def _render_renderer(element):
-    key = _('Renderer')
+def _get_renderer(element):
     renderer = element.find("renderer")
     if renderer is not None:
         value = renderer.attrib.get("type")
     else:
         value = "text"
+    return value
+
+
+def _render_renderer(element):
+    key = _('Renderer')
+    value = _get_renderer(element)
     if value:
         value = value.encode("UTF-8")
     return ":{key}: {value}".format(key=key, value=value)
@@ -169,11 +182,11 @@ def _render_rules(element):
     for num, rule in enumerate(rules):
         key = "{0}.".format(num+1)
         value = rule.attrib.get("expr")
-        msg = rule.attrib.get("expr")
+        msg = rule.attrib.get("msg", "")
         if value:
             value = value.encode("UTF-8")
         if msg:
-            msg = msg.encode("UTF-8")
+            msg = ": {}".format(msg.encode("UTF-8"))
         out.append("{key} {value} {msg}".format(key=key, value=value, msg=msg))
         out.append("")
         out.append(reindent(render_meta(rule), 3))
@@ -235,7 +248,9 @@ def render_spec(config, title, form):
     out.append(title)
     out.append("#"*len(title))
     out.append(render_meta(config._tree))
-    for element in get_spec_elements(config, form):
+    elements = get_spec_elements(config, form)
+    num_elements = len(elements)
+    for num, element in enumerate(elements):
         if element.tag == "page":
             out.append(render_page(element))
         elif element.tag == "section":
@@ -244,7 +259,8 @@ def render_spec(config, title, form):
             out.append(render_subsection(element))
         elif element.tag == "entity":
             out.append(render_field(element))
-            out.append("\n-----\n")
+            if num+1 < num_elements:
+                out.append("\n-----\n")
         out.append("")
     return "\n".join(out)
 

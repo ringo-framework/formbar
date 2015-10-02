@@ -165,8 +165,6 @@ class FormRenderer(Renderer):
         if len(self._form._config._buttons) == 0:
             html.append(HTML.tag("button", type="submit", 
                                  class_="btn btn-default", c=_('Submit')))
-            html.append(HTML.tag("button", type="reset", 
-                                 class_="btn btn-default", c=_('Reset')))
         else:
             for b in self._form._config._buttons:
                 html.append(HTML.tag("button", _closed=False,
@@ -290,10 +288,20 @@ class FieldRenderer(Renderer):
         html = []
         has_errors = len(self._field.get_errors())
         has_warnings = len(self._field.get_warnings())
+
+        # Handle indent. Set indent_with css only if the elements are
+        # actually have an indent and the lable position allows an
+        # indent.
+        indent_width = ""
+        if self.elements_indent \
+           and self.label_position not in ["left", "right"]:
+            indent_width = self.indent_width
+
         class_options = ((has_errors and 'has-error'),
-                         (has_warnings and 'has-warning'))
+                         (has_warnings and 'has-warning'),
+                         indent_width)
         html.append(HTML.tag("div", _closed=False,
-                             class_=("form-group %s %s" % class_options)))
+                             class_=("form-group %s %s %s" % class_options)))
         values = self._get_template_values()
         if self.label_width > 0 and self.label_position in ["left", "right"]:
             label_width = self.label_width

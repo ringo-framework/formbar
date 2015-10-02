@@ -5,8 +5,10 @@ import sys, argparse
 
 log = logging.getLogger(name="formbar.contrib.generate")
 
+
 def _get_config(config):
     return Config(parse(config.read()))
+
 
 def _get_fields(config):
     fields = []
@@ -14,63 +16,45 @@ def _get_fields(config):
         fields.append(Field(en))
     return fields
 
+
 def print_model(config):
-    out = []
-    for field in _get_fields(config):
-        name = field.name
-        extra_attributes = []
-        if field.type == "string":
-            dtype = "sa.String"
-            extra_attributes.append("nullable=False")
-            extra_attributes.append("default=''")
-        elif field.type == "text":
-            dtype = "sa.Text"
-            extra_attributes.append("nullable=False")
-            extra_attributes.append("default=''")
-        elif field.type == "integer":
-            dtype = "sa.Integer"
-        elif field.type == "date":
-            dtype = "sa.Date"
-        elif field.type == "datetime":
-            dtype = "sa.DateTime"
-        elif field.type == "interval":
-            dtype = "sa.Interval"
-        elif field.type == "float":
-            dtype = "sa.Float"
-        elif field.type == "number":
-            dtype = "sa.Numeric"
-        elif field.type == "decimal":
-            dtype = "sa.Decimal"
-        elif field.type == "boolean":
-            dtype = "sa.Boolean"
-        elif field.type == "blob":
-            dtype = "sa.LargeBinary"
-        elif field.type == "info":
-            continue # ignore this type
-        # Default
-        else:
+    def generate_Column(field):
+        datatypes = {
+            "string": "sa.String",
+            "text": "sa.Text",
+            "integer": "sa.Integer",
+            "date": "sa.Date",
+            "datetime": "sa.DateTime",
+            "interval": "sa.Interval",
+            "float": "sa.Float",
+            "number": "sa.Numeric",
+            "decimal": "sa.Decimal",
+            "boolean": "sa.Boolean",
+            "blob": "sa.LargeBinary"
+        }
+        datatype = datatypes.get(field.type)
+        if datatype is None:   
             log.warning(("No type found for '%s' using default 'sa.String'. "
                          % field.name))
-            dtype = "sa.String"
-            extra_attributes.append("nullable=False")
-            extra_attributes.append("default=''")
-
-        if extra_attributes:
-            column_format = "%s = sa.Column('%s', %s, %s)"
-            out.append(column_format % (name, name,
-                                        dtype, ", ".join(extra_attributes)))
+            datatype = "sa.String"
+        if datatype is "sa.String" or datatype is "sa.Text":
+            col = "%s = sa.Column('%s', %s, nullable=False, default='')"
+            return col % (field.name, field.name, datatype)
         else:
-            column_format = "%s = sa.Column('%s', %s)"
-            out.append(column_format % (name, name, dtype))
+            col = "%s = sa.Column('%s', %s)"
+            return col % (field.name, field.name, datatype)
 
+    out = [generate_Column(field) for field in _get_fields(config) if field.type is not "info"]
     print "\n".join(out)
 
-def main (config, action):
+
+def main(config, action):
     config_tree = _get_config(config)
     if action == "model":
         print_model(config_tree)
     else:
         print "nothing to do"
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate various informations from a form configuration file')
