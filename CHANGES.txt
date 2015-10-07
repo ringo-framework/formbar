@@ -1,3 +1,7 @@
+0.14.1
+======
+- Fixed rendering filtered items in checkbox renderer.
+
 0.14
 ====
 - Added configuration attribute to the renderer to configure an indent and
