@@ -20,8 +20,12 @@ selected = field.get_value() or []
     % if field.renderer.align == "vertical" and num < len(options):
       <br/>
     % endif
-  % elif not field.renderer.remove_filtered == "true":
+    ## Prevent loosing already set values. In case a already selected value is
+    ## filtered for some reason than render a hidden input element with the
+    ## value except the user explicit sets the "remove_filtered" config var.
+  % elif not field.renderer.remove_filtered == "true" and option[1] in selected:
     <input type="hidden" id="${field.id}" name="${field.name}" value="${option[1]}"/>
   % endif
 % endfor
+## Hack! Empyt value to allow deselecting all options.
 <input style="display:none" type="checkbox" name="${field.name}" value="" checked="checked"/>
