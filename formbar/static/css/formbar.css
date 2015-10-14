@@ -166,6 +166,18 @@ label sup {
     margin-left: 76px;
 }
 
+// Set width for text input fields
+.form-group.indent-sm input[type="text"], .form-group.indent-sm textarea {
+    width: calc(100% - 36px);
+}
+.form-group.indent-md input[type="text"], .form-group.indent-md textarea {
+    width: calc(100% - 56px);
+}
+.form-group.indent-lg input[type="text"], .form-group.indent-lg textarea {
+    width: calc(100% - 76px);
+}
+
+
 .formbar-form textarea {
   height: auto !important;
 }
