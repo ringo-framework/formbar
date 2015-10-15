@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import multiprocessing
 import sys, os
 
-version = '0.14.1'
+version = '0.14.2'
 
 setup(name='formbar',
     version=version,
