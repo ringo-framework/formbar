@@ -1,3 +1,10 @@
+0.15.0
+======
+- Added new renderer "Textoption". A textoption field is basically a selection
+  field which can be used to set multible values. In a textoption field the
+  values can be entered in a textfield. The textfield has support for
+  autocompletion which offers the available options.
+
 0.14.1
 ======
 - Fixed rendering filtered items in checkbox renderer.
