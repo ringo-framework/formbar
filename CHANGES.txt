@@ -4,6 +4,9 @@
   field which can be used to set multible values. In a textoption field the
   values can be entered in a textfield. The textfield has support for
   autocompletion which offers the available options.
+- Added support for form wide errors and warnings using external validators.
+  Form wide errors and warnings are shown at the top of every page of the
+  form.
 
 0.14.1
 ======

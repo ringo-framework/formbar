@@ -193,6 +193,14 @@ class Form(object):
         """This is merged date from the initial data loaded from the
         given item. And userprovied data. The data is available after
         rendering the form"""
+        self.warnings = []
+        """Form wide warnings. This list contains warnings which affect
+        the entire form and not specific fields. These warnings are show
+        at the top of evere page."""
+        self.errors = []
+        """Form wide errors. This list contains errors which affect
+        the entire form and not specific fields. These errors are show
+        at the top of evere page."""
 
     def _set_current_field_data(self, data):
         for key in self.fields:
@@ -310,14 +318,14 @@ class Form(object):
         for field in self.fields.values():
             if len(field.get_errors()) > 0:
                 return True
-        return False
+        return len(self.errors) != 0
 
     def has_warnings(self):
         """Returns True if one of the fields in the form has warnings"""
         for field in self.fields.values():
             if len(field.get_warnings()) > 0:
                 return True
-        return False
+        return len(self.warnings) != 0
 
     def get_errors(self, page=None):
         """Returns a dictionary of all errors in the form. If page
@@ -339,6 +347,8 @@ class Form(object):
                 continue
             if len(field.get_errors()) > 0:
                 errors[field.name] = field.get_errors()
+        if len(self.errors) != 0 and page is None:
+            errors[""] = self.errors
         return errors
 
     def get_warnings(self, page=None):
@@ -361,6 +371,8 @@ class Form(object):
                 continue
             if len(field.get_warnings()) > 0:
                 warnings[field.name] = field.get_warnings()
+        if len(self.warnings) != 0 and page is None:
+            warnings[""] = self.warnings
         return warnings
 
     def get_field(self, name):
@@ -407,20 +419,27 @@ class Form(object):
         return form
 
     def _add_error(self, fieldname, error):
-        field = self.get_field(fieldname)
-        if isinstance(error, list):
-            for err in error:
-                field.add_error(err)
+        import pdb; pdb.set_trace()
+        if fieldname is None:
+            self.errors.append(error)
         else:
-            field.add_error(error)
+            field = self.get_field(fieldname)
+            if isinstance(error, list):
+                for err in error:
+                    field.add_error(err)
+            else:
+                field.add_error(error)
 
     def _add_warning(self, fieldname, warning):
-        field = self.get_field(fieldname)
-        if isinstance(warning, list):
-            for war in warning:
-                field.add_warning(war)
+        if fieldname is None:
+            self.warnings.append(warning)
         else:
-            field.add_warning(warning)
+            field = self.get_field(fieldname)
+            if isinstance(warning, list):
+                for war in warning:
+                    field.add_warning(war)
+            else:
+                field.add_warning(warning)
 
     def validate(self, submitted=None):
         """Returns True if the validation succeeds else False.
@@ -485,7 +504,7 @@ class Form(object):
 
         # Custom validation. User defined external validators.
         for validator in self.external_validators:
-            if validator._field not in converted:
+            if validator._field not in converted and validator._field is not None:
                 # Ignore validator if the value can't be converted.
                 continue
             if not validator.check(converted):
