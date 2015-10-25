@@ -23,6 +23,13 @@
   % for num, page in enumerate(form._config.get_pages()):
     <div class="formbar-page ${num==form.current_page-1 and 'active'}" id="formbar-page-${num+1}">
       <h1 class="page">${_(page.attrib.get('label'))}</h1>
+      ## Render errors and warnings
+      % for warn in form.warnings:
+        <div class="alert alert-warning" role="warning"><i class="glyphicon glyphicon-exclamation-sign"></i> ${warn}</div>
+      % endfor
+      % for err in form.errors:
+        <div class="alert alert-danger" role="alert"><i class="glyphicon glyphicon-exclamation-sign"></i> ${err}</div>
+      % endfor
       ${self.render_recursive(page)}
     </div>
   % endfor

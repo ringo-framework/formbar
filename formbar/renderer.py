@@ -49,6 +49,8 @@ def get_renderer(field, translate):
             return HiddenFieldRenderer(field, translate)
         elif renderer.render_type == "html":
             return HTMLRenderer(field, translate)
+        elif renderer.render_type == "textoption":
+            return TextoptionFieldRenderer(field, translate)
         elif renderer.render_type == "formbareditor":
             return FormbarEditorRenderer(field, translate)
     else:
@@ -474,6 +476,16 @@ class CheckboxFieldRenderer(OptionFieldRenderer):
     def __init__(self, field, translate):
         OptionFieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("checkbox.mako")
+
+class TextoptionFieldRenderer(OptionFieldRenderer):
+    """A Renderer to render textoption field. A textoption field is a
+    mixture of a selection field and a text field. The value can be as
+    comma separated list into the text field while the actual values are
+    selected in the background."""
+
+    def __init__(self, field, translate):
+        OptionFieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("textoption.mako")
 
 class FormbarEditorRenderer(FieldRenderer):
     """A Renderer to render the formbar editor widget used to edit

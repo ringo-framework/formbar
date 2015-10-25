@@ -663,12 +663,43 @@ model. The checkboxes will be aligned in a horizontal row::
           </options>
         </entity>
 
+
 =============== ===========
 Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
 align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
+=============== ===========
+
+See filtering section of the :ref:`dropdown` renderer.
+
+Textoption
+----------
+A textoption field is basically a selection field which can be used to set
+multible values. This type of renderer is often used for adding `tags`. In a
+textoption field the values can be entered in a textfield. The textfield has
+support for autocompletion which offers the available options::
+
+        <entity>
+          <renderer type="textoption"/>
+          <options>
+             <option value="1">Option 1</option>
+             <option value="2">Option 2</option>
+             <option value="3">Option 3</option>
+          </options>
+        </entity>
+
+In this example the user can enter "Op" in the textfield and the
+autocompletion will offer all options beginning with "Op". If the users
+selects on or more options, the will be set in the background
+and submitted on form submission.
+
+=============== ===========
+Attribute       Description
+=============== ===========
+filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
 =============== ===========
 
 See filtering section of the :ref:`dropdown` renderer.
