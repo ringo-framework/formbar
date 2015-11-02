@@ -1,6 +1,7 @@
 import os
 import gettext
 import logging
+import pkg_resources
 import xml.etree.ElementTree as ET
 from formbar.rules import Rule
 
@@ -31,6 +32,16 @@ def parse(xml, path=None):
     return tree
 
 
+def get_file_location(location, basepath):
+    if location.startswith("@"):
+        path = location.split("/")
+        app = pkg_resources.get_distribution(path[0].strip("@")).location
+        return os.path.join(app, *path[1::])
+    elif not os.path.isabs(location):
+        return os.path.join(basepath, location)
+    return location
+
+
 def handle_inheritance(tree, path=None):
     """Will build a form based on a parent form. Will replace elements
     overwritten in the inherited form and add new elements.
@@ -47,12 +58,7 @@ def handle_inheritance(tree, path=None):
 
     if not "inherits" in tree.attrib:
         return tree
-
-    inherit_path = tree.attrib["inherits"]
-    if not os.path.isabs(inherit_path):
-        inherit_path = os.path.join(basepath,
-                                    inherit_path)
-    ptree = load(inherit_path)
+    ptree = load(get_file_location(tree.attrib["inherits"], basepath))
 
     # Workaroutn for missing support of getting parent elements. See
     # http://stackoverflow.com/questions/2170610/access-elementtree-node-parent-node/2170994
@@ -104,11 +110,8 @@ def handle_includes(tree, path):
     parent_map = {c:p for p in tree.iter() for c in p}
     # handle includes in form
     for include_placeholder in tree.findall(".//include"):
-        include_path = include_placeholder.attrib["src"]
-        if not os.path.isabs(include_path):
-            include_path = os.path.join(basepath,
-                                        include_placeholder.attrib["src"])
-        include_tree = load(include_path)
+        location = include_placeholder.attrib["src"]
+        include_tree = load(get_file_location(location, basepath))
         parent = parent_map[include_placeholder]
         index = parent._children.index(include_placeholder)
         # Check if the content to be included is wrapped in a
