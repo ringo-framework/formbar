@@ -547,6 +547,7 @@ Appearance is same as a readonly field::
 
         <renderer type="infofield"/>
 
+.. _selection:
 
 Selection
 ---------
@@ -903,7 +904,7 @@ must be added to the form::
 
 Includes
 ========
-.. versionadded:: 0.10.0
+.. versionadded:: 0.16.0
 Includes are used to include the content of a different file into the current
 configuration. The included file may contain :ref:`entity` definition or parts
 of the :ref:`layout` like a single :ref:`snippet`. The include will be
@@ -927,6 +928,19 @@ be wrapped into a `configuration` tag::
         <configuration>
                 ... Content ...
         </configuration>
+
+.. _supported_urls:
+
+.. rubric:: Supported URL formats
+
+The location of the file can be defined in three ways:
+
+1. As a path relatice to the current XML file.
+2. As a absoulte path (Path is begining with an "/").
+3. Package relative. Example: *@foo/path/to/form/config.xml*. Formbar
+   will evaluate the path to the package *foo* and replaces the
+   packagage location with the @foo placeholder
+
 
 
 Examples
@@ -957,7 +971,7 @@ countries in a separate file.
 
 Inheritance
 ===========
-.. versionadded:: 0.10.0
+.. versionadded:: 0.16.0
 Inheritance can be used to build a form based on another parent form. The
 inherited form will takeover all properties of the parent form, but can add or
 modify properties.
@@ -993,3 +1007,6 @@ isn't already defined in the parent form. The new element will be appended at
 the end of the related section/part of the form.
 
 Removing elements in the inherited form is not supported.
+
+See :ref:`supported URL formats <supported_urls>` for more information on how to refer to the
+inherited file.
