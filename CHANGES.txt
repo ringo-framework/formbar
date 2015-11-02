@@ -1,7 +1,9 @@
-Next version
-============
+0.16.0
+======
 - Added include function. Includes can be used to include the content of a
   another configuration file in a form configuration.
+- Added inheritance function. Inhertance can be used to inherit from a base
+  form and onyl modify small parts of the form.
 
 0.15.0
 ======
