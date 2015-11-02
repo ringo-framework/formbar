@@ -61,28 +61,23 @@ renderer.
 Each entity can optional have a :ref:`renderer`, :ref:`rule` or :ref:`help`
 element.
 
-=========   ===========
-Attribute   Description
-=========   ===========
-id          Used to refer to this entity in the form. Requiered. Must be unique.
-name        Used as name attribute in the rendered field. Defines the 
-            name of this attribute in the model.
-label       The field will be rendered with this label.
-number      A small number which is rendered in front of the label.
-type        Defines the python datatype which will be used on deserialisation
-            of the submitted value. Defines the datatype of the model. Possible values are
-            ``string`` (default), ``text``, ``integer``, ``float``, ``date``,
-            ``datetime``, ``email``, ``boolean``, ``time``, ``interval``.
-css         Value will be rendered as class attribute in the rendered field.
-expr        Expression which is used to calculate the value of the field.
-value       Default value of the field. Supports expressions. The default value might get overwritten on rendering.
-placeholder Custom placeholder that overrides the default of a field. For now only usable for ``interval``.
-readonly    Flag to indicate that the field should be rendered as readonly field. Default is ``false``.
-required    Flag to indicate that the is a required field. Default is ``false``.
-autofocus   Flag to mark the field to be focused on pageload. Only one field per form can be focused. Default is ``false``.
-desired     Flag to indicate that the is a desired field. Default is ``false``.
-tags        Comma separated list of tags for this field.
-=========   ===========
+===========   ===========
+Attribute     Description
+===========   ===========
+id            Used to refer to this entity in the form. Requiered. Must be unique.
+name          Used as name attribute in the rendered field. Defines the name of this attribute in the model.
+label         The field will be rendered with this label.
+number        A small number which is rendered in front of the label.
+type          Defines the python datatype which will be used on deserialisation of the submitted value. Defines the datatype of the model. Possible values are ``string`` (default), ``text``, ``integer``, ``float``, ``date``, ``datetime``, ``email``, ``boolean``, ``time``, ``interval``.  css         Value will be rendered as class attribute in the rendered field.
+expr          Expression which is used to calculate the value of the field.
+value         Default value of the field. Supports expressions. The default value might get overwritten on rendering.
+placeholder   Custom placeholder that overrides the default of a field. For now only usable for ``interval``.
+readonly      Flag to indicate that the field should be rendered as readonly field. Default is ``false``.
+required      Flag to indicate that the is a required field. Default is ``false``.
+autofocus     Flag to mark the field to be focused on pageload. Only one field per form can be focused. Default is ``false``.
+desired       Flag to indicate that the is a desired field. Default is ``false``.
+tags          Comma separated list of tags for this field.
+===========   ===========
 
 Defaults
 ^^^^^^^^
@@ -181,7 +176,15 @@ triggers    Flag which defines which type of message a the rule will trigger if 
 Help
 ----
 The help block can be used to add some information to the field for the user.
-The help will be rendererd below the field in the form.
+
+=========   ===========
+Attribute   Description
+=========   ===========
+display     Defines how and where to display the information on the field. Can be ``tooltip`` (default) or ``text``.
+=========   ===========
+
+Depending on the display attribute of the help the information is either shown
+as tooltip next to the label of the field or below the field as normal text.
 
 .. _renderer:
 
@@ -194,15 +197,21 @@ The default renderer is chosen depending on the datatype of the field and is a
 textfield for almost all normal datatypes. On relations (in SQLAlchemy mapped
 items) a selection field is used for the relations
 
+============ ===========
+Attribute    Description
+============ ===========
+type         Type of the renderer. See :ref:`formbar_renderers`
+indent       Style of indent of input elements. If set the field elements and help texts under the label will get an indent. This only applies if the label position is set to top. Defaults to no indent. Possible values are `empty`, `symbol` and `number`, `bg`. The style can be combined with the further attributes to define additional styling aspects linke border and width of the indent. Use `bordered` to get some additional visual indication of the indent and `sm`, `md`, `lg` to define the size of the indention.
+============ ===========
+
 There are different types of :ref:`formbar_renderers` available coming with formed. You
 can define which renderer will be used by setting the *type* attribute::
 
-        <renderer type="checkbox"/>
+        <renderer type="checkbox" indent="number-borderd-lg"/>
 
 But it is very easy to write your own custom renderer. See
 :ref:`custom_renderer` for more details on writing custom renderes and
 :ref:`conf_custom_renderer` on how to use them for rendering in your form.
-
 
 Label
 `````
@@ -219,13 +228,15 @@ The label tag is only used to configure the position, alignment and the
 width of the label. The text of the label is still configured in the
 entitiy.
 
-=========   ===========
-Attribute   Description
-=========   ===========
-position    The position of the label realtive to the field element. Can be "left", "top", "right". Defaults to "top".
-align       The alignment of the text in the label. This only applies for labels with position set to "left" or "right". Can be "left" and "right". Defaults to "left".
-align       The width of the label in cols. The whole field including the label can be deived into 12 cols. If the label has e.g 4 cols the field will automatically take the remaining 8 cols. This only applies for labels with position set to "left" or "right".
-=========   ===========
+==========   ===========
+Attribute    Description
+==========   ===========
+position     The position of the label realtive to the field element. Can be "left", "top", "right". Defaults to "top".
+align        The alignment of the text in the label. This only applies for labels with position set to "left" or "right". Can be "left" and "right". Defaults to "left".
+width        The width of the label in cols. The whole field including the label can be deived into 12 cols. If the label has e.g 4 cols the field will automatically take the remaining 8 cols. This only applies for labels with position set to "left" or "right".
+number       The position of the small number (if set) in the label. Can be `left` or `right` Defaults to `left`.
+background   Optional if set to true the label will get a light backgroud color.
+==========   ===========
 
 .. _layout:
 
@@ -557,7 +568,7 @@ the options are automatically determined from the underlying data model::
 =============== ===========
 Attribute       Description
 =============== ===========
-filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+filter          Expression which must evaluate to True if the option should be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
 =============== ===========
 
@@ -600,16 +611,17 @@ underlying data model::
            </options>
         </entity>
 
-=========   ===========
-Attribute   Description
-=========   ===========
-filter      Expression which must evaluate to True if the option shoul be shown in the Dropdown.
-=========   ===========
+=============== ===========
+Attribute       Description
+=============== ===========
+filter          Expression which must evaluate to True if the option should be shown in the Dropdown.
+remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+=============== ===========
 
 .. note::
    Filtering is only possible for SQLAlchemy mapped items.
 
-See filtering section of the :ref:`dropdown` renderer.
+See filtering section of the :ref:`selection` renderer.
 
 Radio
 -----
@@ -653,12 +665,43 @@ model. The checkboxes will be aligned in a horizontal row::
           </options>
         </entity>
 
+
 =============== ===========
 Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
 align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
+=============== ===========
+
+See filtering section of the :ref:`dropdown` renderer.
+
+Textoption
+----------
+A textoption field is basically a selection field which can be used to set
+multible values. This type of renderer is often used for adding `tags`. In a
+textoption field the values can be entered in a textfield. The textfield has
+support for autocompletion which offers the available options::
+
+        <entity>
+          <renderer type="textoption"/>
+          <options>
+             <option value="1">Option 1</option>
+             <option value="2">Option 2</option>
+             <option value="3">Option 3</option>
+          </options>
+        </entity>
+
+In this example the user can enter "Op" in the textfield and the
+autocompletion will offer all options beginning with "Op". If the users
+selects on or more options, the will be set in the background
+and submitted on form submission.
+
+=============== ===========
+Attribute       Description
+=============== ===========
+filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
+remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
 =============== ===========
 
 See filtering section of the :ref:`dropdown` renderer.
@@ -726,6 +769,104 @@ Attribute   Description
 rows        Number of rows of the textarea. Default is 3.
 url         URL which is called to renderer the form.
 =========   ===========
+
+.. _metadata:
+
+Metadata (Specification)
+========================
+You can add add metadata information to ``configuration``, ``entity``,
+``option``, ``renderer``, ``rule``, ``form``, ``snippet`` elements of the
+form.
+
+Metadata can be used to build some kind of specification of the form. This
+data can be used by the ``formspec.py`` command to generate a specification of
+the form.
+
+Every metadata block will look like this::
+
+    <metadata>
+        <meta attrib="example" date="YYYYMMDD"></meta>
+    </metadata>
+
+=========   ===========
+Attribute   Description
+=========   ===========
+attrib      Classification of the metaattribute. 
+label       Optional. Used for the `free` classification to provide a label.
+date        Date of the entry
+=========   ===========
+
+The following classification are available: 
+
+`change`
+    Documentation of change made to the element (may appear multiple times)
+
+`comment`
+    Additional comments to the element. 
+
+    Comments which are applicable to the whole document which will be printed
+    at the top of the RST document (may appear multiple times).
+
+`desc`
+    General plain-language description of the element(unique).
+
+`free`
+    Required additional attributes: ``label``
+
+    General purpose metadata field which allows custom labels (may appear
+    multiple times).
+
+`intro`
+    An introductory text applicable to the whole document which will be printed
+    at the top of the RST document (unique).
+
+
+All meta items must contain a ``date`` attribute in the format ``YYYYMMDD``.
+
+Entities
+--------
+
+Example::
+
+        <entity>
+          <metadata>
+            <meta attrib="change" date="20150820">Customer request: Changed label of field to Foo</meta>
+            <meta attrib="change" date="20150826">Customer request: Changed label of field to Bar</meta>
+          </metadata>
+        </entity>
+
+Rules
+-----
+
+Example::
+
+        <entity>
+          <rule>
+            <metadata>
+              <meta attrib="desc" date="20150820">Is True when Foo is larger than Bar</meta>
+              <meta attrib="change" date="20150826">Customer request: Added rule to check value of Foo</meta>
+            </metadata>
+          </rule>
+        </entity>
+
+Document metadata (``<configuration>``/Root Metadata)
+-----------------------------------------------------
+The main ``<configuration>`` element may contain metadata (*root metadata*)
+which is relevant to the whole document.  This information will be formatted
+as a preamble to the RST output
+
+Example::
+
+        <configuration>
+          <metadata>
+            <meta attrib="intro" date="20150820">This text will be rendererd as preamble.</meta>
+            <meta attrib="comment" date="20150826">Adapted all labels to fullfill gender mainstreaming requirements.</meta>
+          </metadata>
+          <source>
+           ...
+          </source>
+          ...
+        </entity>
 
 .. _custom_renderer:
 

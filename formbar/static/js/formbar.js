@@ -38,6 +38,14 @@ $( document ).ready(function() {
         previous.removeClass('selected'); // previous list-item
         $(e.target).addClass('selected'); // activated list-item
     });
+
+    // If the form has pages and there are no input elements on the current
+    // form page, than hide the submit button.
+    selected_formpage = $('.formbar-page :visible');
+    if (selected_formpage.length > 0) {
+        toggleSubmit(selected_formpage);
+    }
+
     /*
     * Set hidden form field "formbar-page" to the value of the currently
     * selected page. This value will be used to set the currently selected
@@ -71,6 +79,10 @@ $( document ).ready(function() {
             function(data, status) {});
       $('.formbar-page').hide();
       $('#formbar-page-'+page).show();
+      // If there are no input elements on the current form page, than hide
+      // the submit button.
+      var formpage = $('#formbar-page-'+page);
+      toggleSubmit(formpage);
     });
 
     /* Restrict input depending on datatypes */
@@ -101,8 +113,21 @@ $( document ).ready(function() {
     mapFieldsToConditionals();
     evaluateFields();
     evaluateConditionals();
-    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateFields);
-    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').change(evaluateConditionalsOnChange);
+    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(evaluateFields);
+    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(function(event) {
+        evaluateConditionalsOnChange(this);
+        });
+
+    //detection of user stoppy typing in input text fields
+    var timer = null;
+    $('div.formbar-form form input:text').keydown(function(){
+        clearTimeout(timer);
+        function evaluate(obj){
+            evaluateFields();
+            evaluateConditionalsOnChange(obj);
+        }
+        timer = setTimeout(evaluate, 750, this)
+    });
 });
 
 function mapFieldsToConditionals() {
@@ -134,7 +159,7 @@ function convertValue(value, field) {
     // quotes. Please note that the datatype attribute is currently only
     // renderered for the following fields:
     //  * radio
-    if (field.attr("datatype") && field.attr("datatype") == "string") {
+    if ((field.attr("datatype") && field.attr("datatype") == "string")) {
         cvalue = "'"+value+"'"
     }
     return cvalue;
@@ -257,8 +282,9 @@ function evaluateConditional(conditional) {
     }
 }
 
-function evaluateConditionalsOnChange() {
-    var fieldname = this.getAttribute("name")
+// passing context as parameter until better solution is found
+function evaluateConditionalsOnChange(obj) {
+    var fieldname = obj.getAttribute("name")
     var conditionals = fields2Conditionals[fieldname];
     if (conditionals != undefined) {
         for (var j = 0; j <= conditionals.length - 1; j++) {
@@ -281,4 +307,13 @@ function evaluateFields() {
             $('#'+id).text('NaN');
         }
     }
+}
+
+function toggleSubmit(element) {
+  var button = $('.formbar-form :submit');
+  if ( element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
+      button.show();
+  } else {
+      button.hide();
+  }
 }

@@ -285,17 +285,20 @@ class Form(Config):
                 pages.extend(self.get_pages(s))
         return pages
 
-    def walk(self, root, values, evaluate=False):
+    def walk(self, root, values, evaluate=False, include_layout=False):
         """Will walk the tree recursivley and yields every field node.
-        If evaluate parameter is true, then the function will only
-        return fields which are relevant after the conditionals in the
-        form has been evaluated.
+        Optionally you can yield every layout elements too.  If evaluate
+        parameter is true, then the function will only return fields
+        which are relevant after the conditionals in the form has been
+        evaluated.
 
         :root: Root node
         :values: Dictionary with values which are used for evaluating
         conditionals.
         :evaluate: Flag to indicate if evaluation should be done on
         conditionals
+        :include_layout: Flag to indicate to include layout elements
+        too.
         :returns: yields field elements
 
         """
@@ -316,16 +319,21 @@ class Form(Config):
                         # was "disabled" in a conditional. In this case
                         # the value is not sent. (ti) <2015-04-28 16:52>
                         continue
-                    for elem in self.walk(child, values, evaluate):
+                    for elem in self.walk(child, values, evaluate, include_layout):
+                        yield elem
+                elif include_layout and child.tag in ["section",
+                                                      "subsection"]:
+                    yield child
+                    for elem in self.walk(child, values, evaluate, include_layout):
                         yield elem
                 else:
-                    for elem in self.walk(child, values, evaluate):
+                    for elem in self.walk(child, values, evaluate, include_layout):
                         yield elem
             elif child.tag == "snippet":
                 sref = child.attrib.get('ref')
                 if sref:
                     snippet = self._parent.get_element('snippet', sref)
-                    for elem in self.walk(snippet, values, evaluate):
+                    for elem in self.walk(snippet, values, evaluate, include_layout):
                         yield elem
             elif child.tag == "field":
                 yield child
@@ -502,6 +510,7 @@ class Field(Config):
         self.help = None
         help = entity.find('help')
         if help is not None:
+            self.help_display = help.attrib.get("display", "tooltip")
             self.help = help.text
 
         # Renderer
@@ -551,6 +560,26 @@ class Renderer(Config):
         - Textarea
         - HTML
         """
+        self.elements_indent = entity.attrib.get("indent", "")
+        """Optional if set the field and help elements will be have a
+        small indent. The value of the attribute defines the style.
+        Currently only applies to the Radio renderer if label alignment
+        is 'top'."""
+        self.indent_style = ""
+        self.indent_border = ""
+        self.indent_width = "indent-sm"
+        if self.elements_indent:
+            style = self.elements_indent.split("-")[0]
+            self.indent_style = "indent-%s" % style
+        if self.elements_indent.find("bordered") > -1:
+            self.indent_border = "indent-bordered"
+        if self.elements_indent.find("lg") > -1:
+            self.indent_width = "indent-lg"
+        if self.elements_indent.find("md") > -1:
+            self.indent_width = "indent-md"
+        self.label_background = ""
+        """Optional. If defined the label will get a light background
+        color"""
         self.label_position = "top"
         """Optional. If defined the label will placed left, top
         or right to the field.  Defaults to top"""
@@ -563,15 +592,20 @@ class Renderer(Config):
         Defaults to 2 cols. The Fieldwidth will be reduced by the label
         width. This only applies for lables which are positioned on the
         left or right side."""
+        self.number = "left"
+        """Optional. Position of the number in the label. Can be `left`
+        or `right`. Defaults to `left`"""
         label_config = entity.find('label')
         if label_config is not None:
+            self.number = label_config.attrib.get("number") or "left"
             self.label_position = label_config.attrib.get("position") or "top"
+            if label_config.attrib.get("background") == "true":
+                self.label_background = "background"
             if self.label_position == "left":
                 self.label_align = label_config.attrib.get("align") or "right"
             elif self.label_position == "right":
                 self.label_align = label_config.attrib.get("align") or "left"
             self.label_width = int(label_config.attrib.get("width") or 2)
-
         # Warning! The body of the renderer may include all valid and
         # invalid html data including scripting. Use with caution here as
         # this may become a large security hole if some users inject

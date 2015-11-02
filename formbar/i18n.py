@@ -110,3 +110,12 @@ def extract_i18n_formconfig(fileobj, keywords, comment_tags, options):
                "_",
                optiontoken.text,
                [])
+    for buttontoken in config.iter('button'):
+        lineno += 1
+        # "_" is one of the default keywords which marks a string
+        # for extraction. As the json file does not have any
+        # keywords. Set a dummy funcname here.
+        yield (lineno,
+               "_",
+               buttontoken.text,
+               [])

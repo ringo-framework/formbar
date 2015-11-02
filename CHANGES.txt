@@ -3,6 +3,61 @@ Next version
 - Added include function. Includes can be used to include the content of a
   another configuration file in a form configuration.
 
+0.15.0
+======
+- Added new renderer "Textoption". A textoption field is basically a selection
+  field which can be used to set multible values. In a textoption field the
+  values can be entered in a textfield. The textfield has support for
+  autocompletion which offers the available options.
+- Added support for form wide errors and warnings using external validators.
+  Form wide errors and warnings are shown at the top of every page of the
+  form.
+
+0.14.1
+======
+- Fixed rendering filtered items in checkbox renderer.
+
+0.14
+====
+- Added configuration attribute to the renderer to configure an indent and
+  styling of the field element(s).
+- Added configuration attribute to the label to configure the position of the
+  numbering in the label.
+- Added configuration attribute to set a background for the label.
+- Changed margins and font sizes of headings in the form to make the form more
+  compact and improve the visual difference of the headings. Margins are
+  reduced and differences between headings are larger now.
+
+0.13
+====
+- Added attribute to configure how to display the help on the field. Show help
+  on fields as tooltip per default. On behaviour can be reestablished by
+  setting the display attribute of the help to "text".
+- Remove default "Reset" form button. Asking people using forms shows
+  that almost nobody is using a reset button in the forms. If you want
+  to have a reset button than you need to define a custom button bar now
+  in the form.
+- Hide submit buttons on pages of forms with no input elements.
+
+0.12
+====
+- Extract text form button for internationalisation.
+- Fixed affix of outline sidebar on forms.
+- Implement remove_filtered for dropdown elements too.
+
+0.11
+====
+- Added support for metadata sections in the form configuration. This metadata
+  is used together with the entity, and layout sections to generate a
+  specification of the forms.
+- Added formspec.py command to generate the speficication. 
+
+0.10
+====
+- Modified "onchange" event for textfield. Detect if user stopped typing in
+  a textfield and trigger evaluation of rules after 750ms automatically.
+
+
 0.9.13
 ======
 - Fixed type detection for VARCHAR fields.
