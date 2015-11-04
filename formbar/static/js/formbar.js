@@ -162,6 +162,9 @@ function convertValue(value, field) {
     if ((field.attr("datatype") && field.attr("datatype") == "string")) {
         cvalue = "'"+value+"'"
     }
+    if ((field.attr("datatype") && field.attr("datatype") == "date")) {
+        cvalue = "'"+value+"'"
+    }
     return cvalue;
 }
 
