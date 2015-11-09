@@ -21,7 +21,4 @@ else:
     % if field.renderer.align == "vertical" and num < len(options):
       <br/>
     % endif
-  % elif not field.renderer.remove_filtered == "true":
-    <input type="hidden" id="${field.id}" datatype="${field.get_type()}" name="${field.name}" value="${option[1]}"/>
-  % endif
 % endfor
