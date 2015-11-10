@@ -1,3 +1,13 @@
+0.15.1
+======
+Bugfix release:
+
+- Improved rule evaluation. Only try to get values for rules evaluation if the
+  field is in the form. Reduces number of warnings in logfile.
+- Fixed rendering of Radiofields. Removed support for fields which can have
+  mulitple values as a Radiofield can only handle one value.
+- Fixed client side data conversion of date fields for rule evaluation.
+
 0.15.0
 ======
 - Added new renderer "Textoption". A textoption field is basically a selection
