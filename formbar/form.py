@@ -579,7 +579,6 @@ class Field(object):
             try:
                 # Special logic for ringo items.
                 if (self.renderer.render_type == "info"
-                   and value.strip("$") in self._form._config._fields
                    and hasattr(self._form._item, "get_value")):
                     value = self._form._item.get_value(value.strip("$"),
                                                        expand=True)
