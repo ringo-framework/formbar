@@ -721,7 +721,7 @@ class Field(object):
                                               % unicode(v) for v in value)
                     expr_str = expr_str.replace(x, value)
                 else:
-                    expr_str = expr_str.replace(x, "'%s'" % str(value))
+                    expr_str = expr_str.replace(x, "'%s'" % unicode(value))
         return Rule(expr_str)
 
     def _load_options_from_db(self):
