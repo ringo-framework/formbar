@@ -1,3 +1,14 @@
+0.15.2
+======
+Bugfix release:
+
+- Fix handling of empty string values and make them unicode too.
+- In case of InfoRender try to get the value from the item even if the entity
+  is not included in the form. This is needed to be able to work with the
+  value attribute.
+- Set datatype attribute of hidden fields to fix data conversion on client
+  side.
+
 0.15.1
 ======
 Bugfix release:
