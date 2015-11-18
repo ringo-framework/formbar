@@ -275,7 +275,7 @@ def from_python(field, value):
     ftype = field.get_type()
     try:
         if value is None:
-            serialized = ""
+            serialized = u""
         elif isinstance(value, basestring):
             # Special handling for multiple values (multiselect in
             # checkboxes eg.) which has be converted into a string by
