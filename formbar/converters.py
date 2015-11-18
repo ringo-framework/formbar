@@ -287,7 +287,7 @@ def from_python(field, value):
                 for v in value.strip("{").strip("}").split(","):
                     serialized.append(from_python(field, v))
             else:
-                serialized = value
+                serialized = unicode(value)
         elif isinstance(value, list):
             vl = []
             for v in value:
