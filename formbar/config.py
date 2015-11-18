@@ -388,7 +388,7 @@ class Field(Config):
         """Flag to enable focusing the field on pageload. Note that only
         one field in the form can have the autofocus attribute."""
 
-        self.value = entity.attrib.get('value', "")
+        self.value = entity.attrib.get('value', u"")
         """Default value of the field. Note that this value might be
         overwritten while rendering the form if the field is within the
         submitted values on a form submission. Defaults to empty
