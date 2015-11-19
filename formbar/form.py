@@ -579,7 +579,6 @@ class Field(object):
             try:
                 # Special logic for ringo items.
                 if (self.renderer.render_type == "info"
-                   and value.strip("$") in self._form._config._fields
                    and hasattr(self._form._item, "get_value")):
                     value = self._form._item.get_value(value.strip("$"),
                                                        expand=True)
@@ -722,7 +721,7 @@ class Field(object):
                                               % unicode(v) for v in value)
                     expr_str = expr_str.replace(x, value)
                 else:
-                    expr_str = expr_str.replace(x, "'%s'" % str(value))
+                    expr_str = expr_str.replace(x, "'%s'" % unicode(value))
         return Rule(expr_str)
 
     def _load_options_from_db(self):
