@@ -8,6 +8,7 @@
   empyt value. If the conditional becomes True again before the form has been
   submitted the initial values of the fields within the forms will be
   restored.
+- Make readonly checkboxes and radio buttons not clickable.
 
 0.15.2
 ======

@@ -3,6 +3,7 @@
 var language = null;
 var fields2Conditionals = {};
 var initialValues = {}
+var deactivator = function(event){ event.preventDefault();}
 
 /** This function will return the value of a given field. In case of radio,
  * select and checkbox fields it will return the value of the checked/selected
@@ -340,6 +341,7 @@ function evaluateConditional(conditional) {
     var readonly = $(conditional).attr('class').indexOf('readonly') >= 0;
     var result = evaluate(conditional);
     if (result) {
+        $(conditional).find(':radio, :checkbox').unbind('click',deactivator);
         if (readonly) {
             $(conditional).animate({opacity:'1.0'}, 500);
             $(conditional).find('input, textarea').attr('readonly', false);
@@ -353,6 +355,7 @@ function evaluateConditional(conditional) {
         }
     }
     else {
+        $(conditional).find(':radio, :checkbox').click(deactivator);
         if (readonly) {
             $(conditional).animate({opacity:'0.4'}, 500);
             $(conditional).find('input, textarea').attr('readonly', true);
