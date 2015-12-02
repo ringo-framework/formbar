@@ -33,7 +33,7 @@ function setFieldValue(field, value) {
         currentFormValues[fname] = value;
     }
 
-    if (ftype == "checkbox" || ftype == "radio") {
+    if (ftype == "radio") {
         if (field.val() == value) {
             field.prop("checked", true);
         } else {
@@ -184,7 +184,7 @@ $( document ).ready(function() {
     evaluateConditionals();
     $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(evaluateFields);
     $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(function(event) {
-        //setFieldValue(this, $(this).val());
+        setFieldValue(this, $(this).val());
         evaluateConditionalsOnChange(this);
         });
 
