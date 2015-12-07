@@ -1,3 +1,10 @@
+0.16.1
+======
+Bugfixrelease
+
+- Fixed broken JS code to enable and disable fields because of conditionals.
+  This also fixed broken saving of checkboxes.
+
 0.16.0
 ======
 - New option "reset-value" for conditionals.
