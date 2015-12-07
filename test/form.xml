@@ -19,9 +19,8 @@
     </entity>
     <entity id="e8" name="select" type="integer">
       <options>
-        <option value="1">Value 1</option>
-        <option value="2">Value 2</option>
-        <option value="3">Value 3</option>
+        <include src="./include.xml"/>
+        <option value="4">Value 4</option>
       </options>
       <rule expr="$select ne 2" msg="Select field is not 1" mode="post" triggers="warning"/>
     </entity>

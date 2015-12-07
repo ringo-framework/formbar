@@ -1,3 +1,10 @@
+0.17.0
+======
+- Added include function. Includes can be used to include the content of a
+  another configuration file in a form configuration.
+- Added inheritance function. Inhertance can be used to inherit from a base
+  form and onyl modify small parts of the form.
+
 0.16.0
 ======
 - New option "reset-value" for conditionals.
@@ -30,6 +37,7 @@ Bugfix release:
 - Fixed rendering of Radiofields. Removed support for fields which can have
   mulitple values as a Radiofield can only handle one value.
 - Fixed client side data conversion of date fields for rule evaluation.
+
 
 0.15.0
 ======
@@ -84,6 +92,7 @@ Bugfix release:
 ====
 - Modified "onchange" event for textfield. Detect if user stopped typing in
   a textfield and trigger evaluation of rules after 750ms automatically.
+
 
 0.9.13
 ======

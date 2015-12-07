@@ -238,6 +238,8 @@ number       The position of the small number (if set) in the label. Can be `lef
 background   Optional if set to true the label will get a light backgroud color.
 ==========   ===========
 
+.. _layout:
+
 Layout
 ======
 The form directive is the place where the form definition and layout happens.
@@ -546,6 +548,7 @@ Appearance is same as a readonly field::
 
         <renderer type="infofield"/>
 
+.. _selection:
 
 Selection
 ---------
@@ -897,3 +900,113 @@ must be added to the form::
                               'Error message',
                               external_validator)
         self.form.add_validator(validator)
+
+
+Includes
+========
+.. versionadded:: 0.17.0
+Includes are used to include the content of a different file into the current
+configuration. The included file may contain :ref:`entity` definition or parts
+of the :ref:`layout` like a single :ref:`snippet`. The include will be
+replaced with the content of the of the included file.
+
+A include can be placed at any location of the form configuration and looks
+like this::
+
+        <include src="path/to/form/config.xml"/>
+
+=========   ===========
+Attribute   Description
+=========   ===========
+src         Location of the configuration file which should be included
+=========   ===========
+
+The include file must be a valid XML file. The content of the include file can
+be wrapped into a `configuration` tag::
+
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <configuration>
+                ... Content ...
+        </configuration>
+
+.. _supported_urls:
+
+.. rubric:: Supported URL formats
+
+The location of the file can be defined in three ways:
+
+1. As a path relatice to the current XML file.
+2. As a absoulte path (Path is begining with an "/").
+3. Package relative. Example: *@foo/path/to/form/config.xml*. Formbar
+   will evaluate the path to the package *foo* and replaces the
+   packagage location with the @foo placeholder
+
+
+
+Examples
+--------
+.. rubric:: Include options
+Includes can be handy to outsource parts of the form definition into its own
+file. This is especially useful when the outsourced parts are potentially
+reused in multiple places. Think of a long list of options within a entity::
+
+        <entity id="country" name="country" type="integer">
+            <options>
+                <include src="./countries.xml"/>
+                <option value="4">Value 4</option>
+            </option>
+        </entity>
+
+The include file looks like this::
+
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <configuration>
+            <option value="1">Value 1</option>
+            <option value="2">Value 2</option>
+            <option value="3">Value 3</option>
+        </configuration>
+
+This way you can keep your form definition clean and short and maintain the
+countries in a separate file.
+
+Inheritance
+===========
+.. versionadded:: 0.17.0
+Inheritance can be used to build a form based on another parent form. The
+inherited form will takeover all properties of the parent form, but can add or
+modify properties.
+
+An inherited form looks like a usual form, but adds a `inherits` attribute in
+the `configuration` section::
+
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <configuration inherits="./parent.xml">
+           <source>
+           <!-- Add or modify entities -->
+           </source>
+           <form>
+           <!-- Add or modify forms -->
+           </form>
+           <snippet>
+           <!-- Add or modify snippets -->
+           </snippet>
+        </configuration>
+
+The `source`, `form` and `snippet` section is optional and are only needed if
+this section needs to be modified.
+
+Inheritance can only be applied on elements in the form which have an `id`.
+This is because the id is used to identify to elements in the parent form.
+
+To overwrite an element of the parent form you need to add an element with the
+same id in the inherited form. This will replace the element including all
+attributes and subelements.
+
+To add new elements, you simply need to at a new element with an id which
+isn't already defined in the parent form. The new element will be appended at
+the end of the related section/part of the form.
+
+Removing elements in the inherited form is not supported.
+
+See :ref:`supported URL formats <supported_urls>` for more information on how to refer to the
+inherited file.
