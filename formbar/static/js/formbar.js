@@ -12,7 +12,13 @@ function getFieldValue(field) {
     field= $(field);
     var ftype = field.attr("type");
     var fname = field.attr("name");
-    if (ftype == "checkbox" || ftype == "radio") {
+    if (ftype == "checkbox") {
+        allVals = [];
+        $("input[name='"+fname+"']:checked").each(function() {
+            allVals.push($(this).val());
+        });
+        return allVals;
+    } else if (ftype == "radio") {
         return $("input[name='"+fname+"']:checked").val()
     } else if (field.type == "select") {
         return $("input[name='"+fname+"']:selected").val()
@@ -24,17 +30,25 @@ function getFieldValue(field) {
 /** This function will set the value of a given field. In case of radio,
  * select and checkbox fields it will checke/select ithe item/option of the
  * field. */
-function setFieldValue(field, value) {
+function setFieldValue(field, value, remember) {
+    if ( remember == undefined ) {
+        remember = true;
+    }
     field= $(field);
     var ftype = field.attr("type");
     var fname = field.attr("name");
-
-    if (value) {
-        currentFormValues[fname] = value;
+    if (value && remember) {
+        currentFormValues[fname] = getFieldValue(field);
     }
 
     if (ftype == "radio") {
         if (field.val() == value) {
+            field.prop("checked", true);
+        } else {
+            field.prop("checked", false);
+        }
+    } else if (ftype == "checkbox") {
+        if (currentFormValues[fname].indexOf(field.val()) > -1) {
             field.prop("checked", true);
         } else {
             field.prop("checked", false);
@@ -48,6 +62,7 @@ function setFieldValue(field, value) {
     } else {
         return field.val(value);
     }
+
 }
 
 /** Will remove the value of all fields within the given conditional to an empyt
@@ -55,8 +70,15 @@ function setFieldValue(field, value) {
 function removeValues(conditional) {
     var inputs = $(conditional).find(":input");
     for (var i = 0, len = inputs.length; i < len; i++) {
-        var field = inputs[i];
-        setFieldValue(field, "");
+        var field = $(inputs[i]);
+        var ftype = field.attr("type");
+        if (ftype == "radio" || ftype == "checkbox") {
+            field.prop("checked", false);
+        } else if (field.type == "select") {
+            field.prop("selected", false);
+        } else {
+            setFieldValue(field, "");
+        }
     }
 }
 
@@ -66,7 +88,7 @@ function resetValues(conditional, values) {
     var inputs = $(conditional).find(":input");
     for (var i = 0, len = inputs.length; i < len; i++) {
         var field = inputs[i];
-        setFieldValue(field, values[$(field).attr('name')]);
+        setFieldValue(field, values[$(field).attr('name')], false);
     }
 }
 
@@ -209,7 +231,9 @@ $( document ).ready(function() {
 function setInitialFormValues() {
     var fields = $('div.formbar-form :input');
     for (var i = 0, len = fields.length; i < len; i++) {
-        currentFormValues[fields[i].name] = getFieldValue(fields[i]);
+        if (currentFormValues[fields[i].name] == undefined) {
+            currentFormValues[fields[i].name] = getFieldValue(fields[i]);
+        }
     }
 }
 
