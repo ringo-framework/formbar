@@ -904,7 +904,7 @@ must be added to the form::
 
 Includes
 ========
-.. versionadded:: 0.16.0
+.. versionadded:: 0.17.0
 Includes are used to include the content of a different file into the current
 configuration. The included file may contain :ref:`entity` definition or parts
 of the :ref:`layout` like a single :ref:`snippet`. The include will be
@@ -971,7 +971,7 @@ countries in a separate file.
 
 Inheritance
 ===========
-.. versionadded:: 0.16.0
+.. versionadded:: 0.17.0
 Inheritance can be used to build a form based on another parent form. The
 inherited form will takeover all properties of the parent form, but can add or
 modify properties.
