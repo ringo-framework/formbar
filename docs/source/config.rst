@@ -476,6 +476,7 @@ Attribute      Description
 type           Effect of the conditional if the condition evaluates to false.  Defaults to ``hide``.
 expr           The expression which will be evaluated.
 static         Flag disable dynamic clientsided evaluation of the conditional. Defaults to ``false``.
+reset-value    If `true` than the value of all fields with in the conditional will be removed . Defaults to ``false``.
 ============   ===========
 
 Conditionals are evaluated using JavaScript on the client side. Formbar also
@@ -644,7 +645,6 @@ model. The radionfields will be aligned in a horizontal row::
 Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
-remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
 align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
 =============== ===========
 

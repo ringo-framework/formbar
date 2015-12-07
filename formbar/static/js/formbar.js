@@ -2,6 +2,74 @@
  * are inserted dynamically */
 var language = null;
 var fields2Conditionals = {};
+var currentFormValues = {}
+var deactivator = function(event){ event.preventDefault();}
+
+/** This function will return the value of a given field. In case of radio,
+ * select and checkbox fields it will return the value of the checked/selected
+ * item/option of the field. */
+function getFieldValue(field) {
+    field= $(field);
+    var ftype = field.attr("type");
+    var fname = field.attr("name");
+    if (ftype == "checkbox" || ftype == "radio") {
+        return $("input[name='"+fname+"']:checked").val()
+    } else if (field.type == "select") {
+        return $("input[name='"+fname+"']:selected").val()
+    } else {
+        return field.val();
+    }
+}
+
+/** This function will set the value of a given field. In case of radio,
+ * select and checkbox fields it will checke/select ithe item/option of the
+ * field. */
+function setFieldValue(field, value) {
+    field= $(field);
+    var ftype = field.attr("type");
+    var fname = field.attr("name");
+
+    if (value) {
+        currentFormValues[fname] = value;
+    }
+
+    if (ftype == "radio") {
+        if (field.val() == value) {
+            field.prop("checked", true);
+        } else {
+            field.prop("checked", false);
+        }
+    } else if (field.type == "select") {
+        if (field.val() == value) {
+            field.prop("selected", true);
+        } else {
+            field.prop("selected", false);
+        }
+    } else {
+        return field.val(value);
+    }
+}
+
+/** Will remove the value of all fields within the given conditional to an empyt
+ * string which is the default value in most cases. */
+function removeValues(conditional) {
+    var inputs = $(conditional).find(":input");
+    for (var i = 0, len = inputs.length; i < len; i++) {
+        var field = inputs[i];
+        setFieldValue(field, "");
+    }
+}
+
+/** Will reset the value of all fields within a given conditional to the
+ * initial value saved in the given value object. */
+function resetValues(conditional, values) {
+    var inputs = $(conditional).find(":input");
+    for (var i = 0, len = inputs.length; i < len; i++) {
+        var field = inputs[i];
+        setFieldValue(field, values[$(field).attr('name')]);
+    }
+}
+
 
 function getBrowserLanguage() {
     var form = $('div.formbar-form form');
@@ -110,11 +178,13 @@ $( document ).ready(function() {
     /*
      * Evaluate when values in the form changes
     */
+    setInitialFormValues();
     mapFieldsToConditionals();
     evaluateFields();
     evaluateConditionals();
     $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(evaluateFields);
     $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(function(event) {
+        setFieldValue(this, $(this).val());
         evaluateConditionalsOnChange(this);
         });
 
@@ -123,12 +193,25 @@ $( document ).ready(function() {
     $('div.formbar-form form input:text').keydown(function(){
         clearTimeout(timer);
         function evaluate(obj){
+            setFieldValue(obj, $(obj).val());
             evaluateFields();
             evaluateConditionalsOnChange(obj);
         }
         timer = setTimeout(evaluate, 750, this)
     });
 });
+
+
+/** Will save the initial values of all fields in the form in a global
+ * variable called `currentFormValues`. The varibable is used to reset the value
+ * of the field to its initial value in case a value has been removed after it
+ * becomes readonly/invisible in a conditional and now gets activated again. */
+function setInitialFormValues() {
+    var fields = $('div.formbar-form :input');
+    for (var i = 0, len = fields.length; i < len; i++) {
+        currentFormValues[fields[i].name] = getFieldValue(fields[i]);
+    }
+}
 
 function mapFieldsToConditionals() {
     var fieldsToEvaluate = $('.formbar-conditional');
@@ -160,6 +243,9 @@ function convertValue(value, field) {
     // renderered for the following fields:
     //  * radio
     if ((field.attr("datatype") && field.attr("datatype") == "string")) {
+        cvalue = "'"+value+"'"
+    }
+    if ((field.attr("datatype") && field.attr("datatype") == "date")) {
         cvalue = "'"+value+"'"
     }
     return cvalue;
@@ -258,9 +344,11 @@ function evaluateConditionals() {
 }
 
 function evaluateConditional(conditional) {
+    var reset = $(conditional).attr('reset-value').indexOf('true') >= 0;
     var readonly = $(conditional).attr('class').indexOf('readonly') >= 0;
     var result = evaluate(conditional);
     if (result) {
+        $(conditional).find(':radio, :checkbox').unbind('click',deactivator);
         if (readonly) {
             $(conditional).animate({opacity:'1.0'}, 500);
             $(conditional).find('input, textarea').attr('readonly', false);
@@ -269,8 +357,12 @@ function evaluateConditional(conditional) {
         else {
             $(conditional).show();
         }
+        if (reset) {
+            resetValues(conditional, currentFormValues);
+        }
     }
     else {
+        $(conditional).find(':radio, :checkbox').click(deactivator);
         if (readonly) {
             $(conditional).animate({opacity:'0.4'}, 500);
             $(conditional).find('input, textarea').attr('readonly', true);
@@ -278,6 +370,9 @@ function evaluateConditional(conditional) {
         }
         else {
             $(conditional).hide();
+        }
+        if (reset) {
+            removeValues(conditional);
         }
     }
 }

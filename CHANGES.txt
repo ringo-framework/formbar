@@ -1,9 +1,43 @@
-0.16.0
+0.17.0
 ======
 - Added include function. Includes can be used to include the content of a
   another configuration file in a form configuration.
 - Added inheritance function. Inhertance can be used to inherit from a base
   form and onyl modify small parts of the form.
+
+0.16.0
+======
+- New option "reset-value" for conditionals.
+- Improved conditionals. For conditionals with "reset-value" attribute set to
+  "true" the following bahaviour has been improved:
+  If the conditional becomes False and fields within the conditionalcondit
+  become readonly or invisible, the value of all fields will be deleted to an
+  empyt value. If the conditional becomes True again before the form has been
+  submitted the initial values of the fields within the forms will be
+  restored.
+- Make readonly checkboxes and radio buttons not clickable.
+
+0.15.2
+======
+Bugfix release:
+
+- Fix handling of empty string values and make them unicode too.
+- In case of InfoRender try to get the value from the item even if the entity
+  is not included in the form. This is needed to be able to work with the
+  value attribute.
+- Set datatype attribute of hidden fields to fix data conversion on client
+  side.
+
+0.15.1
+======
+Bugfix release:
+
+- Improved rule evaluation. Only try to get values for rules evaluation if the
+  field is in the form. Reduces number of warnings in logfile.
+- Fixed rendering of Radiofields. Removed support for fields which can have
+  mulitple values as a Radiofield can only handle one value.
+- Fixed client side data conversion of date fields for rule evaluation.
+
 
 0.15.0
 ======

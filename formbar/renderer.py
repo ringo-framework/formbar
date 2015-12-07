@@ -199,7 +199,6 @@ class FieldRenderer(Renderer):
 
         """
         Renderer.__init__(self)
-
         self._field = field
         self._config = field._config.renderer
         self.translate = translate
