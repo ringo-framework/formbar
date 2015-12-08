@@ -1,3 +1,22 @@
+0.16.1
+======
+Bugfixrelease
+
+- Fixed broken JS code to enable and disable fields because of conditionals.
+  This also fixed broken saving of checkboxes.
+
+0.16.0
+======
+- New option "reset-value" for conditionals.
+- Improved conditionals. For conditionals with "reset-value" attribute set to
+  "true" the following bahaviour has been improved:
+  If the conditional becomes False and fields within the conditionalcondit
+  become readonly or invisible, the value of all fields will be deleted to an
+  empyt value. If the conditional becomes True again before the form has been
+  submitted the initial values of the fields within the forms will be
+  restored.
+- Make readonly checkboxes and radio buttons not clickable.
+
 0.15.2
 ======
 Bugfix release:

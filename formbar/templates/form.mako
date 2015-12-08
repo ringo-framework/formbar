@@ -51,7 +51,7 @@
     % elif child.tag == "page":
       ${self.render_outline_element(form, child)}
     % elif child.tag == "if" and child[0].tag == "page" and child.attrib.get("static") != "true":
-      <div id="${id(child)}" class="formbar-conditional ${child.attrib.get('type')}" expr="${child.attrib.get('expr')}">
+      <div id="${id(child)}" class="formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
     % endif
     % if child.attrib.get("static") != "true" or Rule(child.attrib.get("expr")).evaluate(form.data):
       ${self.render_recursive_outline(form, child)}
@@ -103,7 +103,7 @@
         <td colspan="${child.attrib.get('colspan', '')}" class="${child.attrib.get('class', '')}" rowspan="${child.attrib.get('rowspan', '')}" width="${child.attrib.get('width', '')}">
       ## Conditionals
       % elif child.tag == "if" and child.attrib.get("static") != "true":
-          <div id="${id(child)}" class="formbar-conditional ${child.attrib.get('type')}" expr="${child.attrib.get('expr')}">
+          <div id="${id(child)}" class="formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
       % endif
       % if child.attrib.get("static") != "true" or Rule(child.attrib.get("expr")).evaluate(form.data):
         ${self.render_recursive(child, mode)}

@@ -474,6 +474,7 @@ Attribute      Description
 type           Effect of the conditional if the condition evaluates to false.  Defaults to ``hide``.
 expr           The expression which will be evaluated.
 static         Flag disable dynamic clientsided evaluation of the conditional. Defaults to ``false``.
+reset-value    If `true` than the value of all fields with in the conditional will be removed . Defaults to ``false``.
 ============   ===========
 
 Conditionals are evaluated using JavaScript on the client side. Formbar also
