@@ -5,6 +5,13 @@
 - Added inheritance function. Inhertance can be used to inherit from a base
   form and onyl modify small parts of the form.
 
+0.16.1
+======
+Bugfixrelease
+
+- Fixed broken JS code to enable and disable fields because of conditionals.
+  This also fixed broken saving of checkboxes.
+
 0.16.0
 ======
 - New option "reset-value" for conditionals.
