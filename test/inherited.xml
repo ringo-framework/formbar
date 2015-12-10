@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration inherits="./form.xml">
+  <source>
+    <entity id="e1" name="string" label="Inherited String field" type="string"/>
+    <entity id="e99" name="newstring" label="New String field" type="string"/>
+  </source>
+  <form>
+  </form>
+  <snippet id="s2">
+    <row>
+      <col><field ref="e1"/></col>
+      <col><field ref="e2"/></col>
+    </row>
+    <row>
+      <col><field ref="e99"/></col>
+    </row>
+  </snippet>
+</configuration>

@@ -1,5 +1,7 @@
+import os
 import gettext
 import logging
+import pkg_resources
 import xml.etree.ElementTree as ET
 from formbar.rules import Rule
 
@@ -7,16 +9,15 @@ log = logging.getLogger(__name__)
 _ = gettext.gettext
 
 
-
 def load(path):
     """Return the parsed XML form the given file. The function will load
     the file located in path and than returns the parsed content."""
     with open(path) as f:
         data = f.read()
-        return parse(data)
+        return parse(data, path)
 
 
-def parse(xml):
+def parse(xml, path=None):
     """Returns the parsed XML. This is a helper function to be used in
     connection with loading the configuration files.
     :xml: XML string to be parsed
@@ -25,7 +26,103 @@ def parse(xml):
     """
     if isinstance(xml, unicode):
         xml = xml.encode("utf-8")
-    return ET.fromstring(xml)
+    tree = ET.fromstring(xml)
+    tree = handle_inheritance(tree, path)
+    tree = handle_includes(tree, path)
+    return tree
+
+
+def get_file_location(location, basepath):
+    if location.startswith("@"):
+        path = location.split("/")
+        app = pkg_resources.get_distribution(path[0].strip("@")).location
+        return os.path.join(app, *path[1::])
+    elif not os.path.isabs(location):
+        return os.path.join(basepath, location)
+    return location
+
+
+def handle_inheritance(tree, path=None):
+    """Will build a form based on a parent form. Will replace elements
+    overwritten in the inherited form and add new elements.
+
+    :tree: ElementTree
+    :path: Path of the loaded form
+    :returns: ElementTree
+
+    """
+    if path:
+        basepath = os.path.dirname(path)
+    else:
+        basepath = ""
+
+    if not "inherits" in tree.attrib:
+        return tree
+    ptree = load(get_file_location(tree.attrib["inherits"], basepath))
+
+    # Workaroutn for missing support of getting parent elements. See
+    # http://stackoverflow.com/questions/2170610/access-elementtree-node-parent-node/2170994
+    tree_parent_map = {c:p for p in tree.iter() for c in p}
+    ptree_parent_map = {c:p for p in ptree.iter() for c in p}
+
+    for element in tree.getiterator():
+        if not "id" in element.attrib:
+            continue
+        # Is there a an element with the same id in the ptree?
+        xpath = ".//*[@id='%s']" % element.attrib["id"]
+        pelement = ptree.find(xpath)
+        if pelement is not None:
+            # Replace the parent element with the one in inherited
+            # element.
+            pparent = ptree_parent_map[pelement]
+            pindex = pparent._children.index(pelement)
+            pparent._children[pindex] = element
+        else:
+            # Add the element to the parent tree
+            # 1. First get the parent of the new element and get the
+            # same element from the parent tree.
+            parent = tree_parent_map[element]
+            if "id" in parent.attrib:
+                xpath = "%s[id='%s']" % (parent.tag, parent.attrib["id"])
+            else:
+                xpath = "%s" % parent.tag
+            pelement = ptree.find(xpath)
+            pelement.append(element)
+    return ptree
+
+
+def handle_includes(tree, path):
+    """Will replace all include element with the content of the include
+    file.
+
+    :tree: ElementTree
+    :path: Path of the loaded form
+    :returns: ElementTree
+
+    """
+    if path:
+        basepath = os.path.dirname(path)
+    else:
+        basepath = ""
+
+    # Workaroutn for missing support of getting parent elements. See
+    # http://stackoverflow.com/questions/2170610/access-elementtree-node-parent-node/2170994
+    parent_map = {c:p for p in tree.iter() for c in p}
+    # handle includes in form
+    for include_placeholder in tree.findall(".//include"):
+        location = include_placeholder.attrib["src"]
+        include_tree = load(get_file_location(location, basepath))
+        parent = parent_map[include_placeholder]
+        index = parent._children.index(include_placeholder)
+        # Check if the content to be included is wrapped in a
+        # 'configuration' section.
+        if include_tree.tag == "configuration":
+            parent.remove(parent._children[index])
+            for child in include_tree:
+                parent.append(child)
+        else:
+            parent._children[index] = include_tree
+    return tree
 
 
 class Config(object):
@@ -249,7 +346,7 @@ class Form(Config):
         fields are stored in a dictionary per page to make the access to
         the fields on a page faster (e.g get_errors and get_warnings
         will check the fields on a certain page for errors).
-       
+
         The attribute ``values`` and ``evaluate`` are used for
         evaluating the rules on initialisation to only include relevant
         fields.
@@ -273,7 +370,6 @@ class Form(Config):
                 fields[page_id][field.name] = field
                 self._id2name[ref] = field.name
         return fields
-
 
     def get_fields(self, root=None, values={},
                    reload_fields=False, evaluate=False):
@@ -369,7 +465,7 @@ class Field(Config):
         is already set by the underlying FormAlchemy library by checking
         if the database field is 'NOT NULL'. Defaults to False"""
 
-        self.desired= entity.attrib.get('desired', 'false') == 'true'
+        self.desired = entity.attrib.get('desired', 'false') == 'true'
         """Flag to mark the field as a desired field. If this tag is
         set an additional rule will be added to the field and an star
         symbol is rendered at the label of the field. Defaults to
@@ -448,7 +544,6 @@ class Field(Config):
             mode = rule.attrib.get('mode')
             triggers = rule.attrib.get('triggers')
             self.rules.append(Rule(expr, msg, mode, triggers))
-
 
 
 class Renderer(Config):

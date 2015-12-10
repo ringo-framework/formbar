@@ -146,11 +146,13 @@ $( document ).ready(function() {
       var item = $(this).attr('formbar-item');
       var itemid = $(this).attr('formbar-itemid');
       var baseurl = $(this).attr('formbar-baseurl');
+      var timestamp = (new Date()).getTime()
       $.get(baseurl+'/set_current_form_page', 
             {
                 page: page,
                 item: item,
-                itemid: itemid
+                itemid: itemid,
+                timestamp: timestamp
             },
             function(data, status) {});
     });
@@ -160,11 +162,13 @@ $( document ).ready(function() {
       var item = $(this).attr('formbar-item');
       var itemid = $(this).attr('formbar-itemid');
       var baseurl = $(this).attr('formbar-baseurl');
+      var timestamp = (new Date()).getTime()
       $.get(baseurl+'/set_current_form_page', 
             {
                 page: page,
                 item: item,
-                itemid: itemid
+                itemid: itemid,
+                timestamp: timestamp
             },
             function(data, status) {});
       $('.formbar-page').hide();
