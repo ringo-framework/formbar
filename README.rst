@@ -1,34 +1,52 @@
 Formbar
 =======
-
 Formbar is a python library to layout, render and validate HTML forms in web
 applications. Formbar renders forms which are compatible with `Twitter
 Bootstrap <twitter.github.com/bootstrap/>`_ styles.
+
+Formbar is the German word for "shapeable" and should emphasise the
+character of formbar which hopefully makes shaping your forms more easy.
 
 In contrast to many other form libraries forms with formbar are configured in XML
 files to separate the form definition form the implementation and handle it as
 configuration.
 
-Formbar is the German word for "shapeable" and should emphasise the
-character of formbar which hopefully makes shaping your forms more easy.
+Formbar is production ready and already used in applications with large forms.
+
+Licence
+-------
+Formbar is Free Software and licensed under GPL version >= 2.
+
+Documentation
+-------------
+Online documentation can be found `formbar.readthedocs.org <https://formbar.readthedocs.org>`_
 
 Features
 --------
-
+* Conversion between Python values and value in the form and vice versa.
+* i18n support for labels and texts in the form.
+* Conditional fields in the form. E.g Render fields readonly if other fields
+  have a certain value.
+* Flexible form definition and layout.
+  * Different form layouts for the same model (Create, Edit, Read...)
+  * Support for inheritance and including parts of other forms.
+  * Support for different pages, sections and subsections.
+* Styling
+  * Twitter bootstrap support
+  * Row and column based layouts
+  * Custom CSS styling
+  * Numbering of fields
+  * XML based form definition
+  * Help texts
+* Validation:
+  * Basic datatype validation on conversion for different types of data (date,
+    int, float, email...).
+  * Rule based validation in the form using expressions (`brabbel <http://github.com/toirl/brabbel>`).
+  * Error and warning messages
+* Extensible
+  * Support for external renderers
+  * Support for writing external validators
 * Support for SQLAlchemy mapped items and plain forms
-* Expression bases rules and elements
-* Type conversation and validation
-* XML based form definition
-* i18n Support
-* Row and column based layouts
-* Different form layouts for the same model (Create, Edit, Read...)
-* Twitter bootstrap support
-* Custom CSS styling
-* Error and warning messages
-* Help texts
-* Numbering of fields
-* Extern defined renderers
-* ...
 
 Getting started
 ---------------
@@ -82,21 +100,3 @@ The corresponding configuration file might look like this one.::
 This is a very simple example just to get an impression. There are many more
 configuration options. See the examples folder for more information on the
 configuration or how the validation works.
-
-
-Documentation
--------------
-Formbar should be well documented and comes with documentation, bunch of
-unitests and last but not least an example serve which serve some example
-forms.
-
-Online documentation can be found `here <https://formbar.readthedocs.org`_
-
-Licence
--------
-Formbar is Free Software and licensed under GPL version >= 2.
-
-Project state
--------------
-Formbar is in a early project state and still in under development including
-large design changes. Call it alpha if you want.
