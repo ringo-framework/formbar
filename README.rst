@@ -28,24 +28,31 @@ Features
 * Conditional fields in the form. E.g Render fields readonly if other fields
   have a certain value.
 * Flexible form definition and layout.
+  
   * Different form layouts for the same model (Create, Edit, Read...)
   * Support for inheritance and including parts of other forms.
   * Support for different pages, sections and subsections.
+
 * Styling
+
   * Twitter bootstrap support
   * Row and column based layouts
   * Custom CSS styling
   * Numbering of fields
   * XML based form definition
   * Help texts
+
 * Validation:
-  * Basic datatype validation on conversion for different types of data (date,
-    int, float, email...).
-  * Rule based validation in the form using expressions (`brabbel <http://github.com/toirl/brabbel>`).
+
+  * Basic datatype validation on conversion for different types of data (date, int, float, email...).
+  * Rule based validation in the form using expressions (`brabbel <http://github.com/toirl/brabbel>`_).
   * Error and warning messages
-* Extensible
+
+* Expandable
+
   * Support for external renderers
   * Support for writing external validators
+
 * Support for SQLAlchemy mapped items and plain forms
 
 Getting started
