@@ -915,11 +915,12 @@ like this::
 
         <include src="path/to/form/config.xml"/>
 
-=========   ===========
-Attribute   Description
-=========   ===========
-src         Location of the configuration file which should be included
-=========   ===========
+=============   ===========
+Attribute       Description
+=============   ===========
+src             Location of the configuration file which should be included
+entity-prefix   Prefix of the name of the entity fieldname
+=============   ===========
 
 The include file must be a valid XML file. The content of the include file can
 be wrapped into a `configuration` tag::

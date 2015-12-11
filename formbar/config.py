@@ -111,6 +111,7 @@ def handle_includes(tree, path):
     # handle includes in form
     for include_placeholder in tree.findall(".//include"):
         location = include_placeholder.attrib["src"]
+        entity_prefix = include_placeholder.attrib.get("entity-prefix")
         include_tree = load(get_file_location(location, basepath))
         parent = parent_map[include_placeholder]
         index = parent._children.index(include_placeholder)
@@ -119,6 +120,8 @@ def handle_includes(tree, path):
         if include_tree.tag == "configuration":
             parent.remove(parent._children[index])
             for child in include_tree:
+                if child.tag == "entity" and entity_prefix is not None:
+                    child.attrib["name"] = entity_prefix+child.attrib["name"]
                 parent.append(child)
         else:
             parent._children[index] = include_tree

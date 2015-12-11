@@ -1,3 +1,7 @@
+Next
+====
+- Added entity-prefix attribute to the include directive.
+
 0.17.0
 ======
 - Added include function. Includes can be used to include the content of a
