@@ -112,7 +112,10 @@ def handle_includes(tree, path):
     for include_placeholder in tree.findall(".//include"):
         location = include_placeholder.attrib["src"]
         entity_prefix = include_placeholder.attrib.get("entity-prefix")
+        element = include_placeholder.attrib.get("element")
         include_tree = load(get_file_location(location, basepath))
+        if element is not None:
+            include_tree = include_tree.find(".//*[@id='%s']" % element)
         parent = parent_map[include_placeholder]
         index = parent._children.index(include_placeholder)
         # Check if the content to be included is wrapped in a
