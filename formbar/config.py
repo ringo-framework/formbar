@@ -74,9 +74,10 @@ def handle_inheritance(tree, path=None):
         if pelement is not None:
             # Replace the parent element with the one in inherited
             # element.
-            pparent = ptree_parent_map[pelement]
-            pindex = pparent._children.index(pelement)
-            pparent._children[pindex] = element
+            pparent = ptree_parent_map.get(pelement)
+            if pparent:
+                pindex = pparent._children.index(pelement)
+                pparent._children[pindex] = element
         else:
             # Add the element to the parent tree
             # 1. First get the parent of the new element and get the
