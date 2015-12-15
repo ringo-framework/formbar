@@ -83,7 +83,7 @@ def handle_inheritance(tree, path=None):
             # same element from the parent tree.
             parent = tree_parent_map[element]
             if "id" in parent.attrib:
-                xpath = "%s[id='%s']" % (parent.tag, parent.attrib["id"])
+                xpath = ".//%s[id='%s']" % (parent.tag, parent.attrib["id"])
             else:
                 xpath = "%s" % parent.tag
             pelement = ptree.find(xpath)
