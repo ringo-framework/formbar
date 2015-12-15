@@ -128,6 +128,9 @@ def handle_includes(tree, path):
                     child.attrib["name"] = entity_prefix+child.attrib["name"]
                 parent.append(child)
         else:
+            for child in include_tree:
+                if child.tag == "entity" and entity_prefix is not None:
+                    child.attrib["name"] = entity_prefix+child.attrib["name"]
             parent._children[index] = include_tree
     return tree
 
