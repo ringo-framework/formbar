@@ -88,6 +88,7 @@ def handle_inheritance(tree, path=None):
                 xpath = "%s" % parent.tag
             pelement = ptree.find(xpath)
             pelement.append(element)
+    ptree = handle_includes(ptree, path)
     return ptree
 
 
