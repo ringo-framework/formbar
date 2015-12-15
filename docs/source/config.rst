@@ -919,6 +919,7 @@ like this::
 Attribute       Description
 =============   ===========
 src             Location of the configuration file which should be included
+element         Only include a single element form the XML file defined in src. The element is referenced by its id.
 entity-prefix   Prefix of the name of the entity fieldname
 =============   ===========
 
