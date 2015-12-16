@@ -87,8 +87,18 @@ def handle_inheritance(tree, path=None):
                 xpath = ".//%s[id='%s']" % (parent.tag, parent.attrib["id"])
             else:
                 xpath = "%s" % parent.tag
-            pelement = ptree.find(xpath)
-            pelement.append(element)
+
+            if parent.tag == "configuration":
+                ptree.append(element)
+            elif "id" in parent.attrib:
+                xpath = ".//%s[id='%s']" % (parent.tag, parent.attrib["id"])
+                pelement = ptree.find(xpath)
+                pelement.append(element)
+            else:
+                xpath = "%s" % parent.tag
+                pelement = ptree.find(xpath)
+                pelement.append(element)
+
     ptree = handle_includes(ptree, path)
     return ptree
 
