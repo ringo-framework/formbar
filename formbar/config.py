@@ -1,4 +1,5 @@
 import os
+import re
 import gettext
 import logging
 import pkg_resources
@@ -126,6 +127,10 @@ def handle_includes(tree, path):
         entity_prefix = include_placeholder.attrib.get("entity-prefix")
         element = include_placeholder.attrib.get("element")
         include_tree = load(get_file_location(location, basepath))
+
+        if entity_prefix is not None:
+            include_tree = handle_entity_prefix(include_tree, entity_prefix)
+
         if element is not None:
             include_tree = include_tree.find(".//*[@id='%s']" % element)
         parent = parent_map[include_placeholder]
@@ -135,14 +140,41 @@ def handle_includes(tree, path):
         if include_tree.tag == "configuration":
             parent.remove(parent._children[index])
             for child in include_tree:
-                if child.tag == "entity" and entity_prefix is not None:
-                    child.attrib["name"] = entity_prefix+child.attrib["name"]
                 parent.append(child)
         else:
-            for child in include_tree:
-                if child.tag == "entity" and entity_prefix is not None:
-                    child.attrib["name"] = entity_prefix+child.attrib["name"]
             parent._children[index] = include_tree
+    return tree
+
+
+def handle_entity_prefix(tree, prefix):
+
+    # Collect name of fields which are defined in this form. This is
+    # used as we only want to handle prefixes on fieldname and
+    # expression for fields which are defined in the form.
+    fieldnames = [f.get("name") for f in tree.findall(".//entity")]
+
+    def replace_fieldnames(expr, prefix, fieldnames):
+        # TODO: Handle % and @ variables to? (ti) <2015-12-17 09:30>
+        for field in set(re.findall(r'\$[\.\w]+', expr)):
+            field = field.strip("$")
+            # Only replace name of fields which has has been defined in
+            # this tree.
+            if field not in fieldnames:
+                continue
+            expr = expr.replace(field, prefix+field)
+        return expr
+
+    # Handle fields
+    for field in tree.findall(".//entity"):
+        field.attrib["name"] = prefix+field.attrib["name"]
+    # Handle rules
+    for rule in tree.findall(".//rule"):
+        rule.attrib["expr"] = replace_fieldnames(rule.attrib["expr"],
+                                                 prefix, fieldnames)
+    # Handle conditional
+    for cond in tree.findall(".//if"):
+        cond.attrib["expr"] = replace_fieldnames(cond.attrib["expr"],
+                                                 prefix, fieldnames)
     return tree
 
 
