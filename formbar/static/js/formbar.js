@@ -3,7 +3,7 @@
 var language = null;
 var fields2Conditionals = {};
 var currentFormValues = {}
-var deactivator = function(event){ event.preventDefault();}
+var deactivator = function(event){ $(this).prop("checked", !$(this).prop("checked"));}
 
 /** This function will return the value of a given field. In case of radio,
  * select and checkbox fields it will return the value of the checked/selected
@@ -37,7 +37,7 @@ function setFieldValue(field, value, remember) {
     field= $(field);
     var ftype = field.attr("type");
     var fname = field.attr("name");
-    if (value && remember) {
+    if (value && remember && !field.attr("readOnly")) {
         currentFormValues[fname] = getFieldValue(field);
     }
 
