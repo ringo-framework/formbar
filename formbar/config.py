@@ -226,7 +226,7 @@ class Config(object):
             qstr += "[@id='%s']" % id
         result = self._tree.findall(qstr)
         if len(result) > 1:
-            raise KeyError('Element is ambigous')
+            raise KeyError('Element is ambigous %s:' % id)
         elif len(result) == 1:
             # If the found elements refernces another element than retry
             # getting the refed element
