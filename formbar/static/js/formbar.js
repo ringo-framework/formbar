@@ -3,7 +3,10 @@
 var language = null;
 var fields2Conditionals = {};
 var currentFormValues = {}
-var deactivator = function(event){ $(this).prop("checked", !$(this).prop("checked"));}
+var deactivator = function(event){ 
+    $(this).prop("checked", !$(this).prop("checked"));
+    event.preventDefault();
+}
 
 /** This function will return the value of a given field. In case of radio,
  * select and checkbox fields it will return the value of the checked/selected
