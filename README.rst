@@ -1,5 +1,9 @@
 Formbar
 =======
+.. image:: https://travis-ci.org/ringo-framework/formbar.svg
+    :target: https://travis-ci.org/ringo-framework/formbar
+.. image:: https://api.codacy.com/project/badge/grade/d2d6ae5518b34416a4d3f0f7fecfd35a
+    :target: https://www.codacy.com/app/torsten/formbar
 Formbar is a python library to layout, render and validate HTML forms in web
 applications. Formbar renders forms which are compatible with `Twitter
 Bootstrap <twitter.github.com/bootstrap/>`_ styles.
