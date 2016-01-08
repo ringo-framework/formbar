@@ -8,6 +8,24 @@ var deactivator = function(event){
     event.preventDefault();
 }
 
+// Plugin to prevent double submission. See
+// http://stackoverflow.com/questions/2830542/prevent-double-submission-of-forms-in-jquery
+jQuery.fn.preventDoubleSubmission = function() {
+  $(this).on('submit',function(e){
+      var $form = $(this);
+      if ($form.data('submitted') === true) {
+        // Previously submitted - don't submit again
+        e.preventDefault();
+      } else {
+        // Mark it so that the next submit can be
+        // ignored
+        $form.data('submitted', true);
+      }
+  });
+// Keep chainability
+return this;
+};
+
 /** This function will return the value of a given field. In case of radio,
  * select and checkbox fields it will return the value of the checked/selected
  * item/option of the field. */
@@ -228,6 +246,8 @@ $( document ).ready(function() {
         }
         timer = setTimeout(evaluate, 750, this)
     });
+    $('div.formbar-form form').preventDoubleSubmission();
+
 });
 
 
