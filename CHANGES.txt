@@ -1,6 +1,15 @@
 Next
 ====
+
+0.17.2
+======
+- Prevent forms from double submission.
+
+0.17.1
+======
 - Added entity-prefix attribute to the include directive.
+- Some cleanup after the move from bitbucket to github. Close branches and
+  remove mercurial specific configurations.
 
 0.17.0
 ======
