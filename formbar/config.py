@@ -310,8 +310,12 @@ class Form(Config):
         """Buttons of the form"""
         self._fields = self.init_fields()
         self._initialized = True
-        """Dictionary with all fields in the form. The name of the field is the
-        key in the dictionary"""
+        """Dictionary with all fields per page in a dictionary.
+        {
+            "p1": [<formbar.config.Field>, ...],
+            "p2": [<formbar.config.Field>, ...]
+        }
+        """
 
     def get_buttons(self, root=None):
         # Get all Buttons for the form.
@@ -395,10 +399,17 @@ class Form(Config):
                 yield child
 
     def init_fields(self, values=None, evaluate=False):
-        """Will initialise (or reinitialize) the fields in the form. The
-        fields are stored in a dictionary per page to make the access to
-        the fields on a page faster (e.g get_errors and get_warnings
-        will check the fields on a certain page for errors).
+        """Will return the fields in the form as a dictionary. The
+        dicionary will containe all fields per page to make the access
+        to the fields on a page faster (e.g get_errors and get_warnings):
+
+        {
+            "p1": [<formbar.config.Field>, ...],
+            "p2": [<formbar.config.Field>, ...]
+        }
+
+        Fields fetched by searching all field elements in the form or
+        snippets and "subsnippets" in the forms.
 
         The attribute ``values`` and ``evaluate`` are used for
         evaluating the rules on initialisation to only include relevant
@@ -426,25 +437,32 @@ class Form(Config):
 
     def get_fields(self, root=None, values={},
                    reload_fields=False, evaluate=False):
-        """Returns a dictionary of included fields in the form. Fields fetched
-        by searching all field elements in the form or snippets and
-        "subsnippets" in the forms.
+        """Returns a dictionary of included fields in the form.
 
         :returns: A dictionary with the configured fields in the form.
         The name of the field is the key of the dictionary.
         """
 
-        # Are the fields already initialized? Ignore cache if we get
-        # fields for a particular page
+        # TODO: Move filtering (evaluation) out of this method () <2016-01-11 15:33>
+        # TODO: Check id the reload_fields flag is really needed () <2016-01-11 15:34>
         if not self._initialized or reload_fields is True:
-            self._fields = self.init_fields(values, evaluate)
+            self._fields = self.init_fields(values)
+            # FIXME: The only way get only fields which are
+            # relevant (e.g in evaluable conditionals) is to "reinit"
+            # the fields.
+            if evaluate:
+                _fields = self.init_fields(values, evaluate)
+            else:
+                _fields = self._fields
+        else:
+            _fields = self._fields
 
         if root is None:
             # if root is None then we must return all fields.
             fields = {}
-            for page in self._fields:
-                for field in self._fields[page]:
-                    fields[field] = self._fields[page][field]
+            for page in _fields:
+                for field in _fields[page]:
+                    fields[field] = _fields[page][field]
             return fields
         else:
             page_id = root.attrib.get("id")
