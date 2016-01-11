@@ -257,10 +257,18 @@ function setInitialFormValues() {
     }
 }
 
+/* Map fields to conditionals. That means map every conditional to the field
+ * where the expression of the condition refers to the field. Later if a value
+ * of a field changes we know which conditionals need to be reevaluated. */
 function mapFieldsToConditionals() {
-    var fieldsToEvaluate = $('.formbar-conditional');
-    for (var i = fieldsToEvaluate.length - 1; i >= 0; i--) {
-        var conditional = fieldsToEvaluate[i];
+    var conditionals = $('.formbar-conditional');
+    // FIXME: Iteration order counts to make cascading conditionals and
+    // resetting work! Currently we are assuming, that rules which occour
+    // later in the document may be preconditionedby former rules. So when
+    // resetting conditionals in the form it is important to handle
+    // conditionals in the correct order to allow cascading resets.
+    for (var i = 0; i <= conditionals.length - 1; i++) {
+        var conditional = conditionals[i];
         var tokens = conditional.getAttribute("expr").split(" ");
         for (var j = 0; j <= tokens.length - 1; j++) {
             var fieldname = null;
