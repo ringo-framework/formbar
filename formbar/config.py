@@ -178,6 +178,46 @@ def handle_entity_prefix(tree, prefix):
     return tree
 
 
+def flatten_form_fields(fields, root=None):
+    """Refacoring helper method. Currently the fields dictionary of the
+    for saves all fields in a dictionary with fields per page. This
+    method will flatten the given given fields dictionary removing
+    the page information. I a root (page) is given only the fields
+    for the given page are returned.
+    
+    TODO: Make this method obsolete by changing the datastructure of the
+    fields dictionary. Save mapping of page2fields in a separate
+    varibale (ti) <2016-01-11 16:44> 
+    """
+    if root is None:
+        tmpfields = {}
+        for page in fields:
+            for field in fields[page]:
+                tmpfields[field] = fields[page][field]
+        return tmpfields
+    else:
+        page_id = root.attrib.get("id")
+        return fields[page_id]
+
+
+def filter_form_fields(form, fields, values=None):
+    """Refacoring helper method. Will a return dictiony of fields which
+    are in 'active' conditionals.  Active means the expression in the
+    conditional will evaluate to true using the given set of values."""
+    if values is None:
+        values = {}
+    # FIXME: The only way get only fields which are
+    # relevant (e.g in evaluable conditionals) is to "reinit"
+    # the fields.
+    filtered_fields = flatten_form_fields(form.init_fields(values,
+                                                           evaluate=True))
+    tmp_fields = {}
+    for fieldname, field in fields.iteritems():
+        if fieldname in filtered_fields:
+            tmp_fields[fieldname] = field
+    return tmp_fields
+
+
 class Config(object):
     """Class for accessing the form configuration file. It provides methods to
     get certain elements from the configuration. """
@@ -447,26 +487,11 @@ class Form(Config):
         # TODO: Check id the reload_fields flag is really needed () <2016-01-11 15:34>
         if not self._initialized or reload_fields is True:
             self._fields = self.init_fields(values)
-            # FIXME: The only way get only fields which are
-            # relevant (e.g in evaluable conditionals) is to "reinit"
-            # the fields.
-            if evaluate:
-                _fields = self.init_fields(values, evaluate)
-            else:
-                _fields = self._fields
-        else:
-            _fields = self._fields
+        fields = flatten_form_fields(self._fields, root)
+        if evaluate:
+            fields = filter_form_fields(self, fields, values)
+        return fields
 
-        if root is None:
-            # if root is None then we must return all fields.
-            fields = {}
-            for page in _fields:
-                for field in _fields[page]:
-                    fields[field] = _fields[page][field]
-            return fields
-        else:
-            page_id = root.attrib.get("id")
-            return self._fields[page_id]
 
     def get_field(self, name):
         """Returns the field with the name from the form. If the field can not
