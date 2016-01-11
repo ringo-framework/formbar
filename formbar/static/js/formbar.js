@@ -92,14 +92,7 @@ function removeValues(conditional) {
     var inputs = $(conditional).find(":input");
     for (var i = 0, len = inputs.length; i < len; i++) {
         var field = $(inputs[i]);
-        var ftype = field.attr("type");
-        if (ftype == "radio" || ftype == "checkbox") {
-            field.prop("checked", false);
-        } else if (field.type == "select") {
-            field.prop("selected", false);
-        } else {
-            setFieldValue(field, "");
-        }
+        setFieldValue(field, "");
     }
 }
 
