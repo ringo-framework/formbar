@@ -81,7 +81,7 @@ function setFieldValue(field, value, remember) {
             field.prop("selected", false);
         }
     } else {
-        return field.val(value);
+        field.val(value);
     }
 
 }
