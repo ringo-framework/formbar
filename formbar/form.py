@@ -585,12 +585,22 @@ class Field(object):
                 else:
                     value = getattr(self._form._item, value.strip("$"))
             except IndexError, e:
-                log.error("Error while accessing attribute '%s': %s"
-                          % (value, e))
+                # In case we are currently creating an item a access to
+                # values of the item may fail because the are not
+                # existing yet. This is especially true for items in
+                # relations as relations are added to the item after the
+                # creation has finished. So we expect such errors in
+                # case of creation and will not log those errors. A way
+                # to identify an item which is not fully created is the
+                # absence of its id value.
+                if self._form._item.id:
+                    log.error("Error while accessing attribute '%s': %s"
+                              % (value, e))
                 value = None
             except AttributeError, e:
-                log.error("Error while accessing attribute '%s': %s"
-                          % (value, e))
+                if self._form._item.id:
+                    log.error("Error while accessing attribute '%s': %s"
+                              % (value, e))
                 value = None
         self.value = value
 
