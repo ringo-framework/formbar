@@ -584,7 +584,7 @@ class Field(object):
                                                        expand=True)
                 else:
                     value = getattr(self._form._item, value.strip("$"))
-            except IndexError, e:
+            except (IndexError, AttributeError), e:
                 # In case we are currently creating an item a access to
                 # values of the item may fail because the are not
                 # existing yet. This is especially true for items in
@@ -593,11 +593,6 @@ class Field(object):
                 # case of creation and will not log those errors. A way
                 # to identify an item which is not fully created is the
                 # absence of its id value.
-                if self._form._item.id:
-                    log.error("Error while accessing attribute '%s': %s"
-                              % (value, e))
-                value = None
-            except AttributeError, e:
                 if self._form._item.id:
                     log.error("Error while accessing attribute '%s': %s"
                               % (value, e))
