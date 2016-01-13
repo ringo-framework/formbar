@@ -4,6 +4,21 @@ Next
 0.17.2
 ======
 - Prevent forms from double submission.
+- Refacored code when initialising the form. Fixed/Improved comments on the
+  involved methods.
+- Fixed bug the getting only evaluable fields on validation reinitialized the
+  form which leads to later problems on rule evaluation because of missing
+  fields.
+- Make logging warnings when trying to access attributes of the linked item
+  more tolerant on errors. So only log those errors if the item is not fresh
+  created as in this case chances are high that relations or other values are
+  missing. Logging in this case would lead to too much false positives.
+- Prevent forms from beeing double submitted. This is done on client side
+  using JS.
+- Cleanup of code to reset and remove values in the form in case a conditional
+  becomes readonly.
+- Fixed Bug of failing cascading resetting of field values in case of nested
+  conditionals.
 
 0.17.1
 ======
