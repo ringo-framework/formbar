@@ -239,7 +239,7 @@ $( document ).ready(function() {
         }
         timer = setTimeout(evaluate, 750, this)
     });
-    $('div.formbar-form form').preventDoubleSubmission();
+    $('div.formbar-form form').not(".disable-double-submit-prevention").preventDoubleSubmission();
 
 });
 

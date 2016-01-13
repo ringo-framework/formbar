@@ -3,7 +3,9 @@ Next
 
 0.17.2
 ======
-- Prevent forms from double submission.
+- Prevent forms from double submission on default.
+  Added "disable-double-submit-prevention" css class which can be used
+  in the form definition to explicit disable the submit prevention.
 - Refacored code when initialising the form. Fixed/Improved comments on the
   involved methods.
 - Fixed bug the getting only evaluable fields on validation reinitialized the
