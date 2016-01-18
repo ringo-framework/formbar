@@ -1,6 +1,16 @@
 Next
 ====
 
+ * Fixed annoying bug of jumping curson in textfields. If the user changes
+   something in the middle of a textfield the cursor jump immediately to the
+   end of the textfield again. This makes it quite impossible to work with
+   textfields.
+
+ * Fixed handling of static rules. In case the the form validation failes the
+   `form.data` attribute is empty. This resulted in failing rule evaluations of
+   static rules because there was not dictionary of valuea available. Now use the
+   loaded_data in case the form.data is empty.
+
 0.17.2
 ======
 - Prevent forms from double submission on default.
