@@ -48,6 +48,15 @@ function getFieldValue(field) {
     }
 }
 
+function rememberFieldValue(field) {
+    // Save the current value of the given field for later resetting of the
+    // field value in case the surrounding conditional of this field because
+    // valid again
+    field= $(field);
+    var fname = field.attr("name");
+    currentFormValues[fname] = getFieldValue(field);
+}
+
 /** This function will set the value of a given field. In case of radio,
  * select and checkbox fields it will checke/select ithe item/option of the
  * field. */
@@ -59,9 +68,8 @@ function setFieldValue(field, value, remember) {
     var ftype = field.attr("type");
     var fname = field.attr("name");
     if (value && remember && !field.attr("readOnly")) {
-        currentFormValues[fname] = getFieldValue(field);
+        rememberFieldValue(field);
     }
-
     if (ftype == "radio") {
         if (field.val() == value) {
             field.prop("checked", true);
@@ -233,7 +241,7 @@ $( document ).ready(function() {
     $('div.formbar-form form input:text').keydown(function(){
         clearTimeout(timer);
         function evaluate(obj){
-            setFieldValue(obj, $(obj).val());
+            rememberFieldValue(obj);
             evaluateFields();
             evaluateConditionalsOnChange(obj);
         }
