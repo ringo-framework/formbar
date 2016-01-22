@@ -1,5 +1,5 @@
-Next
-====
+0.17.3
+======
 
  * Fixed annoying bug of jumping curson in textfields. If the user changes
    something in the middle of a textfield the cursor jump immediately to the
