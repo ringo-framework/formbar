@@ -1,3 +1,8 @@
+0.17.4
+======
+ * Render global error and warning messages in forms without pages too. Fixed
+   bug that these messages were only shown for forms with an outline.
+
 0.17.3
 ======
 

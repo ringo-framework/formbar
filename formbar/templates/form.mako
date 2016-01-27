@@ -36,6 +36,13 @@
   </div>
 % else:
   <div class="col-sm-12">
+      ## Render errors and warnings
+      % for warn in form.warnings:
+        <div class="alert alert-warning" role="warning"><i class="glyphicon glyphicon-exclamation-sign"></i> ${warn}</div>
+      % endfor
+      % for err in form.errors:
+        <div class="alert alert-danger" role="alert"><i class="glyphicon glyphicon-exclamation-sign"></i> ${err}</div>
+      % endfor
     ${self.render_recursive(form._config._tree)}
   </div>
 % endif
