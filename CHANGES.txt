@@ -2,6 +2,9 @@
 ======
  * Render global error and warning messages in forms without pages too. Fixed
    bug that these messages were only shown for forms with an outline.
+ * Added --tags option to generate.py to filter fields with specific tags.
+ * Added command 'fieldnames' to only render fieldnames instead of the model.
+   Additionally there is a aslist flag to render the names as a python list
 
 0.17.3
 ======
