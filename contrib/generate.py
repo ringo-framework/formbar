@@ -16,8 +16,16 @@ def _get_fields(config):
         fields.append(Field(en))
     return fields
 
+def filter_tag(field, tags):
+    if tags == "":
+        return True
+    for tag in tags.split(","):
+        if tag in field.tags:
+            return True
+    return False
 
-def print_model(config):
+def print_model(config, args):
+
     def generate_Column(field):
         datatypes = {
             "string": "sa.String",
@@ -44,14 +52,14 @@ def print_model(config):
             col = "%s = sa.Column('%s', %s)"
             return col % (field.name, field.name, datatype)
 
-    out = [generate_Column(field) for field in _get_fields(config) if field.type is not "info"]
+    out = [generate_Column(field) for field in _get_fields(config) if field.type is not "info" and filter_tag(field, args.tags)]
     print "\n".join(out)
 
 
-def main(config, action):
-    config_tree = _get_config(config)
-    if action == "model":
-        print_model(config_tree)
+def main(args):
+    config_tree = _get_config(args.config)
+    if args.action == "model":
+        print_model(config_tree, args)
     else:
         print "nothing to do"
 
@@ -60,6 +68,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate various informations from a form configuration file')
     parser.add_argument('action', choices=['model'], help='Output to generate')
     parser.add_argument('config', metavar='config', type=file, help='A form configuration file')
+    parser.add_argument('--tags', metavar='tags', help='Only choose fields with given tags. If empty all fields are returned.', default="")
+    parser.add_argument('--aslist', dest='aslist', action="store_true")
     args = parser.parse_args()
-    main(args.config, args.action)
+    main(args)
     sys.exit(0)
