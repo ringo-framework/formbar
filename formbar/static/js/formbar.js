@@ -116,24 +116,7 @@ function resetValues(conditional, values) {
 
 
 function getBrowserLanguage() {
-    var form = $('div.formbar-form form');
-    var eval_url = $(form).attr("evalurl"); 
-    if (!eval_url) {
-        return window.navigator.userLanguage || window.navigator.language
-    }
-    var language = undefined;
-    $.ajax({ 
-        url: eval_url,
-        async: false,
-        data: {rule: "True"},
-        success: function(data) {
-                language = data.params.locale
-            },
-        error: function(data) {
-                language = window.navigator.userLanguage || window.navigator.language
-            }
-    });
-    return language;
+    return (navigator.languages) ? navigator.languages[0] : navigator.language;
 }
 
 $( document ).ready(function() {
