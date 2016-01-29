@@ -116,7 +116,15 @@ function resetValues(conditional, values) {
 
 
 function getBrowserLanguage() {
-    return (navigator.languages) ? navigator.languages[0] : navigator.language;
+    var lang = "en";
+    if (navigator.browserLanguage){
+        lang = navigator.browserLanguage;
+    } else if (navigator.languages){
+        lang = navigator.languages[0];
+    } else {
+        lang = navigator.language;
+    }
+    return lang;
 }
 
 $( document ).ready(function() {
