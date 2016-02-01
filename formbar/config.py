@@ -505,8 +505,7 @@ class Form(Config):
                 self._id2name[ref] = field.name
         return fields
 
-    def get_fields(self, root=None, values={},
-                   reload_fields=False, evaluate=False):
+    def get_fields(self, root=None, values={}, evaluate=False):
         """Returns a dictionary of included fields in the form.
 
         :returns: A dictionary with the configured fields in the form.
@@ -514,8 +513,7 @@ class Form(Config):
         """
 
         # TODO: Move filtering (evaluation) out of this method () <2016-01-11 15:33>
-        # TODO: Check id the reload_fields flag is really needed () <2016-01-11 15:34>
-        if not self._initialized or reload_fields is True:
+        if not self._initialized:
             self._fields = self.init_fields(values)
         fields = flatten_form_fields(self._fields, root)
         if evaluate:

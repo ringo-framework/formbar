@@ -483,7 +483,6 @@ class Form(object):
         # conditionals First get list of fields which are still in the
         # form after conditionals has be evaluated
         fields_to_check = self._config.get_fields(values=converted,
-                                                  reload_fields=True,
                                                   evaluate=True)
         for fieldname, field in fields_to_check.iteritems():
             field = self.fields[fieldname]
