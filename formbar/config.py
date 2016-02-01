@@ -63,8 +63,8 @@ def handle_inheritance(tree, path=None):
 
     # Workaroutn for missing support of getting parent elements. See
     # http://stackoverflow.com/questions/2170610/access-elementtree-node-parent-node/2170994
-    tree_parent_map = {c:p for p in tree.iter() for c in p}
-    ptree_parent_map = {c:p for p in ptree.iter() for c in p}
+    tree_parent_map = {c: p for p in tree.iter() for c in p}
+    ptree_parent_map = {c: p for p in ptree.iter() for c in p}
 
     for element in tree.getiterator():
         if not "id" in element.attrib:
@@ -120,7 +120,7 @@ def handle_includes(tree, path):
 
     # Workaroutn for missing support of getting parent elements. See
     # http://stackoverflow.com/questions/2170610/access-elementtree-node-parent-node/2170994
-    parent_map = {c:p for p in tree.iter() for c in p}
+    parent_map = {c: p for p in tree.iter() for c in p}
     # handle includes in form
     for include_placeholder in tree.findall(".//include"):
         location = include_placeholder.attrib["src"]
@@ -184,10 +184,10 @@ def flatten_form_fields(fields, root=None):
     method will flatten the given given fields dictionary removing
     the page information. I a root (page) is given only the fields
     for the given page are returned.
-    
+
     TODO: Make this method obsolete by changing the datastructure of the
     fields dictionary. Save mapping of page2fields in a separate
-    varibale (ti) <2016-01-11 16:44> 
+    varibale (ti) <2016-01-11 16:44>
     """
     if root is None:
         tmpfields = {}
@@ -482,14 +482,14 @@ class Form(Config):
         The name of the field is the key of the dictionary.
         """
 
-        # TODO: Move filtering (evaluation) out of this method () <2016-01-11 15:33>
+        # TODO: Move filtering (evaluation) out of this method ()
+        # <2016-01-11 15:33>
         if not self._initialized:
             self._fields = self.init_fields(values)
         fields = flatten_form_fields(self._fields, root)
         if evaluate:
             fields = filter_form_fields(self, fields, values)
         return fields
-
 
     def get_field(self, name):
         """Returns the field with the name from the form. If the field can not
