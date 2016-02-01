@@ -646,28 +646,29 @@ class Field(Config):
         if renderer_config is not None:
             self.renderer = Renderer(renderer_config)
 
-        # Get rules
-        self.rules = []
+    def get_rules(self):
+        rules = []
         # Add automatic genertated rules based on the required or
         # desired flag
         if self.required:
             expr = "bool($%s)" % self.name
             msg = _("This field is required. You must provide a value")
             mode = "pre"
-            self.rules.append(Rule(expr, msg, mode))
+            rules.append(Rule(expr, msg, mode))
         if self.desired:
             expr = "bool($%s)" % self.name
             msg = _("This field is desired. Please provide a value")
             mode = "pre"
             triggers = "warning"
-            self.rules.append(Rule(expr, msg, mode, triggers))
+            rules.append(Rule(expr, msg, mode, triggers))
         # Add rules added the the field.
         for rule in self._tree.findall('rule'):
             expr = rule.attrib.get('expr')
             msg = rule.attrib.get('msg')
             mode = rule.attrib.get('mode')
             triggers = rule.attrib.get('triggers')
-            self.rules.append(Rule(expr, msg, mode, triggers))
+            rules.append(Rule(expr, msg, mode, triggers))
+        return rules
 
 
 class Renderer(Config):
