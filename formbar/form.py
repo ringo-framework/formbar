@@ -643,7 +643,7 @@ class Field(object):
 
     def get_rules(self):
         """Returns a list of configured rules for the field."""
-        return self.rules
+        return self._config.get_rules()
 
     def set_value(self, value):
         self.value = value
