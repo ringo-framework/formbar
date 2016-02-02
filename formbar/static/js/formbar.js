@@ -394,11 +394,17 @@ function evaluateConditionals() {
     }
 }
 
+
 function evaluateConditional(conditional) {
+    var result = evaluate(conditional);
+    toggleConditional(conditional, result);
+}
+
+
+function toggleConditional(conditional, enabled) {
     var reset = $(conditional).attr('reset-value').indexOf('true') >= 0;
     var readonly = $(conditional).attr('class').indexOf('readonly') >= 0;
-    var result = evaluate(conditional);
-    if (result) {
+    if (enabled) {
         $(conditional).find(':radio, :checkbox').unbind('click',deactivator);
         if (readonly) {
             $(conditional).animate({opacity:'1.0'}, 500);
