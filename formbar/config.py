@@ -155,11 +155,41 @@ def handle_entity_prefix(tree, prefix):
 
     def replace_fieldnames(expr, prefix, fieldnames):
         # TODO: Handle % and @ variables to? (ti) <2015-12-17 09:30>
-        for field in set(re.findall(r'\$[\.\w]+', expr)):
+        # Note: This algorithmn is hackish and handles some corner cases
+        # with replacements of similar fields names.
+        # 
+        # Example: 
+        # Consider the following expr = "$foo and $foo_bar" And we want
+        # to add a prefix "baz".
+        # 
+        # The code will iterate over all unique fields in the expression
+        # and replaces the fieldname with prefix+fieldname.
+        #
+        # Problem:
+        # If we start with the longest field name first the in first
+        # iteration the expression looks like this:
+        # $foo and $baz.foo_bar.
+        # With the next iteration on "foo" the expression will look like
+        # this:
+        # $baz.foo and $baz.baz.foo_bar with is obvsisouly wrong because
+        # of the double baz.baz.
+        #
+        # Solution:
+        # To handle this problem we sort the fields in the expression to
+        # start with the shortest fieldname. The the result looks like
+        # this on the first iteration:
+        # $baz.foo and $baz.foo_bar.
+        # Note the replacing "foo" also replaces "foo_bar".
+        # Now on the next iteration of "foo_bar" we check if there is
+        # already a prefixed version of this in the expression. If so we
+        # ignore the replacement to prevent double prefixes.
+        fields = re.findall(r'\$[\.\w]+', expr)
+        fields = sorted(set(fields), key=lambda x: len(x))
+        for field in fields:
             field = field.strip("$")
             # Only replace name of fields which has has been defined in
-            # this tree.
-            if field not in fieldnames:
+            # this tree or it is been already replaced.
+            if field not in fieldnames or prefix+field in expr:
                 continue
             expr = expr.replace(field, prefix+field)
         return expr
