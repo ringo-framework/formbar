@@ -655,6 +655,22 @@ class Field(object):
         """Returns a list of configured rules for the field."""
         return self.rules
 
+    def get_warning_rules(self):
+        return [r for r in self.rules if r.triggers == "warning"]
+
+    def get_error_rules(self):
+        return [r for r in self.rules if r.triggers == "error"]
+
+    def has_warning_rules(self):
+        """Returns a True if there is at least on rule that can trigger
+        a warning."""
+        return len(self.get_warning_rules()) > 0
+
+    def has_error_rules(self):
+        """Returns a True if there is at least on rule that can trigger
+        a error."""
+        return len(self.get_error_rules()) > 0
+
     def set_value(self, value):
         self.value = value
 

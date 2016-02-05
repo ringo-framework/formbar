@@ -298,9 +298,11 @@ class FieldRenderer(Renderer):
 
         class_options = ((self._field.has_errors and 'has-error'),
                          (self._field.has_warnings and 'has-warning'),
+                         (self._field.has_error_rules() and 'field-error'),
+                         (self._field.has_warning_rules() and 'field-warning'),
                          indent_width)
         html.append(HTML.tag("div", _closed=False,
-                             class_=("form-group %s %s %s" % class_options),
+                             class_=("form-group %s %s %s %s %s" % class_options),
                              desired="{}".format(self._field.is_desired())
                              ))
         values = self._get_template_values()

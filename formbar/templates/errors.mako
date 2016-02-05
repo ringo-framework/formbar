@@ -1,14 +1,14 @@
-% for error in field.get_errors():
-  <div class="help-block">
+% for rule in field.get_error_rules():
+  <div class="help-block ${not rule.result or "hidden"}" desired="${rule.desired}" required="${rule.required}">
     <span class="glyphicon glyphicon-exclamation-sign"></span>
-    ${_(error)}
+    ${_(rule.msg)}
   </div>
 % endfor
-% for warn in field.get_warnings():
-  <div class="help-block">
+% for rule in field.get_warning_rules():
+  <div class="help-block ${not rule.result or "hidden"}" desired="${rule.desired}" required="${rule.required}">
     <span class="text-warning">
     <span class="glyphicon glyphicon-warning-sign"></span>
-    ${_(warn)}
+    ${_(rule.msg)}
     </span>
   </div>
 % endfor

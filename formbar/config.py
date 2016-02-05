@@ -656,13 +656,13 @@ class Field(Config):
             expr = "bool($%s)" % self.name
             msg = _("This field is required. You must provide a value")
             mode = "pre"
-            self.rules.append(Rule(expr, msg, mode))
+            self.rules.append(Rule(expr, msg, mode, required=True))
         if self.desired:
             expr = "bool($%s)" % self.name
             msg = _("This field is desired. Please provide a value")
             mode = "pre"
             triggers = "warning"
-            self.rules.append(Rule(expr, msg, mode, triggers))
+            self.rules.append(Rule(expr, msg, mode, triggers, desired=True))
         # Add rules added the the field.
         for rule in self._tree.findall('rule'):
             expr = rule.attrib.get('expr')
