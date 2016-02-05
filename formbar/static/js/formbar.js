@@ -405,9 +405,9 @@ function toggleConditional(conditional, enabled) {
     var reset = $(conditional).attr('reset-value').indexOf('true') >= 0;
     var readonly = $(conditional).attr('class').indexOf('readonly') >= 0;
     if (enabled) {
-        $(conditional).find(".form-group[desired='True']").each(
+        $(conditional).find(".help-block[desired='True']").each(
             function(i,x){ 
-              $(x).addClass("has-warning");
+              $(x).removeClass("hidden");
             }
         );
         $(conditional).find(':radio, :checkbox').unbind('click',deactivator);
@@ -425,8 +425,10 @@ function toggleConditional(conditional, enabled) {
     }
     else {
         $(conditional).find(':radio, :checkbox').click(deactivator);
-        $(conditional).find(".form-group[desired='True']").each(
-            function(i,x){ $(x).removeClass("has-warning"); }
+        $(conditional).find(".help-block[desired='True']").each(
+            function(i,x){ 
+              $(x).addClass("hidden");
+            }
         );
         if (readonly) {
             $(conditional).animate({opacity:'0.4'}, 500);
