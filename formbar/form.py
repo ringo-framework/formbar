@@ -864,6 +864,20 @@ class Field(object):
         """Returns true if field is set as desired in field configuration"""
         return self.desired
 
+    def is_missing(self):
+        """Return True if this field is a desired or required field and
+        the value of the fields is actually missing in the current
+        context after all rules have been evaluated. Note the rules the
+        are not evaluated because the field is in an inactive
+        conditional will have the result==None which means the rule is
+        not evaluated."""
+        if self.get_value():
+            return False
+        for rule in self.rules:
+            if (rule.desired or rule.required) and rule.result == False:
+                return True
+        return False
+
     def is_required(self):
         """Returns true if the required flag of the field configuration
         is set"""
