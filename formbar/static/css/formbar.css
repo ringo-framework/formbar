@@ -179,10 +179,12 @@ label sup {
 
 .form-group.active {
     opacity: 1.0;
+    transition: 1s;
 }
 
 .form-group.inactive {
     opacity: 0.4;
+    transition: 1s;
 }
 
 

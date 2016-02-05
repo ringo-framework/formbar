@@ -1,5 +1,5 @@
 % for rule in field.get_error_rules():
-  <div class="help-block ${not (rule.result == None or rule.result )or "hidden"}">
+  <div class="help-block ${'' if field.has_errors else 'hidden'}">
     <span class="glyphicon glyphicon-exclamation-sign"></span>
     ${_(rule.msg)}
   </div>
@@ -9,7 +9,7 @@
   ## is not active in a conditional. Mark this field in the DOM to be able to
   ## toggle the error message in case a conditional becomes enabled.
   ## TODO: Should we better use the "active" attribute of the renderer here?
-  <div class="help-block ${field.is_missing() or "hidden"}" desired="${field.is_desired()}">
+  <div class="help-block ${'' if field.is_missing() else 'hidden'}" desired="${field.is_desired()}">
     <span class="text-warning">
     <span class="glyphicon glyphicon-warning-sign"></span>
     ${_(rule.msg)}

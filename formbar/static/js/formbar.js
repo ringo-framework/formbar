@@ -405,12 +405,17 @@ function toggleConditional(conditional, enabled) {
     var reset = $(conditional).attr('reset-value').indexOf('true') >= 0;
     var readonly = $(conditional).attr('class').indexOf('readonly') >= 0;
     if (enabled) {
+        $(conditional).find(".form-group[desired='True']").addClass("has-warning");
         $(conditional).find(':radio, :checkbox').unbind('click',deactivator);
         if (readonly) {
             $(conditional).find(".form-group").each(
                 function(i,x){ 
-                  $(x).addClass("active");
-                  $(x).removeClass("inactive");
+                  $(x).addClass("active").removeClass("inactive");
+                }
+            );
+            $(conditional).find(".help-block").each(
+                function(i,x){ 
+                  $(x).removeClass("hidden");
                 }
             );
             $(conditional).find('input, textarea').attr('readonly', false);
@@ -424,12 +429,17 @@ function toggleConditional(conditional, enabled) {
         }
     }
     else {
+        $(conditional).find(".form-group[desired='True']").removeClass("has-warning");
         $(conditional).find(':radio, :checkbox').click(deactivator);
         if (readonly) {
             $(conditional).find(".form-group").each(
                 function(i,x){
-                  $(x).removeClass("active");
-                  $(x).addClass("inactive");
+                  $(x).removeClass("active").addClass("inactive");
+                }
+            );
+            $(conditional).find(".help-block").each(
+                function(i,x){ 
+                  $(x).addClass("hidden");
                 }
             );
             $(conditional).find('input, textarea').attr('readonly', true);
