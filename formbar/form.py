@@ -603,6 +603,15 @@ class Field(object):
         """Value as string of the field. Will be set on rendering the
         form"""
 
+
+    @property
+    def has_errors(self):
+        return len(self.get_errors()) > 0
+
+    @property
+    def has_warnings(self):
+        return len(self.get_warnings()) > 0
+
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
         return getattr(self._config, name)

@@ -394,11 +394,22 @@ function evaluateConditionals() {
     }
 }
 
+
 function evaluateConditional(conditional) {
+    var result = evaluate(conditional);
+    toggleConditional(conditional, result);
+}
+
+
+function toggleConditional(conditional, enabled) {
     var reset = $(conditional).attr('reset-value').indexOf('true') >= 0;
     var readonly = $(conditional).attr('class').indexOf('readonly') >= 0;
-    var result = evaluate(conditional);
-    if (result) {
+    if (enabled) {
+        $(conditional).find(".form-group[desired='True']").each(
+            function(i,x){ 
+              $(x).addClass("has-warning");
+            }
+        );
         $(conditional).find(':radio, :checkbox').unbind('click',deactivator);
         if (readonly) {
             $(conditional).animate({opacity:'1.0'}, 500);
@@ -414,6 +425,9 @@ function evaluateConditional(conditional) {
     }
     else {
         $(conditional).find(':radio, :checkbox').click(deactivator);
+        $(conditional).find(".form-group[desired='True']").each(
+            function(i,x){ $(x).removeClass("has-warning"); }
+        );
         if (readonly) {
             $(conditional).animate({opacity:'0.4'}, 500);
             $(conditional).find('input, textarea').attr('readonly', true);

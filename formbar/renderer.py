@@ -287,8 +287,6 @@ class FieldRenderer(Renderer):
         # TODO: Split rendering in four parts: label, fieldbody, errors,
         # help. Each in its own template.
         html = []
-        has_errors = len(self._field.get_errors())
-        has_warnings = len(self._field.get_warnings())
 
         # Handle indent. Set indent_with css only if the elements are
         # actually have an indent and the lable position allows an
@@ -298,11 +296,13 @@ class FieldRenderer(Renderer):
            and self.label_position not in ["left", "right"]:
             indent_width = self.indent_width
 
-        class_options = ((has_errors and 'has-error'),
-                         (has_warnings and 'has-warning'),
+        class_options = ((self._field.has_errors and 'has-error'),
+                         (self._field.has_warnings and 'has-warning'),
                          indent_width)
         html.append(HTML.tag("div", _closed=False,
-                             class_=("form-group %s %s %s" % class_options)))
+                             class_=("form-group %s %s %s" % class_options),
+                             desired="{}".format(self._field.is_desired())
+                             ))
         values = self._get_template_values()
         if self.label_width > 0 and self.label_position in ["left", "right"]:
             label_width = self.label_width
