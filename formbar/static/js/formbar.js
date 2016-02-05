@@ -220,7 +220,7 @@ $( document ).ready(function() {
     setInitialFormValues();
     mapFieldsToConditionals();
     evaluateFields();
-    evaluateConditionals();
+    //evaluateConditionals();
     $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(evaluateFields);
     $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(function(event) {
         setFieldValue(this, $(this).val());
@@ -405,14 +405,14 @@ function toggleConditional(conditional, enabled) {
     var reset = $(conditional).attr('reset-value').indexOf('true') >= 0;
     var readonly = $(conditional).attr('class').indexOf('readonly') >= 0;
     if (enabled) {
-        $(conditional).find(".help-block[desired='True']").each(
-            function(i,x){ 
-              $(x).removeClass("hidden");
-            }
-        );
         $(conditional).find(':radio, :checkbox').unbind('click',deactivator);
         if (readonly) {
-            $(conditional).animate({opacity:'1.0'}, 500);
+            $(conditional).find(".form-group").each(
+                function(i,x){ 
+                  $(x).addClass("active");
+                  $(x).removeClass("inactive");
+                }
+            );
             $(conditional).find('input, textarea').attr('readonly', false);
             $(conditional).find('select').attr('disabled', false);
         }
@@ -425,13 +425,13 @@ function toggleConditional(conditional, enabled) {
     }
     else {
         $(conditional).find(':radio, :checkbox').click(deactivator);
-        $(conditional).find(".help-block[desired='True']").each(
-            function(i,x){ 
-              $(x).addClass("hidden");
-            }
-        );
         if (readonly) {
-            $(conditional).animate({opacity:'0.4'}, 500);
+            $(conditional).find(".form-group").each(
+                function(i,x){
+                  $(x).removeClass("active");
+                  $(x).addClass("inactive");
+                }
+            );
             $(conditional).find('input, textarea').attr('readonly', true);
             $(conditional).find('select').attr('disabled', true);
         }
