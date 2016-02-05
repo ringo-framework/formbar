@@ -201,6 +201,7 @@ class FieldRenderer(Renderer):
         Renderer.__init__(self)
         self._field = field
         self._config = field._config.renderer
+        self._active = True
         self.translate = translate
         self.template = None
         #self.values = self._get_template_values()
@@ -300,11 +301,11 @@ class FieldRenderer(Renderer):
                          (self._field.has_warnings and 'has-warning'),
                          (self._field.has_error_rules() and 'field-error'),
                          (self._field.has_warning_rules() and 'field-warning'),
+                         (self._active and 'active' or 'inactive'),
                          indent_width)
         html.append(HTML.tag("div", _closed=False,
-                             class_=("form-group %s %s %s %s %s" % class_options),
-                             desired="{}".format(self._field.is_desired())
-                             ))
+                             class_=("form-group %s %s %s %s %s %s" % class_options),
+                             desired="{}".format(self._field.is_desired())))
         values = self._get_template_values()
         if self.label_width > 0 and self.label_position in ["left", "right"]:
             label_width = self.label_width

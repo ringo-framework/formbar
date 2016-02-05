@@ -851,8 +851,9 @@ class Field(object):
     def get_warnings(self):
         return self._warnings
 
-    def render(self):
+    def render(self, active):
         """Returns the rendererd HTML for the field"""
+        self.renderer._active = active
         return self.renderer.render()
 
     def is_relation(self):
