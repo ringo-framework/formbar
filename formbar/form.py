@@ -655,10 +655,10 @@ class Field(object):
         return self._config.get_rules()
 
     def get_warning_rules(self):
-        return [r for r in self.rules if r.triggers == "warning"]
+        return [r for r in self.get_rules() if r.triggers == "warning"]
 
     def get_error_rules(self):
-        return [r for r in self.rules if r.triggers == "error"]
+        return [r for r in self.get_rules() if r.triggers == "error"]
 
     def has_warning_rules(self):
         """Returns a True if there is at least on rule that can trigger
@@ -872,7 +872,7 @@ class Field(object):
         not evaluated."""
         if self.get_value():
             return False
-        for rule in self.rules:
+        for rule in self.get_rules():
             if (rule.desired or rule.required) and rule.result == False:
                 return True
         return False

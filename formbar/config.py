@@ -623,6 +623,9 @@ class Field(Config):
             if tag:
                 self.tags.append(tag.strip())
 
+        self._rules = None
+        """List of rules of the field."""
+
         # Subelements of the fields
         # Options (For dropdown, checkbox and radio fields)
         self.options = []
@@ -647,6 +650,9 @@ class Field(Config):
             self.renderer = Renderer(renderer_config)
 
     def get_rules(self):
+        if self._rules is not None:
+            return self._rules
+
         rules = []
         # Add automatic genertated rules based on the required or
         # desired flag
@@ -668,7 +674,8 @@ class Field(Config):
             mode = rule.attrib.get('mode')
             triggers = rule.attrib.get('triggers')
             rules.append(Rule(expr, msg, mode, triggers))
-        return rules
+        self._rules = rules
+        return self._rules
 
 
 class Renderer(Config):
