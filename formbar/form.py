@@ -602,6 +602,15 @@ class Field(object):
         """Value as string of the field. Will be set on rendering the
         form"""
 
+
+    @property
+    def has_errors(self):
+        return len(self.get_errors()) > 0
+
+    @property
+    def has_warnings(self):
+        return len(self.get_warnings()) > 0
+
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
         return getattr(self._config, name)
@@ -644,6 +653,22 @@ class Field(object):
     def get_rules(self):
         """Returns a list of configured rules for the field."""
         return self._config.get_rules()
+
+    def get_warning_rules(self):
+        return [r for r in self.rules if r.triggers == "warning"]
+
+    def get_error_rules(self):
+        return [r for r in self.rules if r.triggers == "error"]
+
+    def has_warning_rules(self):
+        """Returns a True if there is at least on rule that can trigger
+        a warning."""
+        return len(self.get_warning_rules()) > 0
+
+    def has_error_rules(self):
+        """Returns a True if there is at least on rule that can trigger
+        a error."""
+        return len(self.get_error_rules()) > 0
 
     def set_value(self, value):
         self.value = value
@@ -825,8 +850,9 @@ class Field(object):
     def get_warnings(self):
         return self._warnings
 
-    def render(self):
+    def render(self, active):
         """Returns the rendererd HTML for the field"""
+        self.renderer._active = active
         return self.renderer.render()
 
     def is_relation(self):
@@ -836,6 +862,20 @@ class Field(object):
     def is_desired(self):
         """Returns true if field is set as desired in field configuration"""
         return self.desired
+
+    def is_missing(self):
+        """Return True if this field is a desired or required field and
+        the value of the fields is actually missing in the current
+        context after all rules have been evaluated. Note the rules the
+        are not evaluated because the field is in an inactive
+        conditional will have the result==None which means the rule is
+        not evaluated."""
+        if self.get_value():
+            return False
+        for rule in self.rules:
+            if (rule.desired or rule.required) and rule.result == False:
+                return True
+        return False
 
     def is_required(self):
         """Returns true if the required flag of the field configuration

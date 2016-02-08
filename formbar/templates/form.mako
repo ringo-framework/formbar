@@ -76,11 +76,12 @@
   </a>
 </%def>
 
-<%def name="render_recursive(elem, mode='')">
+<%def name="render_recursive(elem, mode='', active=True)">
   % for child in elem:
     <%
       if mode == 'hide':
         continue
+      is_active = active
     %>
     % if len(child) > 0:
       % if child.tag == "page" and not render_outline:
@@ -110,12 +111,13 @@
         <td colspan="${child.attrib.get('colspan', '')}" class="${child.attrib.get('class', '')}" rowspan="${child.attrib.get('rowspan', '')}" width="${child.attrib.get('width', '')}">
       ## Conditionals
       % elif child.tag == "if" and child.attrib.get("static") != "true":
+          <% is_active = Rule(child.attrib.get("expr")).evaluate(form.data or form.loaded_data) %>
           <div id="${id(child)}" class="formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
       % endif
       % if child.attrib.get("static") != "true" or Rule(child.attrib.get("expr")).evaluate(form.data or form.loaded_data):
-        ${self.render_recursive(child, mode)}
+        ${self.render_recursive(child, mode, active=is_active)}
       % else:
-        ${self.render_recursive(child, child.attrib.get('type', 'hide'))}
+        ${self.render_recursive(child, child.attrib.get('type', 'hide'), active=is_active)}
       % endif
       % if child.tag == "fieldset":
         </fieldset>
@@ -143,7 +145,7 @@
           if mode == "readonly":
             field.readonly = True
         %>
-        ${field.render() | n}
+        ${field.render(active) | n}
       % elif child.tag == "snippet":
         <% ref = child.attrib.get('ref') %>
         % if ref:

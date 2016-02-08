@@ -15,7 +15,8 @@ class Rule(Expression):
     """
 
     def __init__(self, expression, msg=None,
-                 mode='post', triggers='error'):
+                 mode='post', triggers='error',
+                 required=False, desired=False):
         """Initialize the rule with the expression and mode.
 
         :expr: string represention of the expression which will be
@@ -29,6 +30,12 @@ class Rule(Expression):
         or a warning. In case of a warning the validation of the form
         will fail. In case of a warning only a warning message will be
         displayer. Defaults to 'error'
+        :required: Flag which is used to indicate that this Rule is a
+        required rule. This is set on initialising the field in the
+        config.
+        :desired: Flag which is used to indicate that this Rule is a
+        desired rule. This is set on initialising the field in the
+        config.
         """
         Expression.__init__(self, expression)
         self.msg = msg
@@ -40,6 +47,15 @@ class Rule(Expression):
         self.triggers = triggers
         if triggers is None:
             self.triggers = 'error'
+
+        # We know nothing on the result of the evaluation on
+        # initialisation.
+        self.result = None
+
+        # TODO: Refactor this out into RequiredRule and DesiredRule
+        # class instead of having attributes for this? (ti) <2016-02-05 13:32>
+        self.required = required
+        self.desired = desired
 
     def evaluate(self, values=None):
         """Returns True or False. Evaluates the expression of the rule against
@@ -54,4 +70,5 @@ class Rule(Expression):
         """
         if values is None:
             values = {}
-        return bool(self._evaluate(self._expression_tree, values))
+        self.result = bool(self._evaluate(self._expression_tree, values))
+        return self.result

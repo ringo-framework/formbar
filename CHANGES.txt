@@ -1,8 +1,16 @@
 0.17.5
 ======
-Performance: Do not build rules on loading a form configuration. Only build
-rules if they are actually needed (On rules evaluation). This improves the
-performance by almost factor or 2.
+Bugfix and Maintenance release
+
+- Improved performace: Conditionals are now evaluted on serverside. So there
+  is no need anymore to let the JS script code to enable and disable the
+  conditionals after loading the page which had triggered a load of AJAX
+  requests.
+- Improved performance: Do not build rules on loading a form configuration.
+  Only build rules if they are actually needed (On rules evaluation). This
+  improves the performance by almost factor of 2.
+- Fixed bug in inheritance code which adds a optional prefix to '$' variables
+  in rules.
 
 0.17.4
 ======

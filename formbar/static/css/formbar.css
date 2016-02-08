@@ -177,6 +177,16 @@ label sup {
     width: calc(100% - 76px);
 }
 
+.form-group.active {
+    opacity: 1.0;
+    transition: 1s;
+}
+
+.form-group.inactive {
+    opacity: 0.4;
+    transition: 1s;
+}
+
 
 .formbar-form textarea {
   height: auto !important;
