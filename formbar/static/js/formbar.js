@@ -389,7 +389,7 @@ function evaluate(element) {
 
 function evaluateConditionals() {
     var fieldsToEvaluate = $('.formbar-conditional');
-    for (var i = fieldsToEvaluate.length - 1; i >= 0; i--) {
+    for (var i = 0; i <= fieldsToEvaluate.length - 1; i++) {
         evaluateConditional(fieldsToEvaluate[i]);
     }
 }
