@@ -62,7 +62,8 @@ def handle_inheritance(tree, path=None):
     ptree = load(get_file_location(tree.attrib["inherits"], basepath))
 
     # Workaroutn for missing support of getting parent elements. See
-    # http://stackoverflow.com/questions/2170610/access-elementtree-node-parent-node/2170994
+    # http://stackoverflow.com/
+    # questions/2170610/access-elementtree-node-parent-node/2170994
     tree_parent_map = {c: p for p in tree.iter() for c in p}
     ptree_parent_map = {c: p for p in ptree.iter() for c in p}
 
@@ -119,7 +120,8 @@ def handle_includes(tree, path):
         basepath = ""
 
     # Workaroutn for missing support of getting parent elements. See
-    # http://stackoverflow.com/questions/2170610/access-elementtree-node-parent-node/2170994
+    # http://stackoverflow.com/
+    # questions/2170610/access-elementtree-node-parent-node/2170994
     parent_map = {c: p for p in tree.iter() for c in p}
     # handle includes in form
     for include_placeholder in tree.findall(".//include"):
@@ -157,11 +159,11 @@ def handle_entity_prefix(tree, prefix):
         # TODO: Handle % and @ variables to? (ti) <2015-12-17 09:30>
         # Note: This algorithmn is hackish and handles some corner cases
         # with replacements of similar fields names.
-        # 
-        # Example: 
+        #
+        # Example:
         # Consider the following expr = "$foo and $foo_bar" And we want
         # to add a prefix "baz".
-        # 
+        #
         # The code will iterate over all unique fields in the expression
         # and replaces the fieldname with prefix+fieldname.
         #
@@ -449,21 +451,25 @@ class Form(Config):
                         # was "disabled" in a conditional. In this case
                         # the value is not sent. (ti) <2015-04-28 16:52>
                         continue
-                    for elem in self.walk(child, values, evaluate, include_layout):
+                    for elem in self.walk(child, values,
+                                          evaluate, include_layout):
                         yield elem
                 elif include_layout and child.tag in ["section",
                                                       "subsection"]:
                     yield child
-                    for elem in self.walk(child, values, evaluate, include_layout):
+                    for elem in self.walk(child, values,
+                                          evaluate, include_layout):
                         yield elem
                 else:
-                    for elem in self.walk(child, values, evaluate, include_layout):
+                    for elem in self.walk(child, values,
+                                          evaluate, include_layout):
                         yield elem
             elif child.tag == "snippet":
                 sref = child.attrib.get('ref')
                 if sref:
                     snippet = self._parent.get_element('snippet', sref)
-                    for elem in self.walk(snippet, values, evaluate, include_layout):
+                    for elem in self.walk(snippet, values,
+                                          evaluate, include_layout):
                         yield elem
             elif child.tag == "field":
                 yield child
@@ -630,7 +636,9 @@ class Field(Config):
         # Options (For dropdown, checkbox and radio fields)
         self.options = []
         options = entity.find('options')
-        if not self.value and options is not None and options.attrib.get('value'):
+        if not self.value \
+           and options is not None \
+           and options.attrib.get('value'):
             self.options = options.attrib.get('value')
         elif options is not None:
             for option in options:
