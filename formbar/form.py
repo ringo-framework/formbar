@@ -592,7 +592,7 @@ class Field(object):
                 # case of creation and will not log those errors. A way
                 # to identify an item which is not fully created is the
                 # absence of its id value.
-                if self._form._item.id:
+                if self._form._item and self._form._item.id:
                     log.error("Error while accessing attribute '%s': %s"
                               % (value, e))
                 value = None
