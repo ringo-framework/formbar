@@ -113,6 +113,8 @@
       % elif child.tag == "if" and child.attrib.get("static") != "true":
           <% is_active = Rule(child.attrib.get("expr")).evaluate(form.data or form.loaded_data) %>
           <div id="${id(child)}" class="formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
+      % elif child.tag == "html":
+        ${ElementTree.tostring(child) | n}
       % endif
       % if child.attrib.get("static") != "true" or Rule(child.attrib.get("expr")).evaluate(form.data or form.loaded_data):
         ${self.render_recursive(child, mode, active=is_active)}

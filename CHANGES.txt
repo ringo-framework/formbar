@@ -1,14 +1,22 @@
+0.18.0
+======
+- Added new HTML directive. This can be used to insert custom html code in the
+  form e.g lists and images.
+- Improved performance: Do not build rules on loading a form configuration.
+  Only build rules if they are actually needed (On rules evaluation). This
+  improves the performance by almost factor of 2.
+
+- !!!WIP AND BROKEN!!! Improved performace: Conditionals are now evaluted on
+  serverside.  So there is no need anymore to let the JS script code to enable
+  and disable the conditionals after loading the page which had triggered a
+  load of AJAX requests. PLEASE NOTE that the behaviour on reseting (nested)
+  conditional fields is currently broken. The value will not be resetted to
+  its default value when toggling the conditional.
+
 0.17.5
 ======
 Bugfix and Maintenance release
 
-- Improved performace: Conditionals are now evaluted on serverside. So there
-  is no need anymore to let the JS script code to enable and disable the
-  conditionals after loading the page which had triggered a load of AJAX
-  requests.
-- Improved performance: Do not build rules on loading a form configuration.
-  Only build rules if they are actually needed (On rules evaluation). This
-  improves the performance by almost factor of 2.
 - Fixed bug in inheritance code which adds a optional prefix to '$' variables
   in rules.
 

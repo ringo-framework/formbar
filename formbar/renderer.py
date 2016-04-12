@@ -1,5 +1,6 @@
 import logging
 import difflib
+import xml.etree.ElementTree as ET
 from webhelpers.html import literal, HTML, escape
 
 from mako.lookup import TemplateLookup
@@ -146,6 +147,7 @@ class FormRenderer(Renderer):
         values = {'form': self._form,
                   '_': self.translate,
                   'render_outline': render_outline,
+                  'ElementTree': ET,
                   'Rule': Rule}
         return literal(self.template.render(**values))
 

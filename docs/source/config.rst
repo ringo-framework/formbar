@@ -435,6 +435,23 @@ column can be set to % or pixel.
 The following attributes are supported for the ``td`` and ``th`` tags of the
 table: ``width``, ``class`` , ``rowspan``, ``colspan``.
 
+HTML
+----
+The html directive is used to insert custom html code. This is usefull if you
+want to render generic text sections icluding lists or other markup elements
+linke images. Images will need a external source for the image file.::
+
+        <html>
+         <ul style="padding:15px">
+           <li>List item 1</li>
+           <li>List item 2</li>
+           <li>List item 3</li>
+         </ul>
+        </html>
+
+The content of the html directive will be rendererd as defined so you are free
+to include whatever you want.
+
 .. _field:
 
 Field
