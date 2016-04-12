@@ -6,6 +6,8 @@
   Only build rules if they are actually needed (On rules evaluation). This
   improves the performance by almost factor of 2.
 - Make simple left aligned numbering of textfield renderers work again.
+- Added "maxlength" attribute to textareas. If set a small indicator is shown
+  below the textfield counting the remaining chars.
 
 - !!!WIP AND BROKEN!!! Improved performace: Conditionals are now evaluted on
   serverside.  So there is no need anymore to let the JS script code to enable

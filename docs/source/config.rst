@@ -552,6 +552,10 @@ Use this renderer if you want to render the field as a textfield::
 Attribute   Description
 =========   ===========
 rows        Number of rows of the texteare. Default is 3.
+maxlength   Number of chars "allowed". If set a small indicator below
+            the textarea is show indicating how many chars are left.
+            Please note that this does **not** triggers any rules. Rules
+            to enforce this maxlength must be defined too.
 =========   ===========
 
 Infofield
