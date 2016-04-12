@@ -5,6 +5,7 @@
 - Improved performance: Do not build rules on loading a form configuration.
   Only build rules if they are actually needed (On rules evaluation). This
   improves the performance by almost factor of 2.
+- Make simple left aligned numbering of textfield renderers work again.
 
 0.17.5
 ======
