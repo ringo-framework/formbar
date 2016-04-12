@@ -17,7 +17,7 @@
       function calcRemainingChars() {
         var text_length = $('#${field.id}').val().length;
         var text_remaining = text_max - text_length;
-        $('#${field.id}_feedback').html(text_remaining + ' characters remaining');
+        $('#${field.id}_feedback').html(text_remaining + ' ${_('characters remaining')}');
       };
       $('#${field.id}').keyup(function() {
         calcRemainingChars();
