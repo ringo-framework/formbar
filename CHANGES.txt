@@ -1,13 +1,14 @@
-Next
-====
-
-Performance: Do not build rules on loading a form configuration. Only build
-rules if they are actually needed (On rules evaluation). This improves the
-performance by almost factor or 2.
+0.18.0
+======
+- Added new HTML directive. This can be used to insert custom html code in the
+  form e.g lists and images.
+- Improved performance: Do not build rules on loading a form configuration.
+  Only build rules if they are actually needed (On rules evaluation). This
+  improves the performance by almost factor of 2.
 
 0.17.5
 ======
-Bugfix release
+Bugfix and Maintenance release
 
 - Fixed bug in inheritance code which adds a optional prefix to '$' variables
   in rules.
