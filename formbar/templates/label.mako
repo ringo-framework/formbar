@@ -9,7 +9,7 @@
     </span>
   % endif
   <span class="label-content  ${field.renderer.elements_indent and field.renderer.indent_width}">
-  % if field.number and field.renderer.number == "left" and field.renderer.indent_style != "indent-number":
+  % if field.number and field.renderer.indent_style != "indent-number":
     <sup>[${field.number}]</sup>
   % endif
     % if field.label:
