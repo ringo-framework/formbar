@@ -489,3 +489,12 @@ function toggleSubmit(element) {
       button.hide();
   }
 }
+
+/* Method to calculate the remaining chars in the given textarea. Textarea is
+ * identified by its id. See textarea.mako for more details. */
+function calcRemainingChars(id, msg) {
+    var text_max = $('#'+id).attr("maxlength");
+    var text_length = $('#'+id).val().length;
+    var text_remaining = text_max - text_length;
+    $('#'+id+'_feedback').html(text_remaining + ' ' + msg);
+}
