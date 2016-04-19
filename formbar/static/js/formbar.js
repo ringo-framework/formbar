@@ -402,6 +402,16 @@ function evaluateConditional(conditional) {
         $(conditional).find(':radio, :checkbox').unbind('click',deactivator);
         if (readonly) {
             $(conditional).animate({opacity:'1.0'}, 500);
+            $(conditional).find(".form-group, .section, .subsection, .subsubsection, p").each(
+                function(i,x){ 
+                  $(x).addClass("active").removeClass("inactive");
+                }
+            );
+            $(conditional).find(".help-block").each(
+                function(i,x){ 
+                  $(x).removeClass("hidden");
+                }
+            );
             $(conditional).find('input, textarea').attr('readonly', false);
             $(conditional).find('select').attr('disabled', false);
         }
@@ -416,6 +426,16 @@ function evaluateConditional(conditional) {
         $(conditional).find(':radio, :checkbox').click(deactivator);
         if (readonly) {
             $(conditional).animate({opacity:'0.4'}, 500);
+            $(conditional).find(".form-group, .section, .subsection, .subsubsection, p").each(
+                function(i,x){
+                  $(x).removeClass("active").addClass("inactive");
+                }
+            );
+            $(conditional).find(".help-block").each(
+                function(i,x){ 
+                  $(x).addClass("hidden");
+                }
+            );
             $(conditional).find('input, textarea').attr('readonly', true);
             $(conditional).find('select').attr('disabled', true);
         }
