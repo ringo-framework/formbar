@@ -9,6 +9,8 @@
 - Added "maxlength" attribute to textareas. If set a small indicator is shown
   below the textfield counting the remaining chars.
 - Gray out sections and text areas too if a conditional is inactive.
+- Allow filtering of options in user defined options based on additional
+  attribute in the option.
 
 - !!!WIP AND BROKEN!!! Improved performace: Conditionals are now evaluted on
   serverside.  So there is no need anymore to let the JS script code to enable
