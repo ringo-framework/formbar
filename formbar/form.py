@@ -1,4 +1,5 @@
 import logging
+import re
 import sqlalchemy as sa
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Expression
@@ -715,14 +716,7 @@ class Field(object):
             # option.
             if x.startswith("%"):
                 key = x.strip("%")
-                if isinstance(item, tuple):
-                    if len(key) == 0:
-                        # User defined option
-                        value = item[1]
-                    else:
-                        value = item[2].get(key, "")
-                else:
-                    value = getattr(item, key)
+                value = "$%s" % key or "value"
             # @ marks the item of the current fields form item.
             elif x.startswith("@"):
                 key = x.strip("@")
@@ -753,9 +747,11 @@ class Field(object):
                     value = "[%s]" % ",".join("'%s'"
                                               % unicode(v) for v in value)
                     expr_str = expr_str.replace(x, value)
+                elif isinstance(value, basestring) and value.startswith("$"):
+                    expr_str = expr_str.replace(x, "%s" % unicode(value))
                 else:
                     expr_str = expr_str.replace(x, "'%s'" % unicode(value))
-        return Rule(expr_str)
+        return Rule(str(expr_str))
 
     def _load_options_from_db(self):
         # Get mapped clazz for the field
@@ -782,6 +778,12 @@ class Field(object):
 
         """
         filtered_options = []
+        if self._config.renderer and self._config.renderer.filter:
+            rule = self._build_filter_rule(self._config.renderer.filter, None)
+            x = re.compile("\$\w+")
+            option_values = x.findall(rule._expression)
+        else:
+            rule = None
         for option in options:
             if isinstance(option, tuple):
                 # User defined options
@@ -791,10 +793,17 @@ class Field(object):
                 # Options loaded from the database
                 o_value = option.id
                 o_label = option
-            if self._config.renderer and self._config.renderer.filter:
-                rule = self._build_filter_rule(self._config.renderer.filter,
-                                               option)
-                if rule.evaluate({}):
+            if rule:
+                values = {}
+                for key in option_values:
+                    if isinstance(option, tuple):
+                        key = key.strip("$")
+                        value = option[2].get(key, "")
+                    else:
+                        value = getattr(option, key)
+                    values[str(key)] = unicode(value)
+                result = rule.evaluate(values)
+                if result:
                     filtered_options.append((o_label, o_value, True))
                 else:
                     filtered_options.append((o_label, o_value, False))
