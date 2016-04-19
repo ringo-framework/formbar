@@ -685,13 +685,17 @@ class Field(object):
             # used to access a attribute of the item. E.g. %id will
             # access the id of the current option item. For user defined
             # options "%" can be used to iterate over the user defined
-            # options. In this case the value is the value of the
+            # options. In this case %attr will access a given attribte
+            # in the option. A bare "%" will give the value of the
             # option.
             if x.startswith("%"):
                 key = x.strip("%")
-                if len(key) == 0:
-                    # User defined option
-                    value = item[1]
+                if isinstance(item, tuple):
+                    if len(key) == 0:
+                        # User defined option
+                        value = item[1]
+                    else:
+                        value = item[2].get(key, "")
                 else:
                     value = getattr(item, key)
             # @ marks the item of the current fields form item.

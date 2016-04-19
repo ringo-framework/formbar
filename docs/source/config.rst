@@ -600,13 +600,15 @@ expression is later evaluated by the rule system of formbar. The expression
 must evaluate to true and is evaluated for every option. The expression uses a
 two special variables begining with 
 
-1. ``%``.  Variables beginning with % marks the options of the selection. A
-   single ``%`` can be used on userdefined options to access the value of the
-   option. For SQLAlchemy based options comming from the database ``%`` can be
-   used to access a attribute of the option. E.g '%id' will access the id
-   attribute of the option.  The variable will be replaced by the value of the
-   attribute of the current item in the option for every option before
-   evaluating.
+1. ``%``.  Variables beginning with % marks the options of the
+   selection. ``%attr`` will access a attribute named 'attr' in the
+   option. A single ``%`` can be used on userdefined options to access
+   the value of the option. For SQLAlchemy based options comming from
+   the database ``%`` can be used to access a attribute of the option.
+   E.g '%id' will access the id attribute of the option.  The variable
+   will be replaced by the value of the attribute of the current item in
+   the option for every option before evaluating.
+
 2. ``@``. Varaible beginning with @ marks the name of an attribute of
 the parents form item.
 
