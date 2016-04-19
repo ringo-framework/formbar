@@ -408,7 +408,7 @@ function toggleConditional(conditional, enabled) {
         $(conditional).find(".form-group[desired='True']").addClass("has-warning");
         $(conditional).find(':radio, :checkbox').unbind('click',deactivator);
         if (readonly) {
-            $(conditional).find(".form-group").each(
+            $(conditional).find(".form-group, .section, .subsection, .subsubsection, p").each(
                 function(i,x){ 
                   $(x).addClass("active").removeClass("inactive");
                 }
@@ -432,7 +432,7 @@ function toggleConditional(conditional, enabled) {
         $(conditional).find(".form-group[desired='True']").removeClass("has-warning");
         $(conditional).find(':radio, :checkbox').click(deactivator);
         if (readonly) {
-            $(conditional).find(".form-group").each(
+            $(conditional).find(".form-group, .section, .subsection, .subsubsection, p").each(
                 function(i,x){
                   $(x).removeClass("active").addClass("inactive");
                 }

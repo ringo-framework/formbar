@@ -187,6 +187,25 @@ label sup {
     transition: 1s;
 }
 
+.section.inactive {
+    opacity: 0.4;
+    transition: 1s;
+}
+
+.subsection.inactive {
+    opacity: 0.4;
+    transition: 1s;
+}
+
+.subsubsection.inactive {
+    opacity: 0.4;
+    transition: 1s;
+}
+
+p.inactive {
+    opacity: 0.4;
+    transition: 1s;
+}
 
 .formbar-form textarea {
   height: auto !important;

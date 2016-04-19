@@ -87,11 +87,11 @@
       % if child.tag == "page" and not render_outline:
         <h1 class="page">${_(child.attrib.get("label"))}</h1>
       % elif child.tag == "section":
-        <h2 class="section">${_(child.attrib.get('label'))}</h2>
+        <h2 class="section ${(is_active and 'active') or 'inactive'}">${_(child.attrib.get('label'))}</h2>
       % elif child.tag == "subsection":
-        <h3 class="section">${_(child.attrib.get('label'))}</h3>
+        <h3 class="section ${(is_active and 'active') or 'inactive'}">${_(child.attrib.get('label'))}</h3>
       % elif child.tag == "subsubsection":
-        <h4 class="section">${_(child.attrib.get('label'))}</h4>
+        <h4 class="section ${(is_active and 'active') or 'inactive'}">${_(child.attrib.get('label'))}</h4>
       % elif child.tag == "row":
         <div class="row row-fluid">
       % elif child.tag == "col":
@@ -163,6 +163,10 @@
             textclasses.append("text-generic")
           if child.attrib.get('color'):
             textclasses.append("text-%s" % child.attrib.get('color'))
+          if is_active:
+            textclasses.append("active")
+          else:
+            textclasses.append("inactive")
         %>
         <p class="${' '.join(textclasses)}">
           % if child.attrib.get('em'):
