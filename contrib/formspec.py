@@ -262,7 +262,12 @@ def render_spec(config, title, form):
             if num+1 < num_elements:
                 out.append("\n-----\n")
         out.append("")
-    return "\n".join(out)
+    outx = []
+    for line in out:
+        if isinstance(line, unicode):
+            line = line.encode("utf8")
+        outx.append(line)
+    return "\n".join(outx)
 
 
 def get_fields(config, node):
