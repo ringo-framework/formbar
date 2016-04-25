@@ -1,5 +1,4 @@
 import logging
-import re
 import sqlalchemy as sa
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Expression
@@ -484,6 +483,7 @@ class Form(object):
         # conditionals First get list of fields which are still in the
         # form after conditionals has be evaluated
         fields_to_check = self._config.get_fields(values=converted,
+                                                  reload_fields=True,
                                                   evaluate=True)
         for fieldname, field in fields_to_check.iteritems():
             field = self.fields[fieldname]
@@ -593,7 +593,7 @@ class Field(object):
                 # case of creation and will not log those errors. A way
                 # to identify an item which is not fully created is the
                 # absence of its id value.
-                if self._form._item and self._form._item.id:
+                if self._form._item.id:
                     log.error("Error while accessing attribute '%s': %s"
                               % (value, e))
                 value = None
@@ -602,15 +602,6 @@ class Field(object):
         self.previous_value = None
         """Value as string of the field. Will be set on rendering the
         form"""
-
-
-    @property
-    def has_errors(self):
-        return len(self.get_errors()) > 0
-
-    @property
-    def has_warnings(self):
-        return len(self.get_warnings()) > 0
 
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
@@ -653,23 +644,7 @@ class Field(object):
 
     def get_rules(self):
         """Returns a list of configured rules for the field."""
-        return self._config.get_rules()
-
-    def get_warning_rules(self):
-        return [r for r in self.get_rules() if r.triggers == "warning"]
-
-    def get_error_rules(self):
-        return [r for r in self.get_rules() if r.triggers == "error"]
-
-    def has_warning_rules(self):
-        """Returns a True if there is at least on rule that can trigger
-        a warning."""
-        return len(self.get_warning_rules()) > 0
-
-    def has_error_rules(self):
-        """Returns a True if there is at least on rule that can trigger
-        a error."""
-        return len(self.get_error_rules()) > 0
+        return self.rules
 
     def set_value(self, value):
         self.value = value
@@ -711,12 +686,15 @@ class Field(object):
             # used to access a attribute of the item. E.g. %id will
             # access the id of the current option item. For user defined
             # options "%" can be used to iterate over the user defined
-            # options. In this case %attr will access a given attribte
-            # in the option. A bare "%" will give the value of the
+            # options. In this case the value is the value of the
             # option.
             if x.startswith("%"):
                 key = x.strip("%")
-                value = "$%s" % key or "value"
+                if len(key) == 0:
+                    # User defined option
+                    value = item[1]
+                else:
+                    value = getattr(item, key)
             # @ marks the item of the current fields form item.
             elif x.startswith("@"):
                 key = x.strip("@")
@@ -747,11 +725,9 @@ class Field(object):
                     value = "[%s]" % ",".join("'%s'"
                                               % unicode(v) for v in value)
                     expr_str = expr_str.replace(x, value)
-                elif isinstance(value, basestring) and value.startswith("$"):
-                    expr_str = expr_str.replace(x, "%s" % unicode(value))
                 else:
                     expr_str = expr_str.replace(x, "'%s'" % unicode(value))
-        return Rule(str(expr_str))
+        return Rule(expr_str)
 
     def _load_options_from_db(self):
         # Get mapped clazz for the field
@@ -778,12 +754,6 @@ class Field(object):
 
         """
         filtered_options = []
-        if self._config.renderer and self._config.renderer.filter:
-            rule = self._build_filter_rule(self._config.renderer.filter, None)
-            x = re.compile("\$\w+")
-            option_values = x.findall(rule._expression)
-        else:
-            rule = None
         for option in options:
             if isinstance(option, tuple):
                 # User defined options
@@ -793,17 +763,10 @@ class Field(object):
                 # Options loaded from the database
                 o_value = option.id
                 o_label = option
-            if rule:
-                values = {}
-                for key in option_values:
-                    if isinstance(option, tuple):
-                        key = key.strip("$")
-                        value = option[2].get(key, "")
-                    else:
-                        value = getattr(option, key)
-                    values[str(key)] = unicode(value)
-                result = rule.evaluate(values)
-                if result:
+            if self._config.renderer and self._config.renderer.filter:
+                rule = self._build_filter_rule(self._config.renderer.filter,
+                                               option)
+                if rule.evaluate({}):
                     filtered_options.append((o_label, o_value, True))
                 else:
                     filtered_options.append((o_label, o_value, False))
@@ -863,9 +826,8 @@ class Field(object):
     def get_warnings(self):
         return self._warnings
 
-    def render(self, active):
+    def render(self):
         """Returns the rendererd HTML for the field"""
-        self.renderer._active = active
         return self.renderer.render()
 
     def is_relation(self):
@@ -875,20 +837,6 @@ class Field(object):
     def is_desired(self):
         """Returns true if field is set as desired in field configuration"""
         return self.desired
-
-    def is_missing(self):
-        """Return True if this field is a desired or required field and
-        the value of the fields is actually missing in the current
-        context after all rules have been evaluated. Note the rules the
-        are not evaluated because the field is in an inactive
-        conditional will have the result==None which means the rule is
-        not evaluated."""
-        if self.get_value():
-            return False
-        for rule in self.get_rules():
-            if (rule.desired or rule.required) and rule.result == False:
-                return True
-        return False
 
     def is_required(self):
         """Returns true if the required flag of the field configuration

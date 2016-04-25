@@ -7,14 +7,5 @@
     % endif
   </div>
 % else:
-  <textarea class="form-control" maxlength="${field.renderer._config._tree.attrib.get("maxlength")}" id="${field.id}" name="${field.name}" rows="${field.renderer.rows}">${field.get_value()}</textarea>
-  % if field.renderer._config._tree.attrib.get("maxlength"):
-    <div id="${field.id}_feedback" class="pull-right text-muted small"></div>
-    <script>
-      $('#${field.id}').keyup(function() {
-        calcRemainingChars("${field.id}", "${_('characters remaining')}");
-      });
-      calcRemainingChars("${field.id}", "${_('characters remaining')}");
-    </script>
-  % endif
+  <textarea class="form-control" id="${field.id}" name="${field.name}" rows="${field.renderer.rows}">${field.get_value()}</textarea>
 % endif

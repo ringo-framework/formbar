@@ -76,22 +76,21 @@
   </a>
 </%def>
 
-<%def name="render_recursive(elem, mode='', active=True)">
+<%def name="render_recursive(elem, mode='')">
   % for child in elem:
     <%
       if mode == 'hide':
         continue
-      is_active = active
     %>
     % if len(child) > 0:
       % if child.tag == "page" and not render_outline:
         <h1 class="page">${_(child.attrib.get("label"))}</h1>
       % elif child.tag == "section":
-        <h2 class="section ${(is_active and 'active') or 'inactive'}">${_(child.attrib.get('label'))}</h2>
+        <h2 class="section">${_(child.attrib.get('label'))}</h2>
       % elif child.tag == "subsection":
-        <h3 class="section ${(is_active and 'active') or 'inactive'}">${_(child.attrib.get('label'))}</h3>
+        <h3 class="section">${_(child.attrib.get('label'))}</h3>
       % elif child.tag == "subsubsection":
-        <h4 class="section ${(is_active and 'active') or 'inactive'}">${_(child.attrib.get('label'))}</h4>
+        <h4 class="section">${_(child.attrib.get('label'))}</h4>
       % elif child.tag == "row":
         <div class="row row-fluid">
       % elif child.tag == "col":
@@ -111,15 +110,12 @@
         <td colspan="${child.attrib.get('colspan', '')}" class="${child.attrib.get('class', '')}" rowspan="${child.attrib.get('rowspan', '')}" width="${child.attrib.get('width', '')}">
       ## Conditionals
       % elif child.tag == "if" and child.attrib.get("static") != "true":
-          <% is_active = Rule(child.attrib.get("expr")).evaluate(form.data or form.loaded_data) %>
           <div id="${id(child)}" class="formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
-      % elif child.tag == "html":
-        ${ElementTree.tostring(child) | n}
       % endif
       % if child.attrib.get("static") != "true" or Rule(child.attrib.get("expr")).evaluate(form.data or form.loaded_data):
-        ${self.render_recursive(child, mode, active=is_active)}
+        ${self.render_recursive(child, mode)}
       % else:
-        ${self.render_recursive(child, child.attrib.get('type', 'hide'), active=is_active)}
+        ${self.render_recursive(child, child.attrib.get('type', 'hide'))}
       % endif
       % if child.tag == "fieldset":
         </fieldset>
@@ -147,7 +143,7 @@
           if mode == "readonly":
             field.readonly = True
         %>
-        ${field.render(active) | n}
+        ${field.render() | n}
       % elif child.tag == "snippet":
         <% ref = child.attrib.get('ref') %>
         % if ref:
@@ -163,10 +159,6 @@
             textclasses.append("text-generic")
           if child.attrib.get('color'):
             textclasses.append("text-%s" % child.attrib.get('color'))
-          if is_active:
-            textclasses.append("active")
-          else:
-            textclasses.append("inactive")
         %>
         <p class="${' '.join(textclasses)}">
           % if child.attrib.get('em'):

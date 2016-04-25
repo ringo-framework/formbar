@@ -220,7 +220,7 @@ $( document ).ready(function() {
     setInitialFormValues();
     mapFieldsToConditionals();
     evaluateFields();
-    //evaluateConditionals();
+    evaluateConditionals();
     $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(evaluateFields);
     $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(function(event) {
         setFieldValue(this, $(this).val());
@@ -394,30 +394,14 @@ function evaluateConditionals() {
     }
 }
 
-
 function evaluateConditional(conditional) {
-    var result = evaluate(conditional);
-    toggleConditional(conditional, result);
-}
-
-
-function toggleConditional(conditional, enabled) {
     var reset = $(conditional).attr('reset-value').indexOf('true') >= 0;
     var readonly = $(conditional).attr('class').indexOf('readonly') >= 0;
-    if (enabled) {
-        $(conditional).find(".form-group[desired='True']").addClass("has-warning");
+    var result = evaluate(conditional);
+    if (result) {
         $(conditional).find(':radio, :checkbox').unbind('click',deactivator);
         if (readonly) {
-            $(conditional).find(".form-group, .section, .subsection, .subsubsection, p").each(
-                function(i,x){ 
-                  $(x).addClass("active").removeClass("inactive");
-                }
-            );
-            $(conditional).find(".help-block").each(
-                function(i,x){ 
-                  $(x).removeClass("hidden");
-                }
-            );
+            $(conditional).animate({opacity:'1.0'}, 500);
             $(conditional).find('input, textarea').attr('readonly', false);
             $(conditional).find('select').attr('disabled', false);
         }
@@ -429,19 +413,9 @@ function toggleConditional(conditional, enabled) {
         }
     }
     else {
-        $(conditional).find(".form-group[desired='True']").removeClass("has-warning");
         $(conditional).find(':radio, :checkbox').click(deactivator);
         if (readonly) {
-            $(conditional).find(".form-group, .section, .subsection, .subsubsection, p").each(
-                function(i,x){
-                  $(x).removeClass("active").addClass("inactive");
-                }
-            );
-            $(conditional).find(".help-block").each(
-                function(i,x){ 
-                  $(x).addClass("hidden");
-                }
-            );
+            $(conditional).animate({opacity:'0.4'}, 500);
             $(conditional).find('input, textarea').attr('readonly', true);
             $(conditional).find('select').attr('disabled', true);
         }
@@ -488,13 +462,4 @@ function toggleSubmit(element) {
   } else {
       button.hide();
   }
-}
-
-/* Method to calculate the remaining chars in the given textarea. Textarea is
- * identified by its id. See textarea.mako for more details. */
-function calcRemainingChars(id, msg) {
-    var text_max = $('#'+id).attr("maxlength");
-    var text_length = $('#'+id).val().length;
-    var text_remaining = text_max - text_length;
-    $('#'+id+'_feedback').html(text_remaining + ' ' + msg);
 }

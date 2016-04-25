@@ -185,10 +185,10 @@ class TestFieldConfig(unittest.TestCase):
         self.assertEqual(self.cfield.help, 'This is my helptext')
 
     def test_rules_default(self):
-        self.assertEqual(len(self.dfield.get_rules()), 0)
+        self.assertEqual(len(self.dfield.rules), 0)
 
     def test_rules_custom(self):
-        self.assertEqual(len(self.ifield.get_rules()), 2)
+        self.assertEqual(len(self.ifield.rules), 2)
 
     def test_html_renderer_fails(self):
         """Only html renderer have the body attribute set"""

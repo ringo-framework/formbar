@@ -435,23 +435,6 @@ column can be set to % or pixel.
 The following attributes are supported for the ``td`` and ``th`` tags of the
 table: ``width``, ``class`` , ``rowspan``, ``colspan``.
 
-HTML
-----
-The html directive is used to insert custom html code. This is usefull if you
-want to render generic text sections icluding lists or other markup elements
-linke images. Images will need a external source for the image file.::
-
-        <html>
-         <ul style="padding:15px">
-           <li>List item 1</li>
-           <li>List item 2</li>
-           <li>List item 3</li>
-         </ul>
-        </html>
-
-The content of the html directive will be rendererd as defined so you are free
-to include whatever you want.
-
 .. _field:
 
 Field
@@ -552,10 +535,6 @@ Use this renderer if you want to render the field as a textfield::
 Attribute   Description
 =========   ===========
 rows        Number of rows of the texteare. Default is 3.
-maxlength   Number of chars "allowed". If set a small indicator below
-            the textarea is show indicating how many chars are left.
-            Please note that this does **not** triggers any rules. Rules
-            to enforce this maxlength must be defined too.
 =========   ===========
 
 Infofield
@@ -600,15 +579,13 @@ expression is later evaluated by the rule system of formbar. The expression
 must evaluate to true and is evaluated for every option. The expression uses a
 two special variables begining with 
 
-1. ``%``.  Variables beginning with % marks the options of the
-   selection. ``%attr`` will access a attribute named 'attr' in the
-   option. A single ``%`` can be used on userdefined options to access
-   the value of the option. For SQLAlchemy based options comming from
-   the database ``%`` can be used to access a attribute of the option.
-   E.g '%id' will access the id attribute of the option.  The variable
-   will be replaced by the value of the attribute of the current item in
-   the option for every option before evaluating.
-
+1. ``%``.  Variables beginning with % marks the options of the selection. A
+   single ``%`` can be used on userdefined options to access the value of the
+   option. For SQLAlchemy based options comming from the database ``%`` can be
+   used to access a attribute of the option. E.g '%id' will access the id
+   attribute of the option.  The variable will be replaced by the value of the
+   attribute of the current item in the option for every option before
+   evaluating.
 2. ``@``. Varaible beginning with @ marks the name of an attribute of
 the parents form item.
 

@@ -62,10 +62,9 @@ def handle_inheritance(tree, path=None):
     ptree = load(get_file_location(tree.attrib["inherits"], basepath))
 
     # Workaroutn for missing support of getting parent elements. See
-    # http://stackoverflow.com/
-    # questions/2170610/access-elementtree-node-parent-node/2170994
-    tree_parent_map = {c: p for p in tree.iter() for c in p}
-    ptree_parent_map = {c: p for p in ptree.iter() for c in p}
+    # http://stackoverflow.com/questions/2170610/access-elementtree-node-parent-node/2170994
+    tree_parent_map = {c:p for p in tree.iter() for c in p}
+    ptree_parent_map = {c:p for p in ptree.iter() for c in p}
 
     for element in tree.getiterator():
         if not "id" in element.attrib:
@@ -120,9 +119,8 @@ def handle_includes(tree, path):
         basepath = ""
 
     # Workaroutn for missing support of getting parent elements. See
-    # http://stackoverflow.com/
-    # questions/2170610/access-elementtree-node-parent-node/2170994
-    parent_map = {c: p for p in tree.iter() for c in p}
+    # http://stackoverflow.com/questions/2170610/access-elementtree-node-parent-node/2170994
+    parent_map = {c:p for p in tree.iter() for c in p}
     # handle includes in form
     for include_placeholder in tree.findall(".//include"):
         location = include_placeholder.attrib["src"]
@@ -159,11 +157,11 @@ def handle_entity_prefix(tree, prefix):
         # TODO: Handle % and @ variables to? (ti) <2015-12-17 09:30>
         # Note: This algorithmn is hackish and handles some corner cases
         # with replacements of similar fields names.
-        #
-        # Example:
+        # 
+        # Example: 
         # Consider the following expr = "$foo and $foo_bar" And we want
         # to add a prefix "baz".
-        #
+        # 
         # The code will iterate over all unique fields in the expression
         # and replaces the fieldname with prefix+fieldname.
         #
@@ -216,10 +214,10 @@ def flatten_form_fields(fields, root=None):
     method will flatten the given given fields dictionary removing
     the page information. I a root (page) is given only the fields
     for the given page are returned.
-
+    
     TODO: Make this method obsolete by changing the datastructure of the
     fields dictionary. Save mapping of page2fields in a separate
-    varibale (ti) <2016-01-11 16:44>
+    varibale (ti) <2016-01-11 16:44> 
     """
     if root is None:
         tmpfields = {}
@@ -451,25 +449,21 @@ class Form(Config):
                         # was "disabled" in a conditional. In this case
                         # the value is not sent. (ti) <2015-04-28 16:52>
                         continue
-                    for elem in self.walk(child, values,
-                                          evaluate, include_layout):
+                    for elem in self.walk(child, values, evaluate, include_layout):
                         yield elem
                 elif include_layout and child.tag in ["section",
                                                       "subsection"]:
                     yield child
-                    for elem in self.walk(child, values,
-                                          evaluate, include_layout):
+                    for elem in self.walk(child, values, evaluate, include_layout):
                         yield elem
                 else:
-                    for elem in self.walk(child, values,
-                                          evaluate, include_layout):
+                    for elem in self.walk(child, values, evaluate, include_layout):
                         yield elem
             elif child.tag == "snippet":
                 sref = child.attrib.get('ref')
                 if sref:
                     snippet = self._parent.get_element('snippet', sref)
-                    for elem in self.walk(snippet, values,
-                                          evaluate, include_layout):
+                    for elem in self.walk(snippet, values, evaluate, include_layout):
                         yield elem
             elif child.tag == "field":
                 yield child
@@ -511,21 +505,23 @@ class Form(Config):
                 self._id2name[ref] = field.name
         return fields
 
-    def get_fields(self, root=None, values={}, evaluate=False):
+    def get_fields(self, root=None, values={},
+                   reload_fields=False, evaluate=False):
         """Returns a dictionary of included fields in the form.
 
         :returns: A dictionary with the configured fields in the form.
         The name of the field is the key of the dictionary.
         """
 
-        # TODO: Move filtering (evaluation) out of this method ()
-        # <2016-01-11 15:33>
-        if not self._initialized:
+        # TODO: Move filtering (evaluation) out of this method () <2016-01-11 15:33>
+        # TODO: Check id the reload_fields flag is really needed () <2016-01-11 15:34>
+        if not self._initialized or reload_fields is True:
             self._fields = self.init_fields(values)
         fields = flatten_form_fields(self._fields, root)
         if evaluate:
             fields = filter_form_fields(self, fields, values)
         return fields
+
 
     def get_field(self, name):
         """Returns the field with the name from the form. If the field can not
@@ -629,22 +625,15 @@ class Field(Config):
             if tag:
                 self.tags.append(tag.strip())
 
-        self._rules = None
-        """List of rules of the field."""
-
         # Subelements of the fields
         # Options (For dropdown, checkbox and radio fields)
         self.options = []
         options = entity.find('options')
-        if not self.value \
-           and options is not None \
-           and options.attrib.get('value'):
+        if not self.value and options is not None and options.attrib.get('value'):
             self.options = options.attrib.get('value')
         elif options is not None:
             for option in options:
-                self.options.append((option.text,
-                                     option.attrib.get('value'),
-                                     option.attrib))
+                self.options.append((option.text, option.attrib.get('value')))
 
         # Help
         self.help = None
@@ -659,33 +648,28 @@ class Field(Config):
         if renderer_config is not None:
             self.renderer = Renderer(renderer_config)
 
-    def get_rules(self):
-        if self._rules is not None:
-            return self._rules
-
-        rules = []
+        # Get rules
+        self.rules = []
         # Add automatic genertated rules based on the required or
         # desired flag
         if self.required:
             expr = "bool($%s)" % self.name
             msg = _("This field is required. You must provide a value")
             mode = "pre"
-            rules.append(Rule(expr, msg, mode, required=True))
+            self.rules.append(Rule(expr, msg, mode))
         if self.desired:
             expr = "bool($%s)" % self.name
             msg = _("This field is desired. Please provide a value")
             mode = "pre"
             triggers = "warning"
-            rules.append(Rule(expr, msg, mode, triggers, desired=True))
+            self.rules.append(Rule(expr, msg, mode, triggers))
         # Add rules added the the field.
         for rule in self._tree.findall('rule'):
             expr = rule.attrib.get('expr')
             msg = rule.attrib.get('msg')
             mode = rule.attrib.get('mode')
             triggers = rule.attrib.get('triggers')
-            rules.append(Rule(expr, msg, mode, triggers))
-        self._rules = rules
-        return self._rules
+            self.rules.append(Rule(expr, msg, mode, triggers))
 
 
 class Renderer(Config):

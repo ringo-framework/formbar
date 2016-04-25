@@ -31,16 +31,6 @@ def print_fieldnames(config, args):
     else:
         print "\n".join(out)
 
-def print_rules(config, args):
-    elements = []
-    elements.extend(config.get_elements('rules'))
-    elements.extend(config.get_elements('if'))
-    out = [element.attrib.get("expr") for element in elements]
-    if args.aslist:
-        print "[%s]" % ",".join("'%s'" % field for field in out)
-    else:
-        print "\n".join(out)
-
 def print_model(config, args):
 
     def generate_Column(field):
@@ -79,15 +69,13 @@ def main(args):
         print_model(config_tree, args)
     if args.action == "fieldnames":
         print_fieldnames(config_tree, args)
-    if args.action == "rules":
-        print_rules(config_tree, args)
     else:
         print "nothing to do"
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate various informations from a form configuration file')
-    parser.add_argument('action', choices=['model', 'fieldnames', 'rules'], help='Output to generate')
+    parser.add_argument('action', choices=['model', 'fieldnames'], help='Output to generate')
     parser.add_argument('config', metavar='config', type=file, help='A form configuration file')
     parser.add_argument('--tags', metavar='tags', help='Only choose fields with given tags. If empty all fields are returned.', default="")
     parser.add_argument('--aslist', dest='aslist', action="store_true")
