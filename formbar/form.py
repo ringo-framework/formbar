@@ -1,4 +1,5 @@
 import logging
+import re
 import sqlalchemy as sa
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Expression
@@ -678,6 +679,15 @@ class Field(object):
 
     def _build_filter_rule(self, expr_str, item):
         t = expr_str.split(" ")
+        # The filter expression may reference values of the form using $
+        # variables. To have access to these values we extract the
+        # values from the given item if available.
+        # TODO: Access to the item is usally no good idea as formbar can
+        # be used in environments where no item is available.
+        if self._form._item:
+            item_values = self._form._item.get_values()
+        else:
+            item_values = {}
         for x in t:
             # % marks the options in the selection field. It is used to
             # iterate over the options in the selection. I case the
@@ -685,15 +695,12 @@ class Field(object):
             # used to access a attribute of the item. E.g. %id will
             # access the id of the current option item. For user defined
             # options "%" can be used to iterate over the user defined
-            # options. In this case the value is the value of the
+            # options. In this case %attr will access a given attribte
+            # in the option. A bare "%" will give the value of the
             # option.
             if x.startswith("%"):
                 key = x.strip("%")
-                if len(key) == 0:
-                    # User defined option
-                    value = item[1]
-                else:
-                    value = getattr(item, key)
+                value = "$%s" % key or "value"
             # @ marks the item of the current fields form item.
             elif x.startswith("@"):
                 key = x.strip("@")
@@ -711,7 +718,8 @@ class Field(object):
                     if key == "user":
                         tmpitem = self._form._request.user
                 else:
-                    value = self._form.merged_data.get(tokens[0].strip("$"))
+                    key = tokens[0].strip("$")
+                    value = item_values.get(key) or ''
                 if tmpitem and not value:
                     value = getattr(tmpitem, attribute)
                     if hasattr(value, '__call__'):
@@ -724,9 +732,11 @@ class Field(object):
                     value = "[%s]" % ",".join("'%s'"
                                               % unicode(v) for v in value)
                     expr_str = expr_str.replace(x, value)
+                elif isinstance(value, basestring) and value.startswith("$"):
+                    expr_str = expr_str.replace(x, "%s" % unicode(value))
                 else:
                     expr_str = expr_str.replace(x, "'%s'" % unicode(value))
-        return Rule(expr_str)
+        return Rule(str(expr_str))
 
     def _load_options_from_db(self):
         # Get mapped clazz for the field
@@ -753,6 +763,12 @@ class Field(object):
 
         """
         filtered_options = []
+        if self._config.renderer and self._config.renderer.filter:
+            rule = self._build_filter_rule(self._config.renderer.filter, None)
+            x = re.compile("\$\w+")
+            option_values = x.findall(rule._expression)
+        else:
+            rule = None
         for option in options:
             if isinstance(option, tuple):
                 # User defined options
@@ -762,10 +778,17 @@ class Field(object):
                 # Options loaded from the database
                 o_value = option.id
                 o_label = option
-            if self._config.renderer and self._config.renderer.filter:
-                rule = self._build_filter_rule(self._config.renderer.filter,
-                                               option)
-                if rule.evaluate({}):
+            if rule:
+                values = {}
+                for key in option_values:
+                    key = key.strip("$")
+                    if isinstance(option, tuple):
+                        value = option[2].get(key, "")
+                    else:
+                        value = getattr(option, key)
+                    values[str(key)] = unicode(value)
+                result = rule.evaluate(values)
+                if result:
                     filtered_options.append((o_label, o_value, True))
                 else:
                     filtered_options.append((o_label, o_value, False))

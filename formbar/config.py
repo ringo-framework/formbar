@@ -639,7 +639,9 @@ class Field(Config):
             self.options = options.attrib.get('value')
         elif options is not None:
             for option in options:
-                self.options.append((option.text, option.attrib.get('value')))
+                self.options.append((option.text,
+                                     option.attrib.get('value'),
+                                     option.attrib))
 
         # Help
         self.help = None
