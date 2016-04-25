@@ -679,6 +679,15 @@ class Field(object):
 
     def _build_filter_rule(self, expr_str, item):
         t = expr_str.split(" ")
+        # The filter expression may reference values of the form using $
+        # variables. To have access to these values we extract the
+        # values from the given item if available.
+        # TODO: Access to the item is usally no good idea as formbar can
+        # be used in environments where no item is available.
+        if self._form._item:
+            item_values = self._form._item.get_values()
+        else:
+            item_values = {}
         for x in t:
             # % marks the options in the selection field. It is used to
             # iterate over the options in the selection. I case the
@@ -709,7 +718,8 @@ class Field(object):
                     if key == "user":
                         tmpitem = self._form._request.user
                 else:
-                    value = self._form.merged_data.get(tokens[0].strip("$"))
+                    key = tokens[0].strip("$")
+                    value = item_values.get(key) or ''
                 if tmpitem and not value:
                     value = getattr(tmpitem, attribute)
                     if hasattr(value, '__call__'):
@@ -771,8 +781,8 @@ class Field(object):
             if rule:
                 values = {}
                 for key in option_values:
+                    key = key.strip("$")
                     if isinstance(option, tuple):
-                        key = key.strip("$")
                         value = option[2].get(key, "")
                     else:
                         value = getattr(option, key)
