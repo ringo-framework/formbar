@@ -699,8 +699,9 @@ class Field(object):
             # in the option. A bare "%" will give the value of the
             # option.
             if x.startswith("%"):
-                key = x.strip("%")
-                value = "$%s" % key or "value"
+                import ipdb; ipdb.set_trace()
+                key = x.strip("%") 
+                value = "$%s" % (key or "value")
             # @ marks the item of the current fields form item.
             elif x.startswith("@"):
                 key = x.strip("@")
