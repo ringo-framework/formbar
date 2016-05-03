@@ -1,494 +1,609 @@
-/* ATTENTION: This file is created with mako and includes some attribute which
- * are inserted dynamically */
-var language = null;
-var fields2Conditionals = {};
-var currentFormValues = {}
-var deactivator = function(event){ 
-    $(this).prop("checked", !$(this).prop("checked"));
-    event.preventDefault();
-}
+/* Formbar rewrite */
 
-// Plugin to prevent double submission. See
-// http://stackoverflow.com/questions/2830542/prevent-double-submission-of-forms-in-jquery
-jQuery.fn.preventDoubleSubmission = function() {
-  $(this).on('submit',function(e){
-      var $form = $(this);
-      if ($form.data('submitted') === true) {
-        // Previously submitted - don't submit again
-        e.preventDefault();
-      } else {
-        // Mark it so that the next submit can be
-        // ignored
-        $form.data('submitted', true);
-      }
-  });
-// Keep chainability
-return this;
-};
+/** 
+ * @function
+ * reduce is defined as a shortcut to [].reduce()
+ */
+var reduce = Function.prototype.call.bind([].reduce)
+var map = Function.prototype.call.bind([].map)
 
-/** This function will return the value of a given field. In case of radio,
- * select and checkbox fields it will return the value of the checked/selected
- * item/option of the field. */
-function getFieldValue(field) {
-    field= $(field);
-    var ftype = field.attr("type");
-    var fname = field.attr("name");
-    if (ftype == "checkbox") {
-        allVals = [];
-        $("input[name='"+fname+"']:checked").each(function() {
-            allVals.push($(this).val());
-        });
-        return allVals;
-    } else if (ftype == "radio") {
-        return $("input[name='"+fname+"']:checked").val()
-    } else if (field.type == "select") {
-        return $("input[name='"+fname+"']:selected").val()
-    } else {
-        return field.val();
-    }
-}
-
-function rememberFieldValue(field) {
-    // Save the current value of the given field for later resetting of the
-    // field value in case the surrounding conditional of this field because
-    // valid again
-    field= $(field);
-    var fname = field.attr("name");
-    currentFormValues[fname] = getFieldValue(field);
-}
-
-/** This function will set the value of a given field. In case of radio,
- * select and checkbox fields it will checke/select ithe item/option of the
- * field. */
-function setFieldValue(field, value, remember) {
-    if ( remember == undefined ) {
-        remember = true;
-    }
-    field= $(field);
-    var ftype = field.attr("type");
-    var fname = field.attr("name");
-    if (value && remember && !field.attr("readOnly")) {
-        rememberFieldValue(field);
-    }
-    if (ftype == "radio") {
-        if (field.val() == value) {
-            field.prop("checked", true);
-        } else {
-            field.prop("checked", false);
+/** 
+ * @module
+ * Conatins the mechanics for evaluating fields and communication results
+ * from the server back to the application. Is used by the form-component
+ *  
+ * @public
+ * @function
+ * 
+ * init - initialization of the engine
+ * changeField - eventhandler 
+ * communicates field-changes to the server and evaluates rules
+ */
+var ruleEngine = function() {
+  var targetFields;
+  var conditionals;
+  
+  /** 
+   * @function
+   * 
+   * scans the form for conditionals
+   * takes expressions like "bool( $qeoi.lm_employment_category_unemployed )" 
+   * from the div-Attribute and extracts the Variables  
+   * ("$qeoi.lm_employment_category_unemployed") and stores for every variable
+   * in which div it occurs and its according expression
+   * 
+   */
+  var scanConditionals = function() {
+     return reduce($('.formbar-conditional'), function(o, n) {
+      var expr = n.getAttribute("expr");
+      var tokens = expr.split(" ");
+      var id = n.getAttribute("id");
+      tokens.forEach(function(token) {
+        if (token[0] === '$') {
+          var fieldName = token.replace("$", '');
+          if (!o[fieldName]) o[fieldName] = {};
+          o[fieldName][id] = {
+            "id": id,
+            "expr": expr
+          };
         }
-    } else if (ftype == "checkbox") {
-        if (currentFormValues[fname].indexOf(field.val()) > -1) {
-            field.prop("checked", true);
-        } else {
-            field.prop("checked", false);
-        }
-    } else if (field.type == "select") {
-        if (field.val() == value) {
-            field.prop("selected", true);
-        } else {
-            field.prop("selected", false);
-        }
-    } else {
-        field.val(value);
-    }
-
-}
-
-/** Will remove the value of all fields within the given conditional to an empyt
- * string which is the default value in most cases. */
-function removeValues(conditional) {
-    var inputs = $(conditional).find(":input");
-    for (var i = 0, len = inputs.length; i < len; i++) {
-        var field = $(inputs[i]);
-        setFieldValue(field, "");
-    }
-}
-
-/** Will reset the value of all fields within a given conditional to the
- * initial value saved in the given value object. */
-function resetValues(conditional, values) {
-    var inputs = $(conditional).find(":input");
-    for (var i = 0, len = inputs.length; i < len; i++) {
-        var field = inputs[i];
-        setFieldValue(field, values[$(field).attr('name')], false);
-    }
-}
-
-
-function getBrowserLanguage() {
-    var lang = "en";
-    if (navigator.browserLanguage){
-        lang = navigator.browserLanguage;
-    } else if (navigator.languages){
-        lang = navigator.languages[0];
-    } else {
-        lang = navigator.language;
-    }
-    return lang;
-}
-
-$( document ).ready(function() {
-    language = getBrowserLanguage();
-    $('.formbar-tooltip').tooltip();
-    $('.formbar-datepicker').datepicker({
-        language: language,
-        todayBtn: "linked",
-        showOnFocus: false,
-        autoclose: true
-    });
-    $('.list-group-item').on('click',function(e){
-        var previous = $(this).closest(".list-group").children(".selected");
-        previous.removeClass('selected'); // previous list-item
-        $(e.target).addClass('selected'); // activated list-item
-    });
-
-    // If the form has pages and there are no input elements on the current
-    // form page, than hide the submit button.
-    selected_formpage = $('.formbar-page :visible');
-    if (selected_formpage.length > 0) {
-        toggleSubmit(selected_formpage);
-    }
-
-    /*
-    * Set hidden form field "formbar-page" to the value of the currently
-    * selected page. This value will be used to set the currently selected
-    * page when the form ist rendered
-    */
-    $('div.formbar-form form div.tabbable ul.nav li a').click(function() {
-      var page = $(this).attr('href').split('#p')[1];
-      var item = $(this).attr('formbar-item');
-      var itemid = $(this).attr('formbar-itemid');
-      var baseurl = $(this).attr('formbar-baseurl');
-      var timestamp = (new Date()).getTime()
-      $.get(baseurl+'/set_current_form_page', 
-            {
-                page: page,
-                item: item,
-                itemid: itemid,
-                timestamp: timestamp
-            },
-            function(data, status) {});
-    });
-
-    $('div.formbar-outline a').click(function() {
-      var page = $(this).attr('href').split('#p')[1];
-      var item = $(this).attr('formbar-item');
-      var itemid = $(this).attr('formbar-itemid');
-      var baseurl = $(this).attr('formbar-baseurl');
-      var timestamp = (new Date()).getTime()
-      $.get(baseurl+'/set_current_form_page', 
-            {
-                page: page,
-                item: item,
-                itemid: itemid,
-                timestamp: timestamp
-            },
-            function(data, status) {});
-      $('.formbar-page').hide();
-      $('#formbar-page-'+page).show();
-      // If there are no input elements on the current form page, than hide
-      // the submit button.
-      var formpage = $('#formbar-page-'+page);
-      toggleSubmit(formpage);
-    });
-
-    /* Restrict input depending on datatypes */
-    $('div.formbar-form input.integer').keypress(function(key) {
-        /* Only allow 0-9 (48-58) */
-        var cc = key.charCode;
-        if ((cc < 48 || cc > 57) && cc != 0){
-            return false;
-        }
-    });
-    $('div.formbar-form input.float').keypress(function(key) {
-        /* Only allow 0-9 (48-58 and ".") */
-        var cc = key.charCode;
-        if ((cc < 48 || cc > 57) && cc != 0 && cc != 46){
-            return false;
-        }
-    });
-    $('div.formbar-form input.date').keypress(function(key) {
-        /* Only allow 0-9 (48-58 and "-./") */
-        var cc = key.charCode;
-        if ((cc < 48 || cc > 57) && cc != 0 && (cc != 45 && cc != 46 && cc != 47)){
-            return false;
-        }
-    });
-    /*
-     * Evaluate when values in the form changes
-    */
-    setInitialFormValues();
-    mapFieldsToConditionals();
-    evaluateFields();
-    evaluateConditionals();
-    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(evaluateFields);
-    $('div.formbar-form form input, div.formbar-form form select,  div.formbar-form form textarea').not(":text").change(function(event) {
-        setFieldValue(this, $(this).val());
-        evaluateConditionalsOnChange(this);
-        });
-
-    //detection of user stoppy typing in input text fields
-    var timer = null;
-    $('div.formbar-form form input:text').keydown(function(){
-        clearTimeout(timer);
-        function evaluate(obj){
-            rememberFieldValue(obj);
-            evaluateFields();
-            evaluateConditionalsOnChange(obj);
-        }
-        timer = setTimeout(evaluate, 750, this)
-    });
-    $('div.formbar-form form').not(".disable-double-submit-prevention").preventDoubleSubmission();
-
-});
-
-
-/** Will save the initial values of all fields in the form in a global
- * variable called `currentFormValues`. The varibable is used to reset the value
- * of the field to its initial value in case a value has been removed after it
- * becomes readonly/invisible in a conditional and now gets activated again. */
-function setInitialFormValues() {
-    var fields = $('div.formbar-form :input');
-    for (var i = 0, len = fields.length; i < len; i++) {
-        if (currentFormValues[fields[i].name] == undefined) {
-            currentFormValues[fields[i].name] = getFieldValue(fields[i]);
-        }
-    }
-}
-
-/* Map fields to conditionals. That means map every conditional to the field
- * where the expression of the condition refers to the field. Later if a value
- * of a field changes we know which conditionals need to be reevaluated. */
-function mapFieldsToConditionals() {
-    var conditionals = $('.formbar-conditional');
-    // FIXME: Iteration order counts to make cascading conditionals and
-    // resetting work! Currently we are assuming, that rules which occour
-    // later in the document may be preconditionedby former rules. So when
-    // resetting conditionals in the form it is important to handle
-    // conditionals in the correct order to allow cascading resets.
-    for (var i = 0; i <= conditionals.length - 1; i++) {
-        var conditional = conditionals[i];
-        var tokens = conditional.getAttribute("expr").split(" ");
-        for (var j = 0; j <= tokens.length - 1; j++) {
-            var fieldname = null;
-            var id = null;
-            if (tokens[j].indexOf("$") >= 0) {
-                fieldname = tokens[j].replace('$', '');
-                if (fields2Conditionals[fieldname] == undefined ) {
-                    fields2Conditionals[fieldname] = [];
-                }
-                id = conditional.getAttribute("id");
-                if (fields2Conditionals[fieldname].indexOf(id) < 0) {
-                    fields2Conditionals[fieldname].push(id);
-                }
-            }
-        }
-    }
-}
-
-function convertValue(value, field) {
-    var cvalue = value;
-    // Poor mans data conversion. In case that the datatype
-    // (formbar datatype) is string, than out the value into single
-    // quotes. Please note that the datatype attribute is currently only
-    // renderered for the following fields:
-    //  * radio
-    if ((field.attr("datatype") && field.attr("datatype") == "string")) {
-        cvalue = "'"+value+"'"
-    }
-    if ((field.attr("datatype") && field.attr("datatype") == "date")) {
-        cvalue = "'"+value+"'"
-    }
-    return cvalue;
-}
-
-function evaluate(element) {
-    var expr = element.getAttribute("expr");
-    var tokens = expr.split(" ");
-
-    var form = $(element).closest("form");
-    var eval_url = $(form).attr("evalurl"); 
-
-    var eval_expr = "";
-    // Build evaluation string
-    for (var j = 0; j <= tokens.length - 1; j++) {
-        var tfield = null;
-        var value = null;
-        if (tokens[j].indexOf("$") >= 0) {
-            tfield = tokens[j].replace('$', '').replace('.', '\\.');
-            // Select field
-            var field = $('input[name='+tfield+'], '
-                          + 'select[name='+tfield+'], '
-                          + 'div[name='+tfield+'], '
-                          + 'textarea[name='+tfield+']');
-            // Get value from field depending on field type
-            switch (field.attr("type")) {
-                case 'radio':
-                    value = convertValue($('input[name='+tfield+']:checked').val(), field);
-                    break;
-                case 'checkbox':
-                    var allVals = [];
-                    $('input[name='+tfield+']:checked').each(function() {
-                        if ($(this).val() != "") {
-                            allVals.push(convertValue($(this).val(), field));
-                        }
-                    });
-                    value = '[' + allVals.join() + ']';
-                    break;
-                default:
-                    value = convertValue(field.val(), field);
-            }
-            // If we can not get a value from an input fields the field my
-            // be readonly. So get the value from the readonly element.
-            // First try to get the unexpaned value, if there is no
-            // value get the textvalue of the field. (Which is usually
-            // the expanded value).
-            if (!value && field.is("div")) {
-                value = field.attr("value") || field.text()
-                value = convertValue(value, field);
-            }
-            // If here is still no value we will set it to None. Otherwise the
-            // the expression will not be valid E.g "== '2'"
-            if (!value) {
-                value = "None"
-            }
-            eval_expr += " "+value;
-        } else {
-            eval_expr += " "+tokens[j];
-        }
-    }
-    try {
-        if (eval_url) {
-            var result = false;
-            $.ajax({
+      });
+      return o;
+    }, {});
+  };
+  
+  /** 
+   * @function
+   * 
+   * delegates the evaluation for the field to the server
+   * 
+   * @param {string} expression - holding the expression without variables
+   * 
+   * @param {string} divId - holding the ID of the div for further processing in 
+   * the callback
+   * 
+   * @param {function} callback - the function which is called with the result
+   */
+  var checkFields = function(expression, divId, callBack){
+    var form = $("#"+divId).closest("form");
+    var eval_url = $(form).attr("evalurl");
+    var ruleParam="?rule="+encodeURIComponent(expression);
+    $.ajax({
                 type: "GET",
-                async: false,
-                url: eval_url,
-                data: {rule: eval_expr},
+                url: eval_url+ruleParam,
                 success: function (data) {
-                    if (data.success) {
-                        result = data.data;
-                    } else {
-                        result = data.data;
-                    }
+                    callBack(data.data, divId);
                 },
                 error: function (data) {
-                    console.log("Request to eval server fails!");
-                    result = false;
+                    console.log("Request to eval server fails!")
                 }
             });
-            return result;
-        } else {
-            return false;
-        }
-    } catch (e) {
-        console.log(e);
-        return undefined;
-    }
-}
+  };
 
-function evaluateConditionals() {
-    var fieldsToEvaluate = $('.formbar-conditional');
-    for (var i = 0; i <= fieldsToEvaluate.length - 1; i++) {
-        evaluateConditional(fieldsToEvaluate[i]);
-    }
-}
-
-function evaluateConditional(conditional) {
-    var reset = $(conditional).attr('reset-value').indexOf('true') >= 0;
-    var readonly = $(conditional).attr('class').indexOf('readonly') >= 0;
-    var result = evaluate(conditional);
-    if (result) {
-        $(conditional).find(':radio, :checkbox').unbind('click',deactivator);
-        if (readonly) {
-            $(conditional).animate({opacity:'1.0'}, 500);
-            $(conditional).find(".form-group, .section, .subsection, .subsubsection, p").each(
-                function(i,x){ 
-                  $(x).addClass("active").removeClass("inactive");
-                }
-            );
-            $(conditional).find(".help-block").each(
-                function(i,x){ 
-                  $(x).removeClass("hidden");
-                }
-            );
-            $(conditional).find('input, textarea').attr('readonly', false);
-            $(conditional).find('select').attr('disabled', false);
-        }
-        else {
-            $(conditional).show();
-        }
-        if (reset) {
-            resetValues(conditional, currentFormValues);
-        }
-    }
-    else {
-        $(conditional).find(':radio, :checkbox').click(deactivator);
-        if (readonly) {
-            $(conditional).animate({opacity:'0.4'}, 500);
-            $(conditional).find(".form-group, .section, .subsection, .subsubsection, p").each(
-                function(i,x){
-                  $(x).removeClass("active").addClass("inactive");
-                }
-            );
-            $(conditional).find(".help-block").each(
-                function(i,x){ 
-                  $(x).addClass("hidden");
-                }
-            );
-            $(conditional).find('input, textarea').attr('readonly', true);
-            $(conditional).find('select').attr('disabled', true);
-        }
-        else {
-            $(conditional).hide();
-        }
-        if (reset) {
-            removeValues(conditional);
-        }
-    }
-}
-
-// passing context as parameter until better solution is found
-function evaluateConditionalsOnChange(obj) {
-    var fieldname = obj.getAttribute("name")
-    var conditionals = fields2Conditionals[fieldname];
-    if (conditionals != undefined) {
-        for (var j = 0; j <= conditionals.length - 1; j++) {
-            evaluateConditional(document.getElementById(conditionals[j]));
-        }
-    }
-}
-
-
-function evaluateFields() {
-    var fieldsToEvaluate = $('.formbar-evaluate');
-    for (var i = fieldsToEvaluate.length - 1; i >= 0; i--){
-        var field = fieldsToEvaluate[i];
-        var id = field['attributes'][1].value;
-        var result = evaluate(field)
-        if (result) {
-            $('#'+id).text(result);
-        }
-        else {
-            $('#'+id).text('NaN');
-        }
-    }
-}
-
-function toggleSubmit(element) {
-  var button = $('.formbar-form :submit');
-  if ( element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
-      button.show();
-  } else {
-      button.hide();
+  /**
+   * @function
+   * 
+   * takes expressions, looks up the values of the variables and substitutes
+   * them in the expression
+   * 
+   * @param {string} expression the expression to be evaluated
+   * 
+   * @param {Object} map for lookup of variables
+   * 
+   */
+  var substituteExpression = function(expression, currentValues){
+    return expression.split(" ").map(function(token){
+      if (token[0]==='$'){
+        currentValue = currentValues[token.replace("$","")].value|| "None";
+        token = currentValue;
+        if (Array.isArray(currentValue)){
+          token="["+currentValue.join(",")+"]";
+        } 
+      }
+      return token;
+    }).join("  ");
   }
-}
 
-/* Method to calculate the remaining chars in the given textarea. Textarea is
- * identified by its id. See textarea.mako for more details. */
-function calcRemainingChars(id, msg) {
-    var text_max = $('#'+id).attr("maxlength");
-    var text_length = $('#'+id).val().length;
-    var text_remaining = text_max - text_length;
-    $('#'+id+'_feedback').html(text_remaining + ' ' + msg);
-}
+  /**
+   * @function 
+   * 
+   * changeField is exported.
+   * It is used as a callable for field-change-events
+   * 
+   * @param {string} name - the name of the field / variable which is changed
+   * 
+   * @param {Object} currentValues - holds the current state of all fields
+   * 
+   * @param {function} callBack - a function to call back after evaluation
+   * 
+   */
+  var changeField = function(name, currentValues, callBack) {
+    if (conditionals[name]){
+      var rules = conditionals[name];
+      Object.keys(rules).forEach(function(k){
+        checkFields(substituteExpression(rules[k].expr, currentValues), k, callBack);
+      });
+    }
+    return true;
+  }
+
+  var init = function() {
+    conditionals=scanConditionals();
+  };
+  return {
+    init: init,
+    changeField: changeField
+  };
+}();
+
+/**
+ * @module
+ * 
+ * is responsible for evaluating inputevents
+ * 
+ * @public
+ * @function
+ * 
+ * integer - evaluates integer keys
+ *
+ * @public
+ * @function
+ * 
+ * float - evaluates integer keys
+ *
+ * @public
+ * @function
+ * 
+ * date - evaluates integer keys 
+ */
+var inputFilter = function() {
+  var zero = "0".charCodeAt(0);
+  var nine = "9".charCodeAt(0);
+  var point = ".".charCodeAt(0);
+  var minus = "-".charCodeAt(0);
+  var slash = "/".charCodeAt(0);
+
+  /**
+   * @function
+   * 
+   * @param {string} key
+   * 
+   * results in true only for 0 - 9
+   * 
+   */
+  var integer = function(key) {
+    return !(key.charCode !== 0 && (key.charCode < zero || key.charCode > nine));
+  };
+
+
+  /**
+   * @function
+   * 
+   * @param {string} key 
+   * 
+   * results in true only for 0 - 9 and .
+   *
+   */
+  var float = function(key) {
+    return !(key.charCode !== 0 && key.charCode !== point && (key.charCode < zero || key.charCode > nine));
+  };
+
+  /**
+   * @function
+   * 
+   * @param {string} key 
+   * 
+   * results in true only for 0 - 9, . and /
+   *
+   */
+  var date = function(key) {
+    return !(key.charCode !== 0 && key.charCode !== point && key.charCode !== slash && (key.charCode < zero || key.charCode > nine));
+  };
+
+  return {
+    integer: integer,
+    float: float,
+    date: date
+  };
+}();
+
+/**
+ * 
+ * @module
+ * 
+ * @requires inputFilter, ruleEngine
+ * 
+ * The form module is responsible for handling form events for setting
+ * and ressetting of values, evaluating the rules and promote changes to
+ * the appropriate fields
+ * 
+ * @public
+ * @function
+ * 
+ * init - inits the form 
+ * 
+ */
+var form = function(inputFilter, ruleEngine) {
+  var formGroups = {};
+  
+  /**
+   * @function
+   * 
+   * @param {Object} f - the field in form of a DOM-element
+   *
+   * extracts the value from DOM-elements
+   * 
+   */
+  var getFieldValue = function(f) {
+    var field = $(f);
+    var ftype = field.attr("type");
+    var fname = field.attr("name");
+    var result;
+    switch (ftype) {
+      case "checkbox":
+        result = [];
+        $("input[name='" + fname + "']:checked:visible").each(function() {
+          result.push($(this).val());
+        });
+        break;
+      case "radio":
+        result = $("input[name='" + fname + "']:checked:visible").val();
+        break;
+      case "select":
+        result = $("select[name='" + fname + "']").val();
+        break;
+      default:
+        result = field.val();
+        break;
+    }
+    return result;
+  };
+
+  /**
+   * @function
+   * 
+   * sets the eventlisteners for the input fields
+   * 
+   */
+  var initInputFilters = function() {
+    $('div.formbar-form input.integer').keypress(inputFilter.integer);
+    $('div.formbar-form input.float').keypress(inputFilter.float);
+    $('div.formbar-form input.date').keypress(inputFilter.date);
+  };
+
+  var cleanValues = function() {
+
+  };
+
+  /**
+   * @function
+   * 
+   * @param {string} fieldName - the name of the field / DOM-element
+   * 
+   * @param {string} value - the value to be set
+   *
+   * sets the value for DOM-elements
+   * 
+   */
+  var setFieldValue = function(fieldName, value) {
+    var field = $("input[name='" + fieldName + "']");
+    var ftype = field.attr("type");
+    switch (ftype) {
+      case "checkbox":
+        value.map(function(v) {
+          $("input[name='" + fieldName + "'][value='" + v + "']").prop("checked", "checked");
+        });
+        break;
+      case "radio":
+        $("input[name='" + fieldName + "'][value='" + value + "']").prop("checked", "checked");
+        break;
+      case "select":
+        $("select[name='" + fieldName + "'][value='" + value + "']").prop("selected", "selected");
+        break;
+      default:
+        field.val(value);
+        break;
+    }
+  };
+
+  /**
+   * @function
+   * 
+   * scans every form-group and gathers every INPUT.
+   * holds state ("active/inactive", value, required, desired) information of
+   * these elements. Acts as a simple model.
+   *
+   */
+  var scanComponents = function() {
+    var groups = $(".form-group");
+    groups.map(function(i, x) {
+      var name = $(x).attr("formgroup");
+      if (name) {
+        var state = ($(x).hasClass("active")) ? "active" : "inactive";
+        var value = getFieldValue($(x).find("input")[0]);
+        var desired = $(x).attr("desired");
+        var required = x.getAttribute("required");
+        formGroups[name] = {
+          'state': state,
+          'value': value,
+          'desired': desired,
+          'required': required
+        };
+      }
+    });
+  };
+
+  /**
+   * @function
+   * 
+   * is called after evaluation of rules.
+   * handles fadeIn/Out and actualization of fields
+   *
+   * @param {Object} result - of evaluation from server
+   *
+   * @param {string} divId - the Id of the div 
+   *
+   * @param {string} elementName - name of the element for which the rule was evaluated
+   * a lookup in formGroups gets you the state of the field
+   * 
+   */
+  var toggleConditional = function(result, divId){
+    var element = $("#"+divId);
+    if($(element).hasClass("readonly")) handleReadOnly(result, element);
+  }
+
+  var handleReadOnly = function(result, div){
+    fieldsToUpdate = map(div.find(".form-group"),(function(x){
+      return x.getAttribute("formgroup");
+    }));
+    fieldsToUpdate.forEach(function(fieldName){
+      var field = formGroups[fieldName];
+      var oldState = field.state;
+      var newState = oldState;
+      if(result==true && oldState=="inactive"){
+        newState = "active";
+        if (field.value==="") activateDesired(fieldName);    
+      }
+      if(result==false && oldState=="active"){
+        newState = "inactive";
+        deactivateDesired(fieldName);    
+      }
+      if (!(oldState == newState)){
+        field.state=newState;
+        $(".form-group[formgroup='"+fieldName+"']").removeClass(oldState).addClass(newState);
+        triggerChange(fieldName);
+      }
+    });
+  }
+
+  var deactivateDesired = function(fieldName){
+    var field = formGroups[fieldName];
+    if($(".form-group[formgroup='"+fieldName+"']").hasClass("has-warning")) {
+      $(".form-group[formgroup='"+fieldName+"']").removeClass("has-warning");
+      $(".form-group[formgroup='"+fieldName+"']").find(".help-block[desired='True']").addClass("hidden");
+    }
+  }
+  var activateDesired = function(fieldName){
+    var field = formGroups[fieldName];
+    if(field.desired==="True" && !$(".form-group[formgroup='"+fieldName+"']").hasClass("has-warning")) {
+      $(".form-group[formgroup='"+fieldName+"']").addClass("has-warning");
+      $(".form-group[formgroup='"+fieldName+"']").find(".help-block[desired='True']").removeClass("hidden");
+    }
+  }
+
+  /**
+   * @function
+   *
+   * triggers changes via ruleEngine
+   *
+   * @param {string} field name - the name of the field, which is changed
+   *
+   */
+  var triggerChange = function(fieldName){
+    ruleEngine.changeField(fieldName, formGroups, function(data, divId){
+      toggleConditional(data, divId);
+    });
+  };
+  /**
+   * @function
+   * 
+   * is called when any INPUT changes
+   *
+   * @param {Object} the event object fired by the DOM
+   * 
+   */
+  var inputChanged = function(e) {
+    var target = e.target;
+    var value = getFieldValue(target);
+    formGroups[target.name].value = value;
+    setDesiredStateForCurrentField(target.name);
+    triggerChange(target.name);
+  };
+
+
+  var setDesiredStateForCurrentField = function(fieldName){
+    var element = formGroups[fieldName];
+    if (element.value==="" && element.desired==="True") activateDesired(fieldName);
+    if (element.value!=="" && element.desired==="True") deactivateDesired(fieldName);
+  }
+
+  /**
+   * @function
+   * 
+   * sets the global listener for changes in INPUT / SELECT 
+   *
+   */
+  var setListener = function() {
+    $("body").on("change", function(e) {
+      switch (e.target.tagName) {
+        case 'INPUT':
+        case 'SELECT':
+          inputChanged(e);
+          break;
+        default:
+          break;
+      }
+    });
+  };
+
+  var init = function() {
+    initInputFilters();
+    scanComponents();
+    setListener();
+    ruleEngine.init();
+  };
+  return {
+    init: init
+  };
+}(inputFilter, ruleEngine);
+
+
+/**
+ * @module 
+ * formbar
+ * 
+ * @depends on for
+ * 
+ * wires up the formhandling process
+ * initializes datepickes
+ * sets up navigation
+ * 
+ * @public
+ * @function
+ * 
+ * init - initializes formbar
+ * 
+ */
+var formbar = function(form) {
+  var getBrowserLanguage = function getBrowserLanguage() {
+    var lang = "en";
+    if (navigator.browserLanguage) {
+      lang = navigator.browserLanguage;
+    } else if (navigator.languages) {
+      lang = navigator.languages[0];
+    } else {
+      lang = navigator.language;
+    }
+    return lang;
+  };
+
+  /**
+   * @function 
+   * handles listgroup-items
+   * 
+   * @param {Object} - the event-Object
+   *
+   */
+  var selectListGroupItem = function(e) {
+    var previous = $(this).closest(".list-group").children(".selected").removeClass('selected');
+    $(e.target).addClass('selected');
+  };
+
+  /**
+   * @function 
+   * hides submit button in case of an empty input page
+   * 
+   * @param {Object} - the DOM-Element
+   *
+   */
+  var hideSubmitButtonOnInputlessPage = function(element) {
+    var button = $('.formbar-form :submit');
+    if (element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
+      button.show();
+    } else {
+      button.hide();
+    }
+  };
+
+  /**
+   * @function
+   * 
+   * handles hiding of submitbutton
+   *
+   */
+  var initSubmit = function() {
+    var selected_formpage = $('.formbar-page :visible');
+    if (selected_formpage.length > 0) {
+      hideSubmitButtonOnInputlessPage(selected_formpage);
+    }
+  };
+
+  /**
+   * @function
+   * 
+   * handles initialization of date-Picker
+   *
+   */
+  var initDatePicker = function() {
+    var browserLanguage = getBrowserLanguage();
+    $('.formbar-datepicker').datepicker({
+      language: browserLanguage,
+      todayBtn: "linked",
+      showOnFocus: false,
+      autoclose: true
+    });
+  };
+
+  /**
+   * @function
+   * 
+   * sets selected page
+   *
+   */
+  var setSelectedPage = function(e) {
+    var target = e.target;
+    var page = $(target).attr('href').split('#p')[1];
+    var item = $(target).attr('formbar-item');
+    var itemid = $(target).attr('formbar-itemid');
+    var baseurl = $(target).attr('formbar-baseurl');
+    var timestamp = (new Date()).getTime()
+    $.get(baseurl + '/set_current_form_page', {
+      page: page,
+      item: item,
+      itemid: itemid,
+      timestamp: timestamp
+    });
+  };
+
+  /**
+   * @function
+   * 
+   * handles navigation for the sidetabs
+   *
+   */
+  var navigate = function(e) {
+    var target = e.target;
+    var page = $(target).attr('href').split('#p')[1];
+    var selectedFormpage = $('#formbar-page-' + page);
+    setSelectedPage(e);
+    $('.formbar-page').hide();
+    selectedFormpage.show();
+    hideSubmitButtonOnInputlessPage(selectedFormpage);
+  };
+
+  var init = function() {
+    $('.formbar-tooltip').tooltip();
+    $('.list-group-item').on('click', selectListGroupItem);
+    $('div.formbar-form form div.tabbable ul.nav li a').click(setSelectedPage);
+    $('div.formbar-outline a').click(navigate);
+    initDatePicker();
+    initSubmit();
+    form.init();
+  };
+
+  return {
+    init: init
+  };
+
+}(form);
+
+
+/**
+ * @function
+ * 
+ * when page is ready, start formbar
+ *
+ */
+$(function() {
+  formbar.init();
+});
