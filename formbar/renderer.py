@@ -202,6 +202,7 @@ class FieldRenderer(Renderer):
         """
         Renderer.__init__(self)
         self._field = field
+        self._active = True
         self._config = field._config.renderer
         self.translate = translate
         self.template = None
@@ -291,7 +292,7 @@ class FieldRenderer(Renderer):
         html = []
         has_errors = len(self._field.get_errors())
         has_warnings = len(self._field.get_warnings())
-        #import ipdb; ipdb.set_trace()
+        active = 'active' if self._active else 'inactive'
         # Handle indent. Set indent_with css only if the elements are
         # actually have an indent and the lable position allows an
         # indent.
@@ -299,15 +300,15 @@ class FieldRenderer(Renderer):
         if self.elements_indent \
            and self.label_position not in ["left", "right"]:
             indent_width = self.indent_width
-
         class_options = ((has_errors and 'has-error'),
                          (has_warnings and 'has-warning'),
+                         (active),
                          indent_width)
         html.append(HTML.tag("div", _closed=False,
                             formgroup="{}".format(self._field.name),
                             desired="{}".format(self._field.desired),
                             required="{}".format(self._field.required),
-                            class_=("form-group %s %s %s" % class_options)))
+                            class_=("form-group %s %s %s %s" % class_options)))
         values = self._get_template_values()
         if self.label_width > 0 and self.label_position in ["left", "right"]:
             label_width = self.label_width

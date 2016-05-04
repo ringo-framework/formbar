@@ -314,6 +314,11 @@ class Form(object):
             fields[name] = Field(self, field, self._translate)
         return fields
 
+
+    @property
+    def pages(self):
+        return self._config.get_pages()
+
     def has_errors(self):
         """Returns True if one of the fields in the form has errors"""
         for field in self.fields.values():
@@ -848,8 +853,9 @@ class Field(object):
     def get_warnings(self):
         return self._warnings
 
-    def render(self):
+    def render(self, active):
         """Returns the rendererd HTML for the field"""
+        self.renderer._active = active
         return self.renderer.render()
 
     def is_relation(self):
