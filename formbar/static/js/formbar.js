@@ -270,7 +270,7 @@ var form = function (inputFilter, ruleEngine) {
       var ftype = field.getAttribute("type");
       switch (ftype) {
         case "checkbox":
-          $("[name='"+fieldName+"']:visible:checked").each(function(i,x){$(x).prop("checked", false);})
+          $("[name='" + fieldName + "']:visible:checked").each(function (i, x) { $(x).prop("checked", false); })
           break;
         case "radio":
           $("input[name='" + fieldName + "'][value='']").prop("checked", true);
@@ -302,7 +302,7 @@ var form = function (inputFilter, ruleEngine) {
       var ftype = field.getAttribute("type");
       switch (ftype) {
         case "checkbox":
-          formFields[fieldName].value.forEach(function(x){ $("[name='qeri.job_position'][value='"+x+"']").prop("checked", true); });
+          formFields[fieldName].value.forEach(function (x) { $("[name='qeri.job_position'][value='" + x + "']").prop("checked", true); });
           break;
         case "radio":
           $("input[name='" + fieldName + "'][value='" + formFields[fieldName].value + "']").prop("checked", true);
@@ -453,6 +453,7 @@ var form = function (inputFilter, ruleEngine) {
     if (element.value === "" && element.desired === "True") activateDesired(fieldName);
     if (element.value !== "" && element.desired === "True") deactivateDesired(fieldName);
   }
+  
 
   /**
    * @function
@@ -465,7 +466,11 @@ var form = function (inputFilter, ruleEngine) {
       switch (e.target.tagName) {
         case 'INPUT':
         case 'SELECT':
-          inputChanged(e);
+          if (formFields[e.target.name].state==='inactive'){
+            clearFieldValue(e.target.name);
+          } else {
+            inputChanged(e);
+          }
           break;
         default:
           break;
