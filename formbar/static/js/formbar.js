@@ -19,10 +19,10 @@ var map = Function.prototype.call.bind([].map)
  * changeField - eventhandler 
  * communicates field-changes to the server and evaluates rules
  */
-var ruleEngine = function() {
+var ruleEngine = function () {
   var targetFields;
   var conditionals;
-  
+
   /** 
    * @function
    * 
@@ -33,12 +33,12 @@ var ruleEngine = function() {
    * in which div it occurs and its according expression
    * 
    */
-  var scanConditionals = function() {
-     return reduce($('.formbar-conditional'), function(o, n) {
+  var scanConditionals = function () {
+    return reduce($('.formbar-conditional'), function (o, n) {
       var expr = n.getAttribute("expr");
       var tokens = expr.split(" ");
       var id = n.getAttribute("id");
-      tokens.forEach(function(token) {
+      tokens.forEach(function (token) {
         if (token[0] === '$') {
           var fieldName = token.replace("$", '');
           if (!o[fieldName]) o[fieldName] = {};
@@ -51,7 +51,7 @@ var ruleEngine = function() {
       return o;
     }, {});
   };
-  
+
   /** 
    * @function
    * 
@@ -64,20 +64,20 @@ var ruleEngine = function() {
    * 
    * @param {function} callback - the function which is called with the result
    */
-  var checkFields = function(expression, divId, callBack){
-    var form = $("#"+divId).closest("form");
+  var checkFields = function (expression, divId, callBack) {
+    var form = $("#" + divId).closest("form");
     var eval_url = $(form).attr("evalurl");
-    var ruleParam="?rule="+encodeURIComponent(expression);
+    var ruleParam = "?rule=" + encodeURIComponent(expression);
     $.ajax({
-                type: "GET",
-                url: eval_url+ruleParam,
-                success: function (data) {
-                    callBack(data.data, divId);
-                },
-                error: function (data) {
-                    console.log("Request to eval server fails!")
-                }
-            });
+      type: "GET",
+      url: eval_url + ruleParam,
+      success: function (data) {
+        callBack(data.data, divId);
+      },
+      error: function (data) {
+        console.log("Request to eval server fails!")
+      }
+    });
   };
 
   /**
@@ -91,14 +91,14 @@ var ruleEngine = function() {
    * @param {Object} map for lookup of variables
    * 
    */
-  var substituteExpression = function(expression, currentValues){
-    return expression.split(" ").map(function(token){
-      if (token[0]==='$'){
-        currentValue = currentValues[token.replace("$","")].value|| "None";
+  var substituteExpression = function (expression, currentValues) {
+    return expression.split(" ").map(function (token) {
+      if (token[0] === '$') {
+        currentValue = currentValues[token.replace("$", "")].value || "None";
         token = currentValue;
-        if (Array.isArray(currentValue)){
-          token="["+currentValue.join(",")+"]";
-        } 
+        if (Array.isArray(currentValue)) {
+          token = "[" + currentValue.join(",") + "]";
+        }
       }
       return token;
     }).join("  ");
@@ -117,24 +117,24 @@ var ruleEngine = function() {
    * @param {function} callBack - a function to call back after evaluation
    * 
    */
-  var changeField = function(name, currentValues, callBack) {
-    if (conditionals[name]){
+  var changeField = function (name, currentValues, callBack) {
+    if (conditionals[name]) {
       var rules = conditionals[name];
-      Object.keys(rules).forEach(function(k){
+      Object.keys(rules).forEach(function (k) {
         checkFields(substituteExpression(rules[k].expr, currentValues), k, callBack);
       });
     }
     return true;
   }
 
-  var init = function() {
-    conditionals=scanConditionals();
+  var init = function () {
+    conditionals = scanConditionals();
   };
   return {
     init: init,
     changeField: changeField
   };
-}();
+} ();
 
 /**
  * @module
@@ -156,7 +156,7 @@ var ruleEngine = function() {
  * 
  * date - evaluates integer keys 
  */
-var inputFilter = function() {
+var inputFilter = function () {
   var zero = "0".charCodeAt(0);
   var nine = "9".charCodeAt(0);
   var point = ".".charCodeAt(0);
@@ -171,7 +171,7 @@ var inputFilter = function() {
    * results in true only for 0 - 9
    * 
    */
-  var integer = function(key) {
+  var integer = function (key) {
     return !(key.charCode !== 0 && (key.charCode < zero || key.charCode > nine));
   };
 
@@ -184,7 +184,7 @@ var inputFilter = function() {
    * results in true only for 0 - 9 and .
    *
    */
-  var float = function(key) {
+  var float = function (key) {
     return !(key.charCode !== 0 && key.charCode !== point && (key.charCode < zero || key.charCode > nine));
   };
 
@@ -196,7 +196,7 @@ var inputFilter = function() {
    * results in true only for 0 - 9, . and /
    *
    */
-  var date = function(key) {
+  var date = function (key) {
     return !(key.charCode !== 0 && key.charCode !== point && key.charCode !== slash && (key.charCode < zero || key.charCode > nine));
   };
 
@@ -205,7 +205,7 @@ var inputFilter = function() {
     float: float,
     date: date
   };
-}();
+} ();
 
 /**
  * 
@@ -223,9 +223,9 @@ var inputFilter = function() {
  * init - inits the form 
  * 
  */
-var form = function(inputFilter, ruleEngine) {
-  var formGroups = {};
-  
+var form = function (inputFilter, ruleEngine) {
+  var formFields = {};
+
   /**
    * @function
    * 
@@ -234,7 +234,7 @@ var form = function(inputFilter, ruleEngine) {
    * extracts the value from DOM-elements
    * 
    */
-  var getFieldValue = function(f) {
+  var getFieldValue = function (f) {
     var field = $(f);
     var ftype = field.attr("type");
     var fname = field.attr("name");
@@ -242,15 +242,12 @@ var form = function(inputFilter, ruleEngine) {
     switch (ftype) {
       case "checkbox":
         result = [];
-        $("input[name='" + fname + "']:checked:visible").each(function() {
+        $("input[name='" + fname + "']:checked:visible").each(function () {
           result.push($(this).val());
         });
         break;
       case "radio":
         result = $("input[name='" + fname + "']:checked:visible").val();
-        break;
-      case "select":
-        result = $("select[name='" + fname + "']").val();
         break;
       default:
         result = field.val();
@@ -262,49 +259,75 @@ var form = function(inputFilter, ruleEngine) {
   /**
    * @function
    * 
+   * @param {string} fieldname - the name of the field to clear
+   *
+   * unsets the value of a field with a given name
+   * 
+   */
+  var clearFieldValue = function (fieldName) {
+    var field = $("[name='" + fieldName + "']")[0];
+    if (field.tagName === 'INPUT') {
+      var ftype = field.getAttribute("type");
+      switch (ftype) {
+        case "checkbox":
+          $("[name='"+fieldName+"']:visible:checked").each(function(i,x){$(x).prop("checked", false);})
+          break;
+        case "radio":
+          $("input[name='" + fieldName + "'][value='']").prop("checked", true);
+          break;
+        default:
+          $("input[name='" + fieldName + "']").val("");
+          break;
+      }
+    } else if (field.tagName === 'SELECT') {
+      $("select[name='" + fieldName + "']").val("");
+    }
+  }
+
+  /**
+   * @function
+   * 
+   * @param {string} fieldName - the name of the field to re-set the value
+   * 
+   * @param {Object} formFields - the current state
+   *
+   * restores the value of field to the value before clearFieldValue was called
+   * 
+   * this is the inverse operation to clearFieldValue
+   * 
+   */
+  var resetFieldValue = function (fieldName, formFields) {
+    var field = $("[name='" + fieldName + "']")[0];
+    if (field.tagName === 'INPUT') {
+      var ftype = field.getAttribute("type");
+      switch (ftype) {
+        case "checkbox":
+          formFields[fieldName].value.forEach(function(x){ $("[name='qeri.job_position'][value='"+x+"']").prop("checked", true); });
+          break;
+        case "radio":
+          $("input[name='" + fieldName + "'][value='" + formFields[fieldName].value + "']").prop("checked", true);
+          break;
+        default:
+          $(field).val(formFields[fieldName].value);
+          break;
+      }
+    } else if (field.tagName === 'SELECT') {
+      $("select[name='" + fieldName + "']").val(formFields[fieldName].value);
+    }
+  }
+
+  /**
+   * @function
+   * 
    * sets the eventlisteners for the input fields
    * 
    */
-  var initInputFilters = function() {
+  var initInputFilters = function () {
     $('div.formbar-form input.integer').keypress(inputFilter.integer);
     $('div.formbar-form input.float').keypress(inputFilter.float);
     $('div.formbar-form input.date').keypress(inputFilter.date);
   };
 
-  var cleanValues = function() {
-
-  };
-
-  /**
-   * @function
-   * 
-   * @param {string} fieldName - the name of the field / DOM-element
-   * 
-   * @param {string} value - the value to be set
-   *
-   * sets the value for DOM-elements
-   * 
-   */
-  var setFieldValue = function(fieldName, value) {
-    var field = $("input[name='" + fieldName + "']");
-    var ftype = field.attr("type");
-    switch (ftype) {
-      case "checkbox":
-        value.map(function(v) {
-          $("input[name='" + fieldName + "'][value='" + v + "']").prop("checked", "checked");
-        });
-        break;
-      case "radio":
-        $("input[name='" + fieldName + "'][value='" + value + "']").prop("checked", "checked");
-        break;
-      case "select":
-        $("select[name='" + fieldName + "'][value='" + value + "']").prop("selected", "selected");
-        break;
-      default:
-        field.val(value);
-        break;
-    }
-  };
 
   /**
    * @function
@@ -314,16 +337,16 @@ var form = function(inputFilter, ruleEngine) {
    * these elements. Acts as a simple model.
    *
    */
-  var scanComponents = function() {
+  var scanComponents = function () {
     var groups = $(".form-group");
-    groups.map(function(i, x) {
+    groups.map(function (i, x) {
       var name = $(x).attr("formgroup");
       if (name) {
         var state = ($(x).hasClass("active")) ? "active" : "inactive";
         var value = getFieldValue($(x).find("input")[0]);
         var desired = $(x).attr("desired");
         var required = x.getAttribute("required");
-        formGroups[name] = {
+        formFields[name] = {
           'state': state,
           'value': value,
           'desired': desired,
@@ -344,50 +367,54 @@ var form = function(inputFilter, ruleEngine) {
    * @param {string} divId - the Id of the div 
    *
    * @param {string} elementName - name of the element for which the rule was evaluated
-   * a lookup in formGroups gets you the state of the field
+   * a lookup in formFields gets you the state of the field
    * 
    */
-  var toggleConditional = function(result, divId){
-    var element = $("#"+divId);
-    if($(element).hasClass("readonly")) handleReadOnly(result, element);
+  var toggleConditional = function (result, divId) {
+    var element = $("#" + divId);
+    if ($(element).hasClass("readonly")) handleReadOnly(result, element);
   }
 
-  var handleReadOnly = function(result, div){
-    fieldsToUpdate = map(div.find(".form-group"),(function(x){
+  var handleReadOnly = function (result, div) {
+    fieldsToUpdate = map(div.find(".form-group"), (function (x) {
       return x.getAttribute("formgroup");
     }));
-    fieldsToUpdate.forEach(function(fieldName){
-      var field = formGroups[fieldName];
+
+    fieldsToUpdate.forEach(function (fieldName) {
+      var field = formFields[fieldName];
       var oldState = field.state;
       var newState = oldState;
-      if(result==true && oldState=="inactive"){
+      if (result == true && oldState == "inactive") {
+        resetFieldValue(fieldName, formFields);
         newState = "active";
-        if (field.value==="") activateDesired(fieldName);    
+        if (field.value === "") activateDesired(fieldName);
       }
-      if(result==false && oldState=="active"){
+      if (result == false && oldState == "active") {
+        clearFieldValue(fieldName);
         newState = "inactive";
-        deactivateDesired(fieldName);    
+        deactivateDesired(fieldName);
       }
-      if (!(oldState == newState)){
-        field.state=newState;
-        $(".form-group[formgroup='"+fieldName+"']").removeClass(oldState).addClass(newState);
+      if (!(oldState == newState)) {
+        field.state = newState;
+        $(".form-group[formgroup='" + fieldName + "']").removeClass(oldState).addClass(newState);
+        $(".form-group[formgroup='" + fieldName + "']").find(':input:disabled').prop('disabled', true);
         triggerChange(fieldName);
       }
     });
   }
 
-  var deactivateDesired = function(fieldName){
-    var field = formGroups[fieldName];
-    if($(".form-group[formgroup='"+fieldName+"']").hasClass("has-warning")) {
-      $(".form-group[formgroup='"+fieldName+"']").removeClass("has-warning");
-      $(".form-group[formgroup='"+fieldName+"']").find(".help-block[desired='True']").addClass("hidden");
+  var deactivateDesired = function (fieldName) {
+    var field = formFields[fieldName];
+    if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
+      $(".form-group[formgroup='" + fieldName + "']").removeClass("has-warning");
+      $(".form-group[formgroup='" + fieldName + "']").find(".help-block[desired='True']").addClass("hidden");
     }
   }
-  var activateDesired = function(fieldName){
-    var field = formGroups[fieldName];
-    if(field.desired==="True" && !$(".form-group[formgroup='"+fieldName+"']").hasClass("has-warning")) {
-      $(".form-group[formgroup='"+fieldName+"']").addClass("has-warning");
-      $(".form-group[formgroup='"+fieldName+"']").find(".help-block[desired='True']").removeClass("hidden");
+  var activateDesired = function (fieldName) {
+    var field = formFields[fieldName];
+    if (field.desired === "True" && !$(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
+      $(".form-group[formgroup='" + fieldName + "']").addClass("has-warning");
+      $(".form-group[formgroup='" + fieldName + "']").find(".help-block[desired='True']").removeClass("hidden");
     }
   }
 
@@ -399,8 +426,8 @@ var form = function(inputFilter, ruleEngine) {
    * @param {string} field name - the name of the field, which is changed
    *
    */
-  var triggerChange = function(fieldName){
-    ruleEngine.changeField(fieldName, formGroups, function(data, divId){
+  var triggerChange = function (fieldName) {
+    ruleEngine.changeField(fieldName, formFields, function (data, divId) {
       toggleConditional(data, divId);
     });
   };
@@ -412,19 +439,19 @@ var form = function(inputFilter, ruleEngine) {
    * @param {Object} the event object fired by the DOM
    * 
    */
-  var inputChanged = function(e) {
+  var inputChanged = function (e) {
     var target = e.target;
     var value = getFieldValue(target);
-    formGroups[target.name].value = value;
+    formFields[target.name].value = value;
     setDesiredStateForCurrentField(target.name);
     triggerChange(target.name);
   };
 
 
-  var setDesiredStateForCurrentField = function(fieldName){
-    var element = formGroups[fieldName];
-    if (element.value==="" && element.desired==="True") activateDesired(fieldName);
-    if (element.value!=="" && element.desired==="True") deactivateDesired(fieldName);
+  var setDesiredStateForCurrentField = function (fieldName) {
+    var element = formFields[fieldName];
+    if (element.value === "" && element.desired === "True") activateDesired(fieldName);
+    if (element.value !== "" && element.desired === "True") deactivateDesired(fieldName);
   }
 
   /**
@@ -433,8 +460,8 @@ var form = function(inputFilter, ruleEngine) {
    * sets the global listener for changes in INPUT / SELECT 
    *
    */
-  var setListener = function() {
-    $("body").on("change", function(e) {
+  var setListener = function () {
+    $("body").on("change", function (e) {
       switch (e.target.tagName) {
         case 'INPUT':
         case 'SELECT':
@@ -446,7 +473,7 @@ var form = function(inputFilter, ruleEngine) {
     });
   };
 
-  var init = function() {
+  var init = function () {
     initInputFilters();
     scanComponents();
     setListener();
@@ -455,7 +482,7 @@ var form = function(inputFilter, ruleEngine) {
   return {
     init: init
   };
-}(inputFilter, ruleEngine);
+} (inputFilter, ruleEngine);
 
 
 /**
@@ -474,7 +501,7 @@ var form = function(inputFilter, ruleEngine) {
  * init - initializes formbar
  * 
  */
-var formbar = function(form) {
+var formbar = function (form) {
   var getBrowserLanguage = function getBrowserLanguage() {
     var lang = "en";
     if (navigator.browserLanguage) {
@@ -494,7 +521,7 @@ var formbar = function(form) {
    * @param {Object} - the event-Object
    *
    */
-  var selectListGroupItem = function(e) {
+  var selectListGroupItem = function (e) {
     var previous = $(this).closest(".list-group").children(".selected").removeClass('selected');
     $(e.target).addClass('selected');
   };
@@ -506,7 +533,7 @@ var formbar = function(form) {
    * @param {Object} - the DOM-Element
    *
    */
-  var hideSubmitButtonOnInputlessPage = function(element) {
+  var hideSubmitButtonOnInputlessPage = function (element) {
     var button = $('.formbar-form :submit');
     if (element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
       button.show();
@@ -521,7 +548,7 @@ var formbar = function(form) {
    * handles hiding of submitbutton
    *
    */
-  var initSubmit = function() {
+  var initSubmit = function () {
     var selected_formpage = $('.formbar-page :visible');
     if (selected_formpage.length > 0) {
       hideSubmitButtonOnInputlessPage(selected_formpage);
@@ -534,7 +561,7 @@ var formbar = function(form) {
    * handles initialization of date-Picker
    *
    */
-  var initDatePicker = function() {
+  var initDatePicker = function () {
     var browserLanguage = getBrowserLanguage();
     $('.formbar-datepicker').datepicker({
       language: browserLanguage,
@@ -550,7 +577,7 @@ var formbar = function(form) {
    * sets selected page
    *
    */
-  var setSelectedPage = function(e) {
+  var setSelectedPage = function (e) {
     var target = e.target;
     var page = $(target).attr('href').split('#p')[1];
     var item = $(target).attr('formbar-item');
@@ -571,7 +598,7 @@ var formbar = function(form) {
    * handles navigation for the sidetabs
    *
    */
-  var navigate = function(e) {
+  var navigate = function (e) {
     var target = e.target;
     var page = $(target).attr('href').split('#p')[1];
     var selectedFormpage = $('#formbar-page-' + page);
@@ -581,7 +608,7 @@ var formbar = function(form) {
     hideSubmitButtonOnInputlessPage(selectedFormpage);
   };
 
-  var init = function() {
+  var init = function () {
     $('.formbar-tooltip').tooltip();
     $('.list-group-item').on('click', selectListGroupItem);
     $('div.formbar-form form div.tabbable ul.nav li a').click(setSelectedPage);
@@ -595,7 +622,7 @@ var formbar = function(form) {
     init: init
   };
 
-}(form);
+} (form);
 
 
 /**
@@ -604,6 +631,6 @@ var formbar = function(form) {
  * when page is ready, start formbar
  *
  */
-$(function() {
+$(function () {
   formbar.init();
 });

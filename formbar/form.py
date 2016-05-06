@@ -651,6 +651,51 @@ class Field(object):
         """Returns a list of configured rules for the field."""
         return self._config.get_rules()
 
+    def get_warning_rules(self):
+        return [r for r in self.get_rules() if r.triggers == "warning"]
+
+    def get_error_rules(self):
+        return [r for r in self.get_rules() if r.triggers == "error"]
+
+    def has_warning_rules(self):
+        """Returns a True if there is at least on rule that can trigger
+        a warning."""
+        return len(self.get_warning_rules()) > 0
+
+    def has_error_rules(self):
+        """Returns a True if there is at least on rule that can trigger
+        a error."""
+        return len(self.get_error_rules()) > 0
+        
+    @property
+    def has_errors(self):
+        return len(self.get_errors()) > 0
+
+    @property
+    def has_warnings(self):
+        return len(self.get_warnings()) > 0
+
+    def get_errors(self):
+        return self._errors
+
+    def get_warnings(self):
+        return self._warnings
+
+    def is_missing(self):
+        """Return True if this field is a desired or required field and
+        the value of the fields is actually missing in the current
+        context after all rules have been evaluated. Note the rules the
+        are not evaluated because the field is in an inactive
+        conditional will have the result==None which means the rule is
+        not evaluated."""
+        if self.get_value():
+            return False
+        for rule in self.get_rules():
+            if (rule.desired or rule.required) and rule.result == False:
+                return True
+        return False
+
+
     def set_value(self, value):
         self.value = value
 
@@ -800,6 +845,12 @@ class Field(object):
             else:
                 filtered_options.append((o_label, o_value, True))
         return filtered_options
+
+    def add_error(self, error):
+        self._errors.append(error)
+
+    def add_warning(self, warning):
+        self._warnings.append(warning)
 
     def get_options(self):
         """Will return a list of tuples containing the options of the

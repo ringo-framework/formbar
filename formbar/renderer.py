@@ -223,7 +223,8 @@ class FieldRenderer(Renderer):
     def _render_errors(self):
         template = template_lookup.get_template("errors.mako")
         values = {'field': self._field,
-                  '_': self.translate}
+                  '_': self.translate,
+                  'active': self._active}
         return literal(template.render(**values))
 
     def _render_help(self):
