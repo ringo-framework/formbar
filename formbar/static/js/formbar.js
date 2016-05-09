@@ -16,11 +16,10 @@ var map = Function.prototype.call.bind([].map)
  * @function
  * 
  * init - initialization of the engine
- * changeField - eventhandler 
+ * onFieldChange - eventhandler 
  * communicates field-changes to the server and evaluates rules
  */
 var ruleEngine = function () {
-  var targetFields;
   var conditionals;
 
   /** 
@@ -91,7 +90,7 @@ var ruleEngine = function () {
    * @param {Object} map for lookup of variables
    * 
    */
-  var substituteExpression = function (expression, currentValues) {
+  var parseExpression = function (expression, currentValues) {
     return expression.split(" ").map(function (token) {
       if (token[0] === '$') {
         currentValue = currentValues[token.replace("$", "")].value || "None";
@@ -107,7 +106,7 @@ var ruleEngine = function () {
   /**
    * @function 
    * 
-   * changeField is exported.
+   * onFieldChange is exported.
    * It is used as a callable for field-change-events
    * 
    * @param {string} name - the name of the field / variable which is changed
@@ -117,11 +116,11 @@ var ruleEngine = function () {
    * @param {function} callBack - a function to call back after evaluation
    * 
    */
-  var changeField = function (name, currentValues, callBack) {
+  var onFieldChange = function (name, currentValues, callBack) {
     if (conditionals[name]) {
-      var rules = conditionals[name];
-      Object.keys(rules).forEach(function (k) {
-        checkFields(substituteExpression(rules[k].expr, currentValues), k, callBack);
+      var rulesForField = conditionals[name];
+      Object.keys(rulesForField).forEach(function (k) {
+        checkFields(parseExpression(rulesForField[k].expr, currentValues), k, callBack);
       });
     }
     return true;
@@ -132,7 +131,7 @@ var ruleEngine = function () {
   };
   return {
     init: init,
-    changeField: changeField
+    onFieldChange: onFieldChange
   };
 } ();
 
@@ -214,7 +213,7 @@ var inputFilter = function () {
  * @requires inputFilter, ruleEngine
  * 
  * The form module is responsible for handling form events for setting
- * and ressetting of values, evaluating the rules and promote changes to
+ * and ressetting of values, evaluating the rulesForField and promote changes to
  * the appropriate fields
  * 
  * @public
@@ -302,7 +301,7 @@ var form = function (inputFilter, ruleEngine) {
       var ftype = field.getAttribute("type");
       switch (ftype) {
         case "checkbox":
-          formFields[fieldName].value.forEach(function (x) { $("[name='qeri.job_position'][value='" + x + "']").prop("checked", true); });
+          formFields[fieldName].value.forEach(function (x) { $("[name='"+fieldName+"'][value='" + x + "']").prop("checked", true); });
           break;
         case "radio":
           $("input[name='" + fieldName + "'][value='" + formFields[fieldName].value + "']").prop("checked", true);
@@ -359,7 +358,7 @@ var form = function (inputFilter, ruleEngine) {
   /**
    * @function
    * 
-   * is called after evaluation of rules.
+   * is called after evaluation of rulesForField.
    * handles fadeIn/Out and actualization of fields
    *
    * @param {Object} result - of evaluation from server
@@ -427,7 +426,7 @@ var form = function (inputFilter, ruleEngine) {
    *
    */
   var triggerChange = function (fieldName) {
-    ruleEngine.changeField(fieldName, formFields, function (data, divId) {
+    ruleEngine.onFieldChange(fieldName, formFields, function (data, divId) {
       toggleConditional(data, divId);
     });
   };
