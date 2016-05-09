@@ -346,6 +346,7 @@ var form = function (inputFilter, ruleEngine) {
         var desired = $(x).attr("desired");
         var required = x.getAttribute("required");
         formFields[name] = {
+          'name': name,
           'state': state,
           'value': value,
           'desired': desired,
@@ -385,11 +386,13 @@ var form = function (inputFilter, ruleEngine) {
       var newState = oldState;
       if (result == true && oldState == "inactive") {
         resetFieldValue(fieldName, formFields);
+        $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text') x.removeAttribute("readonly"); })
         newState = "active";
         if (field.value === "") activateDesired(fieldName);
       }
       if (result == false && oldState == "active") {
         clearFieldValue(fieldName);
+        $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text') x.setAttribute("readonly","readonly"); })
         newState = "inactive";
         deactivateDesired(fieldName);
       }
@@ -404,7 +407,6 @@ var form = function (inputFilter, ruleEngine) {
 
   var deactivateDesired = function (fieldName) {
     var field = formFields[fieldName];
-    $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text') x.setAttribute("readonly", "readonly"); })
     if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
       $(".form-group[formgroup='" + fieldName + "']").removeClass("has-warning");
       $(".form-group[formgroup='" + fieldName + "']").find(".help-block[desired='True']").addClass("hidden");
@@ -412,7 +414,6 @@ var form = function (inputFilter, ruleEngine) {
   }
   var activateDesired = function (fieldName) {
     var field = formFields[fieldName];
-    $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text') x.removeAttribute("readonly"); })
     if (field.desired === "True" && !$(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
       $(".form-group[formgroup='" + fieldName + "']").addClass("has-warning");
       $(".form-group[formgroup='" + fieldName + "']").find(".help-block[desired='True']").removeClass("hidden");
@@ -447,15 +448,12 @@ var form = function (inputFilter, ruleEngine) {
     setDesiredStateForCurrentField(target.name);
     triggerChange(target.name);
   };
-
-
+  
   var setDesiredStateForCurrentField = function (fieldName) {
     var element = formFields[fieldName];
     if (element.value === "" && element.desired === "True") activateDesired(fieldName);
     if (element.value !== "" && element.desired === "True") deactivateDesired(fieldName);
   }
-  
-
   /**
    * @function
    * 
