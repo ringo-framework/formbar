@@ -404,6 +404,7 @@ var form = function (inputFilter, ruleEngine) {
 
   var deactivateDesired = function (fieldName) {
     var field = formFields[fieldName];
+    $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text') x.setAttribute("readonly", "readonly"); })
     if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
       $(".form-group[formgroup='" + fieldName + "']").removeClass("has-warning");
       $(".form-group[formgroup='" + fieldName + "']").find(".help-block[desired='True']").addClass("hidden");
@@ -411,6 +412,7 @@ var form = function (inputFilter, ruleEngine) {
   }
   var activateDesired = function (fieldName) {
     var field = formFields[fieldName];
+    $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text') x.removeAttribute("readonly"); })
     if (field.desired === "True" && !$(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
       $(".form-group[formgroup='" + fieldName + "']").addClass("has-warning");
       $(".form-group[formgroup='" + fieldName + "']").find(".help-block[desired='True']").removeClass("hidden");
