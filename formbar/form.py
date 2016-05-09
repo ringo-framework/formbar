@@ -666,7 +666,7 @@ class Field(object):
         """Returns a True if there is at least on rule that can trigger
         a error."""
         return len(self.get_error_rules()) > 0
-        
+
     @property
     def has_errors(self):
         return len(self.get_errors()) > 0
