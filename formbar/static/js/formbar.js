@@ -343,7 +343,7 @@ function evaluate(element) {
             // First try to get the unexpaned value, if there is no
             // value get the textvalue of the field. (Which is usually
             // the expanded value).
-            if (!value && field.is("div")) {
+            if (value == "''" && field.is("div")) {
                 value = field.attr("value") || field.text()
                 value = convertValue(value, field);
             }
