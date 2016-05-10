@@ -342,7 +342,7 @@ var form = function (inputFilter, ruleEngine) {
       var name = $(x).attr("formgroup");
       if (name) {
         var state = ($(x).hasClass("active")) ? "active" : "inactive";
-        var value = getFieldValue($(x).find("input")[0]);
+        var value = getFieldValue(scanForElements(x));
         var desired = $(x).attr("desired");
         var required = x.getAttribute("required");
         formFields[name] = {
@@ -355,6 +355,10 @@ var form = function (inputFilter, ruleEngine) {
       }
     });
   };
+
+  scanForElements = function(x){
+    return $(x).find("input")[0]||$(x).find("textarea")[0]||$(x).find("select")[0];
+  }
 
   /**
    * @function
@@ -388,7 +392,7 @@ var form = function (inputFilter, ruleEngine) {
         resetFieldValue(fieldName, formFields);
         $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text') x.removeAttribute("readonly"); })
         newState = "active";
-        if (field.value === "") activateDesired(fieldName);
+        if (!field.value) activateDesired(fieldName);
       }
       if (result == false && oldState == "active") {
         clearFieldValue(fieldName);
@@ -467,10 +471,10 @@ var form = function (inputFilter, ruleEngine) {
   
   var setStateForCurrentField = function (fieldName) {
     var element = formFields[fieldName];
-    if (element.value === "" && element.desired === "True") activateDesired(fieldName);
-    if (element.value === "" && element.required === "True") activateRequired(fieldName);
-    if (element.value !== "" && element.desired === "True") deactivateDesired(fieldName);
-    if (element.value !== "" && element.required === "True") deactivateRequired(fieldName);
+    if (!element.value.length && element.desired === "True") activateDesired(fieldName);
+    if (!element.value.length && element.required === "True") activateRequired(fieldName);
+    if (!!element.value.length && element.desired === "True") deactivateDesired(fieldName);
+    if (!!element.value.length && element.required === "True") deactivateRequired(fieldName);
   }
   /**
    * @function
@@ -483,6 +487,7 @@ var form = function (inputFilter, ruleEngine) {
       switch (e.target.tagName) {
         case 'INPUT':
         case 'SELECT':
+        case 'TEXTAREA':
           if (formFields[e.target.name].state==='inactive'){
             clearFieldValue(e.target.name);
           } else {

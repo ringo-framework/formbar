@@ -292,11 +292,7 @@ class FieldRenderer(Renderer):
         # help. Each in its own template.
         html = []
         has_errors = len(self._field.get_errors())
-        if len(self._field.get_warnings()) > 0 or (
-                self._field.desired and self._field.get_value() == ''):
-            has_warnings = 1
-        else: 
-            has_warnings = 0
+        has_warnings = len(self._field.get_warnings())
         active = 'active' if self._active else 'inactive'
         # Handle indent. Set indent_with css only if the elements are
         # actually have an indent and the lable position allows an
