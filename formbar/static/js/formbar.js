@@ -280,6 +280,8 @@ var form = function (inputFilter, ruleEngine) {
       }
     } else if (field.tagName === 'SELECT') {
       $("select[name='" + fieldName + "']").val("");
+    } else if (field.tagName === 'TEXTAREA') {
+      $("textarea[name='" + fieldName + "']").val("");
     }
   }
 
@@ -312,6 +314,8 @@ var form = function (inputFilter, ruleEngine) {
       }
     } else if (field.tagName === 'SELECT') {
       $("select[name='" + fieldName + "']").val(formFields[fieldName].value);
+    } else if (field.tagName === 'TEXTAREA') {
+      $("textarea[name='" + fieldName + "']").val(formFields[fieldName].value);
     }
   }
 
@@ -390,13 +394,13 @@ var form = function (inputFilter, ruleEngine) {
       var newState = oldState;
       if (result == true && oldState == "inactive") {
         resetFieldValue(fieldName, formFields);
-        $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text') x.removeAttribute("readonly"); })
+        $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text' || x.tagName==='TEXTAREA') x.removeAttribute("readonly"); })
         newState = "active";
         if (!field.value) activateDesired(fieldName);
       }
       if (result == false && oldState == "active") {
         clearFieldValue(fieldName);
-        $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text') x.setAttribute("readonly","readonly"); })
+        $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text' || x.tagName==='TEXTAREA') x.setAttribute("readonly","readonly"); })
         newState = "inactive";
         deactivateDesired(fieldName);
       }
