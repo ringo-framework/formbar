@@ -418,8 +418,9 @@ var form = function (inputFilter, ruleEngine) {
     var field = formFields[fieldName];
     if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
       $(".form-group[formgroup='" + fieldName + "']").removeClass("has-error");
-      $(".form-group[formgroup='" + fieldName + "']").find(".help-block[required='True']").addClass("hidden");
     }
+    $(".form-group[formgroup='" + fieldName + "']").find(".help-block[required='True']").addClass("hidden");
+    
   }
   var activateRequired = function (fieldName) {
     var field = formFields[fieldName];
@@ -433,8 +434,8 @@ var form = function (inputFilter, ruleEngine) {
     var field = formFields[fieldName];
     if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
       $(".form-group[formgroup='" + fieldName + "']").removeClass("has-warning");
-      $(".form-group[formgroup='" + fieldName + "']").find(".help-block[desired='True']").addClass("hidden");
     }
+    $(".form-group[formgroup='" + fieldName + "']").find(".help-block[desired='True']").addClass("hidden");    
   }
   var activateDesired = function (fieldName) {
     var field = formFields[fieldName];
