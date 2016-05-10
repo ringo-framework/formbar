@@ -1,5 +1,5 @@
 % for rule in field.get_error_rules():
-  <div class="help-block ${'' if field.has_errors else 'hidden'}">
+  <div class="help-block ${'' if field.has_errors else 'hidden'}" required="${field.is_required()}">
     <span class="glyphicon glyphicon-exclamation-sign"></span>
     ${_(rule.msg)}
   </div>

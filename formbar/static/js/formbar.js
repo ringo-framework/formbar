@@ -405,6 +405,22 @@ var form = function (inputFilter, ruleEngine) {
     });
   }
 
+
+  var deactivateRequired = function (fieldName) {
+    var field = formFields[fieldName];
+    if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
+      $(".form-group[formgroup='" + fieldName + "']").removeClass("has-error");
+      $(".form-group[formgroup='" + fieldName + "']").find(".help-block[required='True']").addClass("hidden");
+    }
+  }
+  var activateRequired = function (fieldName) {
+    var field = formFields[fieldName];
+    if (field.required === "True" && !$(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
+      $(".form-group[formgroup='" + fieldName + "']").addClass("has-error");
+      $(".form-group[formgroup='" + fieldName + "']").find(".help-block[required='True']").removeClass("hidden");
+    }
+  }
+
   var deactivateDesired = function (fieldName) {
     var field = formFields[fieldName];
     if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
@@ -445,14 +461,16 @@ var form = function (inputFilter, ruleEngine) {
     var target = e.target;
     var value = getFieldValue(target);
     formFields[target.name].value = value;
-    setDesiredStateForCurrentField(target.name);
+    setStateForCurrentField(target.name);
     triggerChange(target.name);
   };
   
-  var setDesiredStateForCurrentField = function (fieldName) {
+  var setStateForCurrentField = function (fieldName) {
     var element = formFields[fieldName];
     if (element.value === "" && element.desired === "True") activateDesired(fieldName);
+    if (element.value === "" && element.required === "True") activateRequired(fieldName);
     if (element.value !== "" && element.desired === "True") deactivateDesired(fieldName);
+    if (element.value !== "" && element.required === "True") deactivateRequired(fieldName);
   }
   /**
    * @function
