@@ -93,14 +93,47 @@ var ruleEngine = function () {
   var parseExpression = function (expression, currentValues) {
     return expression.split(" ").map(function (token) {
       if (token[0] === '$') {
-        currentValue = currentValues[token.replace("$", "")].value || "None";
-        token = currentValue;
+        var currentValue = convertValue(currentValues[token.replace("$", "")]);
+        var token = currentValue;
         if (Array.isArray(currentValue)) {
           token = "[" + currentValue.join(",") + "]";
         }
       }
       return token;
     }).join("  ");
+  }
+
+
+ /**
+   * @function
+   * 
+   * delivers a parsable for brabbel according to datatype
+   * 
+   * @param {Object} currentValue
+   * 
+   */
+  var convertValue = function(currentValue){
+    var v = currentValue.value
+    switch(currentValue.datatype){
+    case 'date':
+    case 'string':
+      return (!stringContainsArray(v))?"'"+v+"'":v;
+    default:
+      return currentValue.value || "None";
+    }
+    
+  }
+
+  /**
+   * @function
+   * 
+   * looks for '[' as a sign for an array value
+   * 
+   * @param {string} currentValue
+   * 
+   */
+  var stringContainsArray = function(currentValue){
+    return currentValue.indexOf('[') !== -1;
   }
 
   /**
@@ -341,26 +374,37 @@ var form = function (inputFilter, ruleEngine) {
    *
    */
   var scanComponents = function () {
-    var groups = $(".form-group");
-    groups.map(function (i, x) {
+    return reduce($(".form-group"), function (o, x) {
       var name = $(x).attr("formgroup");
       if (name) {
         var state = ($(x).hasClass("active")) ? "active" : "inactive";
-        var value = getFieldValue(scanForElements(x));
-        var desired = $(x).attr("desired");
+        var element = scanForContentElements(x);
+        var value = getFieldValue(element);
+        var desired = x.getAttribute("desired");
         var required = x.getAttribute("required");
-        formFields[name] = {
+        var datatype = (element)?element.getAttribute("datatype"):undefined;
+        o[name] = {
           'name': name,
           'state': state,
           'value': value,
           'desired': desired,
-          'required': required
+          'required': required,
+          'datatype': datatype
         };
       }
-    });
+    return o;
+    }, {});
   };
 
-  scanForElements = function(x){
+
+  /**
+   * @function
+   * 
+   * looks for any content element
+   *
+   * @param {Object} x - DOM-Node
+   */
+  scanForContentElements = function(x){
     return $(x).find("input")[0]||$(x).find("textarea")[0]||$(x).find("select")[0];
   }
 
@@ -507,7 +551,7 @@ var form = function (inputFilter, ruleEngine) {
 
   var init = function () {
     initInputFilters();
-    scanComponents();
+    formFields = scanComponents();
     setListener();
     ruleEngine.init();
   };
