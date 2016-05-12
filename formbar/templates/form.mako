@@ -1,7 +1,7 @@
 ## Render pages
 <div class="row">
 % if render_outline and len(form._config.get_pages()) > 0:
-  <div class="col-sm-3">
+  <div class="col-sm-3 hidden-print">
     <div>
       <div class="panel panel-default formbar-outline">
         <!-- Default panel contents -->
