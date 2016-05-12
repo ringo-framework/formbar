@@ -168,14 +168,15 @@ class FormRenderer(Renderer):
         # form.
         if len(self._form._config._buttons) == 0:
             html.append(HTML.tag("button", type="submit", 
-                                 class_="btn btn-default", c=_('Submit')))
+                                 class_="btn btn-default hidden-print",
+                                 c=_('Submit')))
         else:
             for b in self._form._config._buttons:
                 html.append(HTML.tag("button", _closed=False,
                                      type=b.attrib.get("type") or "submit",
                                      name="_%s" % b.attrib.get("type") or "submit",
                                      value=b.attrib.get("value") or "",
-                                     class_=b.attrib.get("class") or "btn btn-default"))
+                                     class_=b.attrib.get("class") or "btn btn-default hidden-print"))
                 if b.attrib.get("icon"):
                     html.append(HTML.tag("i", class_=b.attrib.get("icon"), c=_(b.text)))
                 html.append(_(b.text))
