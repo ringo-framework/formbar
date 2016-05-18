@@ -5,7 +5,7 @@
   </div>
 % endfor
 % for rule in field.get_warning_rules():
-  <div class="help-block ${'hidden' if not(field.get_value()== "" and active and not field.is_required()) else ''}" desired="${field.is_desired()}">
+  <div class="help-block ${'hidden' if not(field.has_warnings and field.get_value()== "" and active and not field.is_required()) else ''}" desired="${field.is_desired()}">
     <span class="text-warning">
     <span class="glyphicon glyphicon-warning-sign"></span>
     ${_(rule.msg)}
