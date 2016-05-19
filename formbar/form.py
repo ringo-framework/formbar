@@ -699,8 +699,8 @@ class Field(object):
             # in the option. A bare "%" will give the value of the
             # option.
             if x.startswith("%"):
-                key = x.strip("%")
-                value = "$%s" % key or "value"
+                key = x.strip("%") 
+                value = "$%s" % (key or "value")
             # @ marks the item of the current fields form item.
             elif x.startswith("@"):
                 key = x.strip("@")
