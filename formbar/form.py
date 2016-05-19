@@ -190,10 +190,10 @@ class Form(object):
         self.loaded_data = self.serialize(self._get_data_from_item())
         """This is the initial data loaded from the given item. Used to
         render the readonly forms"""
-        self.merged_data = {}
+        self.merged_data = self.loaded_data
         """This is merged date from the initial data loaded from the
-        given item. And userprovied data. The data is available after
-        rendering the form"""
+        given item. And userprovied data. The user defined values are
+        merged on render time"""
         self.warnings = []
         """Form wide warnings. This list contains warnings which affect
         the entire form and not specific fields. These warnings are show
@@ -399,14 +399,9 @@ class Form(object):
         """
         self.current_page = page
 
-        if self.submitted_data:
-            item_values = self.submitted_data
-        else:
-            item_values = self.loaded_data
         # Merge the items_values with the extra provided values. Extra
         # values will overwrite the item_values.
-        values = dict(item_values.items() + values.items())
-        self.merged_data = values
+        self.merged_data = dict(self.loaded_data.items() + values.items())
 
         # Set current and previous values of the fields in the form.
         self._set_current_field_data(values)
