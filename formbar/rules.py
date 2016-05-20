@@ -44,6 +44,9 @@ class Rule(Expression):
         self.required = required
         self.desired = desired
 
+    def __repr__(self):
+        return self._expression
+
     def evaluate(self, values=None):
         """Returns True or False. Evaluates the expression of the rule against
         the provided values.  If the expression fails because parsing fails or
