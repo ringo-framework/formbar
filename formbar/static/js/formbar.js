@@ -424,7 +424,16 @@ var form = function (inputFilter, ruleEngine) {
    */
   var toggleConditional = function (result, divId) {
     var element = $("#" + divId);
-    if ($(element).hasClass("readonly")) handleReadOnly(result, element);
+    if ($(element).hasClass("readonly")){
+        handleReadOnly(result, element);
+    } else {
+        if (result){
+            $(element).fadeIn("1000").removeClass("hidden");
+        } else {
+            $(element).fadeOut("1000").addClass("hidden")
+        }
+    } 
+
   }
 
   var handleReadOnly = function (result, div) {
