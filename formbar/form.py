@@ -608,6 +608,11 @@ class Field(object):
         """Value as string of the field. Will be set on rendering the
         form"""
 
+    def __repr__(self):
+        rules = [str(r) for r in self.get_rules()]
+        return "field:\t{}\nrules: \n\t{}".format(self.name, 
+                "\n\t".join(rules))
+
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
         return getattr(self._config, name)

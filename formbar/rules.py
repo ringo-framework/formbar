@@ -45,7 +45,7 @@ class Rule(Expression):
         self.desired = desired
 
     def __repr__(self):
-        return self._expression
+        return "{} triggers: {}".format(self._expression, self.triggers)
 
     def evaluate(self, values=None):
         """Returns True or False. Evaluates the expression of the rule against
