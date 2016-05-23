@@ -428,9 +428,9 @@ var form = function (inputFilter, ruleEngine) {
         handleReadOnly(result, element);
     } else {
         if (result){
-            $(element).fadeIn("1000").removeClass("hidden");
+            $(element).fadeIn("1500").removeClass("hidden");
         } else {
-            $(element).fadeOut("1000").addClass("hidden")
+            $(element).fadeOut("1500").addClass("hidden");
         }
     } 
 

@@ -112,7 +112,8 @@
       ## Conditionals
       % elif child.tag == "if" and child.attrib.get("static") != "true":    
           <% is_active = Rule(child.attrib.get("expr")).evaluate(form.data or form.loaded_data) %>
-          <div id="${id(child)}" class="${'hidden' if  not Rule(child.attrib.get("expr")).evaluate(form.data or form.loaded_data) else ''} formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
+          <% is_readonly = child.attrib.get("type")== "readonly" %>
+          <div id="${id(child)}" class="${'hidden' if  not is_active and not is_readonly else ''} formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
       % endif
       % if child.attrib.get("static") != "true" or Rule(child.attrib.get("expr")).evaluate(form.data or form.loaded_data):
         ${self.render_recursive(child, mode, active=is_active)}
