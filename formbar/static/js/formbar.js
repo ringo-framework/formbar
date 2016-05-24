@@ -63,7 +63,7 @@ var ruleEngine = function () {
    * 
    * @param {function} callback - the function which is called with the result
    */
-  var checkFields = function (expression, divId, callBack) {
+  var checkFields = function (rule, expression, callBack, divId) {
     var form = $("#" + divId).closest("form");
     var eval_url = $(form).attr("evalurl");
     var ruleParam = "?rule=" + encodeURIComponent(expression);
@@ -71,7 +71,7 @@ var ruleEngine = function () {
       type: "GET",
       url: eval_url + ruleParam,
       success: function (data) {
-        callBack(data.data, divId);
+        callBack(data.data, divId, rule);
       },
       error: function (data) {
         console.log("Request to eval server fails!")
@@ -149,14 +149,19 @@ var ruleEngine = function () {
    * @param {function} callBack - a function to call back after evaluation
    * 
    */
-  var onFieldChange = function (name, currentValues, callBack) {
+  var onFieldChange = function (name, currentValues, callback) {
     if (conditionals[name]) {
       var rulesForField = conditionals[name];
       Object.keys(rulesForField).forEach(function (k) {
-        checkFields(parseExpression(rulesForField[k].expr, currentValues), k, callBack);
+        var rule = rulesForField[k].expr;
+        checkFields(rule, parseExpression(rule, currentValues), callback, k);
       });
     }
     return true;
+  }
+
+  var evaluateRule = function(fieldname, currentValues, callback, rule){
+    checkFields(rule, parseExpression(rule, currentValues), callback, fieldname);
   }
 
   var init = function () {
@@ -164,7 +169,8 @@ var ruleEngine = function () {
   };
   return {
     init: init,
-    onFieldChange: onFieldChange
+    onFieldChange: onFieldChange,
+    evaluateRule: evaluateRule
   };
 } ();
 
@@ -365,6 +371,19 @@ var form = function (inputFilter, ruleEngine) {
   };
 
 
+  var getRules = function(element){
+    var rules = element.getAttribute("rules").split(";");
+    return rules.map(function(x){
+        var expr = x.split(",");
+        var rule = expr[0];
+        var type = expr[1];
+        return {
+            "expr": rule,
+            "type": type,
+        };
+    });
+  }
+
   /**
    * @function
    * 
@@ -383,13 +402,15 @@ var form = function (inputFilter, ruleEngine) {
         var desired = x.getAttribute("desired");
         var required = x.getAttribute("required");
         var datatype = (element)?element.getAttribute("datatype"):undefined;
+        var rules = getRules(x);
         o[name] = {
           'name': name,
           'state': state,
           'value': value,
           'desired': desired,
           'required': required,
-          'datatype': datatype
+          'datatype': datatype,
+          'rules': rules
         };
       }
     return o;
@@ -422,7 +443,7 @@ var form = function (inputFilter, ruleEngine) {
    * a lookup in formFields gets you the state of the field
    * 
    */
-  var toggleConditional = function (result, divId) {
+  var toggleConditional = function (result, divId, rule) {
     var element = $("#" + divId);
     if ($(element).hasClass("readonly")){
         handleReadOnly(result, element);
@@ -475,6 +496,7 @@ var form = function (inputFilter, ruleEngine) {
     $(".form-group[formgroup='" + fieldName + "']").find(".help-block[required='True']").addClass("hidden");
     
   }
+
   var activateRequired = function (fieldName) {
     var field = formFields[fieldName];
     if (field.required === "True" && !$(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
@@ -507,8 +529,8 @@ var form = function (inputFilter, ruleEngine) {
    *
    */
   var triggerChange = function (fieldName) {
-    ruleEngine.onFieldChange(fieldName, formFields, function (data, divId) {
-      toggleConditional(data, divId);
+    ruleEngine.onFieldChange(fieldName, formFields, function (data, divId, rule) {
+      toggleConditional(data, divId, rule);
     });
   };
   /**
@@ -526,7 +548,22 @@ var form = function (inputFilter, ruleEngine) {
     setStateForCurrentField(target.name);
     triggerChange(target.name);
   };
-  
+
+
+  var evaluateRules = function(element){
+    element.rules.forEach(function(rule){
+        ruleEngine.evaluateRule(element.name, formFields, function (result, divId, rule) {
+          messageDiv=$("[rule='"+rule+"']");
+          if (result) {
+            if(messageDiv.hasClass("hidden")=== false) messageDiv.addClass("hidden");
+          } else {
+            if(messageDiv.hasClass("hidden")=== true) messageDiv.removeClass("hidden");
+          }
+
+        }, rule.expr);
+    });
+  }
+
   var setStateForCurrentField = function (fieldName) {
     var element = formFields[fieldName];
     if (!element.value.length && element.desired === "True") activateDesired(fieldName);
