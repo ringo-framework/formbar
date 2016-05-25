@@ -500,9 +500,13 @@ var form = function (inputFilter, ruleEngine) {
   var activateRequired = function (fieldName) {
     var field = formFields[fieldName];
     if (field.required === "True" && !$(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
+      if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
+        $(".form-group[formgroup='" + fieldName + "']").removeClass("has-warning");
+      }
       $(".form-group[formgroup='" + fieldName + "']").addClass("has-error");
       $(".form-group[formgroup='" + fieldName + "']").find(".help-block[required='True']").removeClass("hidden");
     }
+    $(".form-group[formgroup='" + fieldName + "']").find(".help-block[desired='False']").addClass("hidden");
   }
 
   var deactivateDesired = function (fieldName) {
