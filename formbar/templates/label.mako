@@ -16,10 +16,10 @@
         ${_(field.label)}
     % endif
     % if field.is_required():
-      <span data-toggle="tooltip" data-original-title="${_('Required field')}" class="formbar-tooltip glyphicon glyphicon-asterisk"></span>
+      <span data-toggle="tooltip" data-original-title="${_('Required field')}" class="formbar-tooltip glyphicon glyphicon-asterisk hidden-print"></span>
     % endif
     % if field.help is not None and field.help_display == "tooltip":
-      <span data-toggle="tooltip" data-original-title="${_(field.help)}" class="formbar-tooltip glyphicon glyphicon-info-sign"></span>
+      <span data-toggle="tooltip" data-original-title="${_(field.help)}" class="formbar-tooltip glyphicon glyphicon-info-sign hidden-print"></span>
     % endif
     % if field.number and field.renderer.number == "right" and field.renderer.indent_style != "indent-number":
       <sup>[${field.number}]</sup>
