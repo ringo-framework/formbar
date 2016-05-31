@@ -745,6 +745,7 @@ class Field(object):
         # be used in environments where no item is available.
         if self._form._item:
             item_values = self._form._item.get_values()
+            item_values.update(self._form.merged_data)
         else:
             item_values = {}
         for x in t:
