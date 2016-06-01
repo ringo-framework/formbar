@@ -825,7 +825,7 @@ class Field(object):
         filtered_options = []
         if self._config.renderer and self._config.renderer.filter:
             rule = self._build_filter_rule(self._config.renderer.filter, None)
-            x = re.compile("\$\w+")
+            x = re.compile("\$[\w.]+")
             option_values = x.findall(rule._expression)
         else:
             rule = None
