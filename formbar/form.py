@@ -187,7 +187,7 @@ class Form(object):
         self.submitted_data = {}
         """The submitted data from the user. If validation fails, then
         this values are used to rerender the form."""
-        self.loaded_data = self.serialize(self._get_data_from_item())
+        self.loaded_data = self._get_data_from_item()
         """This is the initial data loaded from the given item. Used to
         render the readonly forms"""
         self.merged_data = {}
@@ -405,7 +405,7 @@ class Form(object):
         self.current_page = page
 
         if self.submitted_data:
-            item_values = self.submitted_data
+            item_values = self.deserialize(self.submitted_data)
         else:
             item_values = self.loaded_data
         # Merge the items_values with the extra provided values. Extra
@@ -474,7 +474,7 @@ class Form(object):
         """
 
         if not submitted:
-            unvalidated = self.loaded_data
+            unvalidated = self.serialize(self.loaded_data)
         else:
             try:
                 unvalidated = submitted.mixed()
