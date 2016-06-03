@@ -403,8 +403,14 @@ class Form(object):
         # values will overwrite the item_values.
         self.merged_data = dict(self.loaded_data.items() + values.items())
 
-        # Set current and previous values of the fields in the form.
-        self._set_current_field_data(self.merged_data)
+        # Set current and previous values of the fields in the form. In
+        # case of errors in the form the submitted_data dictionary will
+        # contain the submitted values which should be displayed in the
+        # form again.
+        if self.submitted_data:
+            self._set_current_field_data(self.submitted_data)
+        else:
+            self._set_current_field_data(self.merged_data)
         self._set_previous_field_data(previous_values)
 
         # Add csrf_token to the values dictionary
