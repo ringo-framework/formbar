@@ -2,6 +2,7 @@
 ======
 - Fixed error that submitted unsaved values are not displayed in the form again if the
   form contains errors. This results in loosing the new entered data.
+- Fixed error of dataloss in case of readonly checkbox fields on submit.
 
 0.18.0
 ======
