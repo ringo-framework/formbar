@@ -661,11 +661,11 @@ class Field(object):
         return self._config.get_rules()
 
     def get_warning_rules(self):
-        return self._warnings + [r.msg for r in self.get_rules() if r.triggers == "warning"]
+        return set(self._warnings + [r.msg for r in self.get_rules() if r.triggers == "warning"])
 
     def get_error_rules(self):
-        return self._errors + [r.msg for r in self.get_rules()
-                               if r.triggers == "error"]
+        return set(self._errors + [r.msg for r in self.get_rules()
+                               if r.triggers == "error"])
 
     def has_warning_rules(self):
         """Returns a True if there is at least on rule that can trigger
