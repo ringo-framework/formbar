@@ -314,7 +314,6 @@ class Form(object):
             fields[name] = Field(self, field, self._translate)
         return fields
 
-
     @property
     def pages(self):
         return self._config.get_pages()
@@ -508,7 +507,8 @@ class Form(object):
 
         # Custom validation. User defined external validators.
         for validator in self.external_validators:
-            if validator._field not in converted and validator._field is not None:
+            if (validator._field not in converted
+                    and validator._field is not None):
                 # Ignore validator if the value can't be converted.
                 continue
             if not validator.check(converted):
@@ -661,11 +661,14 @@ class Field(object):
         return self._config.get_rules()
 
     def get_warning_rules(self):
-        return set(self._warnings + [r.msg for r in self.get_rules() if r.triggers == "warning"])
+        return set(self._warnings +
+                   [r.msg for r in self.get_rules()
+                    if r.triggers == "warning"])
 
     def get_error_rules(self):
-        return set(self._errors + [r.msg for r in self.get_rules()
-                               if r.triggers == "error"])
+        return set(self._errors +
+                   [r.msg for r in self.get_rules()
+                    if r.triggers == "error"])
 
     def has_warning_rules(self):
         """Returns a True if there is at least on rule that can trigger
@@ -704,7 +707,6 @@ class Field(object):
             if (rule.desired or rule.required) and rule.result is False:
                 return True
         return False
-
 
     def set_value(self, value):
         self.value = value
@@ -760,7 +762,7 @@ class Field(object):
             # in the option. A bare "%" will give the value of the
             # option.
             if x.startswith("%"):
-                key = x.strip("%") 
+                key = x.strip("%")
                 value = "$%s" % (key or "value")
             # @ marks the item of the current fields form item.
             elif x.startswith("@"):
