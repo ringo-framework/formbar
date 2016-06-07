@@ -333,7 +333,7 @@ function evaluate(element) {
                             allVals.push(convertValue($(this).val(), field));
                         }
                     });
-                    value = '[' + allVals.join() + ']';
+                    value = JSON.stringify(allVals).replace(/"/g, "'");
                     break;
                 default:
                     value = convertValue(field.val(), field);
