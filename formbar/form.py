@@ -903,12 +903,6 @@ class Field(object):
     def add_warning(self, warning):
         self._warnings.append(warning)
 
-    def get_errors(self):
-        return self._errors
-
-    def get_warnings(self):
-        return self._warnings
-
     def render(self, active):
         """Returns the rendererd HTML for the field"""
         self.renderer._active = active
