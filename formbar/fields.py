@@ -12,6 +12,41 @@ from formbar.converters import (
 log = logging.getLogger(__name__)
 
 
+class FieldFactory(object):
+    """The FieldFactory is responsible for initialising a fields for a
+    given form."""
+
+    def __init__(self, form, translate):
+        """
+
+        :form: Reference to the ::class::Form instance
+        :translate: Translation function.
+
+        """
+        self.form = form
+        self.translate = translate
+
+    def create(self, fieldconfig):
+        """Will return a Field instance based on the given field config.
+
+        :fieldconfig: Reference to the ::class::Field config instance
+        :returns: Field instance
+
+        """
+        builder_map = {
+            "string": self._create_string
+        }
+        builder = builder_map.get(fieldconfig.type or "string",
+                                  self._create_default)
+        return builder(fieldconfig)
+
+    def _create_string(self, fieldconfig):
+        return Field(self.form, fieldconfig, self.translate)
+
+    def _create_default(self, fieldconfig):
+        return Field(self.form, fieldconfig, self.translate)
+
+
 class Field(object):
     """Wrapper for fields in the form. The purpose of this class is to
     provide a common interface for the renderer independent to the
