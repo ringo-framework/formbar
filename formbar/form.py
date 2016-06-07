@@ -1,7 +1,7 @@
 import logging
 import sqlalchemy as sa
 from formbar.renderer import FormRenderer
-from formbar.fields import Field
+from formbar.fields import FieldFactory
 from formbar.converters import (
     DeserializeException, from_python, to_python
 )
@@ -308,8 +308,9 @@ class Form(object):
 
         """
         fields = {}
+        factory = FieldFactory(self, self._translate)
         for name, field in self._config.get_fields().iteritems():
-            fields[name] = Field(self, field, self._translate)
+            fields[name] = factory.create(field)
         return fields
 
     def has_errors(self):
