@@ -739,6 +739,7 @@ var formbar = function (form) {
     $('.list-group-item').on('click', selectListGroupItem);
     $('div.formbar-form form div.tabbable ul.nav li a').click(setSelectedPage);
     $('div.formbar-outline a').click(navigate);
+    $('div.formbar-form form').not(".disable-double-submit-prevention").preventDoubleSubmission();
     initDatePicker();
     initSubmit();
     form.init();
@@ -760,3 +761,21 @@ var formbar = function (form) {
 $(function () {
   formbar.init();
 });
+
+// Plugin to prevent double submission. See
+// http://stackoverflow.com/questions/2830542/prevent-double-submission-of-forms-in-jquery
+jQuery.fn.preventDoubleSubmission = function() {
+  $(this).on('submit',function(e){
+      var $form = $(this);
+      if ($form.data('submitted') === true) {
+        // Previously submitted - don't submit again
+        e.preventDefault();
+      } else {
+        // Mark it so that the next submit can be
+        // ignored
+        $form.data('submitted', true);
+      }
+  });
+// Keep chainability
+return this;
+}
