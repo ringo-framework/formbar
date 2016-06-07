@@ -96,7 +96,7 @@ var ruleEngine = function () {
         var currentValue = convertValue(currentValues[token.replace("$", "")]);
         var token = currentValue;
         if (Array.isArray(currentValue)) {
-          token = "[" + currentValue.join(",") + "]";
+          token = JSON.stringify(currentValue).replace(/"/g, "'");
         }
       }
       return token;
