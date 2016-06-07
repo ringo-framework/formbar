@@ -857,12 +857,6 @@ class Field(object):
                 filtered_options.append((o_label, o_value, True))
         return filtered_options
 
-    def add_error(self, error):
-        self._errors.append(error)
-
-    def add_warning(self, warning):
-        self._warnings.append(warning)
-
     def get_options(self):
         """Will return a list of tuples containing the options of the
         field. The tuple contains in the following order:
