@@ -11,6 +11,30 @@ from formbar.converters import (
 
 log = logging.getLogger(__name__)
 
+def get_sa_property(item, name):
+    mapper = sa.orm.object_mapper(item)
+    for prop in mapper.iterate_properties:
+        if prop.key == name:
+            return prop
+
+
+def get_type_from_sa_property(sa_property):
+    try:
+        column = sa_property.columns[0]
+        dtype = str(column.type)
+        if dtype == "TEXT" or dtype.find("VARCHAR") > -1:
+            return "string"
+        elif dtype == "DATE":
+            return "date"
+        elif dtype == "INTEGER":
+            return "integer"
+        elif dtype == "BOOLEAN":
+            return "boolean"
+        else:
+            log.warning('Unhandled datatype: %s for %s' % (dtype, sa_property))
+    except AttributeError:
+        return sa_property.direction.name.lower()
+
 
 class FieldFactory(object):
     """The FieldFactory is responsible for initialising a fields for a
@@ -33,15 +57,78 @@ class FieldFactory(object):
         :returns: Field instance
 
         """
+        # If the form has a mapped item, then try to determine the type
+        # of the field by looking on the property. This type is used for
+        # two cases:
+        # 1. As fallback if the form does not define type.
+        # 2. For integrity checks to show that there is a missmatch
+        # between type configuration in a form and the SQLALCHEMY model.
+        if self.form._item:
+            sa_property = get_sa_property(self.form._item, fieldconfig.name)
+            if sa_property:
+                sa_dtype = get_type_from_sa_property(sa_property)
+            else:
+                sa_dtype = None
+        else:
+            sa_dtype = None
+
+        # Set datatype of the field based on the config, the type in the
+        # database or as fallback use string.
+        if fieldconfig.type:
+            dtype = fieldconfig.type
+        elif sa_dtype:
+            dtype = sa_dtype
+        else:
+            dtype = "string"
+
+        # Check for integrity if possible and log error if integrity is
+        # violated. If sa_dtype is None and dtype is "string" the
+        # default type is set which is not considired an error.
+        if sa_dtype != dtype and (sa_dtype is not None and dtype != "string"):
+            log.error("Mismatch of datatype for field '{name}' of SA datatype "
+                      "SA '{sa_dtype}' and formbar datatype '{dtype}'"
+                      "".format(sa_dtype=sa_dtype,
+                                dtype=dtype,
+                                name=fieldconfig.name))
+        log.debug("Creating field '{name}' with datatype '{dtype}'"
+                  "".format(name=fieldconfig.name, dtype=dtype))
+
         builder_map = {
-            "string": self._create_string
+            "string": self._create_string,
+            "integer": self._create_integer,
+            "float": self._create_float,
+            "date": self._create_date,
+            "datetime": self._create_datetime,
+            "timedelta": self._create_timedelta,
+            "boolean": self._create_boolean,
+            "email": self._create_email,
         }
-        builder = builder_map.get(fieldconfig.type or "string",
-                                  self._create_default)
+        builder = builder_map.get(dtype, self._create_default)
         return builder(fieldconfig)
 
     def _create_string(self, fieldconfig):
-        return Field(self.form, fieldconfig, self.translate)
+        return StringField(self.form, fieldconfig, self.translate)
+
+    def _create_integer(self, fieldconfig):
+        return IntegerField(self.form, fieldconfig, self.translate)
+
+    def _create_float(self, fieldconfig):
+        return FloatField(self.form, fieldconfig, self.translate)
+
+    def _create_date(self, fieldconfig):
+        return DateField(self.form, fieldconfig, self.translate)
+
+    def _create_datetime(self, fieldconfig):
+        return DateTimeField(self.form, fieldconfig, self.translate)
+
+    def _create_timedelta(self, fieldconfig):
+        return TimedeltaField(self.form, fieldconfig, self.translate)
+
+    def _create_boolean(self, fieldconfig):
+        return BooleanField(self.form, fieldconfig, self.translate)
+
+    def _create_email(self, fieldconfig):
+        return EmailField(self.form, fieldconfig, self.translate)
 
     def _create_default(self, fieldconfig):
         return Field(self.form, fieldconfig, self.translate)
@@ -371,3 +458,35 @@ class Field(object):
         """Returns true if either the readonly flag of the field
         configuration is set or the whole form is marked as readonly"""
         return self.readonly or False
+
+
+class StringField(Field):
+    pass
+
+
+class IntegerField(Field):
+    pass
+
+
+class FloatField(Field):
+    pass
+
+
+class BooleanField(Field):
+    pass
+
+
+class DateField(Field):
+    pass
+
+
+class DateTimeField(Field):
+    pass
+
+
+class TimedeltaField(Field):
+    pass
+
+
+class EmailField(Field):
+    pass
