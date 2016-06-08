@@ -11,6 +11,7 @@ from formbar.converters import (
 
 log = logging.getLogger(__name__)
 
+
 def get_sa_property(item, name):
     mapper = sa.orm.object_mapper(item)
     for prop in mapper.iterate_properties:
@@ -32,6 +33,7 @@ def get_type_from_sa_property(sa_property):
             return "boolean"
         else:
             log.warning('Unhandled datatype: %s for %s' % (dtype, sa_property))
+            return dtype
     except AttributeError:
         return sa_property.direction.name.lower()
 
@@ -102,6 +104,9 @@ class FieldFactory(object):
             "timedelta": self._create_timedelta,
             "boolean": self._create_boolean,
             "email": self._create_email,
+            "manytoone": self._create_manytoone,
+            "onetoone": self._create_onetoone,
+            "onetomany": self._create_onetomany,
         }
         builder = builder_map.get(dtype, self._create_default)
         return builder(fieldconfig)
@@ -130,7 +135,19 @@ class FieldFactory(object):
     def _create_email(self, fieldconfig):
         return EmailField(self.form, fieldconfig, self.translate)
 
+    def _create_onetomany(self, fieldconfig):
+        return OnetomanyRelationField(self.form, fieldconfig, self.translate)
+
+    def _create_onetoone(self, fieldconfig):
+        return OnetooneRelationField(self.form, fieldconfig, self.translate)
+
+    def _create_manytoone(self, fieldconfig):
+        return ManytooneRelationField(self.form, fieldconfig, self.translate)
+
     def _create_default(self, fieldconfig):
+        log.warning("Not sure which field to create... "
+                    "Using default field for '{name}'"
+                    "".format(name=fieldconfig.name))
         return Field(self.form, fieldconfig, self.translate)
 
 
@@ -459,6 +476,9 @@ class Field(object):
         configuration is set or the whole form is marked as readonly"""
         return self.readonly or False
 
+# Singlevalue Fields.
+#####################################
+
 
 class StringField(Field):
     pass
@@ -489,4 +509,43 @@ class TimedeltaField(Field):
 
 
 class EmailField(Field):
+    pass
+
+# Selection and Multiselection Fields.
+#####################################
+
+
+class CollectionField(Field):
+    """Field which can have one or more of predefined values.  If the
+    values are defined in the fields config please check
+    ::class::SelectionField.  If the values are defined by the relations
+    in the database please check ::class::RelationField."""
+    pass
+
+
+class SelectionField(CollectionField):
+    """Field which can have one or more of predefined values. The
+    values are defined in the fields config."""
+    pass
+
+
+# SQLALCHEMY related Fields.
+############################
+
+
+class RelationField(CollectionField):
+    """Field which can have one or more of predefined values. The values
+    are defined through the relation in the database.  Please note that
+    these require a SQLALCHEMY mapped item in the form!"""
+
+
+class ManytooneRelationField(RelationField):
+    pass
+
+
+class OnetooneRelationField(RelationField):
+    pass
+
+
+class OnetomanyRelationField(RelationField):
     pass
