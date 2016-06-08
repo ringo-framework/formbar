@@ -104,10 +104,25 @@ class FieldFactory(object):
             "timedelta": self._create_timedelta,
             "boolean": self._create_boolean,
             "email": self._create_email,
+            "integerselection": self._create_intselection,
+            "stringselection": self._create_stringselection,
+            "multiselection": self._create_multiselection,
             "manytoone": self._create_manytoone,
             "onetoone": self._create_onetoone,
             "onetomany": self._create_onetomany,
         }
+
+        # Look on the renderer to get further informations on the type
+        # of the field.
+        if (dtype not in ["manytoone", "onetomany", "onetoone"]
+           and fieldconfig.renderer):
+            if fieldconfig.renderer.type in ["dropdown", "radio"]:
+                dtype = "%sselection" % dtype
+            elif fieldconfig.renderer.type == "checkbox":
+                if dtype != "string":
+                    raise TypeError("Checkbox must be of type string!")
+                dtype = "multiselection"
+
         builder = builder_map.get(dtype, self._create_default)
         return builder(fieldconfig)
 
@@ -134,6 +149,15 @@ class FieldFactory(object):
 
     def _create_email(self, fieldconfig):
         return EmailField(self.form, fieldconfig, self.translate)
+
+    def _create_intselection(self, fieldconfig):
+        return IntSelectionField(self.form, fieldconfig, self.translate)
+
+    def _create_stringselection(self, fieldconfig):
+        return StringSelectionFieldField(self.form, fieldconfig, self.translate)
+
+    def _create_multiselection(self, fieldconfig):
+        return MultiselectionField(self.form, fieldconfig, self.translate)
 
     def _create_onetomany(self, fieldconfig):
         return OnetomanyRelationField(self.form, fieldconfig, self.translate)
@@ -524,6 +548,24 @@ class CollectionField(Field):
 
 
 class SelectionField(CollectionField):
+    """Field which can have one or more of predefined values. The
+    values are defined in the fields config."""
+    pass
+
+
+class IntSelectionField(SelectionField):
+    """Field which can have one or more of predefined values. The
+    values are defined in the fields config."""
+    pass
+
+
+class StringSelectionField(SelectionField):
+    """Field which can have one or more of predefined values. The
+    values are defined in the fields config."""
+    pass
+
+
+class MultiselectionField(StringSelectionField):
     """Field which can have one or more of predefined values. The
     values are defined in the fields config."""
     pass
