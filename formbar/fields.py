@@ -368,20 +368,6 @@ class Field(object):
                     expr_str = expr_str.replace(x, "'%s'" % unicode(value))
         return Rule(str(expr_str))
 
-    def _load_options_from_db(self):
-        # Get mapped clazz for the field
-        try:
-            clazz = self._get_sa_mapped_class()
-            return self._form._dbsession.query(clazz)
-        except:
-            # Catch exception here. This exception can happen when
-            # rendering the form in the preview of the formeditor. In
-            # this case the item is None and will fail to get the mapped
-            # class.
-            log.error("Can not get a mappend class for '%s' "
-                      "to load the option from db" % self.name)
-        return []
-
     def filter_options(self, options):
         """Will return a of tuples with options. The given options can
         be either a list of SQLAlchemy mapped items (In case the options
@@ -573,13 +559,22 @@ class RelationField(CollectionField):
         if self.get_type() == 'manytoone':
             options.append((_("no selection"), "", True))
         if self._form._dbsession:
-            options.extend(self.filter_options(self._load_options_from_db()))
+            try:
+                clazz = self._get_sa_mapped_class()
+                unfiltered = self._form._dbsession.query(clazz)
+                options.extend(self.filter_options(unfiltered))
+            except:
+                # Catch exception here. This exception can happen when
+                # rendering the form in the preview of the formeditor. In
+                # this case the item is None and will fail to get the mapped
+                # class.
+                log.error("Can not get a mappend class for '%s' "
+                          "to load the option from db" % self.name)
         else:
             # TODO: Try to get the session from the item. Ther must be
             # somewhere the already bound session. (torsten) <2013-07-23 00:27>
             log.warning('No db connection configured for this form. Can '
                         'not load options')
-            return []
         return options
 
 
