@@ -7,6 +7,7 @@ from formbar.converters import (
     DeserializeException, from_python, to_python
 )
 
+import config
 
 log = logging.getLogger(__name__)
 
@@ -549,6 +550,18 @@ class Form(object):
                 self._dbsession.add(self._item)
         return self._item
 
+    def __repr__(self):
+        def f(field):
+            name = field.name
+            value = field.get_value()
+            errors = field.has_errors
+            warnings = field.has_warnings
+            return "{}:\t{} \terrors: {} warnings: {}".format(name, value, errors, warnings)
+        fields = [f(v) for _, v in self.fields.iteritems()]
+        lines = "\n".join(fields)
+        lines +="\nhas errors: {}".format(self.has_errors())
+        return lines
+
 
 class Field(object):
     """Wrapper for fields in the form. The purpose of this class is to
@@ -568,7 +581,6 @@ class Field(object):
         self.renderer = get_renderer(self, translate)
         self._errors = []
         self._warnings = []
-
         # Set default value
         value = getattr(self._config, "value")
 
@@ -613,9 +625,14 @@ class Field(object):
         return [u"{}".format(r) for r in self.get_rules()]
 
     def __repr__(self):
-        rules = self.rules_to_string
-        return u"field:\t{}\nrules: \n\t{}".format(self.name,
-               "\n\t".join(rules))
+        rules = "rules: \n\t\t{}".format("\n\t".join(self.rules_to_string))
+        field = u"field:\t\t{}".format(self.name)
+        value = u"value:\t\t{}, {}".format(self.get_value(), type(self.get_value()))
+        required = "required:\t{}".format(self.is_required)
+        desired = "desired:\t{}".format(self.is_desired)
+        validated = "validated:\t{}".format(self.is_validated)
+        _type = "type:\t\t{}".format(self.get_type())
+        return "\n".join([field, required, desired, value, _type, validated, rules])+"\n"
 
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
@@ -661,14 +678,12 @@ class Field(object):
         return self._config.get_rules()
 
     def get_warning_rules(self):
-        return set(self._warnings +
-                   [r.msg for r in self.get_rules()
-                    if r.triggers == "warning"])
+        return [r for r in self.get_rules()
+                if r.triggers == "warning"]
 
     def get_error_rules(self):
-        return set(self._errors +
-                   [r.msg for r in self.get_rules()
-                    if r.triggers == "error"])
+        return [r for r in self.get_rules()
+                if r.triggers == "error"]
 
     def has_warning_rules(self):
         """Returns a True if there is at least on rule that can trigger
@@ -681,12 +696,26 @@ class Field(object):
         return len(self.get_error_rules()) > 0
 
     @property
-    def has_errors(self):
-        return len(self.get_errors()) > 0
+    def is_empty(self):
+        if self.get_value() is None:
+            return True
+        if self.get_type() == "integer" and self.get_value() is not None:
+            return False
+        return bool(self.get_value()) is False
+
+    @property
+    def empty_message(self):
+        if self.is_required:
+            return config.required_msg
+        return config.desired_msg
 
     @property
     def has_warnings(self):
         return len(self.get_warnings()) > 0
+
+    @property
+    def has_errors(self):
+        return len(self.get_errors()) > 0
 
     def get_errors(self):
         return self._errors
@@ -914,10 +943,12 @@ class Field(object):
         return isinstance(self.sa_property,
                           sa.orm.RelationshipProperty)
 
+    @property
     def is_desired(self):
         """Returns true if field is set as desired in field configuration"""
         return self.desired
 
+    @property
     def is_required(self):
         """Returns true if the required flag of the field configuration
         is set"""

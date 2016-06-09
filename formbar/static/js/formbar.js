@@ -493,7 +493,7 @@ var form = function (inputFilter, ruleEngine) {
     if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
       $(".form-group[formgroup='" + fieldName + "']").removeClass("has-error");
     }
-    $(".form-group[formgroup='" + fieldName + "']").find(".help-block[required='True']").addClass("hidden");
+    $(".form-group[formgroup='" + fieldName + "']").find(".help-block[fieldtype='required']").addClass("hidden");
     
   }
 
@@ -504,9 +504,9 @@ var form = function (inputFilter, ruleEngine) {
         $(".form-group[formgroup='" + fieldName + "']").removeClass("has-warning");
       }
       $(".form-group[formgroup='" + fieldName + "']").addClass("has-error");
-      $(".form-group[formgroup='" + fieldName + "']").find(".help-block[required='True']").removeClass("hidden");
+      $(".form-group[formgroup='" + fieldName + "']").find(".help-block[fieldtype='required']").removeClass("hidden");
     }
-    $(".form-group[formgroup='" + fieldName + "']").find(".help-block[desired='False']").addClass("hidden");
+    $(".form-group[formgroup='" + fieldName + "']").find(".help-block[fieldtype='desired']").addClass("hidden");
   }
 
   var deactivateDesired = function (fieldName) {
@@ -514,13 +514,13 @@ var form = function (inputFilter, ruleEngine) {
     if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
       $(".form-group[formgroup='" + fieldName + "']").removeClass("has-warning");
     }
-    $(".form-group[formgroup='" + fieldName + "']").find(".help-block[desired='True']").addClass("hidden");    
+    $(".form-group[formgroup='" + fieldName + "']").find(".help-block[fieldtype='desired']").addClass("hidden");    
   }
   var activateDesired = function (fieldName) {
     var field = formFields[fieldName];
     if (field.desired === "True" && !$(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
       $(".form-group[formgroup='" + fieldName + "']").addClass("has-warning");
-      $(".form-group[formgroup='" + fieldName + "']").find(".help-block[desired='True']").removeClass("hidden");
+      $(".form-group[formgroup='" + fieldName + "']").find(".help-block[fieldtype='desired']").removeClass("hidden");
     }
   }
 
