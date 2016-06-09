@@ -429,8 +429,7 @@ class Field(object):
         return self.renderer.render()
 
     def is_relation(self):
-        return isinstance(self.sa_property,
-                          sa.orm.RelationshipProperty)
+        return False
 
     def is_desired(self):
         """Returns true if field is set as desired in field configuration"""
@@ -552,6 +551,9 @@ class RelationField(CollectionField):
     """Field which can have one or more of predefined values. The values
     are defined through the relation in the database.  Please note that
     these require a SQLALCHEMY mapped item in the form!"""
+
+    def is_relation(self):
+        return True
 
     def get_options(self):
         options = []
