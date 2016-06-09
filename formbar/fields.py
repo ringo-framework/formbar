@@ -5,9 +5,6 @@ import re
 import sqlalchemy as sa
 from formbar.renderer import get_renderer
 from formbar.rules import Rule, Expression
-from formbar.converters import (
-    from_python
-)
 
 log = logging.getLogger(__name__)
 
@@ -103,6 +100,7 @@ class FieldFactory(object):
             "datetime": self._create_datetime,
             "interval": self._create_timedelta,
             "time": self._create_time,
+            "file": self._create_file,
             "boolean": self._create_boolean,
             "email": self._create_email,
             "integerselection": self._create_intselection,
@@ -111,6 +109,7 @@ class FieldFactory(object):
             "manytoone": self._create_manytoone,
             "onetoone": self._create_onetoone,
             "onetomany": self._create_onetomany,
+            "manytomany": self._create_manytomany,
         }
 
         # Look on the renderer to get further informations on the type
@@ -148,6 +147,9 @@ class FieldFactory(object):
     def _create_time(self, fieldconfig):
         return TimeField(self.form, fieldconfig, self.translate)
 
+    def _create_file(self, fieldconfig):
+        return FileField(self.form, fieldconfig, self.translate)
+
     def _create_boolean(self, fieldconfig):
         return BooleanField(self.form, fieldconfig, self.translate)
 
@@ -171,6 +173,9 @@ class FieldFactory(object):
 
     def _create_manytoone(self, fieldconfig):
         return ManytooneRelationField(self.form, fieldconfig, self.translate)
+
+    def _create_manytomany(self, fieldconfig):
+        return ManytomanyRelationField(self.form, fieldconfig, self.translate)
 
     def _create_default(self, fieldconfig):
         log.warning("Not sure which field to create... "
@@ -305,6 +310,7 @@ class Field(object):
             return ", ".join(ex_values)
         else:
             if value:
+                from formbar.converters import from_python
                 return from_python(self, value)
             elif default:
                 return default
@@ -481,6 +487,10 @@ class TimedeltaField(Field):
     pass
 
 
+class FileField(Field):
+    pass
+
+
 class TimeField(Field):
     pass
 
@@ -599,8 +609,13 @@ class ManytooneRelationField(RelationField):
 
 
 class OnetooneRelationField(RelationField):
+    # SEEMS TO BE UNUSED
     pass
 
 
 class OnetomanyRelationField(RelationField):
+    pass
+
+
+class ManytomanyRelationField(RelationField):
     pass
