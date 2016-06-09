@@ -552,28 +552,29 @@ class RelationField(CollectionField):
     are defined through the relation in the database.  Please note that
     these require a SQLALCHEMY mapped item in the form!"""
 
+    def __init__(self, form, config, translate):
+        if not form._dbsession:
+            raise TypeError("No DB session available in the parent form. "
+                            "RelationField must be instanciated with an "
+                            "available DB session.")
+        super(RelationField, self).__init__(form, config, translate)
+
     def is_relation(self):
         return True
 
     def get_options(self):
         options = []
-        if self._form._dbsession:
-            try:
-                clazz = self._get_sa_mapped_class()
-                unfiltered = self._form._dbsession.query(clazz)
-                options.extend(self.filter_options(unfiltered))
-            except:
-                # Catch exception here. This exception can happen when
-                # rendering the form in the preview of the formeditor. In
-                # this case the item is None and will fail to get the mapped
-                # class.
-                log.error("Can not get a mappend class for '%s' "
-                          "to load the option from db" % self.name)
-        else:
-            # TODO: Try to get the session from the item. Ther must be
-            # somewhere the already bound session. (torsten) <2013-07-23 00:27>
-            log.warning('No db connection configured for this form. Can '
-                        'not load options')
+        try:
+            clazz = self._get_sa_mapped_class()
+            unfiltered = self._form._dbsession.query(clazz)
+            options.extend(self.filter_options(unfiltered))
+        except:
+            # Catch exception here. This exception can happen when
+            # rendering the form in the preview of the formeditor. In
+            # this case the item is None and will fail to get the mapped
+            # class.
+            log.error("Can not get a mappend class for '%s' "
+                      "to load the option from db" % self.name)
         return options
 
 
