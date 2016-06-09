@@ -154,7 +154,7 @@ class FieldFactory(object):
         return IntSelectionField(self.form, fieldconfig, self.translate)
 
     def _create_stringselection(self, fieldconfig):
-        return StringSelectionFieldField(self.form, fieldconfig, self.translate)
+        return StringSelectionField(self.form, fieldconfig, self.translate)
 
     def _create_multiselection(self, fieldconfig):
         return MultiselectionField(self.form, fieldconfig, self.translate)
