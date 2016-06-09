@@ -18,6 +18,7 @@
       <help>This is my helptext</help>
     </entity>
     <entity id="e8" name="select" type="integer">
+      <renderer type="radio"></renderer>
       <options>
         <include src="./include.xml"/>
         <option value="4">Value 4</option>
