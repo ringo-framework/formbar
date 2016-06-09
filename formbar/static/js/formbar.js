@@ -497,6 +497,7 @@ var form = function (inputFilter, ruleEngine) {
             $(".form-group[formgroup='" + fieldName + "']").removeClass("has-error");
         }
         $(".form-group[formgroup='" + fieldName + "']").find(".help-block[fieldtype='required']").addClass("hidden");
+        $(".form-group[formgroup='" + fieldName + "']").find(".text-warning").removeClass("text-warning");
 
     }
 
