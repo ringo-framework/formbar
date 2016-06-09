@@ -426,46 +426,6 @@ class Field(object):
                 filtered_options.append((o_label, o_value, True))
         return filtered_options
 
-    def get_options(self):
-        """Will return a list of tuples containing the options of the
-        field. The tuple contains in the following order:
-
-        1. the display value of the option,
-        2. its value and
-        3. a boolean flag if the options is a filtered one and
-        should not be visible in the selection.
-
-        Options can be filtered by defining the filter attribute of the
-        renderer. The expression will be applied on every option in the
-        selection. Keyword beginning with % are handled as variable. On
-        rule evaluation the keyword in the expression will be replaced
-        with the value of the item with the name of the variable.
-
-        Filtering is currently actually only done for selection based on
-        the SQLAlchemy model and which are loaded from the database.
-        """
-        options = []
-        _ = self._form._translate
-        if self.get_type() == 'manytoone':
-            options.append((_("no selection"), "", True))
-        user_defined_options = self._config.options
-        if (isinstance(user_defined_options, list)
-           and len(user_defined_options) > 0):
-            for option in self.filter_options(user_defined_options):
-                options.append((option[0], option[1], option[2]))
-        elif isinstance(user_defined_options, str):
-            for option in self._form.merged_data.get(user_defined_options):
-                options.append((option[0], option[1], True))
-        elif self._form._dbsession:
-            options.extend(self.filter_options(self._load_options_from_db()))
-        else:
-            # TODO: Try to get the session from the item. Ther must be
-            # somewhere the already bound session. (torsten) <2013-07-23 00:27>
-            log.warning('No db connection configured for this form. Can '
-                        'not load options')
-            return []
-        return options
-
     def add_error(self, error):
         self._errors.append(error)
 
@@ -544,13 +504,40 @@ class CollectionField(Field):
     values are defined in the fields config please check
     ::class::SelectionField.  If the values are defined by the relations
     in the database please check ::class::RelationField."""
-    pass
+
+    def get_options(self):
+        """Will return a list of tuples containing the options of the
+        field. The tuple contains in the following order:
+
+        1. the display value of the option,
+        2. its value and
+        3. a boolean flag if the options is a filtered one and
+        should not be visible in the selection.
+
+        Options can be filtered by defining the filter attribute of the
+        renderer. The expression will be applied on every option in the
+        selection. Keyword beginning with % are handled as variable. On
+        rule evaluation the keyword in the expression will be replaced
+        with the value of the item with the name of the variable.
+        """
+        raise NotImplementedError()
 
 
 class SelectionField(CollectionField):
     """Field which can have one or more of predefined values. The
     values are defined in the fields config."""
-    pass
+
+    def get_options(self):
+        options = []
+        user_defined_options = self._config.options
+        if (isinstance(user_defined_options, list)
+           and len(user_defined_options) > 0):
+            for option in self.filter_options(user_defined_options):
+                options.append((option[0], option[1], option[2]))
+        elif isinstance(user_defined_options, str):
+            for option in self._form.merged_data.get(user_defined_options):
+                options.append((option[0], option[1], True))
+        return options
 
 
 class IntSelectionField(SelectionField):
@@ -579,6 +566,21 @@ class RelationField(CollectionField):
     """Field which can have one or more of predefined values. The values
     are defined through the relation in the database.  Please note that
     these require a SQLALCHEMY mapped item in the form!"""
+
+    def get_options(self):
+        options = []
+        _ = self._form._translate
+        if self.get_type() == 'manytoone':
+            options.append((_("no selection"), "", True))
+        if self._form._dbsession:
+            options.extend(self.filter_options(self._load_options_from_db()))
+        else:
+            # TODO: Try to get the session from the item. Ther must be
+            # somewhere the already bound session. (torsten) <2013-07-23 00:27>
+            log.warning('No db connection configured for this form. Can '
+                        'not load options')
+            return []
+        return options
 
 
 class ManytooneRelationField(RelationField):
