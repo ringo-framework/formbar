@@ -588,16 +588,31 @@ var form = function (inputFilter, ruleEngine) {
    *
    */
   var setListener = function () {
-    $("body").on("change", function (e) {
-      switch (e.target.tagName) {
-        case 'INPUT':
-        case 'SELECT':
-        case 'TEXTAREA':
+    var changeEvent = function(e){
           if (formFields[e.target.name].state==='inactive'){
             clearFieldValue(e.target.name);
           } else {
             inputChanged(e);
           }
+    };
+    $("body").on("keyup", function(e) {
+      switch (e.target.tagName) {
+        case 'INPUT':
+        case 'TEXTAREA':
+            if(!$(e.target).val() || !formFields[e.target.name].value){
+                changeEvent(e);
+            };
+          break;
+        default:
+          break;
+      }
+    });
+    $("body").on("change", function (e) {
+      switch (e.target.tagName) {
+        case 'INPUT':
+        case 'SELECT':
+        case 'TEXTAREA':
+            changeEvent(e);
           break;
         default:
           break;
