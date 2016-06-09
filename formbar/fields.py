@@ -101,7 +101,8 @@ class FieldFactory(object):
             "float": self._create_float,
             "date": self._create_date,
             "datetime": self._create_datetime,
-            "timedelta": self._create_timedelta,
+            "interval": self._create_timedelta,
+            "time": self._create_time,
             "boolean": self._create_boolean,
             "email": self._create_email,
             "integerselection": self._create_intselection,
@@ -143,6 +144,9 @@ class FieldFactory(object):
 
     def _create_timedelta(self, fieldconfig):
         return TimedeltaField(self.form, fieldconfig, self.translate)
+
+    def _create_time(self, fieldconfig):
+        return TimeField(self.form, fieldconfig, self.translate)
 
     def _create_boolean(self, fieldconfig):
         return BooleanField(self.form, fieldconfig, self.translate)
@@ -474,6 +478,10 @@ class DateTimeField(Field):
 
 
 class TimedeltaField(Field):
+    pass
+
+
+class TimeField(Field):
     pass
 
 
