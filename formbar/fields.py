@@ -259,28 +259,6 @@ class Field(object):
             if prop.key == self.name:
                 return prop
 
-    def get_type(self):
-        """Returns the datatype of the field."""
-        if self._config.type:
-            return self._config.type
-        if self.sa_property:
-            try:
-                column = self.sa_property.columns[0]
-                dtype = str(column.type)
-                if dtype == "TEXT" or dtype.find("VARCHAR") > -1:
-                    return "string"
-                elif dtype == "DATE":
-                    return "date"
-                elif dtype == "INTEGER":
-                    return "integer"
-                elif dtype == "BOOLEAN":
-                    return "boolean"
-                else:
-                    log.warning('Unhandled datatype: %s' % dtype)
-            except AttributeError:
-                return self.sa_property.direction.name.lower()
-        return "string"
-
     def get_rules(self):
         """Returns a list of configured rules for the field."""
         return self._config.get_rules()
