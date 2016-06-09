@@ -6,6 +6,10 @@ from webhelpers.html import literal, HTML, escape
 from mako.lookup import TemplateLookup
 from formbar import template_dir
 from formbar.rules import Rule
+from formbar.fields import (
+        TimedeltaField, ManytooneRelationField,
+        ManytomanyRelationField, OnetomanyRelationField, EmailField
+)
 
 
 template_lookup = TemplateLookup(directories=[template_dir],
@@ -57,20 +61,21 @@ def get_renderer(field, translate):
     else:
         # Try to determine the datatype of the field and set approriate
         # renderer.
-        dtype = field.get_type()
-        if dtype == "manytoone":
+        if isinstance(field, ManytooneRelationField):
             return DropdownFieldRenderer(field, translate)
-        elif dtype in ['manytomany', 'onetomany']:
+        if isinstance(field, ManytomanyRelationField):
             return SelectionFieldRenderer(field, translate)
-        elif dtype == "date":
+        if isinstance(field, OnetomanyRelationField):
+            return SelectionFieldRenderer(field, translate)
+        if isinstance(field, DateFieldRenderer):
             return DateFieldRenderer(field, translate)
-        elif dtype == "file":
+        if isinstance(field, FileFieldRenderer):
             return FileFieldRenderer(field, translate)
-        elif dtype == "time":
+        if isinstance(field, TimeFieldRenderer):
             return TimeFieldRenderer(field, translate)
-        elif dtype == "interval":
+        if isinstance(field, TimedeltaField):
             return TimeFieldRenderer(field, translate)
-        elif dtype == "email":
+        if isinstance(field, EmailField):
             return EmailFieldRenderer(field, translate)
     return TextFieldRenderer(field, translate)
 

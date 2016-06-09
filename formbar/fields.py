@@ -3,7 +3,6 @@
 import logging
 import re
 import sqlalchemy as sa
-from formbar.renderer import get_renderer
 from formbar.rules import Rule, Expression
 
 log = logging.getLogger(__name__)
@@ -195,6 +194,7 @@ class Field(object):
         :config: Field configuration
 
         """
+        from formbar.renderer import get_renderer
         self._form = form
         self._config = config
         self.sa_property = self._get_sa_property()
