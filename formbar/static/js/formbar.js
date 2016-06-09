@@ -490,6 +490,9 @@ var form = function (inputFilter, ruleEngine) {
 
   var deactivateRequired = function (fieldName) {
     var field = formFields[fieldName];
+    if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
+      $(".form-group[formgroup='" + fieldName + "']").removeClass("has-warning");
+    }
     if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
       $(".form-group[formgroup='" + fieldName + "']").removeClass("has-error");
     }
@@ -513,6 +516,9 @@ var form = function (inputFilter, ruleEngine) {
     var field = formFields[fieldName];
     if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
       $(".form-group[formgroup='" + fieldName + "']").removeClass("has-warning");
+    }
+    if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
+      $(".form-group[formgroup='" + fieldName + "']").removeClass("has-error");
     }
     $(".form-group[formgroup='" + fieldName + "']").find(".help-block[fieldtype='desired']").addClass("hidden");    
   }
