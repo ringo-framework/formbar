@@ -7,9 +7,14 @@ value into a string are named `from_<datatype>`."""
 import logging
 import datetime
 import re
-import sqlalchemy as sa
 from babel.dates import format_datetime, format_date
 from formbar.helpers import get_local_datetime, get_utc_datetime
+from formbar.fields import (
+    TimeField, TimedeltaField, DateTimeField, DateField, RelationField,
+    StringField, IntegerField, FloatField, EmailField, BooleanField, FileField,
+    ManytooneRelationField, OnetomanyRelationField, ManytomanyRelationField,
+    StringSelectionField, IntSelectionField
+)
 from datetime import timedelta
 
 log = logging.getLogger(__name__)
@@ -41,7 +46,7 @@ def from_timedelta(value):
 
 def to_timedelta(value):
     """Will return a python timedelta for the given value in
-    'HH:MM:SS', 'HH:MM' or 'MM' format. 
+    'HH:MM:SS', 'HH:MM' or 'MM' format.
     If the value can not be converted and
     exception is raised."""
     if not value:
@@ -49,13 +54,13 @@ def to_timedelta(value):
     try:
         ncolon = value.count(":")
         if ncolon == 2:
-            interval  = value.split(":")
+            interval = value.split(":")
             hours = int(interval[0])
             minutes = int(interval[1])
             seconds = int(interval[2])
             return timedelta(hours=hours, minutes=minutes, seconds=seconds)
         elif ncolon == 1:
-            interval  = value.split(":")
+            interval = value.split(":")
             hours = int(interval[0])
             minutes = int(interval[1])
             return timedelta(hours=hours, minutes=minutes)
@@ -272,7 +277,6 @@ def from_python(field, value):
     """
     serialized = ""
     locale = field._form._locale
-    ftype = field.get_type()
     try:
         if value is None:
             serialized = u""
@@ -300,19 +304,19 @@ def from_python(field, value):
             try:
                 serialized = value.id
             except AttributeError:
-                if ftype == "time":
+                if isinstance(field, TimeField):
                     td = datetime.timedelta(seconds=int(value))
                     serialized = from_timedelta(td)
-                elif ftype == "interval":
+                elif isinstance(field, TimedeltaField):
                     serialized = from_timedelta(value)
-                elif ftype == "datetime":
+                elif isinstance(field, DateTimeField):
                     value = get_local_datetime(value)
                     if locale == "de":
                         dateformat = "dd.MM.yyyy HH:mm:ss"
                     else:
                         dateformat = "yyyy-MM-dd HH:mm:ss"
                     serialized = format_datetime(value, format=dateformat)
-                elif ftype == "date":
+                elif isinstance(field, DateField):
                     if locale == "de":
                         dateformat = "dd.MM.yyyy"
                     else:
@@ -335,38 +339,40 @@ def to_python(field, value, relation_names):
     :returns: Instance of a python type
     """
 
-    dtype = field.get_type()
-    if isinstance(value, list) and dtype not in ['manytomany',
-                                                 'manytoone',
-                                                 'onetomany']:
+    if isinstance(value, list) and not isinstance(field, RelationField):
         # Special handling for multiple values (multiselect in
         # checkboxes eg.)
         tmp_list = []
         for v in value:
             tmp_list.append(to_python(field, v, relation_names))
         return tmp_list
-    if dtype in ['string', 'text']:
+
+    if isinstance(field, StringField):
         return to_string(value)
-    elif dtype == 'integer':
+    if isinstance(field, StringSelectionField):
+        return to_string(value)
+    elif isinstance(field, IntSelectionField):
         return to_integer(value)
-    elif dtype == 'float':
+    elif isinstance(field, IntegerField):
+        return to_integer(value)
+    elif isinstance(field, FloatField):
         return to_float(value)
-    elif dtype == 'email':
+    elif isinstance(field, EmailField):
         return to_email(value)
-    elif dtype == 'boolean':
+    elif isinstance(field, BooleanField):
         return to_boolean(value)
-    elif dtype == 'file':
+    elif isinstance(field, FileField):
         return to_file(value)
-    elif dtype == 'date':
+    elif isinstance(field, DateField):
         return to_date(value, field._form._locale)
-    elif dtype == 'time':
+    elif isinstance(field, TimeField):
         return to_timedelta(value).total_seconds()
-    elif dtype == 'interval':
+    elif isinstance(field, TimedeltaField):
         return to_timedelta(value)
-    elif dtype == 'datetime':
+    elif isinstance(field, DateTimeField):
         return to_datetime(value, field._form._locale)
     # Reltation handling
-    elif dtype == 'manytoone':
+    elif isinstance(field, ManytooneRelationField):
         rel = relation_names[field.name].mapper.class_
         if value in ("", None):
             return None
@@ -374,7 +380,7 @@ def to_python(field, value, relation_names):
         db = field._form._dbsession
         selected = getattr(field._form._item, field.name)
         return to_manytoone(rel, value, db, selected)
-    elif dtype == 'onetomany':
+    elif isinstance(field, OnetomanyRelationField):
         rel = relation_names[field.name].mapper.class_
         value = to_integer_list(value)
         if not value:
@@ -382,7 +388,7 @@ def to_python(field, value, relation_names):
         db = field._form._dbsession
         selected = getattr(field._form._item, field.name)
         return to_onetomany(rel, value, db, selected)
-    elif dtype in 'manytomany':
+    elif isinstance(field, ManytomanyRelationField):
         rel = relation_names[field.name].mapper.class_
         value = to_integer_list(value)
         if not value:
