@@ -589,6 +589,7 @@ var form = function (inputFilter, ruleEngine) {
      *
      */
     var setListener = function () {
+        var timeOutID;
         var changeEvent = function(e){
             if (formFields[e.target.name].state==='inactive'){
                 clearFieldValue(e.target.name);
@@ -600,9 +601,10 @@ var form = function (inputFilter, ruleEngine) {
             switch (e.target.tagName) {
                 case 'INPUT':
                 case 'TEXTAREA':
-                    if(!$(e.target).val() || !formFields[e.target.name].value){
+                    if(timeOutID) clearTimeout(timeOutID)
+                    timeOutID = setTimeout(function(){
                         changeEvent(e);
-                    };
+                    }, 300);
                     break;
                 default:
                     break;
