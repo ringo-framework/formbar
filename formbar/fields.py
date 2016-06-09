@@ -557,9 +557,6 @@ class RelationField(CollectionField):
 
     def get_options(self):
         options = []
-        _ = self._form._translate
-        if self.get_type() == 'manytoone':
-            options.append((_("no selection"), "", True))
         if self._form._dbsession:
             try:
                 clazz = self._get_sa_mapped_class()
@@ -581,7 +578,15 @@ class RelationField(CollectionField):
 
 
 class ManytooneRelationField(RelationField):
-    pass
+
+    def get_options(self):
+        """Manytoone Relations need an extra option to set to
+        selection explicit."""
+        options = []
+        _ = self._form._translate
+        options.append((_("no selection"), "", True))
+        options.extend(super(ManytooneRelationField, self).get_options())
+        return options
 
 
 class OnetooneRelationField(RelationField):
