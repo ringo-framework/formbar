@@ -197,7 +197,6 @@ class Field(object):
         from formbar.renderer import get_renderer
         self._form = form
         self._config = config
-        self.sa_property = self._get_sa_property()
         self._translate = translate
         self.renderer = get_renderer(self, translate)
         self._errors = []
@@ -245,19 +244,6 @@ class Field(object):
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
         return getattr(self._config, name)
-
-    def _get_sa_mapped_class(self):
-        # TODO: Raise Exception if this field is not a relation. (None)
-        # <2013-07-25 07:44>
-        return self.sa_property.mapper.class_
-
-    def _get_sa_property(self):
-        if not self._form._item:
-            return None
-        mapper = sa.orm.object_mapper(self._form._item)
-        for prop in mapper.iterate_properties:
-            if prop.key == self.name:
-                return prop
 
     def get_rules(self):
         """Returns a list of configured rules for the field."""
@@ -561,15 +547,12 @@ class RelationField(CollectionField):
     def get_options(self):
         options = []
         try:
-            clazz = self._get_sa_mapped_class()
+            sa_property = get_sa_property(self._form._item, self._config.name)
+            clazz = sa_property.mapper.class_
             unfiltered = self._form._dbsession.query(clazz)
             options.extend(self.filter_options(unfiltered))
         except:
-            # Catch exception here. This exception can happen when
-            # rendering the form in the preview of the formeditor. In
-            # this case the item is None and will fail to get the mapped
-            # class.
-            log.error("Can not get a mappend class for '%s' "
+            log.error("Failed to load options for '%s' "
                       "to load the option from db" % self.name)
         return options
 
