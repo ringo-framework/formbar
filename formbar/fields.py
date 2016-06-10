@@ -295,6 +295,109 @@ class Field(object):
             else:
                 return value
 
+    def add_error(self, error):
+        self._errors.append(error)
+
+    def add_warning(self, warning):
+        self._warnings.append(warning)
+
+    def get_errors(self):
+        return self._errors
+
+    def get_warnings(self):
+        return self._warnings
+
+    def render(self):
+        """Returns the rendererd HTML for the field"""
+        return self.renderer.render()
+
+    def is_relation(self):
+        return False
+
+    def is_desired(self):
+        """Returns true if field is set as desired in field configuration"""
+        return self.desired
+
+    def is_required(self):
+        """Returns true if the required flag of the field configuration
+        is set"""
+        return self.required
+
+    def is_readonly(self):
+        """Returns true if either the readonly flag of the field
+        configuration is set or the whole form is marked as readonly"""
+        return self.readonly or False
+
+# Singlevalue Fields.
+#####################################
+
+
+class StringField(Field):
+    pass
+
+
+class IntegerField(Field):
+    pass
+
+
+class FloatField(Field):
+    pass
+
+
+class BooleanField(Field):
+    pass
+
+
+class DateField(Field):
+    pass
+
+
+class DateTimeField(Field):
+    pass
+
+
+class TimedeltaField(Field):
+    pass
+
+
+class FileField(Field):
+    pass
+
+
+class TimeField(Field):
+    pass
+
+
+class EmailField(Field):
+    pass
+
+# Selection and Multiselection Fields.
+#####################################
+
+
+class CollectionField(Field):
+    """Field which can have one or more of predefined values.  If the
+    values are defined in the fields config please check
+    ::class::SelectionField.  If the values are defined by the relations
+    in the database please check ::class::RelationField."""
+
+    def get_options(self):
+        """Will return a list of tuples containing the options of the
+        field. The tuple contains in the following order:
+
+        1. the display value of the option,
+        2. its value and
+        3. a boolean flag if the options is a filtered one and
+        should not be visible in the selection.
+
+        Options can be filtered by defining the filter attribute of the
+        renderer. The expression will be applied on every option in the
+        selection. Keyword beginning with % are handled as variable. On
+        rule evaluation the keyword in the expression will be replaced
+        with the value of the item with the name of the variable.
+        """
+        raise NotImplementedError()
+
     def _build_filter_rule(self, expr_str, item):
         t = expr_str.split(" ")
         # The filter expression may reference values of the form using $
@@ -399,109 +502,6 @@ class Field(object):
             else:
                 filtered_options.append((o_label, o_value, True))
         return filtered_options
-
-    def add_error(self, error):
-        self._errors.append(error)
-
-    def add_warning(self, warning):
-        self._warnings.append(warning)
-
-    def get_errors(self):
-        return self._errors
-
-    def get_warnings(self):
-        return self._warnings
-
-    def render(self):
-        """Returns the rendererd HTML for the field"""
-        return self.renderer.render()
-
-    def is_relation(self):
-        return False
-
-    def is_desired(self):
-        """Returns true if field is set as desired in field configuration"""
-        return self.desired
-
-    def is_required(self):
-        """Returns true if the required flag of the field configuration
-        is set"""
-        return self.required
-
-    def is_readonly(self):
-        """Returns true if either the readonly flag of the field
-        configuration is set or the whole form is marked as readonly"""
-        return self.readonly or False
-
-# Singlevalue Fields.
-#####################################
-
-
-class StringField(Field):
-    pass
-
-
-class IntegerField(Field):
-    pass
-
-
-class FloatField(Field):
-    pass
-
-
-class BooleanField(Field):
-    pass
-
-
-class DateField(Field):
-    pass
-
-
-class DateTimeField(Field):
-    pass
-
-
-class TimedeltaField(Field):
-    pass
-
-
-class FileField(Field):
-    pass
-
-
-class TimeField(Field):
-    pass
-
-
-class EmailField(Field):
-    pass
-
-# Selection and Multiselection Fields.
-#####################################
-
-
-class CollectionField(Field):
-    """Field which can have one or more of predefined values.  If the
-    values are defined in the fields config please check
-    ::class::SelectionField.  If the values are defined by the relations
-    in the database please check ::class::RelationField."""
-
-    def get_options(self):
-        """Will return a list of tuples containing the options of the
-        field. The tuple contains in the following order:
-
-        1. the display value of the option,
-        2. its value and
-        3. a boolean flag if the options is a filtered one and
-        should not be visible in the selection.
-
-        Options can be filtered by defining the filter attribute of the
-        renderer. The expression will be applied on every option in the
-        selection. Keyword beginning with % are handled as variable. On
-        rule evaluation the keyword in the expression will be replaced
-        with the value of the item with the name of the variable.
-        """
-        raise NotImplementedError()
 
 
 class SelectionField(CollectionField):
