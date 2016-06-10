@@ -256,12 +256,15 @@ class Field(object):
         self.previous_value = value
 
     def get_value(self, default=None, expand=False):
-        return self._from_python(self.value, default, expand)
+        value = self._from_python(self.value, expand)
+        if not value and default:
+            return default
+        return value
 
     def get_previous_value(self, default=None, expand=False):
         return self._from_python(self.previous_value, default, expand)
 
-    def _from_python(self, value, default, expand):
+    def _from_python(self, value, expand):
         if expand:
             if not isinstance(value, list):
                 value = [value]
@@ -276,8 +279,6 @@ class Field(object):
             if value:
                 from formbar.converters import from_python
                 return from_python(self, value)
-            elif default:
-                return default
             else:
                 return value
 
