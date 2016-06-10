@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import logging
+import datetime
 import re
 import sqlalchemy as sa
 from formbar.rules import Rule, Expression
@@ -282,11 +283,9 @@ class Field(object):
         return value
 
     def _from_python(self, value):
-        if value:
-            from formbar.converters import from_python
-            return from_python(self, value)
-        else:
-            return value
+        if value is None:
+            value = ""
+        return unicode(value)
 
     def add_error(self, error):
         self._errors.append(error)
@@ -326,7 +325,11 @@ class Field(object):
 
 
 class StringField(Field):
-    pass
+
+    def _from_python(self, value):
+        if value is None:
+            value = ""
+        return unicode(value)
 
 
 class IntegerField(Field):
@@ -342,15 +345,35 @@ class BooleanField(Field):
 
 
 class DateField(Field):
-    pass
+
+    def _from_python(self, value):
+        from formar.converters import format_date
+        locale = self._form._locale
+        if locale == "de":
+            dateformat = "dd.MM.yyyy"
+        else:
+            dateformat = "yyyy-MM-dd"
+        return format_date(value, format=dateformat)
 
 
 class DateTimeField(Field):
-    pass
+
+    def _from_python(self, value):
+        from formar.converters import format_datetime, get_local_datetime
+        locale = self._form._locale
+        value = get_local_datetime(value)
+        if locale == "de":
+            dateformat = "dd.MM.yyyy HH:mm:ss"
+        else:
+            dateformat = "yyyy-MM-dd HH:mm:ss"
+        return format_datetime(value, format=dateformat)
 
 
 class TimedeltaField(Field):
-    pass
+
+    def _from_python(self, value):
+        from formar.converters import from_timedelta
+        return from_timedelta(value)
 
 
 class FileField(Field):
@@ -358,7 +381,11 @@ class FileField(Field):
 
 
 class TimeField(Field):
-    pass
+
+    def _from_python(self, value):
+        from formar.converters import from_timedelta
+        td = datetime.timedelta(seconds=int(value))
+        return from_timedelta(td)
 
 
 class EmailField(Field):
@@ -536,6 +563,26 @@ class SelectionField(CollectionField):
                 options.append((option[0], option[1], True))
         return options
 
+    def _from_python(self, value):
+        value = super(CollectionField, self)._from_python(value)
+        # Special handling for multiple values (multiselect in
+        # checkboxes eg.) which has be converted into a string by
+        # SQLAalchemy automatically. eg the python value "['1',
+        # '2']" will be converted into the _string_ "{1,2,''}". In
+        # this case we need to convert the value back into a list.
+        if value.startswith("{") and value.endswith("}"):
+            serialized = []
+            for v in value.strip("{").strip("}").split(","):
+                if isinstance(self, IntSelectionField):
+                    value = int(v)
+                elif isinstance(self, BooleanSelectionField):
+                    value = bool(v)
+                else:
+                    value = unicode(v)
+                serialized.append(value)
+            value = serialized
+        return value
+
 
 class IntSelectionField(SelectionField):
     """Field which can have one or more of predefined values. The
@@ -576,6 +623,20 @@ class RelationField(CollectionField):
                             "RelationField must be instanciated with an "
                             "available DB session.")
         super(RelationField, self).__init__(form, config, translate)
+
+    def _from_python(self, value):
+        if isinstance(value, list):
+            vl = []
+            for v in value:
+                try:
+                    vl.append(v.id)
+                except AttributeError:
+                    vl.append(v)
+            return vl
+        try:
+            return value.id
+        except AttributeError:
+            return value
 
     def _get_sa_mapped_class(self):
         sa_property = get_sa_property(self._form._item, self._config.name)
