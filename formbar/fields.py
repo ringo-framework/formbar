@@ -260,31 +260,33 @@ class Field(object):
         self.previous_value = value
 
     def get_value(self, default=None, expand=False):
-        value = self._from_python(self.value, expand)
+        """Will return the serialized value of the field.
+
+        If you want to get the deserialized (pythonic) value please access
+        self.value directly
+
+        If no value is set you can define a default value which will be
+        returned instead. The method take an expand parameter. If set to
+        true the function will try to return the literal value of the
+        field. This option has currently only an effect on
+        CollectionFields."""
+        value = self._from_python(self.value)
         if not value and default:
             return default
         return value
 
     def get_previous_value(self, default=None, expand=False):
-        return self._from_python(self.previous_value, default, expand)
+        value = self._from_python(self.previous_value)
+        if not value and default:
+            return default
+        return value
 
-    def _from_python(self, value, expand):
-        if expand:
-            if not isinstance(value, list):
-                value = [value]
-            ex_values = []
-            options = self.get_options()
-            for opt in options:
-                for v in value:
-                    if unicode(v) == unicode(opt[1]):
-                        ex_values.append("%s" % opt[0])
-            return ", ".join(ex_values)
+    def _from_python(self, value):
+        if value:
+            from formbar.converters import from_python
+            return from_python(self, value)
         else:
-            if value:
-                from formbar.converters import from_python
-                return from_python(self, value)
-            else:
-                return value
+            return value
 
     def add_error(self, error):
         self._errors.append(error)
@@ -371,6 +373,29 @@ class CollectionField(Field):
     values are defined in the fields config please check
     ::class::SelectionField.  If the values are defined by the relations
     in the database please check ::class::RelationField."""
+
+    def expand_value(self, value):
+        ex_values = []
+        if not isinstance(value, list):
+            value = [value]
+        options = self.get_options()
+        for opt in options:
+            for v in value:
+                if unicode(v) == unicode(opt[1]):
+                    ex_values.append("%s" % opt[0])
+        return ", ".join(ex_values)
+
+    def get_previous_value(self, default=None, expand=False):
+        value = super(CollectionField, self).get_previous_value(default)
+        if expand:
+            return self.expand_value(value)
+        return value
+
+    def get_value(self, default=None, expand=False):
+        value = super(CollectionField, self).get_value(default)
+        if expand:
+            return self.expand_value(value)
+        return value
 
     def get_options(self):
         """Will return a list of tuples containing the options of the
