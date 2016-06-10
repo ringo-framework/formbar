@@ -251,9 +251,18 @@ class Field(object):
         return getattr(self._config, name)
 
     def _from_python(self, value):
+        """Internal converter method to convert the internal value of
+        the field into a serialised version of the value which is used
+        in the form for rendering etc."""
         if value is None:
             value = ""
         return unicode(value)
+
+    def _to_python(self, value):
+        """Internal converter method to convert the external serielized
+        value of the field into a pythonic version of the value which is
+        used internally."""
+        return value
 
     def get_rules(self):
         """Returns a list of configured rules for the field."""
