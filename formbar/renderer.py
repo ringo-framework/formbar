@@ -18,6 +18,17 @@ template_lookup = TemplateLookup(directories=[template_dir],
 log = logging.getLogger(__name__)
 
 
+def get_field_type(field):
+    """Helper method to get the lowercase string version of the type of te
+    given field. This method exists because of backward compatibility in
+    the renderer templates which need the string version of the type in
+    the template for client sided type conversion.
+
+    Usually you should NOT USE this method and do decisions based on the
+    fields class type directly e.g using pythons buildin isinstance."""
+    return field.__class__.__name__.replace("Field", "").lower()
+
+
 def get_renderer(field, translate):
     """Returns a Renderer. The renderer is choosen based on the
     configured renderer in the field configuration. If no renderer is
@@ -287,6 +298,7 @@ class FieldRenderer(Renderer):
     def _get_template_values(self):
         values = {'field': self._field,
                   'renderer': self,
+                  'get_field_type': get_field_type,
                   '_': self.translate}
         return values
 
