@@ -250,6 +250,11 @@ class Field(object):
         """Make attributes from the configuration directly available"""
         return getattr(self._config, name)
 
+    def _from_python(self, value):
+        if value is None:
+            value = ""
+        return unicode(value)
+
     def get_rules(self):
         """Returns a list of configured rules for the field."""
         return self._config.get_rules()
@@ -281,11 +286,6 @@ class Field(object):
         if not value and default:
             return default
         return value
-
-    def _from_python(self, value):
-        if value is None:
-            value = ""
-        return unicode(value)
 
     def add_error(self, error):
         self._errors.append(error)
