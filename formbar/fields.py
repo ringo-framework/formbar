@@ -340,17 +340,30 @@ class StringField(Field):
             value = ""
         return unicode(value)
 
+    def _to_python(self, value):
+        from formbar.converters import to_string
+        return to_string(value)
+
 
 class IntegerField(Field):
-    pass
+
+    def _to_python(self, value):
+        from formbar.converters import to_integer
+        return to_integer(value)
 
 
 class FloatField(Field):
-    pass
+
+    def _to_python(self, value):
+        from formbar.converters import to_float
+        return to_float(value)
 
 
 class BooleanField(Field):
-    pass
+
+    def _to_python(self, value):
+        from formbar.converters import to_boolean
+        return to_boolean(value)
 
 
 class DateField(Field):
@@ -363,6 +376,10 @@ class DateField(Field):
         else:
             dateformat = "yyyy-MM-dd"
         return format_date(value, format=dateformat)
+
+    def _to_python(self, value):
+        from formbar.converters import to_date
+        return to_date(value)
 
 
 class DateTimeField(Field):
@@ -377,6 +394,10 @@ class DateTimeField(Field):
             dateformat = "yyyy-MM-dd HH:mm:ss"
         return format_datetime(value, format=dateformat)
 
+    def _to_python(self, value):
+        from formbar.converters import to_datetime
+        return to_datetime(value)
+
 
 class TimedeltaField(Field):
 
@@ -384,9 +405,16 @@ class TimedeltaField(Field):
         from formar.converters import from_timedelta
         return from_timedelta(value)
 
+    def _to_python(self, value):
+        from formbar.converters import to_timedelta
+        return to_timedelta(value)
+
 
 class FileField(Field):
-    pass
+
+    def _to_python(self, value):
+        from formbar.converters import to_file
+        return to_file(value)
 
 
 class TimeField(Field):
@@ -396,9 +424,16 @@ class TimeField(Field):
         td = datetime.timedelta(seconds=int(value))
         return from_timedelta(td)
 
+    def _to_python(self, value):
+        from formbar.converters import to_timedelta
+        return to_timedelta(value).total_seconds()
+
 
 class EmailField(Field):
-    pass
+
+    def _to_python(self, value):
+        from formbar.converters import to_email
+        return to_email(value)
 
 # Selection and Multiselection Fields.
 #####################################
@@ -592,6 +627,11 @@ class SelectionField(CollectionField):
             value = serialized
         return value
 
+    def _to_python(self, value):
+        if isinstance(value, list):
+            value = "{" + ",".join(map(unicode, value)) + "}"
+        return unicode(value)
+
 
 class IntSelectionField(SelectionField):
     """Field which can have one or more of predefined values. The
@@ -677,6 +717,17 @@ class ManytooneRelationField(RelationField):
         options.extend(super(ManytooneRelationField, self).get_options())
         return options
 
+    def _to_python(self, value):
+        from formbar.converters import to_manytoone, to_integer
+        # TODO: Get relation names () <2016-06-10 16:23>
+        rel = relation_names[self.name].mapper.class_
+        if value in ("", None):
+            return None
+        value = to_integer(value)
+        db = self._form._dbsession
+        selected = getattr(self._form._item, self.name)
+        return to_manytoone(rel, value, db, selected)
+
 
 class OnetooneRelationField(RelationField):
     # SEEMS TO BE UNUSED
@@ -684,8 +735,28 @@ class OnetooneRelationField(RelationField):
 
 
 class OnetomanyRelationField(RelationField):
-    pass
+
+    def _to_python(self, value):
+        from formbar.converters import to_onetomany, to_integer_list
+        # TODO: Get relation names () <2016-06-10 16:23>
+        rel = relation_names[self.name].mapper.class_
+        value = to_integer_list(value)
+        if not value:
+            return value
+        db = self._form._dbsession
+        selected = getattr(self._form._item, self.name)
+        return to_onetomany(rel, value, db, selected)
 
 
 class ManytomanyRelationField(RelationField):
-    pass
+
+    def _to_python(self, value):
+        from formbar.converters import to_manytomany, to_integer_list
+        # TODO: Get relation names () <2016-06-10 16:23>
+        rel = relation_names[self.name].mapper.class_
+        value = to_integer_list(value)
+        if not value:
+            return value
+        db = self._form._dbsession
+        selected = getattr(self._form._item, self.name)
+        return to_manytomany(rel, value, db, selected)
