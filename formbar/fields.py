@@ -104,6 +104,7 @@ class FieldFactory(object):
             "email": self._create_email,
             "integerselection": self._create_intselection,
             "stringselection": self._create_stringselection,
+            "booleanselection": self._create_booleanselection,
             "multiselection": self._create_multiselection,
             "manytoone": self._create_manytoone,
             "onetoone": self._create_onetoone,
@@ -160,6 +161,9 @@ class FieldFactory(object):
 
     def _create_stringselection(self, fieldconfig):
         return StringSelectionField(self.form, fieldconfig, self.translate)
+
+    def _create_booleanselection(self, fieldconfig):
+        return BooleanSelectionField(self.form, fieldconfig, self.translate)
 
     def _create_multiselection(self, fieldconfig):
         return MultiselectionField(self.form, fieldconfig, self.translate)
@@ -515,6 +519,12 @@ class IntSelectionField(SelectionField):
 
 
 class StringSelectionField(SelectionField):
+    """Field which can have one or more of predefined values. The
+    values are defined in the fields config."""
+    pass
+
+
+class BooleanSelectionField(SelectionField):
     """Field which can have one or more of predefined values. The
     values are defined in the fields config."""
     pass
