@@ -552,14 +552,17 @@ class RelationField(CollectionField):
                             "available DB session.")
         super(RelationField, self).__init__(form, config, translate)
 
+    def _get_sa_mapped_class(self):
+        sa_property = get_sa_property(self._form._item, self._config.name)
+        return sa_property.mapper.class_
+
     def is_relation(self):
         return True
 
     def get_options(self):
         options = []
         try:
-            sa_property = get_sa_property(self._form._item, self._config.name)
-            clazz = sa_property.mapper.class_
+            clazz = self._get_sa_mapped_class()
             unfiltered = self._form._dbsession.query(clazz)
             options.extend(self.filter_options(unfiltered))
         except:
