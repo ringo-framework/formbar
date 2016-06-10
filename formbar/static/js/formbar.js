@@ -4,8 +4,8 @@
  * @function
  * reduce is defined as a shortcut to [].reduce()
  */
-var reduce = Function.prototype.call.bind([].reduce)
-var map = Function.prototype.call.bind([].map)
+var reduce = Function.prototype.call.bind([].reduce);
+var map = Function.prototype.call.bind([].map);
 
     /** 
      * @module
@@ -160,6 +160,21 @@ var ruleEngine = function () {
         return true;
     }
 
+    /**
+     * @function 
+     * 
+     * onFieldChange is exported.
+     * It is used as a callable for field-change-events
+     * 
+     * @param {string} fieldname - the name of the field / variable which is changed
+     * 
+     * @param {string} currentValues - holds the current state of all fields
+     * 
+     * @param {string} callBack - a function to call back after evaluation
+     *
+     * @param {rule} rule - the current rule to be evaluated
+     *  
+     */
     var evaluateRule = function(fieldname, currentValues, callback, rule){
         checkFields(rule, parseExpression(rule, currentValues), callback, fieldname);
     }
@@ -371,6 +386,14 @@ var form = function (inputFilter, ruleEngine) {
     };
 
 
+    /**
+     * @function
+     * 
+     * extract rules from a div
+     * 
+     * @param {Object} element - selected div
+     * 
+     */
     var getRules = function(element){
         var rules = element.getAttribute("rules").split(";");
         return rules.map(function(x){
@@ -457,6 +480,18 @@ var form = function (inputFilter, ruleEngine) {
 
     }
 
+    /**
+     * @function
+     * 
+     * in case of a negative result we have to deactivate some fields wherein the values are deleted
+     * 
+     * in case of a positive result we have to activate the fields again and reset status quo ante
+     * 
+     * @param {Object} result - evaluation result of the rule
+     *  
+     * @param {Object} div - selected div
+     * 
+     */
     var handleReadOnly = function (result, div) {
         fieldsToUpdate = map(div.find(".form-group"), (function (x) {
             return x.getAttribute("formgroup");
@@ -487,7 +522,14 @@ var form = function (inputFilter, ruleEngine) {
         });
     }
 
-
+    /**
+     * @function
+     * 
+     * handles visuals
+     * 
+     * @param {string} fieldname - the name of the field / variable which is changed
+     * 
+     */
     var deactivateRequired = function (fieldName) {
         var field = formFields[fieldName];
         if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
@@ -501,6 +543,14 @@ var form = function (inputFilter, ruleEngine) {
 
     }
 
+    /**
+     * @function
+     * 
+     * handles visuals
+     * 
+     * @param {string} fieldname - the name of the field / variable which is changed
+     * 
+     */
     var activateRequired = function (fieldName) {
         var field = formFields[fieldName];
         if (field.required === "True" && !$(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
@@ -513,6 +563,14 @@ var form = function (inputFilter, ruleEngine) {
         $(".form-group[formgroup='" + fieldName + "']").find(".help-block[fieldtype='required']").removeClass("hidden");
     }
 
+    /**
+     * @function
+     * 
+     * handles visuals
+     * 
+     * @param {string} fieldname - the name of the field / variable which is changed
+     * 
+     */
     var deactivateDesired = function (fieldName) {
         var field = formFields[fieldName];
         if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
@@ -523,6 +581,15 @@ var form = function (inputFilter, ruleEngine) {
         }
         $(".form-group[formgroup='" + fieldName + "']").find(".help-block[fieldtype='desired']").addClass("hidden");    
     }
+
+    /**
+     * @function
+     * 
+     * handles visuals
+     * 
+     * @param {string} fieldname - the name of the field / variable which is changed
+     * 
+     */
     var activateDesired = function (fieldName) {
         var field = formFields[fieldName];
         if (field.desired === "True" && !$(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
@@ -544,6 +611,7 @@ var form = function (inputFilter, ruleEngine) {
             toggleConditional(data, divId, rule);
         });
     };
+
     /**
      * @function
      * 
@@ -561,6 +629,14 @@ var form = function (inputFilter, ruleEngine) {
     };
 
 
+    /**
+     * @function
+     * 
+     * evaluate every rule attached to a given element
+     * 
+     * @param {string} fieldname - the name of the field / variable which is changed
+     * 
+     */
     var evaluateRules = function(element){
         element.rules.forEach(function(rule){
             ruleEngine.evaluateRule(element.name, formFields, function (result, divId, rule) {
@@ -575,6 +651,14 @@ var form = function (inputFilter, ruleEngine) {
         });
     }
 
+    /**
+     * @function
+     * 
+     * handles visuals
+     * 
+     * @param {string} fieldname - the name of the field / variable which is changed
+     * 
+     */
     var setStateForCurrentField = function (fieldName) {
         var element = formFields[fieldName];
         if (!element.value.length && element.desired === "True") activateDesired(fieldName);
@@ -582,10 +666,11 @@ var form = function (inputFilter, ruleEngine) {
         if (!!element.value.length && element.desired === "True") deactivateDesired(fieldName);
         if (!!element.value.length && element.required === "True") deactivateRequired(fieldName);
     }
+
     /**
      * @function
      * 
-     * sets the global listener for changes in INPUT / SELECT 
+     * sets the global listener for changes in INPUT / SELECT / TEXTAREA
      *
      */
     var setListener = function () {
@@ -652,6 +737,11 @@ var form = function (inputFilter, ruleEngine) {
  * 
  */
 var formbar = function (form) {
+    /**
+     * @function 
+     * retrieves the browserlanguage from the navigator oject of the browser
+     *
+     */
     var getBrowserLanguage = function getBrowserLanguage() {
         var lang = "en";
         if (navigator.browserLanguage) {
