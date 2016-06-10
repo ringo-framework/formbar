@@ -13,7 +13,7 @@ from formbar.fields import (
     TimeField, TimedeltaField, DateTimeField, DateField, RelationField,
     StringField, IntegerField, FloatField, EmailField, BooleanField, FileField,
     ManytooneRelationField, OnetomanyRelationField, ManytomanyRelationField,
-    StringSelectionField, IntSelectionField
+    StringSelectionField, IntSelectionField, BooleanSelectionField
 )
 from datetime import timedelta
 
@@ -351,6 +351,8 @@ def to_python(field, value, relation_names):
         return to_string(value)
     if isinstance(field, StringSelectionField):
         return to_string(value)
+    if isinstance(field, BooleanSelectionField):
+        return to_boolean(value)
     elif isinstance(field, IntSelectionField):
         return to_integer(value)
     elif isinstance(field, IntegerField):
