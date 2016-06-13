@@ -1,3 +1,13 @@
+0.18.2
+======
+- Fixed error on evaluating checkboxes.
+
+0.18.1
+======
+- Fixed error that submitted unsaved values are not displayed in the form again if the
+  form contains errors. This results in loosing the new entered data.
+- Fixed error of dataloss in case of readonly checkbox fields on submit.
+
 0.18.0
 ======
 - Added new HTML directive. This can be used to insert custom html code in the

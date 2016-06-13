@@ -293,7 +293,7 @@ function convertValue(value, field) {
     // quotes. Please note that the datatype attribute is currently only
     // renderered for the following fields:
     //  * radio
-    if ((field.attr("datatype") && field.attr("datatype") == "string")) {
+    if ((field.attr("datatype") && field.attr("datatype") == "string" && value.indexOf("[") < 0)) {
         cvalue = "'"+value+"'"
     }
     if ((field.attr("datatype") && field.attr("datatype") == "date")) {
@@ -333,7 +333,7 @@ function evaluate(element) {
                             allVals.push(convertValue($(this).val(), field));
                         }
                     });
-                    value = '[' + allVals.join() + ']';
+                    value = JSON.stringify(allVals).replace(/"/g, "'");
                     break;
                 default:
                     value = convertValue(field.val(), field);
@@ -343,7 +343,7 @@ function evaluate(element) {
             // First try to get the unexpaned value, if there is no
             // value get the textvalue of the field. (Which is usually
             // the expanded value).
-            if (!value && field.is("div")) {
+            if (value == "''" && field.is("div")) {
                 value = field.attr("value") || field.text()
                 value = convertValue(value, field);
             }
@@ -488,7 +488,10 @@ function toggleSubmit(element) {
  * identified by its id. See textarea.mako for more details. */
 function calcRemainingChars(id, msg) {
     var text_max = $('#'+id).attr("maxlength");
-    var text_length = $('#'+id).val().length;
+    var text = $('#'+id).val()
+    // Handle newlines in a special way and count the as two chars.
+    var num_newlines = text.split("").filter(function(x){return x === '\n'}).length
+    var text_length = text.length + num_newlines;
     var text_remaining = text_max - text_length;
     $('#'+id+'_feedback').html(text_remaining + ' ' + msg);
 }
