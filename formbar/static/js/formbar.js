@@ -689,7 +689,7 @@ var form = function (inputFilter, ruleEngine) {
                     if(timeOutID) clearTimeout(timeOutID)
                     timeOutID = setTimeout(function(){
                         changeEvent(e);
-                    }, 300);
+                    }, 400);
                     break;
                 default:
                     break;
