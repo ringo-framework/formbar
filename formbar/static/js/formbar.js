@@ -538,8 +538,7 @@ var form = function (inputFilter, ruleEngine) {
         if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
             $(".form-group[formgroup='" + fieldName + "']").removeClass("has-error");
         }
-        $(".form-group[formgroup='" + fieldName + "']").find(".help-block[fieldtype='required']").addClass("hidden");
-        $(".form-group[formgroup='" + fieldName + "']").find(".text-warning").removeClass("text-warning");
+        $(".form-group[formgroup='" + fieldName + "']").find(".help-block").addClass("hidden");
 
     }
 
@@ -553,6 +552,7 @@ var form = function (inputFilter, ruleEngine) {
      */
     var activateRequired = function (fieldName) {
         var field = formFields[fieldName];
+        $(".form-group[formgroup='" + fieldName + "']").find(".help-block").addClass("hidden");
         if (field.required === "True" && !$(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
             if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
                 $(".form-group[formgroup='" + fieldName + "']").removeClass("has-warning");
@@ -579,7 +579,7 @@ var form = function (inputFilter, ruleEngine) {
         if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
             $(".form-group[formgroup='" + fieldName + "']").removeClass("has-error");
         }
-        $(".form-group[formgroup='" + fieldName + "']").find(".help-block[fieldtype='desired']").addClass("hidden");    
+        $(".form-group[formgroup='" + fieldName + "']").find(".help-block").addClass("hidden");    
     }
 
     /**
@@ -592,6 +592,10 @@ var form = function (inputFilter, ruleEngine) {
      */
     var activateDesired = function (fieldName) {
         var field = formFields[fieldName];
+        $(".form-group[formgroup='" + fieldName + "']").find(".help-block").addClass("hidden");
+        if ($(".form-group[formgroup='" + fieldName + "']").hasClass("has-error")) {
+            $(".form-group[formgroup='" + fieldName + "']").removeClass("has-error");
+        }
         if (field.desired === "True" && !$(".form-group[formgroup='" + fieldName + "']").hasClass("has-warning")) {
             $(".form-group[formgroup='" + fieldName + "']").addClass("has-warning");
             $(".form-group[formgroup='" + fieldName + "']").find(".help-block[fieldtype='desired']").removeClass("hidden");
