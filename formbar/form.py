@@ -718,10 +718,10 @@ class Field(object):
         return len(self.get_errors()) > 0
 
     def get_errors(self):
-        return self._errors
+        return set(self._errors)
 
     def get_warnings(self):
-        return self._warnings
+        return set(self._warnings)
 
     def is_missing(self):
         """Return True if this field is a desired or required field and
