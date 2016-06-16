@@ -1,3 +1,7 @@
+0.18.3
+======
+- Fixed in selection filtering with user provided value.
+
 0.18.2
 ======
 - Fixed error on evaluating checkboxes.
