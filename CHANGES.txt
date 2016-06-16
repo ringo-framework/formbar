@@ -1,6 +1,6 @@
 0.18.3
 ======
-- Fixed in selection filtering with user provided value.
+- Fixed selection filtering with user provided values.
 
 0.18.2
 ======
