@@ -468,16 +468,27 @@ var form = function (inputFilter, ruleEngine) {
      */
     var toggleConditional = function (result, divId, rule) {
         var element = $("#" + divId);
-        if ($(element).hasClass("readonly")){
+        if (element.hasClass("readonly")){
             handleReadOnly(result, element);
         } else {
-            if (result){
-                $(element).fadeIn("1500").removeClass("hidden");
-            } else {
-                $(element).fadeOut("1500").addClass("hidden");
-            }
+            handleVisbility(result, element);
         } 
 
+    }
+
+    var handleVisbility = function(result, element){
+        if (result){
+            element.fadeIn("1500").removeClass("hidden");
+        } else {
+            element.fadeOut("1500").addClass("hidden");
+        }
+        handleReadOnly(result, element);
+    }
+
+    var findFieldsToUpdate= function(div){
+        return map(div.find(".form-group"), (function (x) {
+            return x.getAttribute("formgroup");
+        }));
     }
 
     /**
@@ -493,9 +504,7 @@ var form = function (inputFilter, ruleEngine) {
      * 
      */
     var handleReadOnly = function (result, div) {
-        fieldsToUpdate = map(div.find(".form-group"), (function (x) {
-            return x.getAttribute("formgroup");
-        }));
+        fieldsToUpdate = findFieldsToUpdate(div);
 
         fieldsToUpdate.forEach(function (fieldName) {
             var field = formFields[fieldName];
