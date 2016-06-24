@@ -7,7 +7,7 @@
     % endif
   </div>
 % else:
-  <textarea ${'' if renderer._active else 'readonly=readonly '} class="form-control" maxlength="${field.renderer._config._tree.attrib.get("maxlength")}" id="${field.id}" name="${field.name}" rows="${field.renderer.rows}">${field.get_value()}</textarea>
+  <textarea  datatype="${field.get_type()}" ${'' if renderer._active else 'readonly=readonly '} class="form-control" maxlength="${field.renderer._config._tree.attrib.get("maxlength")}" id="${field.id}" name="${field.name}" rows="${field.renderer.rows}">${field.get_value()}</textarea>
   % if field.renderer._config._tree.attrib.get("maxlength"):
     <div id="${field.id}_feedback" class="pull-right text-muted small"></div>
     <script>
