@@ -114,6 +114,7 @@ var ruleEngine = function () {
      */
     var convertValue = function(currentValue){
         var v = currentValue.value
+        if (currentValue.state === 'inactive') return "None";
         switch(currentValue.datatype){
             case 'date':
             case 'text':
