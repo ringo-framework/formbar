@@ -119,7 +119,7 @@ var ruleEngine = function () {
             case 'date':
             case 'text':
             case 'string':
-                return (!stringContainsArray(v))?"'"+v+"'":v;
+                return (!stringContainsArray(v))?"'"+v.replace(/\n/g,'')+"'":v;
             default:
                 return currentValue.value || "None";
         }
