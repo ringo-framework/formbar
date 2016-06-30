@@ -328,7 +328,7 @@ var form = function (inputFilter, ruleEngine) {
                     $("[name='" + fieldName + "']:visible:checked").each(function (i, x) { $(x).prop("checked", false); })
                     break;
                 case "radio":
-                    $("input[name='_lm_employment_category_underemployed_reduced']:checked").prop("checked",false)
+                    $("input[name='"+ fieldName +"'][value='']").prop("checked",true)
                     break;
                 default:
                     $("input[name='" + fieldName + "']").val("");
