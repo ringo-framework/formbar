@@ -110,10 +110,11 @@
       % elif child.tag == "td":
         <td colspan="${child.attrib.get('colspan', '')}" class="${child.attrib.get('class', '')}" rowspan="${child.attrib.get('rowspan', '')}" width="${child.attrib.get('width', '')}">
       ## Conditionals
-      % elif child.tag == "if" and child.attrib.get("static") != "true":    
+      % elif child.tag == "if" and child.attrib.get("static") != "true":
           <% is_active = Rule(child.attrib.get("expr")).evaluate(form.merged_data) %>
-          <% is_readonly = child.attrib.get("type")== "readonly" %>
-          <div id="${id(child)}" class="${'hidden' if  not is_active and not is_readonly else ''} formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
+          <div id="${id(child)}" class="formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
+      % elif child.tag == "html":
+        ${ElementTree.tostring(child) | n}
       % endif
       % if child.attrib.get("static") != "true" or Rule(child.attrib.get("expr")).evaluate(form.merged_data):
         ${self.render_recursive(child, mode, active=is_active)}
