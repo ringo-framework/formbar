@@ -908,3 +908,15 @@ jQuery.fn.preventDoubleSubmission = function() {
     // Keep chainability
     return this;
 }
+
+/* Method to calculate the remaining chars in the given textarea. Textarea is
+ * identified by its id. See textarea.mako for more details. */
+function calcRemainingChars(id, msg) {
+    var text_max = $('#'+id).attr("maxlength");
+    var text = $('#'+id).val()
+    // Handle newlines in a special way and count the as two chars.
+    var num_newlines = text.split("").filter(function(x){return x === '\n'}).length
+    var text_length = text.length + num_newlines;
+    var text_remaining = text_max - text_length;
+    $('#'+id+'_feedback').html(text_remaining + ' ' + msg);
+}
