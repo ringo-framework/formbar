@@ -311,7 +311,6 @@ class FieldRenderer(Renderer):
         html.append(HTML.tag("div", _closed=False,
                     rules=u"{}".format(";".join(self._field.rules_to_string)),
                     formgroup="{}".format(self._field.name),
-                    id="{}".format(self._field.name),
                     desired="{}".format(self._field.desired),
                     required="{}".format(self._field.required),
                     class_=("form-group %s %s %s %s" % class_options)))
