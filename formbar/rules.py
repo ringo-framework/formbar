@@ -15,7 +15,8 @@ class Rule(Expression):
     """
 
     def __init__(self, expression, msg=None,
-                 mode='post', triggers='error'):
+                 mode='post', triggers='error',
+                 desired=False, required=False):
         """Initialize the rule with the expression and mode.
 
         :expr: string represention of the expression which will be
@@ -40,6 +41,11 @@ class Rule(Expression):
         self.triggers = triggers
         if triggers is None:
             self.triggers = 'error'
+        self.required = required
+        self.desired = desired
+
+    def __repr__(self):
+        return u"{},{}".format(self._expression, self.triggers)
 
     def evaluate(self, values=None):
         """Returns True or False. Evaluates the expression of the rule against

@@ -7,6 +7,7 @@ from formbar.converters import (
     DeserializeException, from_python, to_python
 )
 
+import config
 
 log = logging.getLogger(__name__)
 
@@ -187,7 +188,7 @@ class Form(object):
         self.submitted_data = {}
         """The submitted data from the user. If validation fails, then
         this values are used to rerender the form."""
-        self.loaded_data = self.serialize(self._get_data_from_item())
+        self.loaded_data = self._get_data_from_item()
         """This is the initial data loaded from the given item. Used to
         render the readonly forms"""
         self.merged_data = self.loaded_data
@@ -313,6 +314,10 @@ class Form(object):
         for name, field in self._config.get_fields().iteritems():
             fields[name] = Field(self, field, self._translate)
         return fields
+
+    @property
+    def pages(self):
+        return self._config.get_pages()
 
     def has_errors(self):
         """Returns True if one of the fields in the form has errors"""
@@ -470,7 +475,7 @@ class Form(object):
         """
 
         if not submitted:
-            unvalidated = self.loaded_data
+            unvalidated = self.serialize(self.loaded_data)
         else:
             try:
                 unvalidated = submitted.mixed()
@@ -504,7 +509,8 @@ class Form(object):
 
         # Custom validation. User defined external validators.
         for validator in self.external_validators:
-            if validator._field not in converted and validator._field is not None:
+            if (validator._field not in converted
+                    and validator._field is not None):
                 # Ignore validator if the value can't be converted.
                 continue
             if not validator.check(converted):
@@ -545,6 +551,18 @@ class Form(object):
                 self._dbsession.add(self._item)
         return self._item
 
+    def __repr__(self):
+        def f(field):
+            name = field.name
+            value = field.get_value()
+            errors = field.has_errors
+            warnings = field.has_warnings
+            return "{}:\t{} \terrors: {} warnings: {}".format(name, value, errors, warnings)
+        fields = [f(v) for _, v in self.fields.iteritems()]
+        lines = "\n".join(fields)
+        lines +="\nhas errors: {}".format(self.has_errors())
+        return lines
+
 
 class Field(object):
     """Wrapper for fields in the form. The purpose of this class is to
@@ -564,7 +582,6 @@ class Field(object):
         self.renderer = get_renderer(self, translate)
         self._errors = []
         self._warnings = []
-
         # Set default value
         value = getattr(self._config, "value")
 
@@ -603,6 +620,20 @@ class Field(object):
         self.previous_value = None
         """Value as string of the field. Will be set on rendering the
         form"""
+
+    @property
+    def rules_to_string(self):
+        return [u"{}".format(r) for r in self.get_rules()]
+
+    def __repr__(self):
+        rules = "rules: \n\t\t{}".format("\n\t".join(self.rules_to_string))
+        field = u"field:\t\t{}".format(self.name)
+        value = u"value:\t\t{}, {}".format(self.get_value(), type(self.get_value()))
+        required = "required:\t{}".format(self.is_required)
+        desired = "desired:\t{}".format(self.is_desired)
+        validated = "validated:\t{}".format(self.is_validated)
+        _type = "type:\t\t{}".format(self.get_type())
+        return "\n".join([field, required, desired, value, _type, validated, rules])+"\n"
 
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
@@ -646,6 +677,66 @@ class Field(object):
     def get_rules(self):
         """Returns a list of configured rules for the field."""
         return self._config.get_rules()
+
+    def get_warning_rules(self):
+        return [r for r in self.get_rules()
+                if r.triggers == "warning"]
+
+    def get_error_rules(self):
+        return [r for r in self.get_rules()
+                if r.triggers == "error"]
+
+    def has_warning_rules(self):
+        """Returns a True if there is at least on rule that can trigger
+        a warning."""
+        return len(self.get_warning_rules()) > 0
+
+    def has_error_rules(self):
+        """Returns a True if there is at least on rule that can trigger
+        a error."""
+        return len(self.get_error_rules()) > 0
+
+    @property
+    def is_empty(self):
+        if self.get_value() is None:
+            return True
+        if self.get_type() == "integer" and self.get_value() is not None:
+            return False
+        return bool(self.get_value()) is False
+
+    @property
+    def empty_message(self):
+        if self.is_required:
+            return config.required_msg
+        return config.desired_msg
+
+    @property
+    def has_warnings(self):
+        return len(self.get_warnings()) > 0
+
+    @property
+    def has_errors(self):
+        return len(self.get_errors()) > 0
+
+    def get_errors(self):
+        return set(self._errors)
+
+    def get_warnings(self):
+        return set(self._warnings)
+
+    def is_missing(self):
+        """Return True if this field is a desired or required field and
+        the value of the fields is actually missing in the current
+        context after all rules have been evaluated. Note the rules the
+        are not evaluated because the field is in an inactive
+        conditional will have the result==None which means the rule is
+        not evaluated."""
+        if self.get_value():
+            return False
+        for rule in self.get_rules():
+            if (rule.desired or rule.required) and rule.result is False:
+                return True
+        return False
 
     def set_value(self, value):
         self.value = value
@@ -701,7 +792,7 @@ class Field(object):
             # in the option. A bare "%" will give the value of the
             # option.
             if x.startswith("%"):
-                key = x.strip("%") 
+                key = x.strip("%")
                 value = "$%s" % (key or "value")
             # @ marks the item of the current fields form item.
             elif x.startswith("@"):
@@ -844,24 +935,21 @@ class Field(object):
     def add_warning(self, warning):
         self._warnings.append(warning)
 
-    def get_errors(self):
-        return self._errors
-
-    def get_warnings(self):
-        return self._warnings
-
-    def render(self):
+    def render(self, active):
         """Returns the rendererd HTML for the field"""
+        self.renderer._active = active
         return self.renderer.render()
 
     def is_relation(self):
         return isinstance(self.sa_property,
                           sa.orm.RelationshipProperty)
 
+    @property
     def is_desired(self):
         """Returns true if field is set as desired in field configuration"""
         return self.desired
 
+    @property
     def is_required(self):
         """Returns true if the required flag of the field configuration
         is set"""

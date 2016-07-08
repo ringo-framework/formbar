@@ -187,6 +187,12 @@ label sup {
     transition: 1s;
 }
 
+.form-group.inactive input {
+    opacity: 0.4;
+    transition: 1s;
+    cursor: not-allowed;
+}
+
 .section.inactive {
     opacity: 0.4;
     transition: 1s;

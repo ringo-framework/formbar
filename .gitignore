@@ -1,5 +1,5 @@
-*.py[cod]
-
+*.py[code]
+setup.cfge
 # C extensions
 *.so
 

@@ -9,6 +9,9 @@ from formbar.rules import Rule
 log = logging.getLogger(__name__)
 _ = gettext.gettext
 
+required_msg = _("This field is required. You must provide a value")
+desired_msg = _("This field is desired. Please provide a value")
+
 
 def load(path):
     """Return the parsed XML form the given file. The function will load
@@ -662,15 +665,13 @@ class Field(Config):
         # desired flag
         if self.required:
             expr = "bool($%s)" % self.name
-            msg = _("This field is required. You must provide a value")
             mode = "pre"
-            rules.append(Rule(expr, msg, mode))
+            rules.append(Rule(expr, required_msg, mode))
         if self.desired:
             expr = "bool($%s)" % self.name
-            msg = _("This field is desired. Please provide a value")
             mode = "pre"
             triggers = "warning"
-            rules.append(Rule(expr, msg, mode, triggers))
+            rules.append(Rule(expr, desired_msg, mode, triggers))
         # Add rules added the the field.
         for rule in self._tree.findall('rule'):
             expr = rule.attrib.get('expr')
