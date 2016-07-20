@@ -829,7 +829,7 @@ class Field(object):
                     expr_str = expr_str.replace(x, "%s" % unicode(value))
                 else:
                     expr_str = expr_str.replace(x, "'%s'" % unicode(value))
-        return Rule(str(expr_str))
+        return Rule(expr_str)
 
     def _load_options_from_db(self):
         # Get mapped clazz for the field
@@ -879,7 +879,7 @@ class Field(object):
                         value = option[2].get(key, "")
                     else:
                         value = getattr(option, key)
-                    values[str(key)] = unicode(value)
+                    values[key] = unicode(value)
                 result = rule.evaluate(values)
                 if result:
                     filtered_options.append((o_label, o_value, True))
