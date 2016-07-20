@@ -1,3 +1,20 @@
+0.20.2
+======
+Bugfixes.
+
+0.20.1
+======
+Bugfixes.
+
+0.20.0
+======
+Large rewrite of the Javascript part and large parts of formbar to make
+formbar more dynamic in case of showing messages on errors and warnings.
+
+0.18.3
+======
+- Fixed selection filtering with user provided values.
+
 0.18.2
 ======
 - Fixed error on evaluating checkboxes.
