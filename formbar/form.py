@@ -793,7 +793,7 @@ class Field(object):
             # option.
             if x.startswith("%"):
                 key = x.strip("%")
-                value = "$%s" % (key or "value")
+                value = "*%s" % (key or "value")
             # @ marks the item of the current fields form item.
             elif x.startswith("@"):
                 key = x.strip("@")
@@ -829,7 +829,7 @@ class Field(object):
                     expr_str = expr_str.replace(x, "%s" % unicode(value))
                 else:
                     expr_str = expr_str.replace(x, "'%s'" % unicode(value))
-        return Rule(expr_str)
+        return Rule(expr_str.replace("*", "$"))
 
     def _load_options_from_db(self):
         # Get mapped clazz for the field
