@@ -860,6 +860,17 @@ var formbar = function (form) {
         setSelectedPage(e);
         $('.formbar-page').hide();
         selectedFormpage.show();
+
+        // Hack! Force a resize event on page change. This will trigger
+        // repainting the page. This hack fixes issues with sizes of elements
+        // on hiden pages (E.g dygraphs). Those element might have a size of 0
+        // because the elements where hidden. Triggering a resize of the
+        // window after the pagehas become visible will repaint the page with
+        // correct sizes.
+        var evt = document.createEvent('UIEvents');
+        evt.initUIEvent('resize', true, false,window,0);
+        window.dispatchEvent(evt);
+
         hideSubmitButtonOnInputlessPage(selectedFormpage);
     };
 
