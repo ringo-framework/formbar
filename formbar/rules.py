@@ -54,4 +54,6 @@ class Rule(Expression):
         """
         if values is None:
             values = {}
-        return bool(self._evaluate(self._expression_tree, values))
+        #return bool(self._evaluate(self._expression_tree, values))
+        # Do not force boolean value here to enable calculations.
+        return self._evaluate(self._expression_tree, values)
