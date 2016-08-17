@@ -1,3 +1,8 @@
+0.20.3
+======
+- Allow user defined values on form initialisation. Needed for specific rules
+  evaluations which relay on external data.
+
 0.20.2
 ======
 Bugfixes.
