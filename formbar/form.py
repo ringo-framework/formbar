@@ -628,12 +628,12 @@ class Field(object):
     def __repr__(self):
         rules = "rules: \n\t\t{}".format("\n\t".join(self.rules_to_string))
         field = u"field:\t\t{}".format(self.name)
-        value = u"value:\t\t{}, {}".format(self.get_value(), type(self.get_value()))
+        value = u"value:\t\t{}, {}".format(repr(self.get_value()), type(self.get_value()))
         required = "required:\t{}".format(self.is_required)
         desired = "desired:\t{}".format(self.is_desired)
-        validated = "validated:\t{}".format(self.is_validated)
+        #validated = "validated:\t{}".format(self.is_validated)
         _type = "type:\t\t{}".format(self.get_type())
-        return "\n".join([field, required, desired, value, _type, validated, rules])+"\n"
+        return "\n".join([field, required, desired, value, _type, rules])+"\n"
 
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
