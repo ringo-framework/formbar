@@ -480,7 +480,7 @@ class Form(object):
         """
 
         if not submitted:
-            unvalidated = self.serialize(self.loaded_data)
+            unvalidated = self.serialize(self.merged_data)
         else:
             try:
                 unvalidated = submitted.mixed()
