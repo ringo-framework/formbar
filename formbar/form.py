@@ -109,7 +109,8 @@ class Form(object):
 
     def __init__(self, config, item=None, dbsession=None, translate=None,
                  change_page_callback={}, renderers={}, request=None,
-                 csrf_token=None, eval_url=None, url_prefix="", locale=None):
+                 csrf_token=None, eval_url=None, url_prefix="", locale=None,
+                 values=None):
         """Initialize the form with ``Form`` configuration instance and
         optional an SQLAlchemy mapped object.
 
@@ -138,6 +139,8 @@ class Form(object):
         :url_prefix: Prefix which can be used for all URL in the form.
         :locale: String of the locale of the form. Used for proper
         display of the date and number functions.
+        :values: Dictionary with values to be prefilled/overwritten in
+                 the rendered form.
         """
         self._config = config
         self._item = item
@@ -191,10 +194,12 @@ class Form(object):
         self.loaded_data = self._get_data_from_item()
         """This is the initial data loaded from the given item. Used to
         render the readonly forms"""
-        self.merged_data = self.loaded_data
+        if not values:
+            values = {}
+        self.merged_data = dict(self.loaded_data.items() + values.items())
         """This is merged date from the initial data loaded from the
-        given item. And userprovied data. The user defined values are
-        merged on render time"""
+        given item and userprovided values on form initialisation. The
+        user defined values are merged again on render time"""
         self.warnings = []
         """Form wide warnings. This list contains warnings which affect
         the entire form and not specific fields. These warnings are show
