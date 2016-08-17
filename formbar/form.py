@@ -411,6 +411,13 @@ class Form(object):
 
         # Merge the items_values with the extra provided values. Extra
         # values will overwrite the item_values.
+
+        #  TODO: Remove merging user provided values on render time as
+        #  this is to late for values used on form validation which must
+        #  be already present on form initialisation. So user provided
+        #  values can now be defined on form initialisation. (ti)
+        #  <2016-08-17 15:18> 
+
         self.merged_data = dict(self.loaded_data.items() + values.items())
 
         # Set current and previous values of the fields in the form. In
