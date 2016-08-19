@@ -2,6 +2,8 @@
 ======
 - Allow user defined values on form initialisation. Needed for specific rules
   evaluations which relay on external data.
+- Added "ignore" attribute to buttons to allow rendering forms with no
+  buttons at all.
 
 0.20.2
 ======

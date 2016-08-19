@@ -291,6 +291,7 @@ value          Optional. Value which is submitted in the form. Defaults to the b
 name           Optional. Name under which the value will be available in the submitted data Defaults to ``_$type``.
 class          Optional. CSS class which will be added to the button.
 icon           Optional. Definition of glyphicons which will be displayed before the buttons label.
+ignore         Optional. If set the button will be ignored on rendering.  This can be used to ignore rendering of buttons at all in a specific form.
 ============   ===========
 
 Page

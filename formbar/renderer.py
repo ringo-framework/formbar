@@ -173,6 +173,8 @@ class FormRenderer(Renderer):
                                  c=_('Submit')))
         else:
             for b in self._form._config._buttons:
+                if b.attrib.get("ignore"):
+                    continue
                 html.append(HTML.tag("button", _closed=False,
                             type=b.attrib.get("type") or "submit",
                             name="_%s" % b.attrib.get("type") or "submit",
