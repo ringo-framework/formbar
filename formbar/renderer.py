@@ -169,8 +169,16 @@ class FormRenderer(Renderer):
         # form.
         if len(self._form._config._buttons) == 0:
             html.append(HTML.tag("button", type="submit",
+                                 name="_submit", value="",
                                  class_="btn btn-default hidden-print",
                                  c=_('Submit')))
+            # If there is a next page than render and additional submit
+            # button.
+            if len(self._form.pages) > 1:
+                html.append(HTML.tag("button", type="submit",
+                                     name="_submit", value="nextpage",
+                                     class_="btn btn-default hidden-print",
+                                     c=_('Submit and proceed')))
         else:
             for b in self._form._config._buttons:
                 if b.attrib.get("ignore"):
