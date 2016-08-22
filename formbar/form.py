@@ -169,6 +169,8 @@ class Form(object):
         """List with external validators. Will be called an form validation."""
         self.current_page = 0
         """Number of the currently selected page"""
+        self.last_page = [int(p.attrib.get("id").strip("p")) for p in self.pages][-1]
+        """Number of the last configured page"""
         self.change_page_callback = change_page_callback
         """Dictionary with some parameters used to call an URL when the
         user changes the currently selected page. The dictionary has the
