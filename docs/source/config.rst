@@ -273,7 +273,8 @@ enctype        Encrytion used while sending the data. Defaults to ``application/
 Buttons
 -------
 Optional directive within the form tag to configure custom buttons for the
-form. If not defined the default Submit and Reset Buttons are renderered::
+form. If not defined the default Submit Button is renderered. If
+the form has pages than an additional "Save and proceed" button is rendered.::
 
         <buttons>
           <button type="submit" value="delete" name="_submit" class="warning" icon="glyphicon glyphicon-delete">Delete</button>
