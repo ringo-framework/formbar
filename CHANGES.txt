@@ -1,5 +1,9 @@
 Next
 ======
+- #3 Add "Save an continue" Button. For forms with multiple pages formbar now
+  renders a Save and continue submit button. An application can exime the
+  request if the user has clicked this button to set active the next page on
+  rendering.
 
 0.20.3
 ======
