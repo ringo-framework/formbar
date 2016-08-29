@@ -176,6 +176,15 @@ triggers    Flag which defines which type of message a the rule will trigger if 
 Help
 ----
 The help block can be used to add some information to the field for the user.
+You can also define some HTML content for the help block to add links to
+external ressources for example::
+
+  <help display="text"><html>HTML content must be wrapped in <i>html</i>
+  tags></html></help>
+
+To be able to use the HTML content the content of the help element must
+be wrapped in a html tag. But you can leave this out in case you just
+have ordinary text content.
 
 =========   ===========
 Attribute   Description
