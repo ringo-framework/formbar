@@ -13,6 +13,18 @@ required_msg = _("This field is required. You must provide a value")
 desired_msg = _("This field is desired. Please provide a value")
 
 
+def get_text_and_html_content(item):
+    """Will return the content (body) of an given element including HTML
+    content. HTML content must be wrapped in a <html> tag.
+    :returns: content of the item.
+
+    """
+    if len(item) > 0 and item[0].tag == "html":
+        content = ET.tostring(item[0], method="html")
+        return content.replace("html>", "span>")
+    return item.text
+
+
 def load(path):
     """Return the parsed XML form the given file. The function will load
     the file located in path and than returns the parsed content."""
@@ -648,10 +660,10 @@ class Field(Config):
 
         # Help
         self.help = None
-        help = entity.find('help')
-        if help is not None:
-            self.help_display = help.attrib.get("display", "tooltip")
-            self.help = help.text
+        help_item = entity.find('help')
+        if help_item is not None:
+            self.help_display = help_item.attrib.get("display", "tooltip")
+            self.help = get_text_and_html_content(help_item)
 
         # Renderer
         self.renderer = None
