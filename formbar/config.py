@@ -4,9 +4,7 @@ import gettext
 import logging
 import pkg_resources
 import xml.etree.ElementTree as ET
-import importlib
 from formbar.rules import Rule
-from formbar.form import Validator 
 
 log = logging.getLogger(__name__)
 _ = gettext.gettext
@@ -699,14 +697,9 @@ class Field(Config):
         validators = []
         for validator in self._tree.findall('validator'):
             # Import dynamically the validator
-            src = validator.attrib.get("src").split(".")
-            package, funcname = ".".join(src[0:-1]), src[-1]
-            checker = getattr(importlib.import_module(package), funcname)
-
-            # Build the validator
-            validators.append(Validator(self.name,
-                                        validator.attrib.get("msg"),
-                                        checker))
+            src = validator.attrib.get("src")
+            msg = validator.attrib.get("msg")
+            validators.append((src, msg))
         return validators
 
 

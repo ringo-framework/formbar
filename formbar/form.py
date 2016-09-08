@@ -1,6 +1,7 @@
 import logging
 import re
 import sqlalchemy as sa
+import importlib
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Expression
 from formbar.converters import (
@@ -522,7 +523,11 @@ class Form(object):
                     else:
                         self._add_error(fieldname, rule.msg)
 
-            for validator in field.get_validators():
+            for src, msg in field.get_validators():
+                src = src.split(".")
+                checker = getattr(importlib.import_module(".".join(src[0:-1])),
+                                  src[-1])
+                validator = Validator(fieldname, msg, checker)
                 if not validator.check(converted):
                     if validator._triggers == "error":
                         self._add_error(validator._field, validator._error)
