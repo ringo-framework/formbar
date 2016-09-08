@@ -196,6 +196,15 @@ msg         The message which is displayed if the evaluation of the validation f
 Help
 ----
 The help block can be used to add some information to the field for the user.
+You can also define some HTML content for the help block to add links to
+external ressources for example::
+
+  <help display="text"><html>HTML content must be wrapped in <i>html</i>
+  tags></html></help>
+
+To be able to use the HTML content the content of the help element must
+be wrapped in a html tag. But you can leave this out in case you just
+have ordinary text content.
 
 =========   ===========
 Attribute   Description
@@ -293,7 +302,8 @@ enctype        Encrytion used while sending the data. Defaults to ``application/
 Buttons
 -------
 Optional directive within the form tag to configure custom buttons for the
-form. If not defined the default Submit and Reset Buttons are renderered::
+form. If not defined the default Submit Button is renderered. If
+the form has pages than an additional "Save and proceed" button is rendered.::
 
         <buttons>
           <button type="submit" value="delete" name="_submit" class="warning" icon="glyphicon glyphicon-delete">Delete</button>
@@ -311,6 +321,7 @@ value          Optional. Value which is submitted in the form. Defaults to the b
 name           Optional. Name under which the value will be available in the submitted data Defaults to ``_$type``.
 class          Optional. CSS class which will be added to the button.
 icon           Optional. Definition of glyphicons which will be displayed before the buttons label.
+ignore         Optional. If set the button will be ignored on rendering.  This can be used to ignore rendering of buttons at all in a specific form.
 ============   ===========
 
 Page

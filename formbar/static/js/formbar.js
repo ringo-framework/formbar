@@ -805,8 +805,13 @@ var formbar = function (form) {
      */
     var initSubmit = function () {
         var selected_formpage = $('.formbar-page :visible');
+        var lastpage = $('.formbar-outline a.selected').attr("formbar-lastpage");
         if (selected_formpage.length > 0) {
             hideSubmitButtonOnInputlessPage(selected_formpage);
+        }
+        if (lastpage == "true") {
+            var button = $(".formbar-form button[value='nextpage']");
+            button.hide();
         }
     };
 
@@ -850,6 +855,30 @@ var formbar = function (form) {
     /**
      * @function
      * 
+     * Toggle the special submit and next submit button if this is the
+     * last page.
+     *
+     */
+    var toggleNextPageSubmit = function (e) {
+        // If selected page is the last page then hide the submitnext
+        // button. Otherwise show it.
+        var target = e.target;
+        var lastpage = $(target).attr('formbar-lastpage');
+        var button = $(".formbar-form button[value='nextpage']");
+        if (button) {
+            if (lastpage == "true") {
+                console.log("Hide");
+                button.hide();
+            } else {
+                console.log("Show");
+                button.show();
+            }
+        }
+    };
+
+    /**
+     * @function
+     * 
      * handles navigation for the sidetabs
      *
      */
@@ -860,7 +889,19 @@ var formbar = function (form) {
         setSelectedPage(e);
         $('.formbar-page').hide();
         selectedFormpage.show();
+
+        // Hack! Force a resize event on page change. This will trigger
+        // repainting the page. This hack fixes issues with sizes of elements
+        // on hiden pages (E.g dygraphs). Those element might have a size of 0
+        // because the elements where hidden. Triggering a resize of the
+        // window after the pagehas become visible will repaint the page with
+        // correct sizes.
+        var evt = document.createEvent('UIEvents');
+        evt.initUIEvent('resize', true, false,window,0);
+        window.dispatchEvent(evt);
+
         hideSubmitButtonOnInputlessPage(selectedFormpage);
+        toggleNextPageSubmit(e);
     };
 
     var init = function () {

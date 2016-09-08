@@ -109,7 +109,8 @@ class Form(object):
 
     def __init__(self, config, item=None, dbsession=None, translate=None,
                  change_page_callback={}, renderers={}, request=None,
-                 csrf_token=None, eval_url=None, url_prefix="", locale=None):
+                 csrf_token=None, eval_url=None, url_prefix="", locale=None,
+                 values=None):
         """Initialize the form with ``Form`` configuration instance and
         optional an SQLAlchemy mapped object.
 
@@ -138,6 +139,8 @@ class Form(object):
         :url_prefix: Prefix which can be used for all URL in the form.
         :locale: String of the locale of the form. Used for proper
         display of the date and number functions.
+        :values: Dictionary with values to be prefilled/overwritten in
+                 the rendered form.
         """
         self._config = config
         self._item = item
@@ -166,6 +169,9 @@ class Form(object):
         """List with external validators. Will be called an form validation."""
         self.current_page = 0
         """Number of the currently selected page"""
+        if self.pages:
+            self.last_page = [int(p.attrib.get("id").strip("p")) for p in self.pages][-1]
+        """Number of the last configured page"""
         self.change_page_callback = change_page_callback
         """Dictionary with some parameters used to call an URL when the
         user changes the currently selected page. The dictionary has the
@@ -191,10 +197,12 @@ class Form(object):
         self.loaded_data = self._get_data_from_item()
         """This is the initial data loaded from the given item. Used to
         render the readonly forms"""
-        self.merged_data = self.loaded_data
+        if not values:
+            values = {}
+        self.merged_data = dict(self.loaded_data.items() + values.items())
         """This is merged date from the initial data loaded from the
-        given item. And userprovied data. The user defined values are
-        merged on render time"""
+        given item and userprovided values on form initialisation. The
+        user defined values are merged again on render time"""
         self.warnings = []
         """Form wide warnings. This list contains warnings which affect
         the entire form and not specific fields. These warnings are show
@@ -406,6 +414,13 @@ class Form(object):
 
         # Merge the items_values with the extra provided values. Extra
         # values will overwrite the item_values.
+
+        #  TODO: Remove merging user provided values on render time as
+        #  this is to late for values used on form validation which must
+        #  be already present on form initialisation. So user provided
+        #  values can now be defined on form initialisation. (ti)
+        #  <2016-08-17 15:18> 
+
         self.merged_data = dict(self.loaded_data.items() + values.items())
 
         # Set current and previous values of the fields in the form. In
@@ -475,7 +490,7 @@ class Form(object):
         """
 
         if not submitted:
-            unvalidated = self.serialize(self.loaded_data)
+            unvalidated = self.serialize(self.merged_data)
         else:
             try:
                 unvalidated = submitted.mixed()
@@ -635,12 +650,12 @@ class Field(object):
     def __repr__(self):
         rules = "rules: \n\t\t{}".format("\n\t".join(self.rules_to_string))
         field = u"field:\t\t{}".format(self.name)
-        value = u"value:\t\t{}, {}".format(self.get_value(), type(self.get_value()))
+        value = u"value:\t\t{}, {}".format(repr(self.get_value()), type(self.get_value()))
         required = "required:\t{}".format(self.is_required)
         desired = "desired:\t{}".format(self.is_desired)
-        validated = "validated:\t{}".format(self.is_validated)
+        #validated = "validated:\t{}".format(self.is_validated)
         _type = "type:\t\t{}".format(self.get_type())
-        return "\n".join([field, required, desired, value, _type, validated, rules])+"\n"
+        return "\n".join([field, required, desired, value, _type, rules])+"\n"
 
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
@@ -800,7 +815,7 @@ class Field(object):
             # option.
             if x.startswith("%"):
                 key = x.strip("%")
-                value = "$%s" % (key or "value")
+                value = "*%s" % (key or "value")
             # @ marks the item of the current fields form item.
             elif x.startswith("@"):
                 key = x.strip("@")
@@ -836,7 +851,7 @@ class Field(object):
                     expr_str = expr_str.replace(x, "%s" % unicode(value))
                 else:
                     expr_str = expr_str.replace(x, "'%s'" % unicode(value))
-        return Rule(expr_str)
+        return Rule(expr_str.replace("*", "$"))
 
     def _load_options_from_db(self):
         # Get mapped clazz for the field

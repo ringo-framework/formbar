@@ -28,6 +28,6 @@ selected = field.get_value() or []
   % endif
 % endfor
 ## Hack! Empyt value to allow deselecting all options.
-% if not field.is_readonly:
+% if not field.is_readonly():
   <input style="display:none" type="checkbox" name="${field.name}" value="" checked="checked"/>
 % endif
