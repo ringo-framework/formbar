@@ -214,7 +214,7 @@ But it is very easy to write your own custom renderer. See
 :ref:`conf_custom_renderer` on how to use them for rendering in your form.
 
 Label
-`````
+^^^^^
 The lable tag can be used to have more options to configure the rendering
 of the fields label. The label tag can be seen as a configuration
 option of the renderer::
@@ -552,10 +552,7 @@ Use this renderer if you want to render the field as a textfield::
 Attribute   Description
 =========   ===========
 rows        Number of rows of the texteare. Default is 3.
-maxlength   Number of chars "allowed". If set a small indicator below
-            the textarea is show indicating how many chars are left.
-            Please note that this does **not** triggers any rules. Rules
-            to enforce this maxlength must be defined too.
+maxlength   Number of chars "allowed". If set a small indicator below the textarea is show indicating how many chars are left.  Please note that this does **not** triggers any rules. Rules to enforce this maxlength must be defined too.
 =========   ===========
 
 Infofield
