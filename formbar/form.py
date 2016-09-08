@@ -507,6 +507,13 @@ class Form(object):
                     else:
                         self._add_error(fieldname, rule.msg)
 
+            for validator in field.get_validators():
+                if not validator.check(converted):
+                    if validator._triggers == "error":
+                        self._add_error(validator._field, validator._error)
+                    else:
+                        self._add_warning(validator._field, validator._error)
+
         # Custom validation. User defined external validators.
         for validator in self.external_validators:
             if (validator._field not in converted
