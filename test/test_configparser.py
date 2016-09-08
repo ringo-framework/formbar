@@ -190,6 +190,12 @@ class TestFieldConfig(unittest.TestCase):
     def test_rules_custom(self):
         self.assertEqual(len(self.ifield.get_rules()), 2)
 
+    def test_validators_default(self):
+        self.assertEqual(len(self.dfield.get_validators()), 0)
+
+    def test_validators_custom(self):
+        self.assertEqual(len(self.ifield.get_validators()), 1)
+
     def test_html_renderer_fails(self):
         """Only html renderer have the body attribute set"""
         self.assertEqual(self.cfield.renderer.body, None)
