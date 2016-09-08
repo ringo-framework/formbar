@@ -46,6 +46,7 @@ Here is an example of an entity definition::
         <renderer type="text"/>
         <help>This is a help text</help>
         <rule expr="$age ge 21" msg="Age must be greater than 21"/> 
+        <validator src="a.b.external_validator" msg="Error message"/>
     </entity>
 
 Entities can be marked as *required* or *desired*. Formed will generate
@@ -169,6 +170,25 @@ expr        Expression which is used to validate the value if the field.
 msg         The message which is displayed if the evaluation of the rule fails.
 mode        Point in validation when this rules gets evaluations. ``post`` (default) means after the deserialisation of the value and ``pre`` is before deserialisation.
 triggers    Flag which defines which type of message a the rule will trigger if the evaluation fails. Be be ``error`` (default) or ``warning``.
+=========   ===========
+
+.. _validator:
+
+Validator
+---------
+A validator defines an external validator. See :ref:`external_validator` for
+more details. Those validators are usally used if the validation become more
+complex or it is just not possible to express the rule with a :ref:`rule`
+You can define a validator in the form configuration in a similar way like
+defining rules for an entity::
+
+            <validator src="a.b.external_validator" msg="Error message"/>
+
+=========   ===========
+Attribute   Description
+=========   ===========
+src         The *src* attribute is the modul path to the callable. The path is used to import the validator dynamically at runtime.
+msg         The message which is displayed if the evaluation of the validation fails.
 =========   ===========
 
 .. _help:
@@ -914,13 +934,23 @@ the field for which this validation belongs to and also determines on
 which field the error message will be shown.
 
 The function should return True or False on validation. The validator
-must be added to the form::
+can be added in two differen ways.
+
+In the formconfig
+-----------------
+See :ref:`validator` for more details.
+
+In the view
+------------
+Another way to add validator to the form is to add the form in the view after
+the form has been initialized::
 
         validator = Validator('fieldname',
                               'Error message',
                               external_validator)
         self.form.add_validator(validator)
 
+.. _includes:
 
 Includes
 ========
@@ -990,6 +1020,8 @@ The include file looks like this::
 
 This way you can keep your form definition clean and short and maintain the
 countries in a separate file.
+
+.. _inheritance:
 
 Inheritance
 ===========
