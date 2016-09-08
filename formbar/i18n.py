@@ -48,6 +48,15 @@ def extract_i18n_formconfig(fileobj, keywords, comment_tags, options):
                "_",
                ruletoken.attrib.get('msg'),
                [])
+    for valtoken in config.iter('validator'):
+        lineno += 1
+        # "_" is one of the default keywords which marks a string
+        # for extraction. As the json file does not have any
+        # keywords. Set a dummy funcname here.
+        yield (lineno,
+               "_",
+               valtoken.attrib.get('msg'),
+               [])
     for ruletoken in config.iter('page'):
         lineno += 1
         # "_" is one of the default keywords which marks a string
