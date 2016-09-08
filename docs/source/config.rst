@@ -944,8 +944,10 @@ contains all values of the form. The value 'field' defines the name of
 the field for which this validation belongs to and also determines on
 which field the error message will be shown.
 
-The function should return True or False on validation. The validator
-can be added in two differen ways.
+The function should return True in case the validation succeeds or either
+return False or raise an exception in case of validation errors. If the method
+raises an exception the message of the exception will be used as error
+message. The validator can be added in two differen ways.
 
 In the formconfig
 -----------------
