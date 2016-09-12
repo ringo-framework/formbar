@@ -693,6 +693,15 @@ class Field(Config):
             rules.append(Rule(expr, msg, mode, triggers))
         return rules
 
+    def get_validators(self):
+        validators = []
+        for validator in self._tree.findall('validator'):
+            # Import dynamically the validator
+            src = validator.attrib.get("src")
+            msg = validator.attrib.get("msg")
+            validators.append((src, msg))
+        return validators
+
 
 class Renderer(Config):
     """Configuration class for FieldRenderers. This class gives an

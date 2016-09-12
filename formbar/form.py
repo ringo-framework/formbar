@@ -1,6 +1,8 @@
 import logging
+import inspect
 import re
 import sqlalchemy as sa
+import importlib
 from formbar.renderer import FormRenderer, get_renderer
 from formbar.rules import Rule, Expression
 from formbar.converters import (
@@ -86,9 +88,13 @@ class Validator(object):
         to actually do the validation on the provided data. Will return
         True or False."""
         try:
-            return self._callback(self._field, data)
-        except TypeError:
-            return self._callback(self._field, data, self._context)
+            if len(inspect.getargspec(self._callback).args) == 2:
+                return self._callback(self._field, data)
+            else:
+                return self._callback(self._field, data, self._context)
+        except Exception, e:
+            self._error = e.message
+            return False
 
 
 class Form(object):
@@ -521,6 +527,17 @@ class Form(object):
                         self._add_warning(fieldname, rule.msg)
                     else:
                         self._add_error(fieldname, rule.msg)
+
+            for src, msg in field.get_validators():
+                src = src.split(".")
+                checker = getattr(importlib.import_module(".".join(src[0:-1])),
+                                  src[-1])
+                validator = Validator(fieldname, msg, checker, self)
+                if not validator.check(converted):
+                    if validator._triggers == "error":
+                        self._add_error(validator._field, validator._error)
+                    else:
+                        self._add_warning(validator._field, validator._error)
 
         # Custom validation. User defined external validators.
         for validator in self.external_validators:

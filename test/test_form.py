@@ -90,7 +90,7 @@ class TestFormValidation(unittest.TestCase):
         validator = Validator('integer',
                               'Error message',
                               external_validator)
-        self.form.external_validators.append(validator)
+        self.form.add_validator(validator)
         self.assertEqual(self.form.validate(values), True)
 
     def test_form_validate_ext_validator_fail(self):
@@ -98,7 +98,7 @@ class TestFormValidation(unittest.TestCase):
         validator = Validator('integer',
                               'Error message',
                               external_validator)
-        self.form.external_validators.append(validator)
+        self.form.add_validator(validator)
         self.assertEqual(self.form.validate(values), False)
 
     def test_form_validate_ext_validator_ok(self):
