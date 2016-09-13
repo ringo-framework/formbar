@@ -55,6 +55,10 @@ class StateError(Error):
         self.msg = msg
 
 
+class ValidationException(Exception):
+    pass
+
+
 class Validator(object):
     """Validator class for external validators. External validators can
     be used to implement more complicated validations on the converted
@@ -92,7 +96,7 @@ class Validator(object):
                 return self._callback(self._field, data)
             else:
                 return self._callback(self._field, data, self._context)
-        except Exception, e:
+        except ValidationException, e:
             self._error = e.message
             return False
 
