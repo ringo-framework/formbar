@@ -235,7 +235,7 @@ def to_email(value):
     # if the adress is known. (ti) <2014-08-04 16:31>
     if not value:
         return ""
-    if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$))", value):
+    if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", value):
         msg = _("%s is not valid email address.")
         raise DeserializeException(msg, value)
     return value
