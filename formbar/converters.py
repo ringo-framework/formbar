@@ -238,7 +238,7 @@ def to_email(value):
     if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", value):
         msg = _("%s is not valid email address.")
         raise DeserializeException(msg, value)
-    return value
+    return value.lower()
 
 
 def to_boolean(value):
