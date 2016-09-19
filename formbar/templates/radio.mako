@@ -19,6 +19,11 @@ else:
     <label class="radio-inline">
       % if option[1] == selected:
         <input type="radio" id="${field.id}-${num}" datatype="${field.get_type()}" name="${field.name}" value="${option[1]}" checked="checked" ${readonly}/>
+        ## Render a hidden field for selected readonly values to make sure the
+        ## value is actually submitted.
+        % if readonly:
+          <input type="hidden" id="${field.id}-${num}" datatype="${field.get_type()}" name="${field.name}" value="${option[1]}"/>
+        % endif
       % else:
         <input type="radio" id="${field.id}-${num}" datatype="${field.get_type()}" name="${field.name}" value="${option[1]}" ${readonly}/>
       % endif
