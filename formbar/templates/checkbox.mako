@@ -12,6 +12,11 @@ selected = field.get_value() or []
     <label class="checkbox-inline">
       % if option[1] in selected:
         <input type="checkbox" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" checked="checked" ${readonly}/>
+        ## Render a hidden field for selected readonly values to make sure the
+        ## value is actually submitted.
+        % if readonly:
+          <input type="hidden" id="${field.id}-${num}" name="${field.name}" value="${option[1]}"/>
+        % endif
       % else:
         <input type="checkbox" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" ${readonly}/>
       % endif
