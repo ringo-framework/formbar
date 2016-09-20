@@ -1,10 +1,11 @@
-Next
+0.21.0
 ======
 - #3 Add "Save an continue" Button. For forms with multiple pages formbar now
   renders a Save and continue submit button. An application can exime the
   request if the user has clicked this button to set active the next page on
   rendering.
 - Add support for HTML code in help blocks.
+- Added support to define validators directly in the form config.
 
 0.20.3
 ======
