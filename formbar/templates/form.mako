@@ -112,7 +112,12 @@
       ## Conditionals
       % elif child.tag == "if" and child.attrib.get("static") != "true":
           <% is_active = Rule(child.attrib.get("expr")).evaluate(form.merged_data) %>
+          <% is_readonly = child.attrib.get('type') == 'readonly' %>
+          % if not is_readonly:
+          <div id="${id(child)}" class="formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}" style="${ '' if is_active else 'display:none' }">
+          % else:
           <div id="${id(child)}" class="formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
+          % endif
       % elif child.tag == "html":
         ${ElementTree.tostring(child) | n}
       % endif
