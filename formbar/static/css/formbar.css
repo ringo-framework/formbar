@@ -177,40 +177,18 @@ label sup {
     width: calc(100% - 76px);
 }
 
-.form-group.active {
+.formbar-conditional.active {
     opacity: 1.0;
     transition: 1s;
 }
 
-.form-group.inactive {
-    opacity: 0.4;
+.formbar-conditional.inactive {
+    opacity: 0.6;
     transition: 1s;
 }
 
 .form-group.inactive input {
-    opacity: 0.4;
-    transition: 1s;
     cursor: not-allowed;
-}
-
-.section.inactive {
-    opacity: 0.4;
-    transition: 1s;
-}
-
-.subsection.inactive {
-    opacity: 0.4;
-    transition: 1s;
-}
-
-.subsubsection.inactive {
-    opacity: 0.4;
-    transition: 1s;
-}
-
-p.inactive {
-    opacity: 0.4;
-    transition: 1s;
 }
 
 .formbar-form textarea {
