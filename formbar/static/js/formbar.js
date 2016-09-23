@@ -469,6 +469,13 @@ var form = function (inputFilter, ruleEngine) {
      * 
      */
     var toggleConditional = function (result, divId, rule) {
+        if (result) {
+            element.addClass("active");
+            element.removeClass("inactive");
+        } else {
+            element.addClass("inactive");
+            element.removeClass("active");
+        }
         var element = $("#" + divId);
         if (element.hasClass("readonly")){
             handleReadOnly(result, element);
