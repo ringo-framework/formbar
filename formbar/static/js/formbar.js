@@ -469,6 +469,7 @@ var form = function (inputFilter, ruleEngine) {
      * 
      */
     var toggleConditional = function (result, divId, rule) {
+        var element = $("#" + divId);
         if (result) {
             element.addClass("active");
             element.removeClass("inactive");
@@ -476,7 +477,6 @@ var form = function (inputFilter, ruleEngine) {
             element.addClass("inactive");
             element.removeClass("active");
         }
-        var element = $("#" + divId);
         if (element.hasClass("readonly")){
             handleReadOnly(result, element);
         } else {
