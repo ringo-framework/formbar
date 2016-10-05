@@ -796,8 +796,6 @@ class Field(object):
                 for v in value:
                     if hasattr(v, "id"):
                         v = v.id
-                    else:
-                        v = unicode(v)
                     if unicode(v) == unicode(opt[1]):
                         ex_values.append("%s" % opt[0])
             return ", ".join(ex_values)
