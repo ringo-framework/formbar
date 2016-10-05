@@ -526,7 +526,9 @@ var form = function (inputFilter, ruleEngine) {
                 if (!field.value) activateDesired(fieldName);
             }
             if (result == false && oldState == "active") {
-                clearFieldValue(fieldName);
+                if (div.attr("reset-value") == "true") {
+                    clearFieldValue(fieldName);
+                }
                 $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text' || x.tagName==='TEXTAREA') x.setAttribute("readonly","readonly"); })
                 newState = "inactive";
                 deactivateDesired(fieldName);
