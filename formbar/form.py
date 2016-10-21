@@ -631,13 +631,7 @@ class Field(object):
         # name of the item in the form and get the value
         elif value and value.startswith("$"):
             try:
-                # Special logic for ringo items.
-                if (self.renderer.render_type == "info"
-                   and hasattr(self._form._item, "get_value")):
-                    value = self._form._item.get_value(value.strip("$"),
-                                                       expand=True)
-                else:
-                    value = getattr(self._form._item, value.strip("$"))
+                value = getattr(self._form._item, value.strip("$"))
             except (IndexError, AttributeError), e:
                 # In case we are currently creating an item a access to
                 # values of the item may fail because the are not
