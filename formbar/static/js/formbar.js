@@ -700,8 +700,14 @@ var form = function (inputFilter, ruleEngine) {
     var setListener = function () {
         var timeOutID;
         var changeEvent = function(e){
-            if (formFields[e.target.name].state==='inactive'){
-                clearFieldValue(e.target.name);
+            var div = $(e.target);
+            var fieldName = e.target.name;
+            if (formFields[fieldName].state==='inactive'){
+                if (div.attr("reset-value") == "true") {
+                   clearFieldValue(fieldName);
+                } else {
+                    resetFieldValue(fieldName, formFields);
+                }
             } else {
                 inputChanged(e);
             }
