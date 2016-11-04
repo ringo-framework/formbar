@@ -411,6 +411,9 @@ class TextareaFieldRenderer(FieldRenderer):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("textarea.mako")
 
+    def nl2br(self, value=""):
+        return literal("<br />".join(escape(value).split("\n")))
+
 
 class DateFieldRenderer(FieldRenderer):
     """A Renderer to render simple fa_field elements"""
