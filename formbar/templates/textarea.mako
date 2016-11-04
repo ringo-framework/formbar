@@ -1,9 +1,9 @@
 % if field.is_readonly():
   <div class="readonlyfield" name="${field.name}">
     % if field.get_previous_value() is not None:
-      ${renderer._render_diff(field.get_previous_value(""), field.get_value(""))}
+      ${renderer._render_diff(renderer.nl2br(field.get_previous_value("")), frenderer.nl2br(ield.get_value("")))}
     % else:
-      ${field.get_value("")}
+      ${renderer.nl2br(field.get_value(""))}
     % endif
   </div>
 % else:
