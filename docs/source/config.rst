@@ -627,6 +627,8 @@ Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option should be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+sort            If set to "true" than the options will be alphabetically sorted. Defaults to no sorting.
+sortorder       If set to "desc" the sorting will be descending (reversed) order. Default is ascending sorting.
 =============== ===========
 
 Filtering can be done by defining a expression in the filter attribute. This
@@ -675,6 +677,8 @@ Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option should be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+sort            If set to "true" than the options will be alphabetically sorted. Defaults to no sorting.
+sortorder       If set to "desc" the sorting will be descending (reversed) order. Default is ascending sorting.
 =============== ===========
 
 .. note::
@@ -703,6 +707,8 @@ Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
 align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
+sort            If set to "true" than the options will be alphabetically sorted. Defaults to no sorting.
+sortorder       If set to "desc" the sorting will be descending (reversed) order. Default is ascending sorting.
 =============== ===========
 
 See filtering section of the :ref:`dropdown` renderer.
@@ -730,6 +736,8 @@ Attribute       Description
 filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
 align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
+sort            If set to "true" than the options will be alphabetically sorted. Defaults to no sorting.
+sortorder       If set to "desc" the sorting will be descending (reversed) order. Default is ascending sorting.
 =============== ===========
 
 See filtering section of the :ref:`dropdown` renderer.
@@ -760,6 +768,8 @@ Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+sort            If set to "true" than the options will be alphabetically sorted. Defaults to no sorting.
+sortorder       If set to "desc" the sorting will be descending (reversed) order. Default is ascending sorting.
 =============== ===========
 
 See filtering section of the :ref:`dropdown` renderer.

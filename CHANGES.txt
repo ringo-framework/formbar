@@ -2,6 +2,8 @@ Next
 ====
 - Added 'showrawvalue' config option for inforenderer. See documentation for
   more details.
+- Added sort configuration for selection fields. See documentation for more
+  details.
 
 0.21.0
 ======

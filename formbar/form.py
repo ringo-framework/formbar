@@ -877,6 +877,18 @@ class Field(object):
                       "to load the option from db" % self.name)
         return []
 
+    def sort_options(self, options):
+        """Will return a alphabetical sorted list of options. The filtering is
+        defined by the following configuration options of the renderer:
+        sort, sortorder. If sort is not set to 'true' than no sorting is
+        done at all. This is the default behaviour."""
+        if self._config.renderer and self._config.renderer.sort:
+            reverse = self._config.renderer.sortorder == "desc"
+            options = sorted(options,
+                             key=lambda x: unicode(x[0]),
+                             reverse=reverse)
+        return options
+
     def filter_options(self, options):
         """Will return a of tuples with options. The given options can
         be either a list of SQLAlchemy mapped items (In case the options
@@ -959,7 +971,7 @@ class Field(object):
             log.warning('No db connection configured for this form. Can '
                         'not load options')
             return []
-        return options
+        return self.sort_options(options)
 
     def add_error(self, error):
         self._errors.append(error)
