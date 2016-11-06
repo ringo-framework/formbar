@@ -1,6 +1,7 @@
 import logging
 import difflib
 import xml.etree.ElementTree as ET
+from cgi import escape
 from webhelpers.html import literal, HTML
 
 from mako.lookup import TemplateLookup
