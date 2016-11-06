@@ -597,6 +597,12 @@ Appearance is same as a readonly field::
 
         <renderer type="infofield"/>
 
+============   ===========
+Attribute      Description
+============   ===========
+showrawvalue   If set to true the info field will return the "raw" value if the field which whithout any exapandation or conversion of the value. This becomes handy for relations if you want to show the related item instead of just its id. Default is false.
+============   ===========
+
 .. _selection:
 
 Selection
