@@ -685,9 +685,26 @@ class Field(object):
         return getattr(self._config, name)
 
     def _get_sa_mapped_class(self):
-        # TODO: Raise Exception if this field is not a relation. (None)
-        # <2013-07-25 07:44>
-        return self.sa_property.mapper.class_
+        if self.name.find(".") > -1:
+            # Special handling for prefixed relations in case of
+            # included entities.
+            # Those included entities usually has a prefix which defines
+            # the path to the attribute.
+            #
+            # Example:
+            # If the fieldname ist "foo.bar" this means that the current
+            # item has a relation named "foo". And within this foo
+            # relation a value should be set in "bar".
+            #
+            # Unfortunately this special notation breaks the default
+            # procedure how to get the mapped class of this attribute.
+            path = self.name.split(".")
+            rel = getattr(self._form._item, ".".join(path[:-1]))
+            field = path[-1]
+            sa_property = get_sa_property(rel, field)
+            return sa_property.mapper.class_
+        else:
+            return self.sa_property.mapper.class_
 
     def _get_sa_property(self):
         if not self._form._item:
