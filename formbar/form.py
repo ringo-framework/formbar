@@ -14,6 +14,15 @@ import config
 log = logging.getLogger(__name__)
 
 
+def get_sa_property(item, fieldname):
+    if not item:
+        return None
+    mapper = sa.orm.object_mapper(item)
+    for prop in mapper.iterate_properties:
+        if prop.key == fieldname:
+            return prop
+
+
 def remove_ws(data):
     """Helper function which removes trailing and leading whitespaces
     for all values in the given dictionary. The dictionary usually
@@ -683,10 +692,7 @@ class Field(object):
     def _get_sa_property(self):
         if not self._form._item:
             return None
-        mapper = sa.orm.object_mapper(self._form._item)
-        for prop in mapper.iterate_properties:
-            if prop.key == self.name:
-                return prop
+        return get_sa_property(self._form._item, self.name)
 
     def get_type(self):
         """Returns the datatype of the field."""
