@@ -17,10 +17,17 @@ log = logging.getLogger(__name__)
 def get_sa_property(item, fieldname):
     if not item:
         return None
-    mapper = sa.orm.object_mapper(item)
-    for prop in mapper.iterate_properties:
-        if prop.key == fieldname:
-            return prop
+
+    # Recursive handling of "dot.separated.field.names"
+    elif fieldname.find(".") > -1:
+        nameparts = fieldname.split(".")
+        return get_sa_property(getattr(item, ".".join(nameparts[0:-1])),
+                               nameparts[-1])
+    else:
+        mapper = sa.orm.object_mapper(item)
+        for prop in mapper.iterate_properties:
+            if prop.key == fieldname:
+                return prop
 
 
 def remove_ws(data):
@@ -286,19 +293,12 @@ class Form(object):
         # Load relations of the item. Those are needed to deserialize
         # the relations.
         relation_names = {}
-        try:
-            mapper = sa.orm.object_mapper(self._item)
-            relation_properties = filter(
-                lambda p: isinstance(p,
-                                     sa.orm.properties.RelationshipProperty),
-                mapper.iterate_properties)
-            for prop in relation_properties:
-                relation_names[prop.key] = prop
-        except sa.orm.exc.UnmappedInstanceError:
-            if not self._item:
-                pass  # The form is not mapped to an item.
-            else:
-                raise
+
+        if self._item:
+            for fieldname in data.keys():
+                prop = get_sa_property(self._item, fieldname)
+                if isinstance(prop, sa.orm.properties.RelationshipProperty):
+                    relation_names[fieldname] = prop
 
         for fieldname, value in self._filter_values(data).iteritems():
             field = self.fields.get(fieldname)
