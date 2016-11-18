@@ -74,6 +74,7 @@ class FieldFactory(object):
             else:
                 sa_dtype = None
         else:
+            sa_property = None
             sa_dtype = None
 
         # Set datatype of the field based on the config, the type in the
