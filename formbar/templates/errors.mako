@@ -17,15 +17,15 @@
 % endif
 % endfor
 
-% if field.is_required or field.is_desired:
+% if field.required or field.desired:
 % if field.empty_message in field.get_errors():
-    <div class="help-block " fieldtype="${'required' if field.is_required else 'desired'}">
+    <div class="help-block " fieldtype="${'required' if field.required else 'desired'}">
 % elif field.empty_message in field.get_warnings():
-    <div class="help-block " fieldtype="${'required' if field.is_required else 'desired'}">
+    <div class="help-block " fieldtype="${'required' if field.required else 'desired'}">
 % else:
-    <div class="help-block hidden" fieldtype="${'required' if field.is_required else 'desired'}">
+    <div class="help-block hidden" fieldtype="${'required' if field.required else 'desired'}">
 % endif
-    <span class="${'text-warning' if field.is_desired else ''}">
+    <span class="${'text-warning' if field.desired else ''}">
         <span class="glyphicon glyphicon-warning-sign"></span>
         ${_(field.empty_message)}
     </span>

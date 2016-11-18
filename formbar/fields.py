@@ -208,6 +208,9 @@ class Field(object):
         self._errors = []
         self._warnings = []
 
+        self.required = getattr(self._config, "required")
+        self.desired = getattr(self._config, "desired")
+
         # Set default value
         value = getattr(self._config, "value")
 
@@ -253,8 +256,8 @@ class Field(object):
     ##    rules = "rules: \n\t\t{}".format("\n\t".join(self.rules_to_string))
     ##    field = u"field:\t\t{}".format(self.name)
     ##    value = u"value:\t\t{}, {}".format(repr(self.get_value()), type(self.get_value()))
-    ##    required = "required:\t{}".format(self.is_required)
-    ##    desired = "desired:\t{}".format(self.is_desired)
+    ##    required = "required:\t{}".format(self.required)
+    ##    desired = "desired:\t{}".format(self.desired)
     ##    #validated = "validated:\t{}".format(self.is_validated)
     ##    #_type = "type:\t\t{}".format(self.get_type())
     ##    return "\n".join([field, required, desired, value, _type, rules])+"\n"
@@ -265,7 +268,7 @@ class Field(object):
 
     @property
     def empty_message(self):
-        if self.is_required:
+        if self.required:
             return config.required_msg
         return config.desired_msg
 
@@ -342,15 +345,6 @@ class Field(object):
 
     def is_relation(self):
         return False
-
-    def is_desired(self):
-        """Returns true if field is set as desired in field configuration"""
-        return self.desired
-
-    def is_required(self):
-        """Returns true if the required flag of the field configuration
-        is set"""
-        return self.required
 
     def is_readonly(self):
         """Returns true if either the readonly flag of the field
