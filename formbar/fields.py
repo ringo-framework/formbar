@@ -267,6 +267,11 @@ class Field(object):
     #     return "\n".join([field, required, desired, value, _type, rules])+"\n"
 
     @property
+    def rules_to_string(self):
+        log.warning("Call of 'rules_to_string' property is deprecated. Use rules_to_string helper method.")
+        return rules_to_string(self)
+
+    @property
     def empty_message(self):
         if self.required:
             return config.required_msg
