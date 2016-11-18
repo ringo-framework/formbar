@@ -355,9 +355,6 @@ class Field(object):
         self.renderer._active = active
         return self.renderer.render()
 
-    def is_relation(self):
-        return False
-
 # Singlevalue Fields.
 #####################################
 
@@ -742,9 +739,6 @@ class RelationField(CollectionField):
     def _get_sa_mapped_class(self):
         sa_property = get_sa_property(self._form._item, self._config.name)
         return sa_property.mapper.class_
-
-    def is_relation(self):
-        return True
 
     def get_options(self):
         options = []
