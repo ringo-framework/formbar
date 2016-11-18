@@ -341,14 +341,14 @@ class Form(object):
     def has_errors(self):
         """Returns True if one of the fields in the form has errors"""
         for field in self.fields.values():
-            if len(field.get_errors()) > 0:
+            if len(field.errors) > 0:
                 return True
         return len(self.errors) != 0
 
     def has_warnings(self):
         """Returns True if one of the fields in the form has warnings"""
         for field in self.fields.values():
-            if len(field.get_warnings()) > 0:
+            if len(field.warnings) > 0:
                 return True
         return len(self.warnings) != 0
 
@@ -370,8 +370,8 @@ class Form(object):
         for field in self.fields.values():
             if page is not None and field.name not in fields_on_page:
                 continue
-            if len(field.get_errors()) > 0:
-                errors[field.name] = field.get_errors()
+            if len(field.errors) > 0:
+                errors[field.name] = field.errors
         if len(self.errors) != 0 and page is None:
             errors[""] = self.errors
         return errors
@@ -394,8 +394,8 @@ class Form(object):
         for field in self.fields.values():
             if page is not None and field.name not in fields_on_page:
                 continue
-            if len(field.get_warnings()) > 0:
-                warnings[field.name] = field.get_warnings()
+            if len(field.warnings) > 0:
+                warnings[field.name] = field.warnings
         if len(self.warnings) != 0 and page is None:
             warnings[""] = self.warnings
         return warnings

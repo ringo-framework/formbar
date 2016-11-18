@@ -210,10 +210,10 @@ class Field(object):
         self._config = config
         self._translate = translate
         self.renderer = get_renderer(self, translate)
-        self._errors = []
-        self._warnings = []
         self._sa_property = sa_property
 
+        self.errors = []
+        self.warnings = []
         self.required = getattr(self._config, "required")
         self.desired = getattr(self._config, "desired")
         self.readonly = getattr(self._config, "readonly")
@@ -339,16 +339,10 @@ class Field(object):
         return value
 
     def add_error(self, error):
-        self._errors.append(error)
+        self.errors.append(error)
 
     def add_warning(self, warning):
-        self._warnings.append(warning)
-
-    def get_errors(self):
-        return self._errors
-
-    def get_warnings(self):
-        return self._warnings
+        self.warnings.append(warning)
 
     def render(self, active):
         """Returns the rendererd HTML for the field"""

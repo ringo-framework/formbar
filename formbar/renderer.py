@@ -323,8 +323,8 @@ class FieldRenderer(Renderer):
         # TODO: Split rendering in four parts: label, fieldbody, errors,
         # help. Each in its own template.
         html = []
-        has_errors = len(self._field.get_errors())
-        has_warnings = len(self._field.get_warnings())
+        has_errors = len(self._field.errors)
+        has_warnings = len(self._field.warnings)
         active = 'active' if self._active else 'inactive'
         # Handle indent. Set indent_with css only if the elements are
         # actually have an indent and the lable position allows an

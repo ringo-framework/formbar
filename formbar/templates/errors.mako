@@ -1,4 +1,4 @@
-% for error in field.get_errors():
+% for error in field.errors:
 % if error != field.empty_message:
   <div class="help-block">
     <span class="glyphicon glyphicon-exclamation-sign"></span>
@@ -6,7 +6,7 @@
   </div>
 % endif
 % endfor
-% for warn in field.get_warnings():
+% for warn in field.warnings:
 % if warn != field.empty_message:
   <div class="help-block">
     <span class="text-warning">
@@ -18,9 +18,9 @@
 % endfor
 
 % if field.required or field.desired:
-% if field.empty_message in field.get_errors():
+% if field.empty_message in field.errors:
     <div class="help-block " fieldtype="${'required' if field.required else 'desired'}">
-% elif field.empty_message in field.get_warnings():
+% elif field.empty_message in field.warnings:
     <div class="help-block " fieldtype="${'required' if field.required else 'desired'}">
 % else:
     <div class="help-block hidden" fieldtype="${'required' if field.required else 'desired'}">
