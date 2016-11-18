@@ -210,6 +210,10 @@ class Form(object):
         if not values:
             values = {}
         self.merged_data = dict(self.loaded_data.items() + values.items())
+        # set default values
+        for field in self.fields:
+            if self.fields[field].value:
+                self.merged_data[field] = self.fields[field].value
         """This is merged date from the initial data loaded from the
         given item and userprovided values on form initialisation. The
         user defined values are merged again on render time"""
@@ -431,7 +435,13 @@ class Form(object):
         #  values can now be defined on form initialisation. (ti)
         #  <2016-08-17 15:18> 
 
-        self.merged_data = dict(self.loaded_data.items() + values.items())
+        if values.items():
+            log.warning("Providing userdefined values on "
+                        "rendertime will be disabled. Please provide the "
+                        "values at time of form initialisation.")
+            for v in values:
+                if self.merged_data.get(v) != values[v]:
+                    self.merged_data[v] = values[v]
 
         # Set current and previous values of the fields in the form. In
         # case of errors in the form the submitted_data dictionary will
@@ -645,6 +655,8 @@ class Field(object):
                     log.error("Error while accessing attribute '%s': %s"
                               % (value, e))
                 value = None
+        if value:
+            value = to_python(self, value, [])
         self.value = value
 
         self.previous_value = None
