@@ -9,6 +9,21 @@ from formbar.rules import Rule
 log = logging.getLogger(__name__)
 _ = gettext.gettext
 
+required_msg = _("This field is required. You must provide a value")
+desired_msg = _("This field is desired. Please provide a value")
+
+
+def get_text_and_html_content(item):
+    """Will return the content (body) of an given element including HTML
+    content. HTML content must be wrapped in a <html> tag.
+    :returns: content of the item.
+
+    """
+    if len(item) > 0 and item[0].tag == "html":
+        content = ET.tostring(item[0], method="html")
+        return content.replace("html>", "span>")
+    return item.text
+
 
 def load(path):
     """Return the parsed XML form the given file. The function will load
@@ -270,6 +285,22 @@ class Config(object):
             log.error(err)
             raise ValueError(err)
 
+        self.build_index()
+
+    def build_index(self):
+        index = {}
+
+        for node in self._tree.iter():
+            if not ET.iselement(node):
+                continue
+            elems = index.get(node.tag)
+            if elems is None:
+                elems = []
+                index[node.tag] = elems
+            elems.append(node)
+
+        self.index = index
+
     def get_elements(self, name):
         """Returns a list of all elements found in the tree with the given
         name. If no elements can be found. Return an empty list.
@@ -278,8 +309,10 @@ class Config(object):
         :returns: list of elements
 
         """
-        qstr = ".//%s" % (name)
-        return self._tree.findall(qstr)
+        try:
+            return self.index[name]
+        except KeyError:
+            return []
 
     def get_element(self, name, id):
         """Returns an ``Element`` from the configuration. If the element can
@@ -293,10 +326,11 @@ class Config(object):
         :returns: ``Element`` or ``None``.
 
         """
-        qstr = ".//%s" % (name)
+        result = self.index.get(name)
+        if result is None:
+            return None
         if id:
-            qstr += "[@id='%s']" % id
-        result = self._tree.findall(qstr)
+            result = [x for x in result if x.attrib.get('id') == id]
         if len(result) > 1:
             raise KeyError('Element is ambigous %s:' % id)
         elif len(result) == 1:
@@ -437,20 +471,21 @@ class Form(Config):
         for child in root:
             if len(child) > 0:
                 if child.tag == "if":
-                    rule = Rule(child.attrib.get('expr'))
-                    try:
-                        if evaluate and not rule.evaluate(values):
+                    if evaluate:
+                        try:
+                            rule = Rule(child.attrib.get('expr'))
+                            if not rule.evaluate(values):
+                                continue
+                        except TypeError:
+                            # FIXME: This error can happen if the rule
+                            # refers to values which are not contained in
+                            # the provided values dictionary. The value
+                            # might be missing because the converting of the
+                            # value failed or the value was missing at
+                            # all.(e.g the field was a selection field and
+                            # was "disabled" in a conditional. In this case
+                            # the value is not sent. (ti) <2015-04-28 16:52>
                             continue
-                    except TypeError:
-                        # FIXME: This error can happen if the rule
-                        # refers to values which are not contained in
-                        # the provided values dictionary. The value
-                        # might be missing because the converting of the
-                        # value failed or the value was missing at
-                        # all.(e.g the field was a selection field and
-                        # was "disabled" in a conditional. In this case
-                        # the value is not sent. (ti) <2015-04-28 16:52>
-                        continue
                     for elem in self.walk(child, values,
                                           evaluate, include_layout):
                         yield elem
@@ -499,7 +534,8 @@ class Form(Config):
             pages.append(self._tree)
         for page in pages:
             page_id = page.attrib.get("id")
-            fields[page_id] = {}
+            per_page = {}
+            fields[page_id] = per_page
             for node in self.walk(page, values, evaluate):
                 ref = node.attrib.get('ref')
                 entity = self._parent.get_element('entity', ref)
@@ -507,7 +543,7 @@ class Form(Config):
                 # Inherit readonly flag to all fields in this field.
                 if self.readonly:
                     field.readonly = self.readonly
-                fields[page_id][field.name] = field
+                per_page[field.name] = field
                 self._id2name[ref] = field.name
         return fields
 
@@ -645,10 +681,10 @@ class Field(Config):
 
         # Help
         self.help = None
-        help = entity.find('help')
-        if help is not None:
-            self.help_display = help.attrib.get("display", "tooltip")
-            self.help = help.text
+        help_item = entity.find('help')
+        if help_item is not None:
+            self.help_display = help_item.attrib.get("display", "tooltip")
+            self.help = get_text_and_html_content(help_item)
 
         # Renderer
         self.renderer = None
@@ -656,29 +692,45 @@ class Field(Config):
         if renderer_config is not None:
             self.renderer = Renderer(renderer_config)
 
+    def required_rule(self, rules):
+        if self.required:
+            expr = "bool($%s)" % self.name
+            mode = "pre"
+            rule = Rule(expr, required_msg, mode)
+            rules.append(rule)
+
+    def desired_rule(self, rules):
+        if self.desired:
+            expr = "bool($%s)" % self.name
+            mode = "pre"
+            triggers = "warning"
+            rule = Rule(expr, desired_msg, mode, triggers)
+            rules.append(rule)
+
     def get_rules(self):
         rules = []
         # Add automatic genertated rules based on the required or
         # desired flag
-        if self.required:
-            expr = "bool($%s)" % self.name
-            msg = _("This field is required. You must provide a value")
-            mode = "pre"
-            rules.append(Rule(expr, msg, mode))
-        if self.desired:
-            expr = "bool($%s)" % self.name
-            msg = _("This field is desired. Please provide a value")
-            mode = "pre"
-            triggers = "warning"
-            rules.append(Rule(expr, msg, mode, triggers))
+        self.required_rule(rules)
+        self.desired_rule(rules)
+
         # Add rules added the the field.
-        for rule in self._tree.findall('rule'):
+        for rule in self.get_elements('rule'):
             expr = rule.attrib.get('expr')
             msg = rule.attrib.get('msg')
             mode = rule.attrib.get('mode')
             triggers = rule.attrib.get('triggers')
             rules.append(Rule(expr, msg, mode, triggers))
         return rules
+
+    def get_validators(self):
+        validators = []
+        for validator in self.get_elements('validator'):
+            # Import dynamically the validator
+            src = validator.attrib.get("src")
+            msg = validator.attrib.get("msg")
+            validators.append((src, msg))
+        return validators
 
 
 class Renderer(Config):

@@ -6,6 +6,7 @@
     <entity id="e1" name="string" label="String field" type="string"/>
     <entity id="e2" name="integer" label="Integer field" type="integer" required="true">
       <rule expr="$integer ge 16" msg="Integer must be greated than 15" mode="post"/>
+      <validator src="formbar.validators.null_validator" msg="An error occured"/>
     </entity>
     <entity id="e3" name="float" label="Float field" type="float" desired="true">
       <rule expr="$float lt 100.0" msg="Float must be lower than 100" mode="post"/>

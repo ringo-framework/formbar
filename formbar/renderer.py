@@ -1,14 +1,16 @@
 import logging
 import difflib
 import xml.etree.ElementTree as ET
-from webhelpers.html import literal, HTML, escape
+from cgi import escape
+from webhelpers.html import literal, HTML
 
 from mako.lookup import TemplateLookup
 from formbar import template_dir
 from formbar.rules import Rule
 from formbar.fields import (
         TimedeltaField, ManytooneRelationField,
-        ManytomanyRelationField, OnetomanyRelationField, EmailField
+        ManytomanyRelationField, OnetomanyRelationField, EmailField,
+        DateField, FileField, TimeField
 )
 
 
@@ -43,8 +45,9 @@ def get_renderer(field, translate):
     if renderer is not None:
         # if there is a external Renderer defined for the given renderer
         # type then use this one.
-        if field._form.external_renderers.has_key(renderer.render_type):
-            return field._form.external_renderers.get(renderer.render_type)(field, translate)
+        if renderer.render_type in field._form.external_renderers:
+            return field._form.external_renderers.get(renderer.render_type)(
+                field, translate)
         if renderer.render_type == "textarea":
             return TextareaFieldRenderer(field, translate)
         elif renderer.render_type == "info":
@@ -78,11 +81,11 @@ def get_renderer(field, translate):
             return SelectionFieldRenderer(field, translate)
         if isinstance(field, OnetomanyRelationField):
             return SelectionFieldRenderer(field, translate)
-        if isinstance(field, DateFieldRenderer):
+        if isinstance(field, DateField):
             return DateFieldRenderer(field, translate)
-        if isinstance(field, FileFieldRenderer):
+        if isinstance(field, FileField):
             return FileFieldRenderer(field, translate)
-        if isinstance(field, TimeFieldRenderer):
+        if isinstance(field, TimeField):
             return TimeFieldRenderer(field, translate)
         if isinstance(field, TimedeltaField):
             return TimeFieldRenderer(field, translate)
@@ -178,22 +181,35 @@ class FormRenderer(Renderer):
                                  class_="col-sm-9 span9 button-pane"))
         else:
             html.append(HTML.tag("div", _closed=False,
-                                 class_="col-sm-12 span12 button-pane well-small"))
+                        class_="col-sm-12 span12 button-pane well-small"))
 
         # Render default buttons if no buttons have been defined for the
         # form.
         if len(self._form._config._buttons) == 0:
-            html.append(HTML.tag("button", type="submit", 
-                                 class_="btn btn-default", c=_('Submit')))
+            html.append(HTML.tag("button", type="submit",
+                                 name="_submit", value="",
+                                 class_="btn btn-default hidden-print",
+                                 c=_('Submit')))
+            # If there is a next page than render and additional submit
+            # button.
+            if len(self._form.pages) > 1:
+                html.append(HTML.tag("button", type="submit",
+                                     name="_submit", value="nextpage",
+                                     class_="btn btn-default hidden-print",
+                                     c=_('Submit and proceed')))
         else:
             for b in self._form._config._buttons:
+                if b.attrib.get("ignore"):
+                    continue
                 html.append(HTML.tag("button", _closed=False,
-                                     type=b.attrib.get("type") or "submit",
-                                     name="_%s" % b.attrib.get("type") or "submit",
-                                     value=b.attrib.get("value") or "",
-                                     class_=b.attrib.get("class") or "btn btn-default"))
+                            type=b.attrib.get("type") or "submit",
+                            name="_%s" % b.attrib.get("type") or "submit",
+                            value=b.attrib.get("value") or "",
+                            class_=b.attrib.get("class")
+                            or "btn btn-default hidden-print"))
                 if b.attrib.get("icon"):
-                    html.append(HTML.tag("i", class_=b.attrib.get("icon"), c=_(b.text)))
+                    html.append(HTML.tag("i", class_=b.attrib.get("icon"),
+                                         c=_(b.text)))
                 html.append(_(b.text))
         html.append(HTML.tag("/div", _closed=False))
         html.append(HTML.tag("/div", _closed=False))
@@ -218,6 +234,7 @@ class FieldRenderer(Renderer):
         """
         Renderer.__init__(self)
         self._field = field
+        self._active = True
         self._config = field._config.renderer
         self.translate = translate
         self.template = None
@@ -238,7 +255,8 @@ class FieldRenderer(Renderer):
     def _render_errors(self):
         template = template_lookup.get_template("errors.mako")
         values = {'field': self._field,
-                  '_': self.translate}
+                  '_': self.translate,
+                  'active': self._active}
         return literal(template.render(**values))
 
     def _render_help(self):
@@ -248,8 +266,8 @@ class FieldRenderer(Renderer):
         return literal(template.render(**values))
 
     def _render_diff(self, newvalue, oldvalue):
-        """Will return a HTML string showing the differences between the old and
-        the new string.
+        """Will return a HTML string showing the differences between the old
+        and the new string.
 
         The new string will have some markup to show the differences between
         the given strings. Words which has been deleted in the new string
@@ -294,7 +312,6 @@ class FieldRenderer(Renderer):
             out.append(HTML.tag("/span", _closed=False))
         return literal("").join(out)
 
-
     def _get_template_values(self):
         values = {'field': self._field,
                   'renderer': self,
@@ -308,7 +325,7 @@ class FieldRenderer(Renderer):
         html = []
         has_errors = len(self._field.get_errors())
         has_warnings = len(self._field.get_warnings())
-
+        active = 'active' if self._active else 'inactive'
         # Handle indent. Set indent_with css only if the elements are
         # actually have an indent and the lable position allows an
         # indent.
@@ -316,17 +333,21 @@ class FieldRenderer(Renderer):
         if self.elements_indent \
            and self.label_position not in ["left", "right"]:
             indent_width = self.indent_width
-
         class_options = ((has_errors and 'has-error'),
                          (has_warnings and 'has-warning'),
+                         (active),
                          indent_width)
         html.append(HTML.tag("div", _closed=False,
-                             class_=("form-group %s %s %s" % class_options)))
+                    rules=u"{}".format(";".join(self._field.rules_to_string)),
+                    formgroup="{}".format(self._field.name),
+                    desired="{}".format(self._field.desired),
+                    required="{}".format(self._field.required),
+                    class_=("form-group %s %s %s %s" % class_options)))
         values = self._get_template_values()
         if self.label_width > 0 and self.label_position in ["left", "right"]:
             label_width = self.label_width
             label_align = self.label_align
-            field_width = 12-self.label_width
+            field_width = 12 - self.label_width
             html.append(HTML.tag("div", _closed=False, class_="row"))
             if self.label_position == "left":
                 html.append(HTML.tag("div", _closed=False,
@@ -361,12 +382,14 @@ class FieldRenderer(Renderer):
         html.append(HTML.tag("/div", _closed=False))
         return literal("").join(html)
 
+
 class InfoFieldRenderer(FieldRenderer):
     """A Renderer to render simple fa_field elements"""
 
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("infofield.mako")
+
 
 class TextFieldRenderer(FieldRenderer):
     """A Renderer to render simple fa_field elements"""
@@ -375,12 +398,14 @@ class TextFieldRenderer(FieldRenderer):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("textfield.mako")
 
+
 class TimeFieldRenderer(FieldRenderer):
     """A Renderer to render simple fa_field elements"""
 
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("timefield.mako")
+
 
 class EmailFieldRenderer(FieldRenderer):
     """A Renderer to render email fields"""
@@ -405,6 +430,9 @@ class TextareaFieldRenderer(FieldRenderer):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("textarea.mako")
 
+    def nl2br(self, value=""):
+        return literal("<br />".join(escape(value).split("\n")))
+
 
 class DateFieldRenderer(FieldRenderer):
     """A Renderer to render simple fa_field elements"""
@@ -421,6 +449,7 @@ class PasswordFieldRenderer(FieldRenderer):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("password.mako")
 
+
 class HiddenFieldRenderer(FieldRenderer):
     """A Renderer to render hidden elements"""
 
@@ -433,6 +462,7 @@ class HiddenFieldRenderer(FieldRenderer):
         values = self._get_template_values()
         html.append(literal(self.template.render(**values)))
         return literal("").join(html)
+
 
 class HTMLRenderer(FieldRenderer):
     """A Renderer to render generic HTML"""
@@ -455,6 +485,7 @@ class OptionFieldRenderer(FieldRenderer):
     # TODO: Implement filtering of items here if possible. See Plorma
     # implementation of the ListingFieldRenderer to see how this
     # ignoring is implemented. (ti) <2013-10-11 22:39>
+
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self._cache_options = None
@@ -467,12 +498,14 @@ class OptionFieldRenderer(FieldRenderer):
         values['options'] = self._cache_options
         return values
 
+
 class DropdownFieldRenderer(OptionFieldRenderer):
     """A Renderer to render dropdown list"""
 
     def __init__(self, field, translate):
         OptionFieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("dropdown.mako")
+
 
 class SelectionFieldRenderer(OptionFieldRenderer):
     """A Renderer to render selection field"""
@@ -481,6 +514,7 @@ class SelectionFieldRenderer(OptionFieldRenderer):
         OptionFieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("selection.mako")
 
+
 class RadioFieldRenderer(OptionFieldRenderer):
     """A Renderer to render selection field"""
 
@@ -488,12 +522,14 @@ class RadioFieldRenderer(OptionFieldRenderer):
         OptionFieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("radio.mako")
 
+
 class CheckboxFieldRenderer(OptionFieldRenderer):
     """A Renderer to render selection field"""
 
     def __init__(self, field, translate):
         OptionFieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("checkbox.mako")
+
 
 class TextoptionFieldRenderer(OptionFieldRenderer):
     """A Renderer to render textoption field. A textoption field is a
@@ -504,6 +540,7 @@ class TextoptionFieldRenderer(OptionFieldRenderer):
     def __init__(self, field, translate):
         OptionFieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("textoption.mako")
+
 
 class FormbarEditorRenderer(FieldRenderer):
     """A Renderer to render the formbar editor widget used to edit
@@ -516,6 +553,7 @@ class FormbarEditorRenderer(FieldRenderer):
 # TODO: Check which of the following Renderers are needed (ti). It looks
 # like they are outdated as they are using old FormAlchemy fa_*.mako
 # templates <2013-10-11 22:31>
+
 
 class ListFieldRenderer(FieldRenderer):
     """A Renderer to render selection list"""

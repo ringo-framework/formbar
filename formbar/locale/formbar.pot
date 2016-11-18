@@ -6,22 +6,22 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: formbar 0.18.0\n"
+"Project-Id-Version: formbar 0.20.3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-12 15:08+0200\n"
+"POT-Creation-Date: 2016-08-22 17:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.3.2\n"
+"Generated-By: Babel 2.3.4\n"
 
-#: formbar/config.py:669
+#: formbar/config.py:12
 msgid "This field is required. You must provide a value"
 msgstr ""
 
-#: formbar/config.py:674
+#: formbar/config.py:13
 msgid "This field is desired. Please provide a value"
 msgstr ""
 
@@ -75,12 +75,16 @@ msgstr ""
 msgid "%s is not a file value."
 msgstr ""
 
-#: formbar/form.py:822
+#: formbar/form.py:927
 msgid "no selection"
 msgstr ""
 
-#: formbar/renderer.py:171
+#: formbar/renderer.py:184
 msgid "Submit"
+msgstr ""
+
+#: formbar/renderer.py:191
+msgid "Submit and proceed"
 msgstr ""
 
 #: formbar/templates/form.mako:8
@@ -106,7 +110,7 @@ msgstr ""
 msgid "Required field"
 msgstr ""
 
-#: formbar/templates/textarea.mako:15
+#: formbar/templates/textarea.mako:15 formbar/templates/textarea.mako:17
 msgid "characters remaining"
 msgstr ""
 

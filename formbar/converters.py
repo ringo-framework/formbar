@@ -175,12 +175,14 @@ def to_manytomany(clazz, ids, db, selected):
 
     # Determine which items need to be added or removed from the
     # relation.
-    add_ids = set(ids).difference(selected_ids)
+    ids = set(ids)
+    add_ids = ids.difference(selected_ids)
     delete_ids = selected_ids.difference(ids)
-    new_items = filter(lambda x: x.id not in delete_ids, selected)
+
+    related_items = filter(lambda x: x.id not in delete_ids, selected)
     for id in add_ids:
-        new_items.append(db.query(clazz).filter(clazz.id == id).one())
-    return new_items
+        related_items.append(db.query(clazz).filter(clazz.id == id).one())
+    return related_items
 
 
 def to_onetomany(clazz, ids, db, selected):
@@ -240,10 +242,10 @@ def to_email(value):
     # if the adress is known. (ti) <2014-08-04 16:31>
     if not value:
         return ""
-    if not re.match(r"^.+@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$", value):
+    if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", value):
         msg = _("%s is not valid email address.")
         raise DeserializeException(msg, value)
-    return value
+    return value.lower()
 
 
 def to_boolean(value):

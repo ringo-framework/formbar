@@ -46,6 +46,7 @@ Here is an example of an entity definition::
         <renderer type="text"/>
         <help>This is a help text</help>
         <rule expr="$age ge 21" msg="Age must be greater than 21"/> 
+        <validator src="a.b.external_validator" msg="Error message"/>
     </entity>
 
 Entities can be marked as *required* or *desired*. Formed will generate
@@ -171,11 +172,39 @@ mode        Point in validation when this rules gets evaluations. ``post`` (defa
 triggers    Flag which defines which type of message a the rule will trigger if the evaluation fails. Be be ``error`` (default) or ``warning``.
 =========   ===========
 
+.. _validator:
+
+Validator
+---------
+A validator defines an external validator. See :ref:`external_validator` for
+more details. Those validators are usally used if the validation become more
+complex or it is just not possible to express the rule with a :ref:`rule`
+You can define a validator in the form configuration in a similar way like
+defining rules for an entity::
+
+            <validator src="a.b.external_validator" msg="Error message"/>
+
+=========   ===========
+Attribute   Description
+=========   ===========
+src         The *src* attribute is the modul path to the callable. The path is used to import the validator dynamically at runtime.
+msg         The message which is displayed if the evaluation of the validation fails.
+=========   ===========
+
 .. _help:
 
 Help
 ----
 The help block can be used to add some information to the field for the user.
+You can also define some HTML content for the help block to add links to
+external ressources for example::
+
+  <help display="text"><html>HTML content must be wrapped in <i>html</i>
+  tags></html></help>
+
+To be able to use the HTML content the content of the help element must
+be wrapped in a html tag. But you can leave this out in case you just
+have ordinary text content.
 
 =========   ===========
 Attribute   Description
@@ -214,7 +243,7 @@ But it is very easy to write your own custom renderer. See
 :ref:`conf_custom_renderer` on how to use them for rendering in your form.
 
 Label
-`````
+^^^^^
 The lable tag can be used to have more options to configure the rendering
 of the fields label. The label tag can be seen as a configuration
 option of the renderer::
@@ -273,7 +302,8 @@ enctype        Encrytion used while sending the data. Defaults to ``application/
 Buttons
 -------
 Optional directive within the form tag to configure custom buttons for the
-form. If not defined the default Submit and Reset Buttons are renderered::
+form. If not defined the default Submit Button is renderered. If
+the form has pages than an additional "Save and proceed" button is rendered.::
 
         <buttons>
           <button type="submit" value="delete" name="_submit" class="warning" icon="glyphicon glyphicon-delete">Delete</button>
@@ -291,6 +321,7 @@ value          Optional. Value which is submitted in the form. Defaults to the b
 name           Optional. Name under which the value will be available in the submitted data Defaults to ``_$type``.
 class          Optional. CSS class which will be added to the button.
 icon           Optional. Definition of glyphicons which will be displayed before the buttons label.
+ignore         Optional. If set the button will be ignored on rendering.  This can be used to ignore rendering of buttons at all in a specific form.
 ============   ===========
 
 Page
@@ -490,7 +521,7 @@ be set to readonly and the element will have a lowered opacity.
 ============   ===========
 Attribute      Description
 ============   ===========
-type           Effect of the conditional if the condition evaluates to false.  Defaults to ``hide``.
+type           Effect of the conditional if the condition evaluates to false.  Defaults to ``hidden``.
 expr           The expression which will be evaluated.
 static         Flag disable dynamic clientsided evaluation of the conditional. Defaults to ``false``.
 reset-value    If `true` than the value of all fields with in the conditional will be removed . Defaults to ``false``.
@@ -552,10 +583,7 @@ Use this renderer if you want to render the field as a textfield::
 Attribute   Description
 =========   ===========
 rows        Number of rows of the texteare. Default is 3.
-maxlength   Number of chars "allowed". If set a small indicator below
-            the textarea is show indicating how many chars are left.
-            Please note that this does **not** triggers any rules. Rules
-            to enforce this maxlength must be defined too.
+maxlength   Number of chars "allowed". If set a small indicator below the textarea is show indicating how many chars are left.  Please note that this does **not** triggers any rules. Rules to enforce this maxlength must be defined too.
 =========   ===========
 
 Infofield
@@ -568,6 +596,12 @@ you can also use the ``value`` attribute.
 Appearance is same as a readonly field::
 
         <renderer type="infofield"/>
+
+============   ===========
+Attribute      Description
+============   ===========
+showrawvalue   If set to true the info field will return the "raw" value if the field which whithout any exapandation or conversion of the value. This becomes handy for relations if you want to show the related item instead of just its id. Default is false.
+============   ===========
 
 .. _selection:
 
@@ -593,6 +627,8 @@ Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option should be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+sort            If set to "true" than the options will be alphabetically sorted. Defaults to no sorting.
+sortorder       If set to "desc" the sorting will be descending (reversed) order. Default is ascending sorting.
 =============== ===========
 
 Filtering can be done by defining a expression in the filter attribute. This
@@ -641,6 +677,8 @@ Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option should be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+sort            If set to "true" than the options will be alphabetically sorted. Defaults to no sorting.
+sortorder       If set to "desc" the sorting will be descending (reversed) order. Default is ascending sorting.
 =============== ===========
 
 .. note::
@@ -669,6 +707,8 @@ Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
 align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
+sort            If set to "true" than the options will be alphabetically sorted. Defaults to no sorting.
+sortorder       If set to "desc" the sorting will be descending (reversed) order. Default is ascending sorting.
 =============== ===========
 
 See filtering section of the :ref:`dropdown` renderer.
@@ -696,6 +736,8 @@ Attribute       Description
 filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
 align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
+sort            If set to "true" than the options will be alphabetically sorted. Defaults to no sorting.
+sortorder       If set to "desc" the sorting will be descending (reversed) order. Default is ascending sorting.
 =============== ===========
 
 See filtering section of the :ref:`dropdown` renderer.
@@ -726,6 +768,8 @@ Attribute       Description
 =============== ===========
 filter          Expression which must evaluate to True if the option shoul be shown in the Dropdown.
 remove_filtered Flag "true/false" to indicate that filtered items should not be rendered at all. On default filtered items will only be hidden and selection is still present.
+sort            If set to "true" than the options will be alphabetically sorted. Defaults to no sorting.
+sortorder       If set to "desc" the sorting will be descending (reversed) order. Default is ascending sorting.
 =============== ===========
 
 See filtering section of the :ref:`dropdown` renderer.
@@ -916,14 +960,26 @@ contains all values of the form. The value 'field' defines the name of
 the field for which this validation belongs to and also determines on
 which field the error message will be shown.
 
-The function should return True or False on validation. The validator
-must be added to the form::
+The function should return True in case the validation succeeds or either
+return False or raise an exception in case of validation errors. If the method
+raises an exception the message of the exception will be used as error
+message. The validator can be added in two differen ways.
+
+In the formconfig
+-----------------
+See :ref:`validator` for more details.
+
+In the view
+------------
+Another way to add validator to the form is to add the form in the view after
+the form has been initialized::
 
         validator = Validator('fieldname',
                               'Error message',
                               external_validator)
         self.form.add_validator(validator)
 
+.. _includes:
 
 Includes
 ========
@@ -993,6 +1049,8 @@ The include file looks like this::
 
 This way you can keep your form definition clean and short and maintain the
 countries in a separate file.
+
+.. _inheritance:
 
 Inheritance
 ===========

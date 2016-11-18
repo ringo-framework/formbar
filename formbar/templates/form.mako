@@ -1,7 +1,7 @@
 ## Render pages
 <div class="row">
-% if render_outline and len(form._config.get_pages()) > 0:
-  <div class="col-sm-3">
+% if render_outline and len(form.pages) > 0:
+  <div class="col-sm-3 hidden-print">
     <div>
       <div class="panel panel-default formbar-outline">
         <!-- Default panel contents -->
@@ -9,7 +9,7 @@
         <!-- List group -->
         <ul class="list-group">
           ${self.render_recursive_outline(form, form._config._tree)}
-          ##% for num, page in enumerate(form._config.get_pages()):
+          ##% for num, page in enumerate(form.pages):
           ##  <a href="#${page.attrib.get('id')}" class="list-group-item" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${page.attrib.get('label')}
           ##  <span class="label label-danger pull-right">${len(form.get_errors(page)) or ""}</span>
           ##  <span class="label label-warning pull-right">${len(form.get_warnings(page)) or ""}</span>
@@ -20,7 +20,7 @@
     </div>
   </div>
   <div class="col-sm-9">
-  % for num, page in enumerate(form._config.get_pages()):
+  % for num, page in enumerate(form.pages):
     <div class="formbar-page ${num==form.current_page-1 and 'active'}" id="formbar-page-${num+1}">
       <h1 class="page">${_(page.attrib.get('label'))}</h1>
       ## Render errors and warnings
@@ -70,7 +70,7 @@
 </%def>
 
 <%def name="render_outline_element(form, page)">
-  <a href="#${page.attrib.get('id')}" class="list-group-item ${(int(page.attrib.get('id').strip("p"))==form.current_page) and 'selected'}" formbar-baseurl="${form._url_prefix}" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${_(page.attrib.get('label'))}
+  <a href="#${page.attrib.get('id')}" class="list-group-item ${(int(page.attrib.get('id').strip("p"))==form.current_page) and 'selected'}" formbar-lastpage="${str(form.last_page==int(page.attrib.get('id').strip("p"))).lower()}" formbar-baseurl="${form._url_prefix}" formbar-item="${form.change_page_callback.get('item')}" formbar-itemid="${form.change_page_callback.get('itemid')}">${_(page.attrib.get('label'))}
   <span class="label label-danger pull-right">${len(form.get_errors(page)) or ""}</span>
   <span class="label label-warning pull-right">${len(form.get_warnings(page)) or ""}</span>
   </a>
@@ -87,11 +87,11 @@
       % if child.tag == "page" and not render_outline:
         <h1 class="page">${_(child.attrib.get("label"))}</h1>
       % elif child.tag == "section":
-        <h2 class="section ${(is_active and 'active') or 'inactive'}">${_(child.attrib.get('label'))}</h2>
+        <h2 class="section">${_(child.attrib.get('label'))}</h2>
       % elif child.tag == "subsection":
-        <h3 class="section ${(is_active and 'active') or 'inactive'}">${_(child.attrib.get('label'))}</h3>
+        <h3 class="section">${_(child.attrib.get('label'))}</h3>
       % elif child.tag == "subsubsection":
-        <h4 class="section ${(is_active and 'active') or 'inactive'}">${_(child.attrib.get('label'))}</h4>
+        <h4 class="section">${_(child.attrib.get('label'))}</h4>
       % elif child.tag == "row":
         <div class="row row-fluid">
       % elif child.tag == "col":
@@ -111,8 +111,15 @@
         <td colspan="${child.attrib.get('colspan', '')}" class="${child.attrib.get('class', '')}" rowspan="${child.attrib.get('rowspan', '')}" width="${child.attrib.get('width', '')}">
       ## Conditionals
       % elif child.tag == "if" and child.attrib.get("static") != "true":
-          <% is_active = Rule(child.attrib.get("expr")).evaluate(form.merged_data) %>
-          <div id="${id(child)}" class="formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
+        <% 
+        is_active = Rule(child.attrib.get("expr")).evaluate(form.merged_data) 
+        is_readonly = child.attrib.get('type') == 'readonly'
+        if is_active:
+          css_class = "active"
+        else:
+          css_class = "inactive {}".format(child.attrib.get('type'))
+        %>
+        <div id="${id(child)}" class="formbar-conditional ${css_class}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
       % elif child.tag == "html":
         ${ElementTree.tostring(child) | n}
       % endif
@@ -147,13 +154,13 @@
           if mode == "readonly":
             field.readonly = True
         %>
-        ${field.render() | n}
+        ${field.render(active) | n}
       % elif child.tag == "snippet":
         <% ref = child.attrib.get('ref') %>
         % if ref:
           <% child = form._config._parent.get_element('snippet', ref) %>
         % endif
-        ${self.render_recursive(child)}
+        ${self.render_recursive(child, active=is_active)}
       ## Others
       % elif child.tag == "text":
         <%
@@ -163,10 +170,6 @@
             textclasses.append("text-generic")
           if child.attrib.get('color'):
             textclasses.append("text-%s" % child.attrib.get('color'))
-          if is_active:
-            textclasses.append("active")
-          else:
-            textclasses.append("inactive")
         %>
         <p class="${' '.join(textclasses)}">
           % if child.attrib.get('em'):

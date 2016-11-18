@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from formbar.config import get_text_and_html_content
 
 
 def extract_i18n_formconfig(fileobj, keywords, comment_tags, options):
@@ -36,7 +37,7 @@ def extract_i18n_formconfig(fileobj, keywords, comment_tags, options):
         # keywords. Set a dummy funcname here.
         yield (lineno,
                "_",
-               helptoken.text,
+               get_text_and_html_content(helptoken),
                [])
     for ruletoken in config.iter('rule'):
         lineno += 1
@@ -46,6 +47,15 @@ def extract_i18n_formconfig(fileobj, keywords, comment_tags, options):
         yield (lineno,
                "_",
                ruletoken.attrib.get('msg'),
+               [])
+    for valtoken in config.iter('validator'):
+        lineno += 1
+        # "_" is one of the default keywords which marks a string
+        # for extraction. As the json file does not have any
+        # keywords. Set a dummy funcname here.
+        yield (lineno,
+               "_",
+               valtoken.attrib.get('msg'),
                [])
     for ruletoken in config.iter('page'):
         lineno += 1

@@ -1,3 +1,43 @@
+Next
+====
+- Added 'showrawvalue' config option for inforenderer. See documentation for
+  more details.
+- Added sort configuration for selection fields. See documentation for more
+  details.
+
+0.21.0
+======
+- #3 Add "Save an continue" Button. For forms with multiple pages formbar now
+  renders a Save and continue submit button. An application can exime the
+  request if the user has clicked this button to set active the next page on
+  rendering.
+- Add support for HTML code in help blocks.
+- Added support to define validators directly in the form config.
+
+0.20.3
+======
+- Allow user defined values on form initialisation. Needed for specific rules
+  evaluations which relay on external data.
+- Added "ignore" attribute to buttons to allow rendering forms with no
+  buttons at all.
+
+0.20.2
+======
+Bugfixes.
+
+0.20.1
+======
+Bugfixes.
+
+0.20.0
+======
+Large rewrite of the Javascript part and large parts of formbar to make
+formbar more dynamic in case of showing messages on errors and warnings.
+
+0.18.3
+======
+- Fixed selection filtering with user provided values.
+
 0.18.2
 ======
 - Fixed error on evaluating checkboxes.

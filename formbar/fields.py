@@ -5,6 +5,7 @@ import datetime
 import re
 import sqlalchemy as sa
 from formbar.rules import Rule, Expression
+import formbar.config as config
 
 log = logging.getLogger(__name__)
 
@@ -246,6 +247,28 @@ class Field(object):
         """Value as string of the field. Will be set on rendering the
         form"""
 
+    ##def __repr__(self):
+    ##    rules = "rules: \n\t\t{}".format("\n\t".join(self.rules_to_string))
+    ##    field = u"field:\t\t{}".format(self.name)
+    ##    value = u"value:\t\t{}, {}".format(repr(self.get_value()), type(self.get_value()))
+    ##    required = "required:\t{}".format(self.is_required)
+    ##    desired = "desired:\t{}".format(self.is_desired)
+    ##    #validated = "validated:\t{}".format(self.is_validated)
+    ##    #_type = "type:\t\t{}".format(self.get_type())
+    ##    return "\n".join([field, required, desired, value, _type, rules])+"\n"
+
+    @property
+    def rules_to_string(self):
+        return [u"{}".format(r) for r in self.get_rules()]
+
+    @property
+    def empty_message(self):
+        if self.is_required:
+            return config.required_msg
+        return config.desired_msg
+
+
+
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
         return getattr(self._config, name)
@@ -285,7 +308,11 @@ class Field(object):
         true the function will try to return the literal value of the
         field. This option has currently only an effect on
         CollectionFields."""
-        value = self._from_python(self.value)
+        try:
+            value = self._from_python(self.value)
+        except:
+            log.exception("'{}' in {} ({}) could not be converted".format(self.value, self.name, self))
+            return self.value
         if not value and default:
             return default
         return value
@@ -308,8 +335,9 @@ class Field(object):
     def get_warnings(self):
         return self._warnings
 
-    def render(self):
+    def render(self, active):
         """Returns the rendererd HTML for the field"""
+        self.renderer._active = active
         return self.renderer.render()
 
     def is_relation(self):
@@ -369,13 +397,15 @@ class BooleanField(Field):
 class DateField(Field):
 
     def _from_python(self, value):
-        from formar.converters import format_date
+        from formbar.converters import format_date
         locale = self._form._locale
         if locale == "de":
             dateformat = "dd.MM.yyyy"
         else:
             dateformat = "yyyy-MM-dd"
-        return format_date(value, format=dateformat)
+        if value:
+            return format_date(value, format=dateformat)
+        return None
 
     def _to_python(self, value):
         from formbar.converters import to_date
@@ -385,7 +415,7 @@ class DateField(Field):
 class DateTimeField(Field):
 
     def _from_python(self, value):
-        from formar.converters import format_datetime, get_local_datetime
+        from formbar.converters import format_datetime, get_local_datetime
         locale = self._form._locale
         value = get_local_datetime(value)
         if locale == "de":
@@ -402,7 +432,7 @@ class DateTimeField(Field):
 class TimedeltaField(Field):
 
     def _from_python(self, value):
-        from formar.converters import from_timedelta
+        from formbar.converters import from_timedelta
         return from_timedelta(value)
 
     def _to_python(self, value):
@@ -420,7 +450,7 @@ class FileField(Field):
 class TimeField(Field):
 
     def _from_python(self, value):
-        from formar.converters import from_timedelta
+        from formbar.converters import from_timedelta
         td = datetime.timedelta(seconds=int(value))
         return from_timedelta(td)
 
@@ -467,6 +497,20 @@ class CollectionField(Field):
         if expand:
             return self.expand_value(value)
         return value
+
+
+    def sort_options(self, options):
+        """Will return a alphabetical sorted list of options. The filtering is
+        defined by the following configuration options of the renderer:
+        sort, sortorder. If sort is not set to 'true' than no sorting is
+        done at all. This is the default behaviour."""
+        if self._config.renderer and self._config.renderer.sort:
+            reverse = self._config.renderer.sortorder == "desc"
+            options = sorted(options,
+                             key=lambda x: unicode(x[0]),
+                             reverse=reverse)
+        return options
+
 
     def get_options(self):
         """Will return a list of tuples containing the options of the
@@ -605,7 +649,7 @@ class SelectionField(CollectionField):
         elif isinstance(user_defined_options, str):
             for option in self._form.merged_data.get(user_defined_options):
                 options.append((option[0], option[1], True))
-        return options
+        return self.sort_options(options)
 
     def _from_python(self, value):
         value = super(CollectionField, self)._from_python(value)
