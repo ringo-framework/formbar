@@ -241,6 +241,8 @@ class Field(object):
                     log.error("Error while accessing attribute '%s': %s"
                               % (value, e))
                 value = None
+        if value:
+            value = self._to_python(value)
         self.value = value
 
         self.previous_value = None
@@ -266,8 +268,6 @@ class Field(object):
         if self.is_required:
             return config.required_msg
         return config.desired_msg
-
-
 
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
