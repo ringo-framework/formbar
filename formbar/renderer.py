@@ -10,7 +10,7 @@ from formbar.rules import Rule
 from formbar.fields import (
         TimedeltaField, ManytooneRelationField,
         ManytomanyRelationField, OnetomanyRelationField, EmailField,
-        DateField, FileField, TimeField
+        DateField, FileField, TimeField, rules_to_string
 )
 
 
@@ -338,7 +338,7 @@ class FieldRenderer(Renderer):
                          (active),
                          indent_width)
         html.append(HTML.tag("div", _closed=False,
-                    rules=u"{}".format(";".join(self._field.rules_to_string)),
+                    rules=u"{}".format(";".join(rules_to_string(self._field))),
                     formgroup="{}".format(self._field.name),
                     desired="{}".format(self._field.desired),
                     required="{}".format(self._field.required),
