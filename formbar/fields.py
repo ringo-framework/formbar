@@ -10,6 +10,10 @@ import formbar.config as config
 log = logging.getLogger(__name__)
 
 
+def rules_to_string(field):
+    return [u"{}".format(r) for r in field.get_rules()]
+
+
 def get_sa_property(item, name):
     mapper = sa.orm.object_mapper(item)
     for prop in mapper.iterate_properties:
@@ -253,7 +257,7 @@ class Field(object):
         form"""
 
     ##def __repr__(self):
-    ##    rules = "rules: \n\t\t{}".format("\n\t".join(self.rules_to_string))
+    ##    rules = "rules: \n\t\t{}".format("\n\t".join(rules_to_string(field))
     ##    field = u"field:\t\t{}".format(self.name)
     ##    value = u"value:\t\t{}, {}".format(repr(self.get_value()), type(self.get_value()))
     ##    required = "required:\t{}".format(self.required)
@@ -261,10 +265,6 @@ class Field(object):
     ##    #validated = "validated:\t{}".format(self.is_validated)
     ##    #_type = "type:\t\t{}".format(self.get_type())
     ##    return "\n".join([field, required, desired, value, _type, rules])+"\n"
-
-    @property
-    def rules_to_string(self):
-        return [u"{}".format(r) for r in self.get_rules()]
 
     @property
     def empty_message(self):
