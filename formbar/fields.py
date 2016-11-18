@@ -680,7 +680,11 @@ class SelectionField(CollectionField):
 class IntSelectionField(SelectionField):
     """Field which can have one or more of predefined values. The
     values are defined in the fields config."""
-    pass
+    def _to_python(self, value):
+        from formbar.converters import to_integer
+        if isinstance(value, list):
+            return [to_integer(e) for e in value]
+        return to_integer(value)
 
 
 class StringSelectionField(SelectionField):
