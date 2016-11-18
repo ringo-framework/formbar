@@ -210,6 +210,10 @@ class Form(object):
         if not values:
             values = {}
         self.merged_data = dict(self.loaded_data.items() + values.items())
+        # set default values
+        for field in self.fields:
+            if self.fields[field].value:
+                self.merged_data[field] = self.fields[field].value
         """This is merged date from the initial data loaded from the
         given item and userprovided values on form initialisation. The
         user defined values are merged again on render time"""
@@ -645,7 +649,7 @@ class Field(object):
                     log.error("Error while accessing attribute '%s': %s"
                               % (value, e))
                 value = None
-        self.value = value
+        self.value = to_python(self, value, [])
 
         self.previous_value = None
         """Value as string of the field. Will be set on rendering the
