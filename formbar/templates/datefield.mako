@@ -4,7 +4,7 @@ if field._form._locale == "de":
 else:
   placeholder = "YYYY-MM-DD"
 %>
-% if field.is_readonly():
+% if field.readonly:
   <div class="readonlyfield" name="${field.name}">
     % if field.get_previous_value() is not None:
       ${renderer._render_diff(field.get_previous_value(""), field.get_value(""))}

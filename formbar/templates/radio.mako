@@ -1,5 +1,5 @@
 <%
-readonly = (field.is_readonly() and "disabled") or ""
+readonly = (field.readonly and "disabled") or ""
 selected = field.get_value()
 if isinstance(selected, list):
   raise TypeError("There can not be multiple selected values in a radio renderer!")

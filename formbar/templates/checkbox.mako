@@ -1,5 +1,5 @@
 <%
-readonly = (field.is_readonly() and "disabled") or ""
+readonly = (field.readonly and "disabled") or ""
 ## TODO: field should return a field specific value. So we do not need to
 ## handle the special case here if there is no value set. (ti) <2015-07-07
 ## 14:50> 
@@ -33,6 +33,6 @@ selected = field.get_value() or []
   % endif
 % endfor
 ## Hack! Empyt value to allow deselecting all options.
-% if not field.is_readonly():
+% if not field.readonly:
   <input style="display:none" type="checkbox" name="${field.name}" value="" checked="checked"/>
 % endif

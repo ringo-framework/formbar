@@ -1,4 +1,4 @@
-% if field.is_readonly():
+% if field.readonly:
   <div class="readonlyfield" name="${field.name}">
     <a href="mailto:${field.get_value("")}">${field.get_value("")}</a>
   </div>

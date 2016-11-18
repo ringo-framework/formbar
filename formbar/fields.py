@@ -216,6 +216,7 @@ class Field(object):
 
         self.required = getattr(self._config, "required")
         self.desired = getattr(self._config, "desired")
+        self.readonly = getattr(self._config, "readonly")
 
         # Set default value
         value = getattr(self._config, "value")
@@ -272,6 +273,10 @@ class Field(object):
     def rules_to_string(self):
         log.warning("Call of 'rules_to_string' property is deprecated. Use rules_to_string helper method.")
         return rules_to_string(self)
+
+    def is_readonly(self):
+        log.warning("Call of 'is_readonly' method is deprecated. Use readonly attribute.")
+        return self.readonly
 
     @property
     def empty_message(self):
@@ -352,11 +357,6 @@ class Field(object):
 
     def is_relation(self):
         return False
-
-    def is_readonly(self):
-        """Returns true if either the readonly flag of the field
-        configuration is set or the whole form is marked as readonly"""
-        return self.readonly or False
 
 # Singlevalue Fields.
 #####################################
