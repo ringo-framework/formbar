@@ -130,67 +130,67 @@ class FieldFactory(object):
                 dtype = "multiselection"
 
         builder = builder_map.get(dtype, self._create_default)
-        return builder(fieldconfig)
+        return builder(fieldconfig, sa_property)
 
-    def _create_string(self, fieldconfig):
-        return StringField(self.form, fieldconfig, self.translate)
+    def _create_string(self, fieldconfig, sa_property):
+        return StringField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_integer(self, fieldconfig):
-        return IntegerField(self.form, fieldconfig, self.translate)
+    def _create_integer(self, fieldconfig, sa_property):
+        return IntegerField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_float(self, fieldconfig):
-        return FloatField(self.form, fieldconfig, self.translate)
+    def _create_float(self, fieldconfig, sa_property):
+        return FloatField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_date(self, fieldconfig):
-        return DateField(self.form, fieldconfig, self.translate)
+    def _create_date(self, fieldconfig, sa_property):
+        return DateField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_datetime(self, fieldconfig):
-        return DateTimeField(self.form, fieldconfig, self.translate)
+    def _create_datetime(self, fieldconfig, sa_property):
+        return DateTimeField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_timedelta(self, fieldconfig):
-        return TimedeltaField(self.form, fieldconfig, self.translate)
+    def _create_timedelta(self, fieldconfig, sa_property):
+        return TimedeltaField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_time(self, fieldconfig):
-        return TimeField(self.form, fieldconfig, self.translate)
+    def _create_time(self, fieldconfig, sa_property):
+        return TimeField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_file(self, fieldconfig):
-        return FileField(self.form, fieldconfig, self.translate)
+    def _create_file(self, fieldconfig, sa_property):
+        return FileField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_boolean(self, fieldconfig):
-        return BooleanField(self.form, fieldconfig, self.translate)
+    def _create_boolean(self, fieldconfig, sa_property):
+        return BooleanField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_email(self, fieldconfig):
-        return EmailField(self.form, fieldconfig, self.translate)
+    def _create_email(self, fieldconfig, sa_property):
+        return EmailField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_intselection(self, fieldconfig):
-        return IntSelectionField(self.form, fieldconfig, self.translate)
+    def _create_intselection(self, fieldconfig, sa_property):
+        return IntSelectionField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_stringselection(self, fieldconfig):
-        return StringSelectionField(self.form, fieldconfig, self.translate)
+    def _create_stringselection(self, fieldconfig, sa_property):
+        return StringSelectionField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_booleanselection(self, fieldconfig):
-        return BooleanSelectionField(self.form, fieldconfig, self.translate)
+    def _create_booleanselection(self, fieldconfig, sa_property):
+        return BooleanSelectionField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_multiselection(self, fieldconfig):
-        return MultiselectionField(self.form, fieldconfig, self.translate)
+    def _create_multiselection(self, fieldconfig, sa_property):
+        return MultiselectionField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_onetomany(self, fieldconfig):
-        return OnetomanyRelationField(self.form, fieldconfig, self.translate)
+    def _create_onetomany(self, fieldconfig, sa_property):
+        return OnetomanyRelationField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_onetoone(self, fieldconfig):
-        return OnetooneRelationField(self.form, fieldconfig, self.translate)
+    def _create_onetoone(self, fieldconfig, sa_property):
+        return OnetooneRelationField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_manytoone(self, fieldconfig):
-        return ManytooneRelationField(self.form, fieldconfig, self.translate)
+    def _create_manytoone(self, fieldconfig, sa_property):
+        return ManytooneRelationField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_manytomany(self, fieldconfig):
-        return ManytomanyRelationField(self.form, fieldconfig, self.translate)
+    def _create_manytomany(self, fieldconfig, sa_property):
+        return ManytomanyRelationField(self.form, fieldconfig, self.translate, sa_property)
 
-    def _create_default(self, fieldconfig):
+    def _create_default(self, fieldconfig, sa_property):
         log.warning("Not sure which field to create... "
                     "Using default field for '{name}'"
                     "".format(name=fieldconfig.name))
-        return Field(self.form, fieldconfig, self.translate)
+        return Field(self.form, fieldconfig, self.translate, sa_property)
 
 
 class Field(object):
@@ -198,7 +198,7 @@ class Field(object):
     provide a common interface for the renderer independent to the
     underlying implementation detail of the field."""
 
-    def __init__(self, form, config, translate):
+    def __init__(self, form, config, translate, sa_property=None):
         """Initialize the field with the given field configuration.
 
         :config: Field configuration
@@ -211,6 +211,7 @@ class Field(object):
         self.renderer = get_renderer(self, translate)
         self._errors = []
         self._warnings = []
+        self._sa_property = sa_property
 
         self.required = getattr(self._config, "required")
         self.desired = getattr(self._config, "desired")
@@ -711,12 +712,12 @@ class RelationField(CollectionField):
     are defined through the relation in the database.  Please note that
     these require a SQLALCHEMY mapped item in the form!"""
 
-    def __init__(self, form, config, translate):
+    def __init__(self, form, config, translate, sa_property):
         if not form._dbsession:
             raise TypeError("No DB session available in the parent form. "
                             "RelationField must be instanciated with an "
                             "available DB session.")
-        super(RelationField, self).__init__(form, config, translate)
+        super(RelationField, self).__init__(form, config, translate, sa_property)
 
     def _from_python(self, value):
         if isinstance(value, list):
@@ -799,6 +800,8 @@ class ManytomanyRelationField(RelationField):
         from formbar.converters import to_manytomany, to_integer_list
         # TODO: Get relation names () <2016-06-10 16:23>
         rel = relation_names[self.name].mapper.class_
+        import pdb
+        pdb.set_trace()
         value = to_integer_list(value)
         if not value:
             return value
