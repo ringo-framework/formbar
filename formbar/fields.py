@@ -120,8 +120,8 @@ class FieldFactory(object):
 
         # Look on the renderer to get further informations on the type
         # of the field.
-        if (dtype not in ["manytoone", "onetomany", "onetoone"]
-           and fieldconfig.renderer):
+        if dtype not in ["manytoone", "onetomany", "onetoone"] and \
+           fieldconfig.renderer:
             if fieldconfig.renderer.type in ["dropdown", "radio"]:
                 dtype = "%sselection" % dtype
             elif fieldconfig.renderer.type == "checkbox":
@@ -229,13 +229,13 @@ class Field(object):
         elif value and value.startswith("$"):
             try:
                 # Special logic for ringo items.
-                if (self.renderer.render_type == "info"
-                   and hasattr(self._form._item, "get_value")):
+                if self.renderer.render_type == "info" and \
+                   hasattr(self._form._item, "get_value"):
                     value = self._form._item.get_value(value.strip("$"),
                                                        expand=True)
                 else:
                     value = getattr(self._form._item, value.strip("$"))
-            except (IndexError, AttributeError), e:
+            except (IndexError, AttributeError) as e:
                 # In case we are currently creating an item a access to
                 # values of the item may fail because the are not
                 # existing yet. This is especially true for items in
@@ -256,15 +256,15 @@ class Field(object):
         """Value as string of the field. Will be set on rendering the
         form"""
 
-    ##def __repr__(self):
-    ##    rules = "rules: \n\t\t{}".format("\n\t".join(rules_to_string(field))
-    ##    field = u"field:\t\t{}".format(self.name)
-    ##    value = u"value:\t\t{}, {}".format(repr(self.get_value()), type(self.get_value()))
-    ##    required = "required:\t{}".format(self.required)
-    ##    desired = "desired:\t{}".format(self.desired)
-    ##    #validated = "validated:\t{}".format(self.is_validated)
-    ##    #_type = "type:\t\t{}".format(self.get_type())
-    ##    return "\n".join([field, required, desired, value, _type, rules])+"\n"
+    # def __repr__(self):
+    #     rules = "rules: \n\t\t{}".format("\n\t".join(rules_to_string(field))
+    #     field = u"field:\t\t{}".format(self.name)
+    #     value = u"value:\t\t{}, {}".format(repr(self.get_value()), type(self.get_value()))
+    #     required = "required:\t{}".format(self.required)
+    #     desired = "desired:\t{}".format(self.desired)
+    #     #validated = "validated:\t{}".format(self.is_validated)
+    #     #_type = "type:\t\t{}".format(self.get_type())
+    #     return "\n".join([field, required, desired, value, _type, rules])+"\n"
 
     @property
     def empty_message(self):
@@ -492,7 +492,6 @@ class CollectionField(Field):
             return self.expand_value(value)
         return value
 
-
     def sort_options(self, options):
         """Will return a alphabetical sorted list of options. The filtering is
         defined by the following configuration options of the renderer:
@@ -504,7 +503,6 @@ class CollectionField(Field):
                              key=lambda x: unicode(x[0]),
                              reverse=reverse)
         return options
-
 
     def get_options(self):
         """Will return a list of tuples containing the options of the
@@ -636,8 +634,8 @@ class SelectionField(CollectionField):
     def get_options(self):
         options = []
         user_defined_options = self._config.options
-        if (isinstance(user_defined_options, list)
-           and len(user_defined_options) > 0):
+        if isinstance(user_defined_options, list) and \
+           len(user_defined_options) > 0:
             for option in self.filter_options(user_defined_options):
                 options.append((option[0], option[1], option[2]))
         elif isinstance(user_defined_options, str):
