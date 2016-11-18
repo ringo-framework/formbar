@@ -655,7 +655,9 @@ class Field(object):
                     log.error("Error while accessing attribute '%s': %s"
                               % (value, e))
                 value = None
-        self.value = to_python(self, value, [])
+        if value:
+            value = to_python(self, value, [])
+        self.value = value
 
         self.previous_value = None
         """Value as string of the field. Will be set on rendering the
