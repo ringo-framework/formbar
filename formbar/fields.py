@@ -410,7 +410,7 @@ class DateField(Field):
 
     def _to_python(self, value):
         from formbar.converters import to_date
-        return to_date(value)
+        return to_date(value, self._form._locale)
 
 
 class DateTimeField(Field):
