@@ -720,9 +720,9 @@ class RelationField(CollectionField):
             log.warning("No DB session available in the parent form. "
                         "RelationField must be instanciated with an "
                         "available DB session.")
-            #raise TypeError("No DB session available in the parent form. "
-            #                "RelationField must be instanciated with an "
-            #                "available DB session.")
+            # raise TypeError("No DB session available in the parent form. "
+            #                 "RelationField must be instanciated with an "
+            #                 "available DB session.")
         super(RelationField, self).__init__(form, config, translate, sa_property)
 
     def _from_python(self, value):
