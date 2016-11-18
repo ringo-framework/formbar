@@ -472,7 +472,7 @@ class Form(object):
             else:
                 field.add_warning(warning)
 
-    def validate(self, submitted=None):
+    def validate(self, submitted=None, evaluate=True):
         """Returns True if the validation succeeds else False.
         Validation of the data happens in three stages:
 
@@ -515,7 +515,7 @@ class Form(object):
         # conditionals First get list of fields which are still in the
         # form after conditionals has be evaluated
         fields_to_check = self._config.get_fields(values=converted,
-                                                  evaluate=True)
+                                                  evaluate=evaluate)
         for fieldname, field in fields_to_check.iteritems():
             field = self.fields[fieldname]
             for rule in field.get_rules():
