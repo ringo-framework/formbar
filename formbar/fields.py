@@ -765,8 +765,7 @@ class ManytooneRelationField(RelationField):
 
     def _to_python(self, value):
         from formbar.converters import to_manytoone, to_integer
-        # TODO: Get relation names () <2016-06-10 16:23>
-        rel = relation_names[self.name].mapper.class_
+        rel = self._sa_property.mapper.class_
         if value in ("", None):
             return None
         value = to_integer(value)
@@ -784,8 +783,7 @@ class OnetomanyRelationField(RelationField):
 
     def _to_python(self, value):
         from formbar.converters import to_onetomany, to_integer_list
-        # TODO: Get relation names () <2016-06-10 16:23>
-        rel = relation_names[self.name].mapper.class_
+        rel = self._sa_property.mapper.class_
         value = to_integer_list(value)
         if not value:
             return value
@@ -798,10 +796,7 @@ class ManytomanyRelationField(RelationField):
 
     def _to_python(self, value):
         from formbar.converters import to_manytomany, to_integer_list
-        # TODO: Get relation names () <2016-06-10 16:23>
-        rel = relation_names[self.name].mapper.class_
-        import pdb
-        pdb.set_trace()
+        rel = self._sa_property.mapper.class_
         value = to_integer_list(value)
         if not value:
             return value

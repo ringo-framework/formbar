@@ -293,23 +293,11 @@ class Form(object):
         """
         deserialized = {}
 
-        # Load relations of the item. Those are needed to deserialize
-        # the relations.
-        relation_names = {}
-
-        if self._item:
-            for fieldname in data.keys():
-                prop = get_sa_property(self._item, fieldname)
-                if isinstance(prop, sa.orm.properties.RelationshipProperty):
-                    relation_names[fieldname] = prop
-
         for fieldname, value in self._filter_values(data).iteritems():
             field = self.fields.get(fieldname)
             try:
                 serialized = data.get(field.name)
-                deserialized[fieldname] = to_python(field,
-                                                    serialized,
-                                                    relation_names)
+                deserialized[fieldname] = to_python(field, serialized)
             except DeserializeException as ex:
                 self._add_error(field.name,
                                 self._translate(ex.message) % ex.value)

@@ -8,14 +8,9 @@ import logging
 import datetime
 import re
 from babel.dates import format_datetime, format_date
-from formbar.helpers import get_local_datetime, get_utc_datetime
-from formbar.fields import (
-    TimeField, TimedeltaField, DateTimeField, DateField, RelationField,
-    StringField, IntegerField, FloatField, EmailField, BooleanField, FileField,
-    ManytooneRelationField, OnetomanyRelationField, ManytomanyRelationField,
-    StringSelectionField, IntSelectionField, BooleanSelectionField
-)
 from datetime import timedelta
+from formbar.helpers import get_local_datetime, get_utc_datetime
+from formbar.fields import TimeField, TimedeltaField, DateTimeField, DateField
 
 log = logging.getLogger(__name__)
 
@@ -80,7 +75,7 @@ def to_timedelta(value):
 def _split_date(value, locale=None):
     """Will return a tuple integers of YEAR, MONTH, DAY for a given
     date string"""
-    #@TODO: Support other dateformats that ISO8601
+    # @TODO: Support other dateformats that ISO8601
     if locale == "de":
         d, m, y = value.split('.')
     else:
@@ -332,7 +327,7 @@ def from_python(field, value):
     return serialized
 
 
-def to_python(field, value, relation_names):
+def to_python(field, value):
     """Will return a instance of a python value of the value the given
     field and value.
 
@@ -340,63 +335,4 @@ def to_python(field, value, relation_names):
     :value: Serialized version of the value
     :returns: Instance of a python type
     """
-
-    if isinstance(value, list) and not isinstance(field, RelationField):
-        # Special handling for multiple values (multiselect in
-        # checkboxes eg.)
-        tmp_list = []
-        for v in value:
-            tmp_list.append(to_python(field, v, relation_names))
-        return tmp_list
-
-    if isinstance(field, StringField):
-        return to_string(value)
-    if isinstance(field, StringSelectionField):
-        return to_string(value)
-    if isinstance(field, BooleanSelectionField):
-        return to_boolean(value)
-    elif isinstance(field, IntSelectionField):
-        return to_integer(value)
-    elif isinstance(field, IntegerField):
-        return to_integer(value)
-    elif isinstance(field, FloatField):
-        return to_float(value)
-    elif isinstance(field, EmailField):
-        return to_email(value)
-    elif isinstance(field, BooleanField):
-        return to_boolean(value)
-    elif isinstance(field, FileField):
-        return to_file(value)
-    elif isinstance(field, DateField):
-        return to_date(value, field._form._locale)
-    elif isinstance(field, TimeField):
-        return to_timedelta(value).total_seconds()
-    elif isinstance(field, TimedeltaField):
-        return to_timedelta(value)
-    elif isinstance(field, DateTimeField):
-        return to_datetime(value, field._form._locale)
-    # Reltation handling
-    elif isinstance(field, ManytooneRelationField):
-        rel = relation_names[field.name].mapper.class_
-        if value in ("", None):
-            return None
-        value = to_integer(value)
-        db = field._form._dbsession
-        selected = getattr(field._form._item, field.name)
-        return to_manytoone(rel, value, db, selected)
-    elif isinstance(field, OnetomanyRelationField):
-        rel = relation_names[field.name].mapper.class_
-        value = to_integer_list(value)
-        if not value:
-            return value
-        db = field._form._dbsession
-        selected = getattr(field._form._item, field.name)
-        return to_onetomany(rel, value, db, selected)
-    elif isinstance(field, ManytomanyRelationField):
-        rel = relation_names[field.name].mapper.class_
-        value = to_integer_list(value)
-        if not value:
-            return value
-        db = field._form._dbsession
-        selected = getattr(field._form._item, field.name)
-        return to_manytomany(rel, value, db, selected)
+    return field._to_python(value)
