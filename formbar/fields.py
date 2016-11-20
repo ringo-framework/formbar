@@ -126,8 +126,8 @@ class FieldFactory(object):
             if fieldconfig.renderer.type in ["dropdown", "radio"]:
                 dtype = "%sselection" % dtype
             elif fieldconfig.renderer.type == "checkbox":
-                if dtype != "string":
-                    raise TypeError("Checkbox must be of type string!")
+                if dtype not in ("string", "integer"):
+                    raise TypeError("Checkbox must be of type either string or integer!")
                 dtype = "multiselection"
 
         builder = builder_map.get(dtype, self._create_default)
@@ -341,8 +341,14 @@ class Field(object):
     def add_error(self, error):
         self.errors.append(error)
 
+    def get_errors(self):
+        return self.errors
+
     def add_warning(self, warning):
         self.warnings.append(warning)
+
+    def get_warnings(self):
+        return self.warnings
 
     def render(self, active):
         """Returns the rendererd HTML for the field"""
