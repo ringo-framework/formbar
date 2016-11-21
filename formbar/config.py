@@ -185,14 +185,11 @@ def handle_entity_prefix(tree, prefix):
         if n.tag == "entity":
             # Handle fields
             n.attrib["name"] = prefix + n.attrib["name"]
-        elif n.tag == "rule":
-            # Handle rules
+        elif n.tag in ("rule", "if"):
+            # Handle rules and conditionals
             n.attrib["expr"] = _var_re.sub(replace_fieldnames,
                                            n.attrib["expr"])
-        elif n.tag == "if":
-            # Handle conditional
-            n.attrib["expr"] = _var_re.sub(replace_fieldnames,
-                                           n.attrib["expr"])
+
     return tree
 
 
