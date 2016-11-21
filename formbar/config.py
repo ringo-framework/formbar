@@ -163,65 +163,36 @@ def handle_includes(tree, path):
     return tree
 
 
+_var_re = re.compile(r"\$([\w_\-\.]+)")
+
 def handle_entity_prefix(tree, prefix):
 
     # Collect name of fields which are defined in this form. This is
     # used as we only want to handle prefixes on fieldname and
     # expression for fields which are defined in the form.
-    fieldnames = [f.get("name") for f in tree.findall(".//entity")]
+    fieldnames = set([f.get("name") for f in tree.findall(".//entity")])
 
-    def replace_fieldnames(expr, prefix, fieldnames):
+    def replace_fieldnames(m):
         # TODO: Handle % and @ variables to? (ti) <2015-12-17 09:30>
-        # Note: This algorithmn is hackish and handles some corner cases
-        # with replacements of similar fields names.
-        #
-        # Example:
-        # Consider the following expr = "$foo and $foo_bar" And we want
-        # to add a prefix "baz".
-        #
-        # The code will iterate over all unique fields in the expression
-        # and replaces the fieldname with prefix+fieldname.
-        #
-        # Problem:
-        # If we start with the longest field name first the in first
-        # iteration the expression looks like this:
-        # $foo and $baz.foo_bar.
-        # With the next iteration on "foo" the expression will look like
-        # this:
-        # $baz.foo and $baz.baz.foo_bar with is obvsisouly wrong because
-        # of the double baz.baz.
-        #
-        # Solution:
-        # To handle this problem we sort the fields in the expression to
-        # start with the shortest fieldname. The the result looks like
-        # this on the first iteration:
-        # $baz.foo and $baz.foo_bar.
-        # Note the replacing "foo" also replaces "foo_bar".
-        # Now on the next iteration of "foo_bar" we check if there is
-        # already a prefixed version of this in the expression. If so we
-        # ignore the replacement to prevent double prefixes.
-        fields = re.findall(r'\$[\.\w]+', expr)
-        fields = sorted(set(fields), key=lambda x: len(x))
-        for field in fields:
-            field = field.strip("$")
-            # Only replace name of fields which has has been defined in
-            # this tree or it is been already replaced.
-            if field not in fieldnames or prefix+field in expr:
-                continue
-            expr = expr.replace(field, prefix+field)
-        return expr
+        v = m.group(1)
+        if v in fieldnames:
+            return "$" + prefix + v
+        return m.group(0)
 
-    # Handle fields
-    for field in tree.findall(".//entity"):
-        field.attrib["name"] = prefix+field.attrib["name"]
-    # Handle rules
-    for rule in tree.findall(".//rule"):
-        rule.attrib["expr"] = replace_fieldnames(rule.attrib["expr"],
-                                                 prefix, fieldnames)
-    # Handle conditional
-    for cond in tree.findall(".//if"):
-        cond.attrib["expr"] = replace_fieldnames(cond.attrib["expr"],
-                                                 prefix, fieldnames)
+    for n in tree.iter():
+        if not ET.iselement(n):
+            continue
+        if n.tag == "entity":
+            # Handle fields
+            n.attrib["name"] = prefix + n.attrib["name"]
+        elif n.tag == "rule":
+            # Handle rules
+            n.attrib["expr"] = _var_re.sub(replace_fieldnames,
+                                           n.attrib["expr"])
+        elif n.tag == "if":
+            # Handle conditional
+            n.attrib["expr"] = _var_re.sub(replace_fieldnames,
+                                           n.attrib["expr"])
     return tree
 
 
