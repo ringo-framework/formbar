@@ -1,3 +1,23 @@
+Next
+====
+LARGE REFACTORING AND CODE CLEANUP.
+
+WARNING: This change can break up your running application and forces you to
+do some code adaptions. See details below.
+
+Basically splitted the large form.py into to modules. One for the form related
+stuff and the other one containinig the fields.
+
+Further there are now a Field for each supported datatype. Many of the field
+and type specific code is now put into the fields. This should make the code
+much more cleaner.
+
+Possibible incompatiblities:
+
+* Removed various getter and setter and property methods to access private
+  attributes like _warnings and _errors of the fields. Those attributes has
+  become public now and should be accessed directly. 
+
 0.23.0
 ======
 - Added 'showrawvalue' config option for inforenderer. See documentation for

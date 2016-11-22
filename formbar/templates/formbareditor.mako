@@ -9,7 +9,7 @@ pages = [x.attrib.get('id') for x in field._form._config._parent.get_elements("f
 </ul>
 <div id="formbareditor-tab-content" class="tab-content">
   <div class="tab-pane active" id="formbar-editor">
-    % if field.is_readonly():
+    % if field.readonly:
       <div class="readonlyfield" name="${field.name}">
         % if field.get_previous_value() is not None:
           ${renderer._render_diff(field.get_previous_value(""), field.get_value(""))}

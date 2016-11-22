@@ -6,7 +6,7 @@ for option in options:
   if str(option[1]) in selected:
     inputvalue.append(str(option[0]))
 %>
-% if field.is_readonly():
+% if field.readonly:
   <div class="readonlyfield" name="${field.name}">
     ${field.get_value(expand=True) or "&nbsp;"}
   </div>

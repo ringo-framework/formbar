@@ -7,10 +7,10 @@ value into a string are named `from_<datatype>`."""
 import logging
 import datetime
 import re
-import sqlalchemy as sa
 from babel.dates import format_datetime, format_date
-from formbar.helpers import get_local_datetime, get_utc_datetime
 from datetime import timedelta
+from formbar.helpers import get_local_datetime, get_utc_datetime
+from formbar.fields import TimeField, TimedeltaField, DateTimeField, DateField
 
 log = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ def from_timedelta(value):
 
 def to_timedelta(value):
     """Will return a python timedelta for the given value in
-    'HH:MM:SS', 'HH:MM' or 'MM' format. 
+    'HH:MM:SS', 'HH:MM' or 'MM' format.
     If the value can not be converted and
     exception is raised."""
     if not value:
@@ -49,13 +49,13 @@ def to_timedelta(value):
     try:
         ncolon = value.count(":")
         if ncolon == 2:
-            interval  = value.split(":")
+            interval = value.split(":")
             hours = int(interval[0])
             minutes = int(interval[1])
             seconds = int(interval[2])
             return timedelta(hours=hours, minutes=minutes, seconds=seconds)
         elif ncolon == 1:
-            interval  = value.split(":")
+            interval = value.split(":")
             hours = int(interval[0])
             minutes = int(interval[1])
             return timedelta(hours=hours, minutes=minutes)
@@ -75,7 +75,7 @@ def to_timedelta(value):
 def _split_date(value, locale=None):
     """Will return a tuple integers of YEAR, MONTH, DAY for a given
     date string"""
-    #@TODO: Support other dateformats that ISO8601
+    # @TODO: Support other dateformats that ISO8601
     if locale == "de":
         d, m, y = value.split('.')
     else:
@@ -274,7 +274,6 @@ def from_python(field, value):
     """
     serialized = ""
     locale = field._form._locale
-    ftype = field.get_type()
     try:
         if value is None:
             serialized = u""
@@ -302,19 +301,19 @@ def from_python(field, value):
             try:
                 serialized = value.id
             except AttributeError:
-                if ftype == "time":
+                if isinstance(field, TimeField):
                     td = datetime.timedelta(seconds=int(value))
                     serialized = from_timedelta(td)
-                elif ftype == "interval":
+                elif isinstance(field, TimedeltaField):
                     serialized = from_timedelta(value)
-                elif ftype == "datetime":
+                elif isinstance(field, DateTimeField):
                     value = get_local_datetime(value)
                     if locale == "de":
                         dateformat = "dd.MM.yyyy HH:mm:ss"
                     else:
                         dateformat = "yyyy-MM-dd HH:mm:ss"
                     serialized = format_datetime(value, format=dateformat)
-                elif ftype == "date":
+                elif isinstance(field, DateField):
                     if locale == "de":
                         dateformat = "dd.MM.yyyy"
                     else:
@@ -328,7 +327,7 @@ def from_python(field, value):
     return serialized
 
 
-def to_python(field, value, relation_names):
+def to_python(field, value):
     """Will return a instance of a python value of the value the given
     field and value.
 
@@ -336,59 +335,4 @@ def to_python(field, value, relation_names):
     :value: Serialized version of the value
     :returns: Instance of a python type
     """
-
-    dtype = field.get_type()
-    if isinstance(value, list) and dtype not in ['manytomany',
-                                                 'manytoone',
-                                                 'onetomany']:
-        # Special handling for multiple values (multiselect in
-        # checkboxes eg.)
-        tmp_list = []
-        for v in value:
-            tmp_list.append(to_python(field, v, relation_names))
-        return tmp_list
-    if dtype in ['string', 'text']:
-        return to_string(value)
-    elif dtype == 'integer':
-        return to_integer(value)
-    elif dtype == 'float':
-        return to_float(value)
-    elif dtype == 'email':
-        return to_email(value)
-    elif dtype == 'boolean':
-        return to_boolean(value)
-    elif dtype == 'file':
-        return to_file(value)
-    elif dtype == 'date':
-        return to_date(value, field._form._locale)
-    elif dtype == 'time':
-        return to_timedelta(value).total_seconds()
-    elif dtype == 'interval':
-        return to_timedelta(value)
-    elif dtype == 'datetime':
-        return to_datetime(value, field._form._locale)
-    # Reltation handling
-    elif dtype == 'manytoone':
-        rel = relation_names[field.name].mapper.class_
-        if value in ("", None):
-            return None
-        value = to_integer(value)
-        db = field._form._dbsession
-        selected = getattr(field._form._item, field.name)
-        return to_manytoone(rel, value, db, selected)
-    elif dtype == 'onetomany':
-        rel = relation_names[field.name].mapper.class_
-        value = to_integer_list(value)
-        if not value:
-            return value
-        db = field._form._dbsession
-        selected = getattr(field._form._item, field.name)
-        return to_onetomany(rel, value, db, selected)
-    elif dtype in 'manytomany':
-        rel = relation_names[field.name].mapper.class_
-        value = to_integer_list(value)
-        if not value:
-            return value
-        db = field._form._dbsession
-        selected = getattr(field._form._item, field.name)
-        return to_manytomany(rel, value, db, selected)
+    return field._to_python(value)

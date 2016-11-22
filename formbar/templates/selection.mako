@@ -2,7 +2,7 @@
 value = field.get_value() or []
 selected = [str(id) for id in value if id]
 %>
-% if field.is_readonly():
+% if field.readonly:
   <div class="readonlyfield" name="${field.name}">
     ${field.get_value(expand=True) or "&nbsp;"}
   </div>
