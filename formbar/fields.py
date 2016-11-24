@@ -251,7 +251,7 @@ class Field(object):
                     log.error("Error while accessing attribute '%s': %s"
                               % (value, e))
                 value = None
-        if value:
+        if value and isinstance(value, basestring):
             value = self._to_python(value)
         self.value = value
 
