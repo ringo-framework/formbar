@@ -1,9 +1,18 @@
-Next
-====
+0.23.0
+======
 - Added 'showrawvalue' config option for inforenderer. See documentation for
   more details.
 - Added sort configuration for selection fields. See documentation for more
   details.
+
+0.22.0
+======
+Bugfix release
+- Fixed bug with reset values. Resetting was to aggressive and deleted values
+  even if reset was not set to true in conditionals which could cause
+  dataloss.
+- Fixed handling relations wich realtions are used with comma separated names
+  as it is used when using form inheritance.
 
 0.21.0
 ======
