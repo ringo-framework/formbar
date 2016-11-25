@@ -664,7 +664,11 @@ class Field(object):
                     log.error("Error while accessing attribute '%s': %s"
                               % (value, e))
                 value = None
-        if value:
+        # If value is a basestring we will try to convert the default
+        # value into the the right python value. But if it is not a
+        # basestring e.g a datettime coming from a date('today')
+        # expression we will leave the value as it is.
+        if value and isinstance(value, basestring):
             value = to_python(self, value, [])
         self.value = value
 
