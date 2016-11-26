@@ -526,7 +526,7 @@ var form = function (inputFilter, ruleEngine) {
                 if (!field.value) activateDesired(fieldName);
             }
             if (result == false && oldState == "active") {
-                if (div.attr("reset-value") == "true") {
+                if (div.closest(".formbar-conditional").attr("reset-value") == "true") {
                     clearFieldValue(fieldName);
                 }
                 $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text' || x.tagName==='TEXTAREA') x.setAttribute("readonly","readonly"); })
@@ -703,7 +703,7 @@ var form = function (inputFilter, ruleEngine) {
             var div = $(e.target);
             var fieldName = e.target.name;
             if (formFields[fieldName].state==='inactive'){
-                if (div.attr("reset-value") == "true") {
+                if (div.closest(".formbar-conditional").attr("reset-value") == "true") {
                    clearFieldValue(fieldName);
                 } else {
                     resetFieldValue(fieldName, formFields);
