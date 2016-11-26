@@ -873,7 +873,8 @@ class Field(object):
             value = "[%s]" % ",".join("'%s'"
                                       % unicode(v) for v in value)
             return expression.replace(token, value)
-        elif isinstance(value, basestring) and value.startswith("$"):
+        elif isinstance(value, basestring) and (value.startswith("$") or
+                                                value.startswith("*")):
             return expression.replace(token, "%s" % unicode(value))
 
         return expression.replace(token, "'%s'" % unicode(value))
@@ -947,39 +948,46 @@ class Field(object):
         :returns: List of tuples.
 
         """
-        filtered_options = []
-        if self._config.renderer and self._config.renderer.filter:
+        is_filtering_configured = self._config.renderer and self._config.renderer.filter
+        if is_filtering_configured:
             rule = self._build_filter_rule(self._config.renderer.filter, None)
             x = re.compile("\$[\w\.]+")
-            option_values = x.findall(rule._expression)
+            values = x.findall(rule._expression)
+            return [self.do_filter_options(option, values, rule) for option in options]
         else:
-            rule = None
-        for option in options:
+            return [self.dont_filter_options(option) for option in options]
+
+    def dont_filter_options(self, option):
+        label, value = self.explode_option(option)
+        return (label, value, True)
+
+    def do_filter_options(self, option, option_values, rule):
+        label, value = self.explode_option(option)
+        values = {}
+        for key in option_values:
+            key = key.strip("$")
             if isinstance(option, tuple):
-                # User defined options
-                o_value = option[1]
-                o_label = option[0]
+                value = option[2].get(key, "")
             else:
-                # Options loaded from the database
-                o_value = option.id
-                o_label = option
-            if rule:
-                values = {}
-                for key in option_values:
-                    key = key.strip("$")
-                    if isinstance(option, tuple):
-                        value = option[2].get(key, "")
-                    else:
-                        value = getattr(option, key)
-                    values[key] = unicode(value)
-                result = rule.evaluate(values)
-                if result:
-                    filtered_options.append((o_label, o_value, True))
-                else:
-                    filtered_options.append((o_label, o_value, False))
-            else:
-                filtered_options.append((o_label, o_value, True))
-        return filtered_options
+                value = getattr(option, key)
+            values[key] = unicode(value)
+        result = rule.evaluate(values)
+        if result:
+            return (label, value, True)
+        else:
+            return (label, value, False)
+
+
+    def explode_option(self, option):
+        if isinstance(option, tuple):
+            # User defined options
+            o_value = option[1]
+            o_label = option[0]
+        else:
+            # Options loaded from the database
+            o_value = option.id
+            o_label = option
+        return o_label, o_value
 
     def get_options(self):
         """Will return a list of tuples containing the options of the
