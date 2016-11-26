@@ -297,12 +297,12 @@ var form = function (inputFilter, ruleEngine) {
         switch (ftype) {
             case "checkbox":
                 result = [];
-                $("input[name='" + fname + "']:checked:visible").each(function () {
+                $("input[name='" + fname + "']:checked").each(function () {
                     result.push($(this).val());
                 });
                 break;
             case "radio":
-                result = $("input[name='" + fname + "']:checked:visible").val();
+                result = $("input[name='" + fname + "']:checked").val();
                 break;
             default:
                 result = field.val();
@@ -325,7 +325,7 @@ var form = function (inputFilter, ruleEngine) {
             var ftype = field.getAttribute("type");
             switch (ftype) {
                 case "checkbox":
-                    $("[name='" + fieldName + "']:visible:checked").each(function (i, x) { $(x).prop("checked", false); })
+                    $("[name='" + fieldName + "']:checked").each(function (i, x) { $(x).prop("checked", false); })
                     break;
                 case "radio":
                     $("input[name='"+ fieldName +"'][value='']").prop("checked",true)
@@ -944,7 +944,7 @@ var formbar = function (form) {
  *
  */
 $(function () {
-    formbar.init();
+        formbar.init();
 });
 
 // Plugin to prevent double submission. See
