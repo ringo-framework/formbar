@@ -853,6 +853,22 @@ class Field(object):
         return expr_str
 
     def substitute(self, token, unmodified_expression, values):
+        """
+        % marks the options in the selection field. It is used to
+        iterate over the options in the selection. I case the
+        options are SQLAlchemy based options the variable can be
+        used to access a attribute of the item. E.g. %id will
+        access the id of the current option item. For user defined
+        options "%" can be used to iterate over the user defined
+        options. In this case %attr will access a given attribte
+        in the option. A bare "%" will give the value of the
+        option.
+
+        :param token:
+        :param unmodified_expression:
+        :param values:
+        :return:
+        """
         is_optionfield = token.startswith("%")
         is_value_of_formitem = token.startswith("@")
         is_value_of_current_form = token.startswith("$")
