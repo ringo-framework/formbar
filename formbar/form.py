@@ -669,8 +669,10 @@ class Field(object):
         # value into the the right python value. But if it is not a
         # basestring e.g a datettime coming from a date('today')
         # expression we will leave the value as it is.
-        if value and isinstance(value, basestring):
-            value = to_python(self, value, [])
+        dtype = self.get_type()
+        if value and isinstance(value, basestring) and dtype not in ['manytoone', 'manytomany', 'onetomany']:
+	    # Deserialization of relations is not supported yet.
+            value = to_python(self, value, {})
         self.value = value
 
         self.previous_value = None
