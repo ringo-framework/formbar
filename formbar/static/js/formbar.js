@@ -297,12 +297,12 @@ var form = function (inputFilter, ruleEngine) {
         switch (ftype) {
             case "checkbox":
                 result = [];
-                $("input[name='" + fname + "']:checked:visible").each(function () {
+                $("input[name='" + fname + "']:checked").each(function () {
                     result.push($(this).val());
                 });
                 break;
             case "radio":
-                result = $("input[name='" + fname + "']:checked:visible").val();
+                result = $("input[name='" + fname + "']:checked").val();
                 break;
             default:
                 result = field.val();
@@ -325,7 +325,7 @@ var form = function (inputFilter, ruleEngine) {
             var ftype = field.getAttribute("type");
             switch (ftype) {
                 case "checkbox":
-                    $("[name='" + fieldName + "']:visible:checked").each(function (i, x) { $(x).prop("checked", false); })
+                    $("[name='" + fieldName + "']:checked").each(function (i, x) { $(x).prop("checked", false); })
                     break;
                 case "radio":
                     $("input[name='"+ fieldName +"'][value='']").prop("checked",true)
@@ -526,7 +526,7 @@ var form = function (inputFilter, ruleEngine) {
                 if (!field.value) activateDesired(fieldName);
             }
             if (result == false && oldState == "active") {
-                if (div.attr("reset-value") == "true") {
+                if (div.closest(".formbar-conditional").attr("reset-value") == "true") {
                     clearFieldValue(fieldName);
                 }
                 $("[name='"+fieldName+"']").map(function(i,x){ if (x.type==='text' || x.tagName==='TEXTAREA') x.setAttribute("readonly","readonly"); })
@@ -703,7 +703,7 @@ var form = function (inputFilter, ruleEngine) {
             var div = $(e.target);
             var fieldName = e.target.name;
             if (formFields[fieldName].state==='inactive'){
-                if (div.attr("reset-value") == "true") {
+                if (div.closest(".formbar-conditional").attr("reset-value") == "true") {
                    clearFieldValue(fieldName);
                 } else {
                     resetFieldValue(fieldName, formFields);
@@ -944,7 +944,7 @@ var formbar = function (form) {
  *
  */
 $(function () {
-    formbar.init();
+        formbar.init();
 });
 
 // Plugin to prevent double submission. See

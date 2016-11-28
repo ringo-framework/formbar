@@ -1,15 +1,15 @@
-import logging
+import importlib
 import inspect
+import logging
+
+import config
 import re
 import sqlalchemy as sa
-import importlib
-from formbar.renderer import FormRenderer, get_renderer
-from formbar.rules import Rule, Expression
 from formbar.converters import (
     DeserializeException, from_python, to_python
 )
-
-import config
+from formbar.renderer import FormRenderer, get_renderer
+from formbar.rules import Rule, Expression
 
 log = logging.getLogger(__name__)
 
@@ -565,7 +565,7 @@ class Form(object):
         # Custom validation. User defined external validators.
         for validator in self.external_validators:
             if (validator._field not in converted
-                    and validator._field is not None):
+                and validator._field is not None):
                 # Ignore validator if the value can't be converted.
                 continue
             if not validator.check(converted):
@@ -613,9 +613,10 @@ class Form(object):
             errors = field.has_errors
             warnings = field.has_warnings
             return "{}:\t{} \terrors: {} warnings: {}".format(name, value, errors, warnings)
+
         fields = [f(v) for _, v in self.fields.iteritems()]
         lines = "\n".join(fields)
-        lines +="\nhas errors: {}".format(self.has_errors())
+        lines += "\nhas errors: {}".format(self.has_errors())
         return lines
 
 
@@ -686,9 +687,9 @@ class Field(object):
         value = u"value:\t\t{}, {}".format(repr(self.get_value()), type(self.get_value()))
         required = "required:\t{}".format(self.is_required)
         desired = "desired:\t{}".format(self.is_desired)
-        #validated = "validated:\t{}".format(self.is_validated)
+        # validated = "validated:\t{}".format(self.is_validated)
         _type = "type:\t\t{}".format(self.get_type())
-        return "\n".join([field, required, desired, value, _type, rules])+"\n"
+        return "\n".join([field, required, desired, value, _type, rules]) + "\n"
 
     def __getattr__(self, name):
         """Make attributes from the configuration directly available"""
@@ -841,66 +842,91 @@ class Field(object):
                 return value
 
     def _build_filter_rule(self, expr_str, item):
-        t = expr_str.split(" ")
-        # The filter expression may reference values of the form using $
-        # variables. To have access to these values we extract the
-        # values from the given item if available.
-        # TODO: Access to the item is usally no good idea as formbar can
-        # be used in environments where no item is available.
-        if self._form._item:
-            item_values = self._form._item.get_values()
-            item_values.update(self._form.merged_data)
-        else:
-            item_values = {}
-        for x in t:
-            # % marks the options in the selection field. It is used to
-            # iterate over the options in the selection. I case the
-            # options are SQLAlchemy based options the variable can be
-            # used to access a attribute of the item. E.g. %id will
-            # access the id of the current option item. For user defined
-            # options "%" can be used to iterate over the user defined
-            # options. In this case %attr will access a given attribte
-            # in the option. A bare "%" will give the value of the
-            # option.
-            if x.startswith("%"):
-                key = x.strip("%")
-                value = "*%s" % (key or "value")
-            # @ marks the item of the current fields form item.
-            elif x.startswith("@"):
-                key = x.strip("@")
-                value = getattr(self._form._item, key)
-            # $ special attributes of the current form.
-            elif x.startswith("$"):
-                tmpitem = None
-                value = None
-                tokens = x.split(".")
-                if len(tokens) > 1:
-                    key = tokens[0].strip("$")
-                    attribute = ".".join(tokens[1:])
-                    # FIXME: This is a bad assumption that there is a
-                    # user within a request. (ti) <2014-07-09 11:18>
-                    if key == "user":
-                        tmpitem = self._form._request.user
-                else:
-                    key = tokens[0].strip("$")
-                    value = item_values.get(key) or ''
-                if tmpitem and not value:
-                    value = getattr(tmpitem, attribute)
-                    if hasattr(value, '__call__'):
-                        value = value()
-            else:
-                value = None
+        return Rule(self.parse_expression(expr_str))
 
-            if value is not None:
-                if isinstance(value, list):
-                    value = "[%s]" % ",".join("'%s'"
-                                              % unicode(v) for v in value)
-                    expr_str = expr_str.replace(x, value)
-                elif isinstance(value, basestring) and value.startswith("$"):
-                    expr_str = expr_str.replace(x, "%s" % unicode(value))
-                else:
-                    expr_str = expr_str.replace(x, "'%s'" % unicode(value))
-        return Rule(expr_str.replace("*", "$"))
+    def parse_expression(self, expr_str):
+        tokens = re.split("\s", expr_str)
+        values = self.determine_values()
+        for token in tokens:
+            expr_str = self.substitute(token, expr_str, values)
+        expr_str = expr_str.replace("*", "$")
+        return expr_str
+
+    def substitute(self, token, unmodified_expression, values):
+        """
+        % marks the options in the selection field. It is used to
+        iterate over the options in the selection. I case the
+        options are SQLAlchemy based options the variable can be
+        used to access a attribute of the item. E.g. %id will
+        access the id of the current option item. For user defined
+        options "%" can be used to iterate over the user defined
+        options. In this case %attr will access a given attribte
+        in the option. A bare "%" will give the value of the
+        option.
+
+        :param token:
+        :param unmodified_expression:
+        :param values:
+        :return:
+        """
+        is_optionfield = token.startswith("%")
+        is_value_of_formitem = token.startswith("@")
+        is_value_of_current_form = token.startswith("$")
+
+        if not (is_optionfield or is_value_of_current_form or is_value_of_formitem):
+            return unmodified_expression
+        elif is_optionfield:
+            value = self.parse_optionfield(token)
+        elif is_value_of_formitem:
+            value = self.parse_formitem(token)
+        elif is_value_of_current_form:
+            value = self.parse_formvalue(values, token)
+
+        return self.substitute_value(unmodified_expression, token, value)
+
+    def substitute_value(self, expression, token, value):
+        if isinstance(value, list):
+            value = "[%s]" % ",".join("'%s'"
+                                      % unicode(v) for v in value)
+            return expression.replace(token, value)
+        elif isinstance(value, basestring) and (value.startswith("$") or
+                                                value.startswith("*")):
+            return expression.replace(token, "%s" % unicode(value))
+
+        return expression.replace(token, "'%s'" % unicode(value))
+
+    def parse_formvalue(self, substitution_values, token):
+        tmpitem = None
+        value = None
+        tokens = token.split(".")
+        if len(tokens) > 1:
+            key = tokens[0].strip("$")
+            attribute = ".".join(tokens[1:])
+            # FIXME: This is a bad assumption that there is a
+            # user within a request. (ti) <2014-07-09 11:18>
+            if key == "user":
+                tmpitem = self._form._request.user
+        else:
+            key = tokens[0].strip("$")
+            value = substitution_values.get(key) or ''
+        if tmpitem and not value:
+            value = getattr(tmpitem, attribute)
+            if hasattr(value, '__call__'):
+                value = value()
+        return value
+
+    def parse_formitem(self, token):
+        return getattr(self._form._item, token.strip("@"))
+
+    def parse_optionfield(self, token):
+        return "*%s" % (token.strip("%") or "value")
+
+    def determine_values(self):
+        if not self._form._item:
+            return {}
+        values = self._form._item.get_values()
+        values.update(self._form.merged_data)
+        return values
 
     def _load_options_from_db(self):
         # Get mapped clazz for the field
@@ -938,39 +964,46 @@ class Field(object):
         :returns: List of tuples.
 
         """
-        filtered_options = []
-        if self._config.renderer and self._config.renderer.filter:
+        is_filtering_configured = self._config.renderer and self._config.renderer.filter
+        if is_filtering_configured:
             rule = self._build_filter_rule(self._config.renderer.filter, None)
             x = re.compile("\$[\w\.]+")
-            option_values = x.findall(rule._expression)
+            values = x.findall(rule._expression)
+            return [self.do_filter_options(option, values, rule) for option in options]
         else:
-            rule = None
-        for option in options:
+            return [self.dont_filter_options(option) for option in options]
+
+    def dont_filter_options(self, option):
+        label, value = self.explode_option(option)
+        return (label, value, True)
+
+    def do_filter_options(self, option, option_values, rule):
+        label, value = self.explode_option(option)
+        values = {}
+        for key in option_values:
+            key = key.strip("$")
             if isinstance(option, tuple):
-                # User defined options
-                o_value = option[1]
-                o_label = option[0]
+                value = option[2].get(key, "")
             else:
-                # Options loaded from the database
-                o_value = option.id
-                o_label = option
-            if rule:
-                values = {}
-                for key in option_values:
-                    key = key.strip("$")
-                    if isinstance(option, tuple):
-                        value = option[2].get(key, "")
-                    else:
-                        value = getattr(option, key)
-                    values[key] = unicode(value)
-                result = rule.evaluate(values)
-                if result:
-                    filtered_options.append((o_label, o_value, True))
-                else:
-                    filtered_options.append((o_label, o_value, False))
-            else:
-                filtered_options.append((o_label, o_value, True))
-        return filtered_options
+                value = getattr(option, key)
+            values[key] = unicode(value)
+        result = rule.evaluate(values)
+        if result:
+            return (label, value, True)
+        else:
+            return (label, value, False)
+
+
+    def explode_option(self, option):
+        if isinstance(option, tuple):
+            # User defined options
+            o_value = option[1]
+            o_label = option[0]
+        else:
+            # Options loaded from the database
+            o_value = option.id
+            o_label = option
+        return o_label, o_value
 
     def get_options(self):
         """Will return a list of tuples containing the options of the
@@ -996,7 +1029,7 @@ class Field(object):
             options.append((_("no selection"), "", True))
         user_defined_options = self._config.options
         if (isinstance(user_defined_options, list)
-           and len(user_defined_options) > 0):
+            and len(user_defined_options) > 0):
             for option in self.filter_options(user_defined_options):
                 options.append((option[0], option[1], option[2]))
         elif isinstance(user_defined_options, str):

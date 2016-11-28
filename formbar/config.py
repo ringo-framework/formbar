@@ -189,7 +189,6 @@ def handle_entity_prefix(tree, prefix):
             # Handle rules and conditionals
             n.attrib["expr"] = _var_re.sub(replace_fieldnames,
                                            n.attrib["expr"])
-
     return tree
 
 
