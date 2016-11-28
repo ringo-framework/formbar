@@ -7,8 +7,8 @@ from formbar.fields import FieldFactory
 from formbar.converters import (
     DeserializeException, from_python, to_python
 )
-
-import config
+from formbar.renderer import FormRenderer, get_renderer
+from formbar.rules import Rule, Expression
 
 log = logging.getLogger(__name__)
 
@@ -553,7 +553,7 @@ class Form(object):
         # Custom validation. User defined external validators.
         for validator in self.external_validators:
             if (validator._field not in converted
-                    and validator._field is not None):
+                and validator._field is not None):
                 # Ignore validator if the value can't be converted.
                 continue
             if not validator.check(converted):
@@ -601,7 +601,8 @@ class Form(object):
             errors = field.has_errors
             warnings = field.has_warnings
             return "{}:\t{} \terrors: {} warnings: {}".format(name, value, errors, warnings)
+
         fields = [f(v) for _, v in self.fields.iteritems()]
         lines = "\n".join(fields)
-        lines +="\nhas errors: {}".format(self.has_errors())
+        lines += "\nhas errors: {}".format(self.has_errors())
         return lines
