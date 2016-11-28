@@ -4,13 +4,13 @@ values are named `to_<datatype>` where datatype is the name of the
 python data type name. Convertes which serialize the value from python
 value into a string are named `from_<datatype>`."""
 
-import logging
 import datetime
+import logging
+from datetime import timedelta
+
 import re
-import sqlalchemy as sa
 from babel.dates import format_datetime, format_date
 from formbar.helpers import get_local_datetime, get_utc_datetime
-from datetime import timedelta
 
 log = logging.getLogger(__name__)
 
@@ -20,6 +20,7 @@ _ = lambda x: x
 
 class DeserializeException(Exception):
     """Exception for errors on deserialization."""
+
     def __init__(self, msg, value):
         self.value = value
         self.message = msg
@@ -49,13 +50,13 @@ def to_timedelta(value):
     try:
         ncolon = value.count(":")
         if ncolon == 2:
-            interval  = value.split(":")
+            interval = value.split(":")
             hours = int(interval[0])
             minutes = int(interval[1])
             seconds = int(interval[2])
             return timedelta(hours=hours, minutes=minutes, seconds=seconds)
         elif ncolon == 1:
-            interval  = value.split(":")
+            interval = value.split(":")
             hours = int(interval[0])
             minutes = int(interval[1])
             return timedelta(hours=hours, minutes=minutes)
@@ -75,7 +76,7 @@ def to_timedelta(value):
 def _split_date(value, locale=None):
     """Will return a tuple integers of YEAR, MONTH, DAY for a given
     date string"""
-    #@TODO: Support other dateformats that ISO8601
+    # @TODO: Support other dateformats that ISO8601
     if locale == "de":
         d, m, y = value.split('.')
     else:
@@ -263,6 +264,42 @@ def to_file(value):
         raise DeserializeException(msg, value)
 
 
+def multiselect_to_list(value):
+    checkbox_representation = value.strip("{").strip("}").split(",")
+    return [unicode(v) for v in checkbox_representation]
+
+
+def serialize_string(value):
+    """
+    Handles string values
+    a) plain string
+    b) multiselect
+    :param value: string representation
+    :return: serialize
+    """
+    is_checkbox = re.compile("{.*}").match
+    if is_checkbox(value):
+        serialized = multiselect_to_list(value)
+    else:
+        serialized = unicode(value)
+    return serialized
+
+
+def serialize_list(value):
+    """
+    generates a converted list of value_ids
+    :param value:
+    :return: serialized list
+    """
+
+    def extract_inner_value(inner_value):
+        if hasattr(inner_value, "id"):
+            return inner_value.id
+        return inner_value
+
+    return [extract_inner_value(v) for v in value]
+
+
 def from_python(field, value):
     """Will return the serialised version of the value the given field
     and value.
@@ -272,59 +309,41 @@ def from_python(field, value):
     :returns: Serialized version.
 
     """
-    serialized = ""
     locale = field._form._locale
-    ftype = field.get_type()
+    field_type = field.get_type()
+    is_german_locale = locale == "de"
     try:
+        serialized = value
         if value is None:
-            serialized = u""
-        elif isinstance(value, basestring):
-            # Special handling for multiple values (multiselect in
-            # checkboxes eg.) which has be converted into a string by
-            # SQLAalchemy automatically. eg the python value "['1',
-            # '2']" will be converted into the _string_ "{1,2,''}". In
-            # this case we need to convert the value back into a list.
-            if value.startswith("{") and value.endswith("}"):
-                serialized = []
-                for v in value.strip("{").strip("}").split(","):
-                    serialized.append(from_python(field, v))
-            else:
-                serialized = unicode(value)
+            return u""
+        if isinstance(value, basestring):
+            serialized = serialize_string(value)
         elif isinstance(value, list):
-            vl = []
-            for v in value:
-                try:
-                    vl.append(v.id)
-                except AttributeError:
-                    vl.append(v)
-            serialized = vl
-        else:
-            try:
-                serialized = value.id
-            except AttributeError:
-                if ftype == "time":
-                    td = datetime.timedelta(seconds=int(value))
-                    serialized = from_timedelta(td)
-                elif ftype == "interval":
-                    serialized = from_timedelta(value)
-                elif ftype == "datetime":
-                    value = get_local_datetime(value)
-                    if locale == "de":
-                        dateformat = "dd.MM.yyyy HH:mm:ss"
-                    else:
-                        dateformat = "yyyy-MM-dd HH:mm:ss"
-                    serialized = format_datetime(value, format=dateformat)
-                elif ftype == "date":
-                    if locale == "de":
-                        dateformat = "dd.MM.yyyy"
-                    else:
-                        dateformat = "yyyy-MM-dd"
-                    serialized = format_date(value, format=dateformat)
-                else:
-                    serialized = value
+            serialized = serialize_list(value)
+        elif hasattr(value, "id"):
+            return value.id
+        elif field_type == "time":
+            td = datetime.timedelta(seconds=int(value))
+            serialized = from_timedelta(td)
+        elif field_type == "interval":
+            serialized = from_timedelta(value)
+        elif field_type == "datetime":
+            value = get_local_datetime(value)
+            if is_german_locale:
+                dateformat = "dd.MM.yyyy HH:mm:ss"
+            else:
+                dateformat = "yyyy-MM-dd HH:mm:ss"
+            serialized = format_datetime(value, format=dateformat)
+        elif field_type == "date":
+            if is_german_locale:
+                dateformat = "dd.MM.yyyy"
+            else:
+                dateformat = "yyyy-MM-dd"
+            serialized = format_date(value, format=dateformat)
     except AttributeError:
         log.warning('Can not get value for field "%s". '
                     'The field is no attribute of the item' % field.name)
+        serialized = u""
     return serialized
 
 

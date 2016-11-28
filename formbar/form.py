@@ -985,16 +985,14 @@ class Field(object):
         for key in option_values:
             key = key.strip("$")
             if isinstance(option, tuple):
-                value = option[2].get(key, "")
+                values[key] = unicode(option[2].get(key, ""))
             else:
-                value = getattr(option, key)
-            values[key] = unicode(value)
+                values[key] = unicode(getattr(option, key))
         result = rule.evaluate(values)
         if result:
             return (label, value, True)
         else:
             return (label, value, False)
-
 
     def explode_option(self, option):
         if isinstance(option, tuple):
