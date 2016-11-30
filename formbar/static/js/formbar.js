@@ -359,6 +359,7 @@ var form = function (inputFilter, ruleEngine) {
             var ftype = field.getAttribute("type");
             switch (ftype) {
                 case "checkbox":
+                    $("input[name='"+fieldName+"']:checked").each(function(){$(this).prop('checked', false)})
                     formFields[fieldName].value.forEach(function (x) { $("[name='"+fieldName+"'][value='" + x + "']").prop("checked", true); });
                     break;
                 case "radio":
