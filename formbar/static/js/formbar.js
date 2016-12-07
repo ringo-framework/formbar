@@ -252,7 +252,7 @@ var inputFilter = function () {
      *
      */
     var date = function (key) {
-        return !(key.charCode !== 0 && key.charCode !== point && key.charCode !== slash && (key.charCode < zero || key.charCode > nine));
+        return !(key.charCode !== 0 && key.charCode !== point && key.charCode !== minus && (key.charCode < zero || key.charCode > nine));
     };
 
     return {
