@@ -1,3 +1,19 @@
+0.24.1
+======
+Bugfixrelease
+
+- Fixed behaviour of not readonly conditionals visibilty if Rule evaluate to False on
+  initial loading of the form.
+
+0.24.0
+======
+Maintenance release. Code cleanup
+
+- Improved expression parsing for list filtering
+- Improved serialisation/deserialisation of multiselction fields (e.g
+  checkboxescheckboxes)
+- Fixed error in deserialisation of initial field values.
+
 0.23.0
 ======
 - Added 'showrawvalue' config option for inforenderer. See documentation for
