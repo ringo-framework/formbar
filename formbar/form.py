@@ -245,7 +245,7 @@ class Form(object):
     def _set_current_field_data(self, data):
         for key in self.fields:
             value = data.get(key)
-            if value or isinstance(value, int):
+            if value is not None:
                 field = self.fields[key]
                 field.set_value(value)
 
