@@ -787,6 +787,20 @@ var formbar = function (form) {
 
     /**
      * @function 
+     * determines the dateformat based on te browserlanguage. Only german and
+     * ISO 8601 is supported.
+     *
+     */
+    var getDateFormat = function getDateFormat(browserLanguage) {
+        if (browserLanguage.search("de") > -1) {
+            return "dd.mm.yyyy"
+        } else {
+            return "yyyy-mm-dd"
+        }
+    };
+
+    /**
+     * @function 
      * handles listgroup-items
      * 
      * @param {Object} - the event-Object
@@ -839,8 +853,10 @@ var formbar = function (form) {
      */
     var initDatePicker = function () {
         var browserLanguage = getBrowserLanguage();
+        var dateFormat = getDateFormat(browserLanguage);
         $('.formbar-datepicker').datepicker({
             language: browserLanguage,
+            format: dateFormat,
             todayBtn: "linked",
             showOnFocus: false,
             autoclose: true
