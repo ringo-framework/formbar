@@ -18,6 +18,29 @@ Possibible incompatiblities:
   attributes like _warnings and _errors of the fields. Those attributes has
   become public now and should be accessed directly. 
 
+0.24.2
+======
+- Fixed #23: Support other dateformat that german dateformat. If
+  browserlanguage is not german that the datepicker will use ISO8601
+  dateformat.
+
+0.24.1
+======
+Bugfixrelease
+
+- Fixed behaviour of not readonly conditionals visibilty if Rule evaluate to False on
+  initial loading of the form.
+
+0.24.0
+======
+Maintenance release. Code cleanup
+
+- Improved expression parsing for list filtering
+- Improved serialisation/deserialisation of multiselction fields (e.g
+  checkboxescheckboxes)
+- Fixed error in deserialisation of initial field values.
+>>>>>>> master
+
 0.23.0
 ======
 - Added 'showrawvalue' config option for inforenderer. See documentation for

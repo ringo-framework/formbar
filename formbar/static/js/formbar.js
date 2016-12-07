@@ -252,7 +252,7 @@ var inputFilter = function () {
      *
      */
     var date = function (key) {
-        return !(key.charCode !== 0 && key.charCode !== point && key.charCode !== slash && (key.charCode < zero || key.charCode > nine));
+        return !(key.charCode !== 0 && key.charCode !== point && key.charCode !== minus && (key.charCode < zero || key.charCode > nine));
     };
 
     return {
@@ -359,6 +359,7 @@ var form = function (inputFilter, ruleEngine) {
             var ftype = field.getAttribute("type");
             switch (ftype) {
                 case "checkbox":
+                    $("input[name='"+fieldName+"']:checked").each(function(){$(this).prop('checked', false)})
                     formFields[fieldName].value.forEach(function (x) { $("[name='"+fieldName+"'][value='" + x + "']").prop("checked", true); });
                     break;
                 case "radio":
@@ -786,6 +787,20 @@ var formbar = function (form) {
 
     /**
      * @function 
+     * determines the dateformat based on te browserlanguage. Only german and
+     * ISO 8601 is supported.
+     *
+     */
+    var getDateFormat = function getDateFormat(browserLanguage) {
+        if (browserLanguage.search("de") > -1) {
+            return "dd.mm.yyyy"
+        } else {
+            return "yyyy-mm-dd"
+        }
+    };
+
+    /**
+     * @function 
      * handles listgroup-items
      * 
      * @param {Object} - the event-Object
@@ -838,8 +853,10 @@ var formbar = function (form) {
      */
     var initDatePicker = function () {
         var browserLanguage = getBrowserLanguage();
+        var dateFormat = getDateFormat(browserLanguage);
         $('.formbar-datepicker').datepicker({
             language: browserLanguage,
+            format: dateFormat,
             todayBtn: "linked",
             showOnFocus: false,
             autoclose: true
