@@ -117,13 +117,12 @@
         if is_active:
           css_class = "active"
         else:
-          css_class = "inactive {}".format(child.attrib.get('type'))
+          # If the conditional evaluates to False (inactive) and the field is
+          # not a readonly field the content of the conditional must be
+          # hidden on initial load of the form.
+          css_class = "inactive {} {}".format(child.attrib.get('type'), '' if is_readonly else 'hidden')
         %>
-        % if not is_readonly:
-          <div id="${id(child)}" class="formbar-conditional ${css_class}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}" style="${ '' if is_active else 'display:none' }">
-        % else:
-          <div id="${id(child)}" class="formbar-conditional ${css_class}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
-        % endif
+        <div id="${id(child)}" class="formbar-conditional ${css_class}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
       % elif child.tag == "html":
         ${ElementTree.tostring(child) | n}
       % endif
