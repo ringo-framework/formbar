@@ -1,3 +1,9 @@
+0.24.2
+======
+- Fixed #23: Support other dateformat that german dateformat. If
+  browserlanguage is not german that the datepicker will use ISO8601
+  dateformat.
+
 0.23.0
 ======
 - Added 'showrawvalue' config option for inforenderer. See documentation for
