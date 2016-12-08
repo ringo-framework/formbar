@@ -30,7 +30,10 @@ def print_fieldnames(config, args):
     for field in fields:
         if (not args.filtertype
             or field.type == args.filtertype):
-            out.append(field.name)
+            if args.printtype:
+                out.append("{} ({})".format(field.name, field.type if field.type else "string"))
+            else:
+                out.append(field.name)
     if args.aslist:
         print "[%s]" % ",".join("'%s'" % field for field in out)
     else:
@@ -95,6 +98,7 @@ if __name__ == '__main__':
     parser.add_argument('action', choices=['model', 'fieldnames', 'rules'], help='Output to generate')
     parser.add_argument('config', metavar='config', type=file, help='A form configuration file')
     parser.add_argument('--filter-type', help='Only show fields with the given type.', dest='filtertype', default="")
+    parser.add_argument('--print-type', dest='printtype', action="store_true")
     parser.add_argument('--tags', metavar='tags', help='Only choose fields with given tags. If empty all fields are returned.', default="")
     parser.add_argument('--aslist', dest='aslist', action="store_true")
     args = parser.parse_args()
