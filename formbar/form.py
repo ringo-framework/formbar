@@ -223,6 +223,9 @@ class Form(object):
         self.loaded_data = self._get_data_from_item()
         """This is the initial data loaded from the given item. Used to
         render the readonly forms"""
+        self.converted = {}
+        """This is the data which is converted to python values
+         during validation time"""
         if not values:
             values = {}
         self.merged_data = dict(self.loaded_data.items() + values.items())
@@ -442,7 +445,7 @@ class Form(object):
         #  this is to late for values used on form validation which must
         #  be already present on form initialisation. So user provided
         #  values can now be defined on form initialisation. (ti)
-        #  <2016-08-17 15:18> 
+        #  <2016-08-17 15:18>
 
         if values.items():
             log.warning("Providing userdefined values on "
@@ -458,6 +461,7 @@ class Form(object):
         # form again.
         if self.submitted_data:
             self._set_current_field_data(self.submitted_data)
+            self.merged_data = self.converted # for rule evaluation in form
         else:
             self._set_current_field_data(self.merged_data)
         self._set_previous_field_data(previous_values)
@@ -577,6 +581,7 @@ class Form(object):
         # If the form is valid. Save the converted and validated data
         # into the data dictionary.
         has_errors = self.has_errors()
+        self.converted = converted
         if not has_errors:
             self.data = converted
         self.validated = True
