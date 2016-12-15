@@ -1,5 +1,8 @@
-0.24.2
-======
+Next
+====
+- Added preview to file fields. The preview shows the preview of an image file
+  which will be uploaded.
+
 - Fixed #23: Support other dateformat that german dateformat. If
   browserlanguage is not german that the datepicker will use ISO8601
   dateformat.

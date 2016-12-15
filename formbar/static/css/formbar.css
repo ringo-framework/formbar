@@ -332,3 +332,28 @@ a.list-group-item.selected {
 .formbar-conditional .list-group-item {
     border-top-width: 1px !important;
 }
+
+/*****************************************************************************
+*                                  Fileupload                                *
+*****************************************************************************/
+
+#file-container {
+    width:100%;
+    display:-webkit-flex;
+    display:flex;
+}
+
+#file-upload {
+    width:50%;
+}
+
+#file-preview {
+    border: dashed 1px;
+    border-color: gray;
+    width:50%;
+    margin-left: 5px;
+}
+
+#file-preview p {
+    padding: 5px;
+}
