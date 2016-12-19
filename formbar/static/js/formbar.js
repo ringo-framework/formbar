@@ -713,7 +713,7 @@ var form = function (inputFilter, ruleEngine) {
                 inputChanged(e);
             }
         };
-        $("body").on("keyup", function(e) {
+        $("div.formbar-form").on("keyup", function(e) {
             switch (e.target.tagName) {
                 case 'INPUT':
                 case 'TEXTAREA':
@@ -726,7 +726,7 @@ var form = function (inputFilter, ruleEngine) {
                     break;
             }
         });
-        $("body").on("change", function (e) {
+        $("div.formbar-form").on("change", function (e) {
             switch (e.target.tagName) {
                 case 'INPUT':
                 case 'SELECT':
