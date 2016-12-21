@@ -49,6 +49,15 @@ def print_rules(config, args):
     else:
         print "\n".join(out)
 
+def print_conditionals(config, args):
+    elements = []
+    elements.extend(config.get_elements('if'))
+    out = ["Reset: {}, Type {}, Expression: {}, Fields: {}".format("True" if element.attrib.get("reset-value") else "False", element.attrib.get("type") if element.attrib.get("type") else "hide", element.attrib.get("expr"), [f.attrib.get("ref") for f in element.findall(".//field")]) for element in elements]
+    if args.aslist:
+        print "[%s]" % ",".join("'%s'" % field for field in out)
+    else:
+        print "\n".join(out)
+
 def print_model(config, args):
 
     def generate_Column(field):
@@ -85,17 +94,19 @@ def main(args):
     config_tree = _get_config(args.config)
     if args.action == "model":
         print_model(config_tree, args)
-    if args.action == "fieldnames":
+    elif args.action == "fieldnames":
         print_fieldnames(config_tree, args)
-    if args.action == "rules":
+    elif args.action == "rules":
         print_rules(config_tree, args)
+    elif args.action == "conditionals":
+        print_conditionals(config_tree, args)
     else:
         print "nothing to do"
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate various informations from a form configuration file')
-    parser.add_argument('action', choices=['model', 'fieldnames', 'rules'], help='Output to generate')
+    parser.add_argument('action', choices=['model', 'fieldnames', 'rules', 'conditionals'], help='Output to generate')
     parser.add_argument('config', metavar='config', type=file, help='A form configuration file')
     parser.add_argument('--filter-type', help='Only show fields with the given type.', dest='filtertype', default="")
     parser.add_argument('--print-type', dest='printtype', action="store_true")
