@@ -81,6 +81,10 @@ class FieldFactory(object):
         # database or as fallback use string.
         if fieldconfig.type:
             dtype = fieldconfig.type
+            # special handling for certian datatypes
+            # 1. email. email is actually a string field
+            if dtype == "email":
+                dtype = "string"
         elif sa_dtype:
             dtype = sa_dtype
         else:
