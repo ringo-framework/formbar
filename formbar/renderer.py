@@ -280,6 +280,13 @@ class FieldRenderer(Renderer):
         :returns: A HTML string showing the differences.
 
         """
+
+        #  TODO: Rendering diff between old an new value is broken. It
+        #  is currently a fetaure not used in current ringo
+        #  applications. So we disable this function here temporarily.
+        #  (ti) <2016-12-28 11:20>
+        newvalue = oldvalue
+
         out = []
         mode = None
         d = difflib.Differ()
