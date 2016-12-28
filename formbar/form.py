@@ -476,7 +476,7 @@ class Form(object):
     def prefill_form_private_fields(self):
         for name, field in self.fields.items():
             if name.startswith("_"):
-                field.value = self.merged_data[name]
+                field.value = self.merged_data.get(name)
 
     def _add_error(self, fieldname, error):
         if fieldname is None:
