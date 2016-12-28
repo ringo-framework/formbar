@@ -1,5 +1,5 @@
-Next
-====
+1.0
+===
 LARGE REFACTORING AND CODE CLEANUP.
 
 WARNING: This change can break up your running application and forces you to

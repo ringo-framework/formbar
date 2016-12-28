@@ -81,6 +81,10 @@ class FieldFactory(object):
         # database or as fallback use string.
         if fieldconfig.type:
             dtype = fieldconfig.type
+            # special handling for certian datatypes
+            # 1. email. email is actually a string field
+            if dtype == "email":
+                dtype = "string"
         elif sa_dtype:
             dtype = sa_dtype
         else:
@@ -752,11 +756,11 @@ class RelationField(CollectionField):
 
     def __init__(self, form, config, translate, sa_property):
         if not form._dbsession:
-            # For now we only log a warning. In the future we should be
+            # For now we only log in debug mode. In the future we should be
             # more strict and raise exception.
-            log.warning("No DB session available in the parent form. "
-                        "RelationField must be instanciated with an "
-                        "available DB session.")
+            log.debug("No DB session available in the parent form. "
+                      "RelationField must be instanciated with an "
+                      "available DB session.")
             # raise TypeError("No DB session available in the parent form. "
             #                 "RelationField must be instanciated with an "
             #                 "available DB session.")
