@@ -460,18 +460,23 @@ class Form(object):
         # contain the submitted values which should be displayed in the
         # form again.
         if self.submitted_data:
+            self.prefill_form_private_fields()
             self._set_current_field_data(self.submitted_data)
             self.merged_data = self.converted # for rule evaluation in form
         else:
             self._set_current_field_data(self.merged_data)
         self._set_previous_field_data(previous_values)
-
         # Add csrf_token to the values dictionary
         values['csrf_token'] = self._csrf_token
 
         renderer = FormRenderer(self, self._translate)
         form = renderer.render(buttons=buttons, outline=outline)
         return form
+
+    def prefill_form_private_fields(self):
+        for name, field in self.fields.items():
+            if name.startswith("_"):
+                field.value = self.merged_data[name]
 
     def _add_error(self, fieldname, error):
         if fieldname is None:
