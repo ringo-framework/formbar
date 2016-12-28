@@ -18,7 +18,7 @@ Possibible incompatiblities:
   attributes like _warnings and _errors of the fields. Those attributes has
   become public now and should be accessed directly. 
 
-0.24.2
+0.24.3
 ======
 - Added preview to file fields. The preview shows the preview of an image file
   which will be uploaded.
@@ -26,6 +26,19 @@ Possibible incompatiblities:
 - Fixed #23: Support other dateformat that german dateformat. If
   browserlanguage is not german that the datepicker will use ISO8601
   dateformat.
+
+- Under certain circumstances conditionals were rendered invisible instead of
+  inactive, due to different contextual behaviour of "readonly". To circumvent
+  misinterpretation of the current context, the type is rendered alongside
+  other infos in the DOM-Node.
+
+- Private variables used to prefill the form are broken, when the form
+  contains "submitted" data.  These are now conserved for rendering.
+
+0.24.2
+======
+- Added "self.converted" attribute to the form. This variable will save the
+  converted values on validation.
 
 0.24.1
 ======
@@ -42,7 +55,6 @@ Maintenance release. Code cleanup
 - Improved serialisation/deserialisation of multiselction fields (e.g
   checkboxescheckboxes)
 - Fixed error in deserialisation of initial field values.
->>>>>>> master
 
 0.23.0
 ======
