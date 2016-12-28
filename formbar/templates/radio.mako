@@ -1,5 +1,5 @@
 <%
-readonly = (field.is_readonly() and "disabled") or ""
+readonly = (field.readonly and "disabled") or ""
 selected = field.get_value()
 if isinstance(selected, list):
   raise TypeError("There can not be multiple selected values in a radio renderer!")
@@ -18,14 +18,14 @@ else:
   % if option[2]:
     <label class="radio-inline">
       % if option[1] == selected:
-        <input type="radio" id="${field.id}-${num}" datatype="${field.get_type()}" name="${field.name}" value="${option[1]}" checked="checked" ${readonly}/>
+        <input type="radio" id="${field.id}-${num}" datatype="${get_field_type(field)}" name="${field.name}" value="${option[1]}" checked="checked" ${readonly}/>
         ## Render a hidden field for selected readonly values to make sure the
         ## value is actually submitted.
         % if readonly:
-          <input type="hidden" id="${field.id}-${num}" datatype="${field.get_type()}" name="${field.name}" value="${option[1]}"/>
+          <input type="hidden" id="${field.id}-${num}" datatype="${get_field_type(field)}" name="${field.name}" value="${option[1]}"/>
         % endif
       % else:
-        <input type="radio" id="${field.id}-${num}" datatype="${field.get_type()}" name="${field.name}" value="${option[1]}" ${readonly}/>
+        <input type="radio" id="${field.id}-${num}" datatype="${get_field_type(field)}" name="${field.name}" value="${option[1]}" ${readonly}/>
       % endif
       ${_(option[0])}
     </label>

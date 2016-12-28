@@ -7,12 +7,28 @@ from webhelpers.html import literal, HTML
 from mako.lookup import TemplateLookup
 from formbar import template_dir
 from formbar.rules import Rule
+from formbar.fields import (
+        TimedeltaField, ManytooneRelationField,
+        ManytomanyRelationField, OnetomanyRelationField, EmailField,
+        DateField, FileField, TimeField, rules_to_string
+)
 
 
 template_lookup = TemplateLookup(directories=[template_dir],
                                  default_filters=['h'])
 
 log = logging.getLogger(__name__)
+
+
+def get_field_type(field):
+    """Helper method to get the lowercase string version of the type of te
+    given field. This method exists because of backward compatibility in
+    the renderer templates which need the string version of the type in
+    the template for client sided type conversion.
+
+    Usually you should NOT USE this method and do decisions based on the
+    fields class type directly e.g using pythons buildin isinstance."""
+    return field.__class__.__name__.replace("Field", "").lower()
 
 
 def get_renderer(field, translate):
@@ -59,20 +75,21 @@ def get_renderer(field, translate):
     else:
         # Try to determine the datatype of the field and set approriate
         # renderer.
-        dtype = field.get_type()
-        if dtype == "manytoone":
+        if isinstance(field, ManytooneRelationField):
             return DropdownFieldRenderer(field, translate)
-        elif dtype in ['manytomany', 'onetomany']:
+        if isinstance(field, ManytomanyRelationField):
             return SelectionFieldRenderer(field, translate)
-        elif dtype == "date":
+        if isinstance(field, OnetomanyRelationField):
+            return SelectionFieldRenderer(field, translate)
+        if isinstance(field, DateField):
             return DateFieldRenderer(field, translate)
-        elif dtype == "file":
+        if isinstance(field, FileField):
             return FileFieldRenderer(field, translate)
-        elif dtype == "time":
+        if isinstance(field, TimeField):
             return TimeFieldRenderer(field, translate)
-        elif dtype == "interval":
+        if isinstance(field, TimedeltaField):
             return TimeFieldRenderer(field, translate)
-        elif dtype == "email":
+        if isinstance(field, EmailField):
             return EmailFieldRenderer(field, translate)
     return TextFieldRenderer(field, translate)
 
@@ -298,6 +315,7 @@ class FieldRenderer(Renderer):
     def _get_template_values(self):
         values = {'field': self._field,
                   'renderer': self,
+                  'get_field_type': get_field_type,
                   '_': self.translate}
         return values
 
@@ -305,8 +323,8 @@ class FieldRenderer(Renderer):
         # TODO: Split rendering in four parts: label, fieldbody, errors,
         # help. Each in its own template.
         html = []
-        has_errors = len(self._field.get_errors())
-        has_warnings = len(self._field.get_warnings())
+        has_errors = len(self._field.errors)
+        has_warnings = len(self._field.warnings)
         active = 'active' if self._active else 'inactive'
         # Handle indent. Set indent_with css only if the elements are
         # actually have an indent and the lable position allows an
@@ -320,7 +338,7 @@ class FieldRenderer(Renderer):
                          (active),
                          indent_width)
         html.append(HTML.tag("div", _closed=False,
-                    rules=u"{}".format(";".join(self._field.rules_to_string)),
+                    rules=u"{}".format(";".join(rules_to_string(self._field))),
                     formgroup="{}".format(self._field.name),
                     desired="{}".format(self._field.desired),
                     required="{}".format(self._field.required),

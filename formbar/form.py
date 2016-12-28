@@ -1,10 +1,9 @@
+import logging
 import importlib
 import inspect
-import logging
-
-import config
-import re
 import sqlalchemy as sa
+from formbar.renderer import FormRenderer
+from formbar.fields import FieldFactory
 from formbar.converters import (
     DeserializeException, from_python, to_python
 )
@@ -297,23 +296,11 @@ class Form(object):
         """
         deserialized = {}
 
-        # Load relations of the item. Those are needed to deserialize
-        # the relations.
-        relation_names = {}
-
-        if self._item:
-            for fieldname in data.keys():
-                prop = get_sa_property(self._item, fieldname)
-                if isinstance(prop, sa.orm.properties.RelationshipProperty):
-                    relation_names[fieldname] = prop
-
         for fieldname, value in self._filter_values(data).iteritems():
             field = self.fields.get(fieldname)
             try:
                 serialized = data.get(field.name)
-                deserialized[fieldname] = to_python(field,
-                                                    serialized,
-                                                    relation_names)
+                deserialized[fieldname] = to_python(field, serialized)
             except DeserializeException as ex:
                 self._add_error(field.name,
                                 self._translate(ex.message) % ex.value)
@@ -345,8 +332,9 @@ class Form(object):
 
         """
         fields = {}
+        factory = FieldFactory(self, self._translate)
         for name, field in self._config.get_fields().iteritems():
-            fields[name] = Field(self, field, self._translate)
+            fields[name] = factory.create(field)
         return fields
 
     @property
@@ -356,14 +344,14 @@ class Form(object):
     def has_errors(self):
         """Returns True if one of the fields in the form has errors"""
         for field in self.fields.values():
-            if len(field.get_errors()) > 0:
+            if len(field.errors) > 0:
                 return True
         return len(self.errors) != 0
 
     def has_warnings(self):
         """Returns True if one of the fields in the form has warnings"""
         for field in self.fields.values():
-            if len(field.get_warnings()) > 0:
+            if len(field.warnings) > 0:
                 return True
         return len(self.warnings) != 0
 
@@ -385,8 +373,8 @@ class Form(object):
         for field in self.fields.values():
             if page is not None and field.name not in fields_on_page:
                 continue
-            if len(field.get_errors()) > 0:
-                errors[field.name] = field.get_errors()
+            if len(field.errors) > 0:
+                errors[field.name] = field.errors
         if len(self.errors) != 0 and page is None:
             errors[""] = self.errors
         return errors
@@ -409,8 +397,8 @@ class Form(object):
         for field in self.fields.values():
             if page is not None and field.name not in fields_on_page:
                 continue
-            if len(field.get_warnings()) > 0:
-                warnings[field.name] = field.get_warnings()
+            if len(field.warnings) > 0:
+                warnings[field.name] = field.warnings
         if len(self.warnings) != 0 and page is None:
             warnings[""] = self.warnings
         return warnings
@@ -628,460 +616,3 @@ class Form(object):
         lines = "\n".join(fields)
         lines += "\nhas errors: {}".format(self.has_errors())
         return lines
-
-
-class Field(object):
-    """Wrapper for fields in the form. The purpose of this class is to
-    provide a common interface for the renderer independent to the
-    underlying implementation detail of the field."""
-
-    def __init__(self, form, config, translate):
-        """Initialize the field with the given field configuration.
-
-        :config: Field configuration
-
-        """
-        self._form = form
-        self._config = config
-        self.sa_property = self._get_sa_property()
-        self._translate = translate
-        self.renderer = get_renderer(self, translate)
-        self._errors = []
-        self._warnings = []
-        # Set default value
-        value = getattr(self._config, "value")
-
-        # If value begins with '%' then consider the following string as
-        # a brabbel expression and set the value of the default value to
-        # the result of the evaluation of the expression.
-        if value and value.startswith("%"):
-            form_values = self._form._get_data_from_item()
-            value = Expression(value.strip("%")).evaluate(values=form_values)
-        # If value begins with '$' then consider the string as attribute
-        # name of the item in the form and get the value
-        elif value and value.startswith("$"):
-            try:
-                value = getattr(self._form._item, value.strip("$"))
-            except (IndexError, AttributeError), e:
-                # In case we are currently creating an item a access to
-                # values of the item may fail because the are not
-                # existing yet. This is especially true for items in
-                # relations as relations are added to the item after the
-                # creation has finished. So we expect such errors in
-                # case of creation and will not log those errors. A way
-                # to identify an item which is not fully created is the
-                # absence of its id value.
-                if self._form._item and self._form._item.id:
-                    log.error("Error while accessing attribute '%s': %s"
-                              % (value, e))
-                value = None
-        # If value is a basestring we will try to convert the default
-        # value into the the right python value. But if it is not a
-        # basestring e.g a datettime coming from a date('today')
-        # expression we will leave the value as it is.
-        dtype = self.get_type()
-        if value and isinstance(value, basestring) and dtype not in ['manytoone', 'manytomany', 'onetomany']:
-	    # Deserialization of relations is not supported yet.
-            value = to_python(self, value, {})
-        self.value = value
-
-        self.previous_value = None
-        """Value as string of the field. Will be set on rendering the
-        form"""
-
-    @property
-    def rules_to_string(self):
-        return [u"{}".format(r) for r in self.get_rules()]
-
-    def __repr__(self):
-        rules = "rules: \n\t\t{}".format("\n\t".join(self.rules_to_string))
-        field = u"field:\t\t{}".format(self.name)
-        value = u"value:\t\t{}, {}".format(repr(self.get_value()), type(self.get_value()))
-        required = "required:\t{}".format(self.is_required)
-        desired = "desired:\t{}".format(self.is_desired)
-        # validated = "validated:\t{}".format(self.is_validated)
-        _type = "type:\t\t{}".format(self.get_type())
-        return "\n".join([field, required, desired, value, _type, rules]) + "\n"
-
-    def __getattr__(self, name):
-        """Make attributes from the configuration directly available"""
-        return getattr(self._config, name)
-
-    def _get_sa_mapped_class(self):
-        if self.name.find(".") > -1:
-            # Special handling for prefixed relations in case of
-            # included entities.
-            # Those included entities usually has a prefix which defines
-            # the path to the attribute.
-            #
-            # Example:
-            # If the fieldname ist "foo.bar" this means that the current
-            # item has a relation named "foo". And within this foo
-            # relation a value should be set in "bar".
-            #
-            # Unfortunately this special notation breaks the default
-            # procedure how to get the mapped class of this attribute.
-            path = self.name.split(".")
-            rel = getattr(self._form._item, ".".join(path[:-1]))
-            field = path[-1]
-            sa_property = get_sa_property(rel, field)
-            return sa_property.mapper.class_
-        else:
-            return self.sa_property.mapper.class_
-
-    def _get_sa_property(self):
-        if not self._form._item:
-            return None
-        return get_sa_property(self._form._item, self.name)
-
-    def get_type(self):
-        """Returns the datatype of the field."""
-        if self._config.type:
-            return self._config.type
-        if self.sa_property:
-            try:
-                column = self.sa_property.columns[0]
-                dtype = str(column.type)
-                if dtype == "TEXT" or dtype.find("VARCHAR") > -1:
-                    return "string"
-                elif dtype == "DATE":
-                    return "date"
-                elif dtype == "INTEGER":
-                    return "integer"
-                elif dtype == "BOOLEAN":
-                    return "boolean"
-                else:
-                    log.warning('Unhandled datatype: %s' % dtype)
-            except AttributeError:
-                return self.sa_property.direction.name.lower()
-        return "string"
-
-    def get_rules(self):
-        """Returns a list of configured rules for the field."""
-        return self._config.get_rules()
-
-    def get_warning_rules(self):
-        return [r for r in self.get_rules()
-                if r.triggers == "warning"]
-
-    def get_error_rules(self):
-        return [r for r in self.get_rules()
-                if r.triggers == "error"]
-
-    def has_warning_rules(self):
-        """Returns a True if there is at least on rule that can trigger
-        a warning."""
-        return len(self.get_warning_rules()) > 0
-
-    def has_error_rules(self):
-        """Returns a True if there is at least on rule that can trigger
-        a error."""
-        return len(self.get_error_rules()) > 0
-
-    @property
-    def is_empty(self):
-        if self.get_value() is None:
-            return True
-        if self.get_type() == "integer" and self.get_value() is not None:
-            return False
-        return bool(self.get_value()) is False
-
-    @property
-    def empty_message(self):
-        if self.is_required:
-            return config.required_msg
-        return config.desired_msg
-
-    @property
-    def has_warnings(self):
-        return len(self.get_warnings()) > 0
-
-    @property
-    def has_errors(self):
-        return len(self.get_errors()) > 0
-
-    def get_errors(self):
-        return set(self._errors)
-
-    def get_warnings(self):
-        return set(self._warnings)
-
-    def is_missing(self):
-        """Return True if this field is a desired or required field and
-        the value of the fields is actually missing in the current
-        context after all rules have been evaluated. Note the rules the
-        are not evaluated because the field is in an inactive
-        conditional will have the result==None which means the rule is
-        not evaluated."""
-        if self.get_value():
-            return False
-        for rule in self.get_rules():
-            if (rule.desired or rule.required) and rule.result is False:
-                return True
-        return False
-
-    def set_value(self, value):
-        self.value = value
-
-    def set_previous_value(self, value):
-        self.previous_value = value
-
-    def get_value(self, default=None, expand=False):
-        return self._get_value(self.value, default, expand)
-
-    def get_previous_value(self, default=None, expand=False):
-        return self._get_value(self.previous_value, default, expand)
-
-    def _get_value(self, value, default, expand):
-        if expand:
-            if not isinstance(value, list):
-                value = [value]
-            ex_values = []
-            options = self.get_options()
-            for opt in options:
-                for v in value:
-                    if hasattr(v, "id"):
-                        v = v.id
-                    if unicode(v) == unicode(opt[1]):
-                        ex_values.append("%s" % opt[0])
-            return ", ".join(ex_values)
-        else:
-            if value:
-                return from_python(self, value)
-            elif default:
-                return default
-            else:
-                return value
-
-    def _build_filter_rule(self, expr_str, item):
-        return Rule(self.parse_expression(expr_str))
-
-    def parse_expression(self, expr_str):
-        tokens = re.split("\s", expr_str)
-        values = self.determine_values()
-        for token in tokens:
-            expr_str = self.substitute(token, expr_str, values)
-        expr_str = expr_str.replace("*", "$")
-        return expr_str
-
-    def substitute(self, token, unmodified_expression, values):
-        """
-        % marks the options in the selection field. It is used to
-        iterate over the options in the selection. I case the
-        options are SQLAlchemy based options the variable can be
-        used to access a attribute of the item. E.g. %id will
-        access the id of the current option item. For user defined
-        options "%" can be used to iterate over the user defined
-        options. In this case %attr will access a given attribte
-        in the option. A bare "%" will give the value of the
-        option.
-
-        :param token:
-        :param unmodified_expression:
-        :param values:
-        :return:
-        """
-        is_optionfield = token.startswith("%")
-        is_value_of_formitem = token.startswith("@")
-        is_value_of_current_form = token.startswith("$")
-
-        if not (is_optionfield or is_value_of_current_form or is_value_of_formitem):
-            return unmodified_expression
-        elif is_optionfield:
-            value = self.parse_optionfield(token)
-        elif is_value_of_formitem:
-            value = self.parse_formitem(token)
-        elif is_value_of_current_form:
-            value = self.parse_formvalue(values, token)
-
-        return self.substitute_value(unmodified_expression, token, value)
-
-    def substitute_value(self, expression, token, value):
-        if isinstance(value, list):
-            value = "[%s]" % ",".join("'%s'"
-                                      % unicode(v) for v in value)
-            return expression.replace(token, value)
-        elif isinstance(value, basestring) and (value.startswith("$") or
-                                                value.startswith("*")):
-            return expression.replace(token, "%s" % unicode(value))
-
-        return expression.replace(token, "'%s'" % unicode(value))
-
-    def parse_formvalue(self, substitution_values, token):
-        tmpitem = None
-        value = None
-        tokens = token.split(".")
-        if len(tokens) > 1:
-            key = tokens[0].strip("$")
-            attribute = ".".join(tokens[1:])
-            # FIXME: This is a bad assumption that there is a
-            # user within a request. (ti) <2014-07-09 11:18>
-            if key == "user":
-                tmpitem = self._form._request.user
-        else:
-            key = tokens[0].strip("$")
-            value = substitution_values.get(key) or ''
-        if tmpitem and not value:
-            value = getattr(tmpitem, attribute)
-            if hasattr(value, '__call__'):
-                value = value()
-        return value
-
-    def parse_formitem(self, token):
-        return getattr(self._form._item, token.strip("@"))
-
-    def parse_optionfield(self, token):
-        return "*%s" % (token.strip("%") or "value")
-
-    def determine_values(self):
-        if not self._form._item:
-            return {}
-        values = self._form._item.get_values()
-        values.update(self._form.merged_data)
-        return values
-
-    def _load_options_from_db(self):
-        # Get mapped clazz for the field
-        try:
-            clazz = self._get_sa_mapped_class()
-            return self._form._dbsession.query(clazz)
-        except:
-            # Catch exception here. This exception can happen when
-            # rendering the form in the preview of the formeditor. In
-            # this case the item is None and will fail to get the mapped
-            # class.
-            log.error("Can not get a mappend class for '%s' "
-                      "to load the option from db" % self.name)
-        return []
-
-    def sort_options(self, options):
-        """Will return a alphabetical sorted list of options. The filtering is
-        defined by the following configuration options of the renderer:
-        sort, sortorder. If sort is not set to 'true' than no sorting is
-        done at all. This is the default behaviour."""
-        if self._config.renderer and self._config.renderer.sort:
-            reverse = self._config.renderer.sortorder == "desc"
-            options = sorted(options,
-                             key=lambda x: unicode(x[0]),
-                             reverse=reverse)
-        return options
-
-    def filter_options(self, options):
-        """Will return a of tuples with options. The given options can
-        be either a list of SQLAlchemy mapped items (In case the options
-        come directly from the database) or a list of tuples with option
-        name and values. (In case of userdefined options in the form)
-
-        :options: List of items or tuples
-        :returns: List of tuples.
-
-        """
-        is_filtering_configured = self._config.renderer and self._config.renderer.filter
-        if is_filtering_configured:
-            rule = self._build_filter_rule(self._config.renderer.filter, None)
-            x = re.compile("\$[\w\.]+")
-            values = x.findall(rule._expression)
-            return [self.do_filter_options(option, values, rule) for option in options]
-        else:
-            return [self.dont_filter_options(option) for option in options]
-
-    def dont_filter_options(self, option):
-        label, value = self.explode_option(option)
-        return (label, value, True)
-
-    def do_filter_options(self, option, option_values, rule):
-        label, value = self.explode_option(option)
-        values = {}
-        for key in option_values:
-            key = key.strip("$")
-            if isinstance(option, tuple):
-                values[key] = unicode(option[2].get(key, ""))
-            else:
-                values[key] = unicode(getattr(option, key))
-        result = rule.evaluate(values)
-        if result:
-            return (label, value, True)
-        else:
-            return (label, value, False)
-
-    def explode_option(self, option):
-        if isinstance(option, tuple):
-            # User defined options
-            o_value = option[1]
-            o_label = option[0]
-        else:
-            # Options loaded from the database
-            o_value = option.id
-            o_label = option
-        return o_label, o_value
-
-    def get_options(self):
-        """Will return a list of tuples containing the options of the
-        field. The tuple contains in the following order:
-
-        1. the display value of the option,
-        2. its value and
-        3. a boolean flag if the options is a filtered one and
-        should not be visible in the selection.
-
-        Options can be filtered by defining the filter attribute of the
-        renderer. The expression will be applied on every option in the
-        selection. Keyword beginning with % are handled as variable. On
-        rule evaluation the keyword in the expression will be replaced
-        with the value of the item with the name of the variable.
-
-        Filtering is currently actually only done for selection based on
-        the SQLAlchemy model and which are loaded from the database.
-        """
-        options = []
-        _ = self._form._translate
-        if self.get_type() == 'manytoone':
-            options.append((_("no selection"), "", True))
-        user_defined_options = self._config.options
-        if (isinstance(user_defined_options, list)
-            and len(user_defined_options) > 0):
-            for option in self.filter_options(user_defined_options):
-                options.append((option[0], option[1], option[2]))
-        elif isinstance(user_defined_options, str):
-            for option in self._form.merged_data.get(user_defined_options):
-                options.append((option[0], option[1], True))
-        elif self._form._dbsession:
-            options.extend(self.filter_options(self._load_options_from_db()))
-        else:
-            # TODO: Try to get the session from the item. Ther must be
-            # somewhere the already bound session. (torsten) <2013-07-23 00:27>
-            log.warning('No db connection configured for this form. Can '
-                        'not load options')
-            return []
-        return self.sort_options(options)
-
-    def add_error(self, error):
-        self._errors.append(error)
-
-    def add_warning(self, warning):
-        self._warnings.append(warning)
-
-    def render(self, active):
-        """Returns the rendererd HTML for the field"""
-        self.renderer._active = active
-        return self.renderer.render()
-
-    def is_relation(self):
-        return isinstance(self.sa_property,
-                          sa.orm.RelationshipProperty)
-
-    @property
-    def is_desired(self):
-        """Returns true if field is set as desired in field configuration"""
-        return self.desired
-
-    @property
-    def is_required(self):
-        """Returns true if the required flag of the field configuration
-        is set"""
-        return self.required
-
-    def is_readonly(self):
-        """Returns true if either the readonly flag of the field
-        configuration is set or the whole form is marked as readonly"""
-        return self.readonly or False
