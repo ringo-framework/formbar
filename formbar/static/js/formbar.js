@@ -478,7 +478,7 @@ var form = function (inputFilter, ruleEngine) {
             element.addClass("inactive");
             element.removeClass("active");
         }
-        if (element.hasClass("readonly")){
+        if (element.attr("type") === "readonly"){
             handleReadOnly(result, element);
         } else {
             handleVisbility(result, element);
