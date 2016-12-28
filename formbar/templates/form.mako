@@ -122,7 +122,7 @@
           # hidden on initial load of the form.
           css_class = "inactive {} {}".format(child.attrib.get('type'), '' if is_readonly else 'hidden')
         %>
-        <div id="${id(child)}" class="formbar-conditional ${css_class}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
+        <div id="${id(child)}" type="${child.attrib.get('type')}" class="formbar-conditional ${css_class}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
       % elif child.tag == "html":
         ${ElementTree.tostring(child) | n}
       % endif
