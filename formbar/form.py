@@ -231,10 +231,9 @@ class Form(object):
         self.merged_data = dict(self.loaded_data.items() + values.items())
         # set default values
         for field in self.fields:
-            merged_value = self.merged_data[field]
+            merged_value = self.merged_data.get(field)
             if self.fields[field].value and merged_value=='' or merged_value is None:
                 self.merged_data[field] = self.fields[field].value
-        import ipdb; ipdb.set_trace()
         """This is merged date from the initial data loaded from the
         given item and userprovided values on form initialisation. The
         user defined values are merged again on render time"""
