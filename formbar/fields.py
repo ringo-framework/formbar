@@ -31,6 +31,8 @@ def get_type_from_sa_property(sa_property):
             return "date"
         elif dtype == "INTEGER":
             return "integer"
+        elif dtype == "FLOAT":
+            return "float"
         elif dtype == "BOOLEAN":
             return "boolean"
         else:
