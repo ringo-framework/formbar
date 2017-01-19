@@ -127,7 +127,7 @@ class FieldFactory(object):
 
         # Look on the renderer to get further informations on the type
         # of the field.
-        if dtype not in ["manytoone", "onetomany", "onetoone"] and \
+        if dtype not in ["manytoone", "onetomany", "onetoone", "manytomany"] and \
            fieldconfig.renderer:
             if fieldconfig.renderer.type in ["dropdown", "radio"]:
                 dtype = "%sselection" % dtype
