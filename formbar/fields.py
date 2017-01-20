@@ -29,6 +29,8 @@ def get_type_from_sa_property(sa_property):
             return "string"
         elif dtype == "DATE":
             return "date"
+        elif dtype == "DATETIME":
+            return "datetime"
         elif dtype == "INTEGER":
             return "integer"
         elif dtype == "FLOAT":
