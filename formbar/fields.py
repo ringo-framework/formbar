@@ -416,6 +416,8 @@ class DateTimeField(Field):
 
     def _from_python(self, value):
         from formbar.converters import format_datetime, get_local_datetime
+        if not value:
+            return ""
         locale = self._form._locale
         value = get_local_datetime(value)
         if locale == "de":
