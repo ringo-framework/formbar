@@ -428,7 +428,8 @@ class DateTimeField(Field):
 
     def _to_python(self, value):
         from formbar.converters import to_datetime
-        return to_datetime(value)
+        locale = self._form._locale
+        return to_datetime(value, locale)
 
 
 class TimedeltaField(Field):
