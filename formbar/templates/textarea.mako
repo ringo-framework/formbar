@@ -1,7 +1,7 @@
 % if field.readonly:
   <div class="readonlyfield" name="${field.name}">
     % if field.get_previous_value() is not None:
-      ${renderer._render_diff(renderer.nl2br(field.get_previous_value("")), renderer.nl2br(field.get_value("")))}
+      ${renderer.nl2br(renderer._render_diff(field.get_previous_value(""), field.get_value("")))}
     % else:
       ${renderer.nl2br(field.get_value(""))}
     % endif
