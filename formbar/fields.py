@@ -226,7 +226,29 @@ class Field(object):
         self.desired = getattr(self._config, "desired")
         self.readonly = getattr(self._config, "readonly")
 
+        if self.name in self._form.merged_data:
+            self.value = self._form.merged_data[self.name]
+
         # Set default value
+        if (self.value is None or
+           (isinstance(self.value, basestring) and self.value == "")):
+            self._set_default_value()
+
+        self.previous_value = None
+        """Value as string of the field. Will be set on rendering the
+        form"""
+
+    # def __repr__(self):
+    #     rules = "rules: \n\t\t{}".format("\n\t".join(rules_to_string(field))
+    #     field = u"field:\t\t{}".format(self.name)
+    #     value = u"value:\t\t{}, {}".format(repr(self.get_value()), type(self.get_value()))
+    #     required = "required:\t{}".format(self.required)
+    #     desired = "desired:\t{}".format(self.desired)
+    #     #validated = "validated:\t{}".format(self.is_validated)
+    #     #_type = "type:\t\t{}".format(self.get_type())
+    #     return "\n".join([field, required, desired, value, _type, rules])+"\n"
+
+    def _set_default_value(self):
         value = getattr(self._config, "value")
 
         # If value begins with '%' then consider the following string as
@@ -256,20 +278,6 @@ class Field(object):
         if value and isinstance(value, basestring):
             value = self._to_python(value)
         self.value = value
-
-        self.previous_value = None
-        """Value as string of the field. Will be set on rendering the
-        form"""
-
-    # def __repr__(self):
-    #     rules = "rules: \n\t\t{}".format("\n\t".join(rules_to_string(field))
-    #     field = u"field:\t\t{}".format(self.name)
-    #     value = u"value:\t\t{}, {}".format(repr(self.get_value()), type(self.get_value()))
-    #     required = "required:\t{}".format(self.required)
-    #     desired = "desired:\t{}".format(self.desired)
-    #     #validated = "validated:\t{}".format(self.is_validated)
-    #     #_type = "type:\t\t{}".format(self.get_type())
-    #     return "\n".join([field, required, desired, value, _type, rules])+"\n"
 
     @property
     def rules_to_string(self):
