@@ -208,6 +208,15 @@ class Form(object):
         The url will have the additional parameter "page" which holds
         the currently selected page.
         """
+        self.loaded_data = self._get_data_from_item()
+        """This is the initial data loaded from the given item. Used to
+        render the readonly forms"""
+        if not values:
+            values = {}
+        self.merged_data = dict(self.loaded_data.items() + values.items())
+        """This is merged date from the initial data loaded from the
+        given item and userprovided values on form initialisation. The
+        user defined values are merged again on render time"""
         self.external_renderers = renderers
         """Dictionary with external provided custom renderers."""
         self.fields = self._build_fields()
@@ -219,22 +228,13 @@ class Form(object):
         self.submitted_data = {}
         """The submitted data from the user. If validation fails, then
         this values are used to rerender the form."""
-        self.loaded_data = self._get_data_from_item()
-        """This is the initial data loaded from the given item. Used to
-        render the readonly forms"""
         self.converted = {}
         """This is the data which is converted to python values
          during validation time"""
-        if not values:
-            values = {}
-        self.merged_data = dict(self.loaded_data.items() + values.items())
         # set default values
         for field in self.fields:
             if self.fields[field].value:
                 self.merged_data[field] = self.fields[field].value
-        """This is merged date from the initial data loaded from the
-        given item and userprovided values on form initialisation. The
-        user defined values are merged again on render time"""
         self.warnings = []
         """Form wide warnings. This list contains warnings which affect
         the entire form and not specific fields. These warnings are show
