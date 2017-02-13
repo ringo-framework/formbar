@@ -118,6 +118,7 @@ var ruleEngine = function () {
         switch(currentValue.datatype){
             case 'date':
             case 'text':
+            case 'stringselection':
             case 'string':
                 return (!stringContainsArray(v))?"'"+v.replace(/\n/g,'')+"'":v;
             default:
