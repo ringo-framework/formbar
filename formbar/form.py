@@ -608,15 +608,15 @@ class Form(object):
                 self._dbsession.add(self._item)
         return self._item
 
-    def __repr__(self):
-        def f(field):
-            name = field.name
-            value = field.get_value()
-            errors = field.has_errors
-            warnings = field.has_warnings
-            return "{}:\t{} \terrors: {} warnings: {}".format(name, value, errors, warnings)
+    #def __repr__(self):
+    #    def f(field):
+    #        name = field.name
+    #        value = field.get_value()
+    #        errors = field.has_errors
+    #        warnings = field.has_warnings
+    #        return "{}:\t{} \terrors: {} warnings: {}".format(name, value, errors, warnings)
 
-        fields = [f(v) for _, v in self.fields.iteritems()]
-        lines = "\n".join(fields)
-        lines += "\nhas errors: {}".format(self.has_errors())
-        return lines
+    #    fields = [f(v) for _, v in self.fields.iteritems()]
+    #    lines = "\n".join(fields)
+    #    lines += "\nhas errors: {}".format(self.has_errors())
+    #    return lines
