@@ -453,7 +453,7 @@ class Form(object):
         # form again.
         if self.submitted_data:
             self.prefill_form_private_fields()
-            self._set_current_field_data(self.submitted_data)
+            self._set_current_field_data(self.converted)
             self.merged_data = self.converted # for rule evaluation in form
         else:
             self._set_current_field_data(self.merged_data)
