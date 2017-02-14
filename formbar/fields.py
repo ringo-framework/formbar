@@ -15,10 +15,20 @@ def rules_to_string(field):
 
 
 def get_sa_property(item, name):
-    mapper = sa.orm.object_mapper(item)
-    for prop in mapper.iterate_properties:
-        if prop.key == name:
-            return prop
+    # Special handling needed to support namespaces in forms.
+    names = name.split(".")
+    if len(names) == 1:
+        name = names[-1]
+    else:
+        item = getattr(item, ".".join(names[:-1]))
+        name = names[-1]
+    try:
+        mapper = sa.orm.object_mapper(item)
+        for prop in mapper.iterate_properties:
+            if prop.key == name:
+                return prop
+    except:
+        pass
 
 
 def get_type_from_sa_property(sa_property):
