@@ -409,8 +409,8 @@ class Form(object):
     def add_validator(self, validator):
         return self.external_validators.append(validator)
 
-    def render(self, values={}, page=0, buttons=True,
-               previous_values={}, outline=True):
+    def render(self, values=None, page=0, buttons=True,
+               previous_values=None, outline=True):
         """Returns the rendererd form as an HTML string.
 
         :values: Dictionary with values to be prefilled/overwritten in
@@ -424,6 +424,10 @@ class Form(object):
         :returns: Rendered form.
 
         """
+        if not values:
+            values = {}
+        if not previous_values:
+            previous_values = {}
         self.current_page = page
 
         # Merge the items_values with the extra provided values. Extra
