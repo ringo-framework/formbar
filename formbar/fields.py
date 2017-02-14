@@ -748,9 +748,10 @@ class SelectionField(CollectionField):
         return value
 
     def _to_python(self, value):
-        if isinstance(value, list):
-            value = "{" + ",".join(map(unicode, value)) + "}"
-        return unicode(value)
+        # It seems that the # value is converted into a string by
+        # SQLAalchemy automatically. eg the python value "['1', '2']"
+        # will be converted into the _string_ "{1,2,''}".
+        return value
 
 
 class IntSelectionField(SelectionField):
