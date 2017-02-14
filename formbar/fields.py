@@ -338,14 +338,21 @@ class Field(object):
         true the function will try to return the literal value of the
         field. This option has currently only an effect on
         CollectionFields."""
-        value = None
-        try:
-            value = self._from_python(self.value)
-        except:
-            log.error("'{}' in {} ({}) could not be converted".format(self.value, self.name, self))
-        if not value and default:
+
+        # In case the type conversion (deserialisation) worked, the value of
+        # the field should have a value. In case the conversion fails
+        # this field has errors. In this case we will return the
+        # submitted value.
+        if self.value is None and self.errors:
+            return self._form.submitted_data[self.name]
+        elif self.value is None:
             return default
-        return value
+        else:
+            try:
+                return self._from_python(self.value)
+            except:
+                log.error("'{}' in {} ({}) could not be converted".format(self.value, self.name, self))
+                return ""
 
     def get_previous_value(self, default=None, expand=False):
         value = self._from_python(self.previous_value)
