@@ -327,7 +327,7 @@ class Field(object):
     def set_previous_value(self, value):
         self.previous_value = value
 
-    def get_value(self, default=None, expand=False):
+    def get_value(self, default="", expand=False):
         """Will return the serialized value of the field.
 
         If you want to get the deserialized (pythonic) value please access
@@ -338,11 +338,11 @@ class Field(object):
         true the function will try to return the literal value of the
         field. This option has currently only an effect on
         CollectionFields."""
+        value = None
         try:
             value = self._from_python(self.value)
         except:
-            log.exception("'{}' in {} ({}) could not be converted".format(self.value, self.name, self))
-            return self.value
+            log.error("'{}' in {} ({}) could not be converted".format(self.value, self.name, self))
         if not value and default:
             return default
         return value
