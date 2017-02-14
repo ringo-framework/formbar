@@ -214,8 +214,9 @@ class Field(object):
 
         """
         from formbar.renderer import get_renderer
-        self._form = form
+        self.value = None
         self._config = config
+        self._form = form
         self._translate = translate
         self.renderer = get_renderer(self, translate)
         self._sa_property = sa_property
@@ -230,9 +231,7 @@ class Field(object):
             self.value = self._form.merged_data[self.name]
 
         # Set default value
-        if (self.value is None or
-           (isinstance(self.value, basestring) and self.value == "")):
-            self._set_default_value()
+        self._set_default_value()
 
         self.previous_value = None
         """Value as string of the field. Will be set on rendering the
@@ -248,9 +247,7 @@ class Field(object):
     #     #_type = "type:\t\t{}".format(self.get_type())
     #     return "\n".join([field, required, desired, value, _type, rules])+"\n"
 
-    def _set_default_value(self):
-        value = getattr(self._config, "value")
-
+    def _handle_expression(self, value):
         # If value begins with '%' then consider the following string as
         # a brabbel expression and set the value of the default value to
         # the result of the evaluation of the expression.
@@ -275,8 +272,16 @@ class Field(object):
                     log.error("Error while accessing attribute '%s': %s"
                               % (value, e))
                 value = None
-        if value and isinstance(value, basestring):
-            value = self._to_python(value)
+        return value
+
+    def _set_default_value(self):
+        value = getattr(self._config, "value")
+        if value:
+            value = self._handle_expression(value)
+            if value and isinstance(value, basestring):
+                value = self._to_python(value)
+        else:
+            value = None
         self.value = value
 
     @property
