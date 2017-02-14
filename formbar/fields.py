@@ -58,6 +58,23 @@ class FieldFactory(object):
         self.form = form
         self.translate = translate
 
+    def _check_integrity(self, name, sa_dtype, dtype):
+        """Check for integrity if possible and log error if integrity is
+        violated. If sa_dtype is None and dtype is "string" the default
+        type is set which is not considired an error."""
+
+        # special handling for certian datatypes
+        # 1. email. email is actually a string field
+        if dtype == "email":
+            dtype = "string"
+        if sa_dtype != dtype and (sa_dtype is not None and dtype != "string"):
+            log.error("Mismatch of datatype for field '{name}' of SA datatype "
+                      "SA '{sa_dtype}' and formbar datatype '{dtype}'"
+                      "".format(sa_dtype=sa_dtype,
+                                dtype=dtype,
+                                name=fieldconfig.name))
+
+
     def create(self, fieldconfig):
         """Will return a Field instance based on the given field config.
 
@@ -85,24 +102,12 @@ class FieldFactory(object):
         # database or as fallback use string.
         if fieldconfig.type:
             dtype = fieldconfig.type
-            # special handling for certian datatypes
-            # 1. email. email is actually a string field
-            if dtype == "email":
-                dtype = "string"
         elif sa_dtype:
             dtype = sa_dtype
         else:
             dtype = "string"
 
-        # Check for integrity if possible and log error if integrity is
-        # violated. If sa_dtype is None and dtype is "string" the
-        # default type is set which is not considired an error.
-        if sa_dtype != dtype and (sa_dtype is not None and dtype != "string"):
-            log.error("Mismatch of datatype for field '{name}' of SA datatype "
-                      "SA '{sa_dtype}' and formbar datatype '{dtype}'"
-                      "".format(sa_dtype=sa_dtype,
-                                dtype=dtype,
-                                name=fieldconfig.name))
+        self._check_integrity(fieldconfig.name, sa_dtype, dtype)
         log.debug("Creating field '{name}' with datatype '{dtype}'"
                   "".format(name=fieldconfig.name, dtype=dtype))
 
