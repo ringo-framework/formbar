@@ -369,7 +369,7 @@ class Field(object):
                 log.error("'{}' in {} ({}) could not be converted".format(self.value, self.name, self))
                 return ""
 
-    def get_previous_value(self, default=None, expand=False):
+    def get_previous_value(self, default="", expand=False):
         value = self._from_python(self.previous_value)
         if not value and default:
             return default
@@ -524,13 +524,13 @@ class CollectionField(Field):
                     ex_values.append("%s" % opt[0])
         return ", ".join(ex_values)
 
-    def get_previous_value(self, default=None, expand=False):
+    def get_previous_value(self, default="", expand=False):
         value = super(CollectionField, self).get_previous_value(default)
         if expand:
             return self.expand_value(value)
         return value
 
-    def get_value(self, default=None, expand=False):
+    def get_value(self, default="", expand=False):
         value = super(CollectionField, self).get_value(default)
         if expand:
             return self.expand_value(value)
