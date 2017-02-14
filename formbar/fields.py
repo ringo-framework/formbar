@@ -82,8 +82,7 @@ class FieldFactory(object):
                       "SA '{sa_dtype}' and formbar datatype '{dtype}'"
                       "".format(sa_dtype=sa_dtype,
                                 dtype=dtype,
-                                name=fieldconfig.name))
-
+                                name=name))
 
     def create(self, fieldconfig):
         """Will return a Field instance based on the given field config.
@@ -118,8 +117,6 @@ class FieldFactory(object):
             dtype = "string"
 
         self._check_integrity(fieldconfig.name, sa_dtype, dtype)
-        log.debug("Creating field '{name}' with datatype '{dtype}'"
-                  "".format(name=fieldconfig.name, dtype=dtype))
 
         builder_map = {
             "string": self._create_string,
@@ -154,6 +151,8 @@ class FieldFactory(object):
                 dtype = "multiselection"
 
         builder = builder_map.get(dtype, self._create_default)
+        log.debug("Creating field '{name}' '{dtype}'"
+                  "".format(name=fieldconfig.name, dtype=dtype))
         return builder(fieldconfig, sa_property)
 
     def _create_string(self, fieldconfig, sa_property):
