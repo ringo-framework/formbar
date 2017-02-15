@@ -132,7 +132,6 @@ class FieldFactory(object):
             "integerselection": self._create_intselection,
             "stringselection": self._create_stringselection,
             "booleanselection": self._create_booleanselection,
-            "multiselection": self._create_multiselection,
             "manytoone": self._create_manytoone,
             "onetoone": self._create_onetoone,
             "onetomany": self._create_onetomany,
@@ -192,9 +191,6 @@ class FieldFactory(object):
 
     def _create_booleanselection(self, fieldconfig, sa_property):
         return BooleanSelectionField(self.form, fieldconfig, self.translate, sa_property)
-
-    def _create_multiselection(self, fieldconfig, sa_property):
-        return MultiselectionField(self.form, fieldconfig, self.translate, sa_property)
 
     def _create_onetomany(self, fieldconfig, sa_property):
         return OnetomanyRelationField(self.form, fieldconfig, self.translate, sa_property)
@@ -769,12 +765,6 @@ class StringSelectionField(SelectionField):
 
 
 class BooleanSelectionField(SelectionField):
-    """Field which can have one or more of predefined values. The
-    values are defined in the fields config."""
-    pass
-
-
-class MultiselectionField(StringSelectionField):
     """Field which can have one or more of predefined values. The
     values are defined in the fields config."""
     pass
