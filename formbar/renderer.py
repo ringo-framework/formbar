@@ -10,7 +10,7 @@ from formbar.rules import Rule
 from formbar.fields import (
         TimedeltaField, ManytooneRelationField,
         ManytomanyRelationField, OnetomanyRelationField, EmailField,
-        DateField, FileField, TimeField, rules_to_string
+        DateField, DateTimeField, FileField, TimeField, rules_to_string
 )
 
 
@@ -83,6 +83,8 @@ def get_renderer(field, translate):
             return SelectionFieldRenderer(field, translate)
         if isinstance(field, DateField):
             return DateFieldRenderer(field, translate)
+        if isinstance(field, DateTimeField):
+            return DatetimeFieldRenderer(field, translate)
         if isinstance(field, FileField):
             return FileFieldRenderer(field, translate)
         if isinstance(field, TimeField):
@@ -447,6 +449,14 @@ class DateFieldRenderer(FieldRenderer):
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("datefield.mako")
+
+
+class DatetimeFieldRenderer(FieldRenderer):
+    """A Renderer to render simple fa_field elements"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("datetimefield.mako")
 
 
 class PasswordFieldRenderer(FieldRenderer):
