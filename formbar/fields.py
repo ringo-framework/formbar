@@ -360,8 +360,13 @@ class Field(object):
             try:
                 return self._from_python(self.value)
             except:
-                log.error("'{}' in {} ({}) could not be converted".format(self.value, self.name, self))
-                return ""
+                # TODO: Ensure that self.value only contains pythonic
+                # values. At least when providing values on
+                # formin itialisation e.g {"datefield": '2015-01-01'}
+                # Will result in other values than expected -> string
+                # instead of date.
+                log.debug("'{}' ({}) in {} ({}) could not be converted".format(self.value, type(self.value), self.name, self))
+                return self.value
 
     def get_previous_value(self, default="", expand=False):
         value = self._from_python(self.previous_value)
