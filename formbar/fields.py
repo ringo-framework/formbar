@@ -143,12 +143,11 @@ class FieldFactory(object):
         # of the field.
         if dtype not in ["manytoone", "onetomany", "onetoone", "manytomany"] and \
            fieldconfig.renderer:
-            if fieldconfig.renderer.type in ["dropdown", "radio"]:
+            if fieldconfig.renderer.type in ["dropdown", "radio", "checkbox"]:
+                if fieldconfig.renderer.type == "checkbox":
+                    if dtype not in ("string", "integer"):
+                        raise TypeError("Checkbox must be of type either string or integer!")
                 dtype = "%sselection" % dtype
-            elif fieldconfig.renderer.type == "checkbox":
-                if dtype not in ("string", "integer"):
-                    raise TypeError("Checkbox must be of type either string or integer!")
-                dtype = "multiselection"
 
         builder = builder_map.get(dtype, self._create_default)
         log.debug("Creating field '{name}' '{dtype}'"
