@@ -218,6 +218,7 @@ var inputFilter = function () {
     var point = ".".charCodeAt(0);
     var minus = "-".charCodeAt(0);
     var slash = "/".charCodeAt(0);
+    var column = ":".charCodeAt(0);
 
     /**
      * @function
@@ -256,10 +257,23 @@ var inputFilter = function () {
         return !(key.charCode !== 0 && key.charCode !== point && key.charCode !== minus && (key.charCode < zero || key.charCode > nine));
     };
 
+    /**
+     * @function
+     * 
+     * @param {string} key 
+     * 
+     * results in true only for 0 - 9, . and /
+     *
+     */
+    var datetime = function (key) {
+        return !(key.charCode !== 0&& key.charCode !== column && key.charCode !== point && key.charCode !== minus && (key.charCode < zero || key.charCode > nine));
+    };
+
     return {
         integer: integer,
         float: float,
-        date: date
+        date: date,
+        datetime: datetime
     };
 } ();
 
@@ -387,6 +401,7 @@ var form = function (inputFilter, ruleEngine) {
         $('div.formbar-form input.integer').keypress(inputFilter.integer);
         $('div.formbar-form input.float').keypress(inputFilter.float);
         $('div.formbar-form input.date').keypress(inputFilter.date);
+        $('div.formbar-form input.datetime').keypress(inputFilter.datetime);
     };
 
 
