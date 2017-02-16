@@ -353,7 +353,10 @@ class Field(object):
         # this field has errors. In this case we will return the
         # submitted value.
         if self.value is None and self.errors:
-            return self._form.submitted_data[self.name]
+            # Get with .get instead of getting directly per keyname
+            # because of checkboxes which are not submitted at all if
+            # they are not checked.
+            return self._form.submitted_data.get(self.name, "")
         elif self.value is None:
             return default
         else:
