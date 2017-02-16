@@ -219,6 +219,7 @@ var inputFilter = function () {
     var minus = "-".charCodeAt(0);
     var slash = "/".charCodeAt(0);
     var column = ":".charCodeAt(0);
+    var space = "  ".charCodeAt(0);
 
     /**
      * @function
@@ -266,7 +267,7 @@ var inputFilter = function () {
      *
      */
     var datetime = function (key) {
-        return !(key.charCode !== 0&& key.charCode !== column && key.charCode !== point && key.charCode !== minus && (key.charCode < zero || key.charCode > nine));
+        return !(key.charCode !== 0 && key.charCode !== space && key.charCode !== column && key.charCode !== point && key.charCode !== minus && (key.charCode < zero || key.charCode > nine));
     };
 
     return {
