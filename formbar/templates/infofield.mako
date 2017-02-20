@@ -10,7 +10,7 @@ else:
     if isinstance(field.value, list):
       value = ", ".join([_(i) for i in field.value])
     else:
-      value = _(field.value)
+      value = _(field.value) if field.value else ""
     %>
     ${value}
   % else:
