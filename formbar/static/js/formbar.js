@@ -720,14 +720,16 @@ var form = function (inputFilter, ruleEngine) {
         var changeEvent = function(e){
             var div = $(e.target);
             var fieldName = e.target.name;
-            if (formFields[fieldName].state==='inactive'){
-                if (div.closest(".formbar-conditional").attr("reset-value") == "true") {
-                   clearFieldValue(fieldName);
+            if (formFields[fieldName]){
+                if (formFields[fieldName].state==='inactive'){
+                    if (div.closest(".formbar-conditional").attr("reset-value") == "true") {
+                       clearFieldValue(fieldName);
+                    } else {
+                        resetFieldValue(fieldName, formFields);
+                    }
                 } else {
-                    resetFieldValue(fieldName, formFields);
+                    inputChanged(e);
                 }
-            } else {
-                inputChanged(e);
             }
         };
         $("div.formbar-form").on("keyup", function(e) {
