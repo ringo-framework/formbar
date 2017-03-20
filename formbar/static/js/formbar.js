@@ -731,6 +731,11 @@ var form = function (inputFilter, ruleEngine) {
                     inputChanged(e);
                 }
             }
+            else {
+                // some input fields may not be part of formbar fields, even inside the form.
+                // examples are inputs (e.g. checkboxes) dynamically created by javascript.
+                // Formbar functions are not available to these fields.
+            }
         };
         $("div.formbar-form").on("keyup", function(e) {
             switch (e.target.tagName) {
