@@ -720,14 +720,21 @@ var form = function (inputFilter, ruleEngine) {
         var changeEvent = function(e){
             var div = $(e.target);
             var fieldName = e.target.name;
-            if (formFields[fieldName].state==='inactive'){
-                if (div.closest(".formbar-conditional").attr("reset-value") == "true") {
-                   clearFieldValue(fieldName);
+            if (formFields[fieldName]){
+                if (formFields[fieldName].state==='inactive'){
+                    if (div.closest(".formbar-conditional").attr("reset-value") == "true") {
+                       clearFieldValue(fieldName);
+                    } else {
+                        resetFieldValue(fieldName, formFields);
+                    }
                 } else {
-                    resetFieldValue(fieldName, formFields);
+                    inputChanged(e);
                 }
-            } else {
-                inputChanged(e);
+            }
+            else {
+                // some input fields may not be part of formbar fields, even inside the form.
+                // examples are inputs (e.g. checkboxes) dynamically created by javascript.
+                // Formbar functions are not available to these fields.
             }
         };
         $("div.formbar-form").on("keyup", function(e) {
