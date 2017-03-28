@@ -77,6 +77,8 @@ class FieldFactory(object):
         # 1. email. email is actually a string field
         if dtype == "email":
             dtype = "string"
+        if dtype == "interval":
+            dtype = "datetime"
         if sa_dtype != dtype and (sa_dtype is not None and dtype != "string"):
             log.error("Mismatch of datatype for field '{name}' of SA datatype "
                       "SA '{sa_dtype}' and formbar datatype '{dtype}'"
