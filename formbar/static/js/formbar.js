@@ -120,7 +120,7 @@ var ruleEngine = function () {
             case 'text':
             case 'stringselection':
             case 'string':
-                return (!stringContainsArray(v))?"'"+v.replace(/\n/g,'').replace(/'/g,'"')+"'":v;
+                return (!stringContainsArray(v))?"'"+v.replace(/\n/g,'').replace(/'/g,'\\\'')+"'":v;
             default:
                 return currentValue.value || "None";
         }
