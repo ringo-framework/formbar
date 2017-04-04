@@ -154,18 +154,6 @@ label sup {
  *  Field elements  *
  ********************/
 
-/* If indent is set for the renderer than indent all child elements of the
- * form group except it is the main label (.form-control) */
-.form-group.indent-sm > *:not(.control-label) {
-    margin-left: 36px;
-}
-.form-group.indent-md > *:not(.control-label) {
-    margin-left: 56px;
-}
-.form-group.indent-lg > *:not(.control-label) {
-    margin-left: 76px;
-}
-
 // Set width for text input fields
 .form-group.indent-sm input[type="text"], .form-group.indent-sm textarea {
     width: calc(100% - 36px);

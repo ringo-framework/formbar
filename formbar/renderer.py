@@ -344,14 +344,13 @@ class FieldRenderer(Renderer):
             indent_width = self.indent_width
         class_options = ((has_errors and 'has-error'),
                          (has_warnings and 'has-warning'),
-                         (active),
-                         indent_width)
+                         (active))
         html.append(HTML.tag("div", _closed=False,
                     rules=u"{}".format(";".join(rules_to_string(self._field))),
                     formgroup="{}".format(self._field.name),
                     desired="{}".format(self._field.desired),
                     required="{}".format(self._field.required),
-                    class_=("form-group %s %s %s %s" % class_options)))
+                    class_=("form-group %s %s %s" % class_options)))
         values = self._get_template_values()
         if self.label_width > 0 and self.label_position in ["left", "right"]:
             label_width = self.label_width
@@ -385,7 +384,17 @@ class FieldRenderer(Renderer):
             html.append(HTML.tag("/div", _closed=False))
         else:
             html.append(self._render_label())
+            if indent_width == "indent-sm":
+                indent_padding = 36
+            elif indent_width == "indent-md":
+                indent_padding = 56
+            elif indent_width == "indent-lg":
+                indent_padding = 76
+            else:
+                indent_padding = 0
+            html.append(HTML.tag("div", _closed=False, style="padding-left: {}px".format(indent_padding)))
             html.append(literal(self.template.render(**values)))
+            html.append(HTML.tag("/div", _closed=False))
             html.append(self._render_errors())
             html.append(self._render_help())
         html.append(HTML.tag("/div", _closed=False))
