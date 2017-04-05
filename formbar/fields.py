@@ -241,8 +241,11 @@ class Field(object):
         if self.name in self._form.merged_data:
             self.value = self._form.merged_data[self.name]
 
-        # Set default value
-        self._set_default_value()
+        # Only set default value if the current value of the form is not
+        # "empty"
+        if (self.value is None or
+           (isinstance(self.value, basestring) and self.value == "")):
+            self._set_default_value()
 
         self.previous_value = None
         """Value as string of the field. Will be set on rendering the
