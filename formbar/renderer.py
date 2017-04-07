@@ -150,6 +150,7 @@ class FormRenderer(Renderer):
         html.append(HTML.tag("form", _closed=False,
                              id=self._form._config.id,
                              role="form",
+                             lang=self._form._locale,
                              class_=self._form._config.css,
                              action=self._form._config.action,
                              method=self._form._config.method,

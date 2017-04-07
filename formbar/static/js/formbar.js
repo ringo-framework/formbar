@@ -798,15 +798,7 @@ var formbar = function (form) {
      *
      */
     var getBrowserLanguage = function getBrowserLanguage() {
-        var lang = "en";
-        if (navigator.browserLanguage) {
-            lang = navigator.browserLanguage;
-        } else if (navigator.languages) {
-            lang = navigator.languages[0];
-        } else {
-            lang = navigator.language;
-        }
-        return lang;
+        return $('div.formbar-form form').attr('lang');
     };
 
     /**
