@@ -808,11 +808,12 @@ var formbar = function (form) {
      *
      */
     var getDateFormat = function getDateFormat(browserLanguage) {
-        if (browserLanguage.search("de") > -1) {
-            return "dd.mm.yyyy"
-        } else {
-            return "yyyy-mm-dd"
+        if (browserLanguage !== undefined) {
+            if (browserLanguage.search("de") > -1) {
+                return "dd.mm.yyyy"
+            }
         }
+        return "yyyy-mm-dd"
     };
 
     /**
