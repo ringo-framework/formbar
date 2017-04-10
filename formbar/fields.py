@@ -503,7 +503,10 @@ class TimeField(Field):
 
     def _to_python(self, value):
         from formbar.converters import to_timedelta
-        return to_timedelta(value).total_seconds()
+        if value:
+            return to_timedelta(value).total_seconds()
+        else:
+            return value
 
 
 class EmailField(Field):
