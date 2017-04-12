@@ -1,14 +1,14 @@
 # Translations template for formbar.
-# Copyright (C) 2016 ORGANIZATION
+# Copyright (C) 2017 ORGANIZATION
 # This file is distributed under the same license as the formbar project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: formbar 0.20.3\n"
+"Project-Id-Version: formbar 1.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-08-22 17:04+0200\n"
+"POT-Creation-Date: 2017-04-12 11:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,66 +25,86 @@ msgstr ""
 msgid "This field is desired. Please provide a value"
 msgstr ""
 
-#: formbar/converters.py:65 formbar/converters.py:68
+#: formbar/converters.py:68 formbar/converters.py:71
 #, python-format
 msgid "Value '%s' must be in format 'HH:MM:SS'"
 msgstr ""
 
-#: formbar/converters.py:71
+#: formbar/converters.py:74
 #, python-format
 msgid "Value '%s' is too large"
 msgstr ""
 
-#: formbar/converters.py:102
+#: formbar/converters.py:105
 #, python-format
 msgid "%s is not a valid date format."
 msgstr ""
 
-#: formbar/converters.py:146
+#: formbar/converters.py:149
 #, python-format
 msgid "%s is not a valid datetime format."
 msgstr ""
 
-#: formbar/converters.py:196
+#: formbar/converters.py:201
 #, python-format
 msgid "%s is not a string value."
 msgstr ""
 
-#: formbar/converters.py:216
+#: formbar/converters.py:221
 #, python-format
 msgid "%s is not a integer value."
 msgstr ""
 
-#: formbar/converters.py:229
+#: formbar/converters.py:234
 #, python-format
 msgid "%s is not a float value."
 msgstr ""
 
-#: formbar/converters.py:239
+#: formbar/converters.py:244
 #, python-format
 msgid "%s is not valid email address."
 msgstr ""
 
-#: formbar/converters.py:250
+#: formbar/converters.py:255
 #, python-format
 msgid "%s is not a boolean value."
 msgstr ""
 
-#: formbar/converters.py:260
+#: formbar/converters.py:265
 #, python-format
 msgid "%s is not a file value."
 msgstr ""
 
-#: formbar/form.py:927
+#: formbar/fields.py:846
 msgid "no selection"
 msgstr ""
 
-#: formbar/renderer.py:184
-msgid "Submit"
+#: formbar/renderer.py:198
+msgid "Save and return to the parent item"
 msgstr ""
 
-#: formbar/renderer.py:191
-msgid "Submit and proceed"
+#: formbar/renderer.py:199
+msgid "Save and return"
+msgstr ""
+
+#: formbar/renderer.py:204
+msgid "Save and stay on this page"
+msgstr ""
+
+#: formbar/renderer.py:205
+msgid "Save"
+msgstr ""
+
+#: formbar/renderer.py:212
+msgid "Save and proceed to the next page"
+msgstr ""
+
+#: formbar/renderer.py:213
+msgid "Save and proceed"
+msgstr ""
+
+#: formbar/templates/filefield.mako:10
+msgid "Image Preview"
 msgstr ""
 
 #: formbar/templates/form.mako:8
