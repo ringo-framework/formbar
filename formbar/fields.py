@@ -124,6 +124,7 @@ class FieldFactory(object):
 
         builder_map = {
             "string": self._create_string,
+            "text": self._create_string,
             "integer": self._create_integer,
             "float": self._create_float,
             "date": self._create_date,
