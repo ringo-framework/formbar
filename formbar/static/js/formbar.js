@@ -837,10 +837,12 @@ var formbar = function (form) {
      */
     var hideSubmitButtonOnInputlessPage = function (element) {
         var button = $('.formbar-form :submit');
-        if (element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
-            button.style.display = 'inline-block';
-        } else {
-            button.style.display = 'none';
+        if (button) {
+            if (element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
+                button.style.display = 'inline-block';
+            } else {
+                button.style.display = 'none';
+            }
         }
     };
 
