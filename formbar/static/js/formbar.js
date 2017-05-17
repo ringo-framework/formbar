@@ -838,9 +838,9 @@ var formbar = function (form) {
     var hideSubmitButtonOnInputlessPage = function (element) {
         var button = $('.formbar-form :submit');
         if (element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
-            button.show();
+            button.style.display = 'inline-block';
         } else {
-            button.hide();
+            button.style.display = 'none';
         }
     };
 
@@ -858,7 +858,7 @@ var formbar = function (form) {
         }
         if (lastpage == "true") {
             var button = $(".formbar-form button[value='nextpage']");
-            button.hide();
+            button.style.display= 'none';
         }
     };
 
