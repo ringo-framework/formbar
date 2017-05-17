@@ -839,9 +839,9 @@ var formbar = function (form) {
         var button = $('.formbar-form :submit');
         if (button) {
             if (element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
-                button.style.display = 'inline-block';
+                button.style.visibility = 'visible';
             } else {
-                button.style.display = 'none';
+                button.style.visibility = 'hidden';
             }
         }
     };
@@ -860,7 +860,7 @@ var formbar = function (form) {
         }
         if (lastpage == "true") {
             var button = $(".formbar-form button[value='nextpage']");
-            button.style.display= 'none';
+            button.style.visibility = 'hidden';
         }
     };
 
