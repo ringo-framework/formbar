@@ -832,7 +832,21 @@ class RelationField(CollectionField):
         options = []
         try:
             clazz = self._get_sa_mapped_class()
-            unfiltered = self._form._dbsession.query(clazz)
+            # The following code will enable optimzed loading of options
+            # in case that the are handling ringo items. If the class
+            # has a certain attribute we will use a optimzed loading
+            # strategy of within Ringo. Otherwise stay with the old
+            # mechanism. This is some some sort of a hack and *not* a
+            # ideal solution as it itroduces a deeper dependency to the
+            # ringo application. But as this relation code has
+            # implicit assumptions on the structure of the request it
+            # doesn't hurt too much. I expect that the generality of
+            # formbar as form rendering lib is not affected by this
+            # change.
+            if hasattr(clazz, "_sql_eager_loads"):
+                unfiltered = clazz.get_item_list(self._form._request).items
+            else:
+                unfiltered = self._form._dbsession.query(clazz)
             options.extend(self.filter_options(unfiltered))
         except:
             log.error("Failed to load options for '%s' "
