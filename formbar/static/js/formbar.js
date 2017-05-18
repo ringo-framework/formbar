@@ -837,10 +837,16 @@ var formbar = function (form) {
      */
     var hideSubmitButtonOnInputlessPage = function (element) {
         var button = $('.formbar-form :submit');
-        if (element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
-            button.show();
-        } else {
-            button.hide();
+        if (button.length) {
+            if (element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
+                button.each( function(index, btn){
+                    btn.style.visibility = 'visible';
+                });
+            } else {
+                button.each( function(index, btn) {
+                    btn.style.visibility = 'hidden';
+                });
+            }
         }
     };
 
@@ -858,7 +864,9 @@ var formbar = function (form) {
         }
         if (lastpage == "true") {
             var button = $(".formbar-form button[value='nextpage']");
-            button.hide();
+            button.each( function index, btn){
+                btn.style.visibility = 'hidden';
+            });
         }
     };
 
