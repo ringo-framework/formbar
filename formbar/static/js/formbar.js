@@ -864,7 +864,7 @@ var formbar = function (form) {
         }
         if (lastpage == "true") {
             var button = $(".formbar-form button[value='nextpage']");
-            button.each( function index, btn){
+            button.each( function (index, btn){
                 btn.style.visibility = 'hidden';
             });
         }
