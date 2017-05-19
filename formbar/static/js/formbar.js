@@ -838,15 +838,23 @@ var formbar = function (form) {
     var hideSubmitButtonOnInputlessPage = function (element) {
         var button = $('.formbar-form :submit');
         if (button.length) {
-            if (element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
-                button.each( function(index, btn){
-                    btn.style.visibility = 'visible';
-                });
-            } else {
-                button.each( function(index, btn) {
-                    btn.style.visibility = 'hidden';
-                });
-            }
+            button.each( function(index, btn) {
+                btn.style.visibility = 'hidden';
+            });
+            var elements = $(element.selector + ' '
+                     + "input:not([type='hidden']):visible,"
+                     + "select:visible,"
+                     + "textarea:visible");
+            elements.each(function (indx, el){
+                if (!el.hasAttribute('no-dirtyable')){
+                    button.each( function(index, btn){
+                        btn.style.visibility = 'visible';
+                    });
+                    // first successful match means a submit button is needed,
+                    // thus abort the DOM traversal
+                    return false;
+                }
+            });
         }
     };
 
