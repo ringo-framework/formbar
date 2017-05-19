@@ -843,12 +843,12 @@ class RelationField(CollectionField):
             # doesn't hurt too much. I expect that the generality of
             # formbar as form rendering lib is not affected by this
             # change.
-            if hasattr(clazz, "_sql_eager_loads"):
-                unfiltered = clazz.get_item_list(self._form._request).items
+            if hasattr(clazz, "_sql_eager_loads") and self._form._request:
+                unfiltered = clazz.get_item_list(self._form._request, user=None).items
             else:
                 unfiltered = self._form._dbsession.query(clazz)
             options.extend(self.filter_options(unfiltered))
-        except:
+        except Exception as e:
             log.error("Failed to load options for '%s' "
                       "to load the option from db" % self.name)
         return options
