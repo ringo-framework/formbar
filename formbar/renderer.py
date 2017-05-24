@@ -1,7 +1,6 @@
 import logging
 import difflib
 import xml.etree.ElementTree as ET
-from cgi import escape
 from webhelpers.html import literal, HTML
 
 from mako.lookup import TemplateLookup
@@ -222,8 +221,7 @@ class FormRenderer(Renderer):
                             type=b.attrib.get("type") or "submit",
                             name="_%s" % b.attrib.get("type") or "submit",
                             value=b.attrib.get("value") or "",
-                            class_=b.attrib.get("class")
-                            or "btn btn-default hidden-print"))
+                            class_=b.attrib.get("class") or "btn btn-default hidden-print"))
                 if b.attrib.get("icon"):
                     html.append(HTML.tag("i", class_=b.attrib.get("icon"),
                                          c=_(b.text)))
@@ -255,7 +253,6 @@ class FieldRenderer(Renderer):
         self._config = field._config.renderer
         self.translate = translate
         self.template = None
-        #self.values = self._get_template_values()
 
     def __getattr__(self, name):
         """Give access to the config values of the renderer"""
@@ -464,7 +461,7 @@ class TextareaFieldRenderer(FieldRenderer):
         self.template = template_lookup.get_template("textarea.mako")
 
     def nl2br(self, value=""):
-        return literal("<br />".join(escape(value).split("\n")))
+        return literal("<br />".join(value.split("\n")))
 
 
 class DateFieldRenderer(FieldRenderer):
