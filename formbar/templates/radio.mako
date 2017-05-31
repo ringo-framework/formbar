@@ -2,7 +2,12 @@
 readonly = (field.readonly and "disabled") or ""
 selected = field.get_value()
 if isinstance(selected, list):
-  raise TypeError("There can not be multiple selected values in a radio renderer!")
+  if len(selected) > 1:
+    raise TypeError("There can not be multiple selected values in a radio renderer!")
+  elif len(selected) == 0:
+    selected = None
+  else:
+    selected = selected[0]
 
   ## Check if the selection value is among the filtered options. If not the 
 filterd_values = [str(o[1]) for o in options if o[2]]
