@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: formbar 0.8.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-08-22 17:04+0200\n"
+"POT-Creation-Date: 2017-04-12 11:27+0200\n"
 "PO-Revision-Date: 2015-02-11 13:06+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -26,67 +26,87 @@ msgstr "Dieses Feld ist verpflichtend. Sie müssen einen Wert angeben."
 msgid "This field is desired. Please provide a value"
 msgstr "Dieses Feld ist erwünscht. Bitte geben Sie einen Wert an."
 
-#: formbar/converters.py:65 formbar/converters.py:68
+#: formbar/converters.py:68 formbar/converters.py:71
 #, python-format
 msgid "Value '%s' must be in format 'HH:MM:SS'"
 msgstr "Wert '%s' muss im Format 'HH:MM:SS' vorliegen"
 
-#: formbar/converters.py:71
+#: formbar/converters.py:74
 #, python-format
 msgid "Value '%s' is too large"
 msgstr "Wert '%s' ist zu groß"
 
-#: formbar/converters.py:102
+#: formbar/converters.py:105
 #, python-format
 msgid "%s is not a valid date format."
 msgstr "%s ist kein valides Format für ein Datum."
 
-#: formbar/converters.py:146
+#: formbar/converters.py:149
 #, python-format
 msgid "%s is not a valid datetime format."
 msgstr "%s ist kein valides Format für ein Datum/Zeit."
 
-#: formbar/converters.py:196
+#: formbar/converters.py:201
 #, python-format
 msgid "%s is not a string value."
 msgstr "%s is keine Zeichenkette."
 
-#: formbar/converters.py:216
+#: formbar/converters.py:221
 #, python-format
 msgid "%s is not a integer value."
 msgstr "%s ist kein Ganzzahlenwert."
 
-#: formbar/converters.py:229
+#: formbar/converters.py:234
 #, python-format
 msgid "%s is not a float value."
 msgstr "%s is kein Fließkommawert."
 
-#: formbar/converters.py:239
+#: formbar/converters.py:244
 #, python-format
 msgid "%s is not valid email address."
 msgstr "%s ist keine valide E-Mail-Adresse."
 
-#: formbar/converters.py:250
+#: formbar/converters.py:255
 #, python-format
 msgid "%s is not a boolean value."
 msgstr "%s ist kein boolescher Wert."
 
-#: formbar/converters.py:260
+#: formbar/converters.py:265
 #, python-format
 msgid "%s is not a file value."
 msgstr "%s ist keine Datei."
 
-#: formbar/form.py:927
+#: formbar/fields.py:846
 msgid "no selection"
 msgstr "keine Auswahl"
 
-#: formbar/renderer.py:184
-msgid "Submit"
+#: formbar/renderer.py:198
+msgid "Save and return to the parent item"
+msgstr "Speichern und zum Elterneintrag zurückkehren"
+
+#: formbar/renderer.py:199
+msgid "Save and return"
+msgstr "Speichern und zurück"
+
+#: formbar/renderer.py:204
+msgid "Save and stay on this page"
+msgstr "Speichern und auf dieser Seite bleiben"
+
+#: formbar/renderer.py:205
+msgid "Save"
 msgstr "Speichern"
 
-#: formbar/renderer.py:191
-msgid "Submit and proceed"
+#: formbar/renderer.py:212
+msgid "Save and proceed to the next page"
+msgstr "Speichern und zur nächsten Seite fortfahren"
+
+#: formbar/renderer.py:213
+msgid "Save and proceed"
 msgstr "Speichern und weiter"
+
+#: formbar/templates/filefield.mako:10
+msgid "Image Preview"
+msgstr "Bild Vorschau"
 
 #: formbar/templates/form.mako:8
 msgid "Outline"
@@ -121,4 +141,10 @@ msgstr "Zeichen verbleiben"
 
 #~ msgid "Reset"
 #~ msgstr "Zurücksetzen"
+
+#~ msgid "Submit"
+#~ msgstr "Speichern"
+
+#~ msgid "Submit and proceed"
+#~ msgstr "Speichern und weiter"
 

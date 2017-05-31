@@ -798,15 +798,7 @@ var formbar = function (form) {
      *
      */
     var getBrowserLanguage = function getBrowserLanguage() {
-        var lang = "en";
-        if (navigator.browserLanguage) {
-            lang = navigator.browserLanguage;
-        } else if (navigator.languages) {
-            lang = navigator.languages[0];
-        } else {
-            lang = navigator.language;
-        }
-        return lang;
+        return $('div.formbar-form form').attr('lang');
     };
 
     /**
@@ -816,11 +808,12 @@ var formbar = function (form) {
      *
      */
     var getDateFormat = function getDateFormat(browserLanguage) {
-        if (browserLanguage.search("de") > -1) {
-            return "dd.mm.yyyy"
-        } else {
-            return "yyyy-mm-dd"
+        if (browserLanguage !== undefined) {
+            if (browserLanguage.search("de") > -1) {
+                return "dd.mm.yyyy"
+            }
         }
+        return "yyyy-mm-dd"
     };
 
     /**
@@ -844,10 +837,24 @@ var formbar = function (form) {
      */
     var hideSubmitButtonOnInputlessPage = function (element) {
         var button = $('.formbar-form :submit');
-        if (element.find("input[type!='hidden'], select, textarea").filter(":visible").length > 0) {
-            button.show();
-        } else {
-            button.hide();
+        if (button.length) {
+            button.each( function(index, btn) {
+                btn.style.visibility = 'hidden';
+            });
+            var elements = $(element.selector + ' '
+                     + "input:not([type='hidden']):visible,"
+                     + "select:visible,"
+                     + "textarea:visible");
+            elements.each(function (indx, el){
+                if (!el.hasAttribute('no-dirtyable')){
+                    button.each( function(index, btn){
+                        btn.style.visibility = 'visible';
+                    });
+                    // first successful match means a submit button is needed,
+                    // thus abort the DOM traversal
+                    return false;
+                }
+            });
         }
     };
 
@@ -865,7 +872,9 @@ var formbar = function (form) {
         }
         if (lastpage == "true") {
             var button = $(".formbar-form button[value='nextpage']");
-            button.hide();
+            button.each( function (index, btn){
+                btn.style.visibility = 'hidden';
+            });
         }
     };
 

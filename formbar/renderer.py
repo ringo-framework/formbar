@@ -1,7 +1,6 @@
 import logging
 import difflib
 import xml.etree.ElementTree as ET
-from cgi import escape
 from webhelpers.html import literal, HTML
 
 from mako.lookup import TemplateLookup
@@ -150,6 +149,7 @@ class FormRenderer(Renderer):
         html.append(HTML.tag("form", _closed=False,
                              id=self._form._config.id,
                              role="form",
+                             lang=self._form._locale,
                              class_=self._form._config.css,
                              action=self._form._config.action,
                              method=self._form._config.method,
@@ -188,17 +188,31 @@ class FormRenderer(Renderer):
         # Render default buttons if no buttons have been defined for the
         # form.
         if len(self._form._config._buttons) == 0:
+            # Ringo specific logic. If there is a backurl parameter in
+            # the URL render and additional submit button to return to
+            # the backurl. The backurl is used in Ringo to define the
+            # target location to return to after the a successfull
+            # submit.
+            if self._form._request and "backurl" in self._form._request.params:
+                html.append(HTML.tag("button", type="submit",
+                                     name="_submit", value="return",
+                                     class_="btn btn-default hidden-print",
+                                     title=_('Save and return to the parent item'),
+                                     c=_('Save and return')))
+
             html.append(HTML.tag("button", type="submit",
                                  name="_submit", value="",
                                  class_="btn btn-default hidden-print",
-                                 c=_('Submit')))
+                                 title=_('Save and stay on this page'),
+                                 c=_('Save')))
             # If there is a next page than render and additional submit
             # button.
             if len(self._form.pages) > 1:
                 html.append(HTML.tag("button", type="submit",
                                      name="_submit", value="nextpage",
                                      class_="btn btn-default hidden-print",
-                                     c=_('Submit and proceed')))
+                                     title=_('Save and proceed to the next page'),
+                                     c=_('Save and proceed')))
         else:
             for b in self._form._config._buttons:
                 if b.attrib.get("ignore"):
@@ -207,8 +221,7 @@ class FormRenderer(Renderer):
                             type=b.attrib.get("type") or "submit",
                             name="_%s" % b.attrib.get("type") or "submit",
                             value=b.attrib.get("value") or "",
-                            class_=b.attrib.get("class")
-                            or "btn btn-default hidden-print"))
+                            class_=b.attrib.get("class") or "btn btn-default hidden-print"))
                 if b.attrib.get("icon"):
                     html.append(HTML.tag("i", class_=b.attrib.get("icon"),
                                          c=_(b.text)))
@@ -240,7 +253,6 @@ class FieldRenderer(Renderer):
         self._config = field._config.renderer
         self.translate = translate
         self.template = None
-        #self.values = self._get_template_values()
 
     def __getattr__(self, name):
         """Give access to the config values of the renderer"""
@@ -449,7 +461,7 @@ class TextareaFieldRenderer(FieldRenderer):
         self.template = template_lookup.get_template("textarea.mako")
 
     def nl2br(self, value=""):
-        return literal("<br />".join(escape(value).split("\n")))
+        return literal("<br />".join(value.split("\n")))
 
 
 class DateFieldRenderer(FieldRenderer):
