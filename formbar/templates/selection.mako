@@ -7,7 +7,7 @@ selected = [str(id) for id in value if id]
     ${field.get_value(expand=True) or "&nbsp;"}
   </div>
 % else:
-  <select class="form-control" id="${field.id}" name="${field.name}" size="${len(options)}">
+  <select class="form-control" id="${field.id}" name="${field.name}" size="${len(options)}" multiple>
     % for option in options:
       ## Depending if the options has passed the configured filter the
       ## option will be visible or hidden
