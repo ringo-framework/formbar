@@ -226,11 +226,11 @@ var inputFilter = function () {
      * 
      * @param {string} key
      * 
-     * results in true only for 0 - 9
+     * results in true only for 0 - 9 and -
      * 
      */
     var integer = function (key) {
-        return !(key.charCode !== 0 && (key.charCode < zero || key.charCode > nine));
+        return !(key.charCode !== 0 && key.charCode !== minus && (key.charCode < zero || key.charCode > nine));
     };
 
 
@@ -239,11 +239,11 @@ var inputFilter = function () {
      * 
      * @param {string} key 
      * 
-     * results in true only for 0 - 9 and .
+     * results in true only for 0 - 9 . and -
      *
      */
     var float = function (key) {
-        return !(key.charCode !== 0 && key.charCode !== point && (key.charCode < zero || key.charCode > nine));
+        return !(key.charCode !== 0 && key.charCode !== point && key.charCode !== minus && (key.charCode < zero || key.charCode > nine));
     };
 
     /**
