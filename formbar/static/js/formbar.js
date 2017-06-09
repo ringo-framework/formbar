@@ -703,10 +703,15 @@ var form = function (inputFilter, ruleEngine) {
      */
     var setStateForCurrentField = function (fieldName) {
         var element = formFields[fieldName];
-        if (!element.value.length && element.desired === "True") activateDesired(fieldName);
-        if (!element.value.length && element.required === "True") activateRequired(fieldName);
-        if (!!element.value.length && element.desired === "True") deactivateDesired(fieldName);
-        if (!!element.value.length && element.required === "True") deactivateRequired(fieldName);
+        var isEmpty = function(element){
+            var value = element.value;
+            if(Array.isArray(value)) return (value.length==1 && value[0]===""); //handle [""] case for empty selection
+            return !element.value.length;
+        };
+        if (isEmpty(element) && element.desired === "True") activateDesired(fieldName);
+        if (isEmpty(element) && element.required === "True") activateRequired(fieldName);
+        if (!isEmpty(element) && element.desired === "True") deactivateDesired(fieldName);
+        if (!isEmpty(element) && element.required === "True") deactivateRequired(fieldName);
     }
 
     /**
