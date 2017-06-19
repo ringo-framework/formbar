@@ -448,9 +448,9 @@ class DateField(Field):
             dateformat = "dd.MM.yyyy"
         else:
             dateformat = "yyyy-MM-dd"
-        if value:
+        if value and isinstance(value, datetime.date):
             return format_date(value, format=dateformat)
-        return None
+        return value
 
     def _to_python(self, value):
         from formbar.converters import to_date
