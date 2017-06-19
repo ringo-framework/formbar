@@ -297,7 +297,10 @@ class FieldRenderer(Renderer):
 
         #  TODO: Rendering diff between old an new value is broken. It
         #  is currently a fetaure not used in current ringo
-        #  applications. So we disable this function here temporarily.
+        #  applications. E.g the comparison of dates is wrong. The new
+        #  and oldvalues are in different represenations (depending on
+        #  the locale) even if the field which holds the values has
+        #  correct value. So we disable this function here temporarily.
         #  (ti) <2016-12-28 11:20>
         newvalue = oldvalue
 
