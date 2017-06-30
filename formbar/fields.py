@@ -810,6 +810,7 @@ class RelationField(CollectionField):
             #                 "available DB session.")
         super(RelationField, self).__init__(form, config, translate, sa_property)
 
+
     def _from_python(self, value):
         if isinstance(value, list):
             vl = []
@@ -895,6 +896,15 @@ class OnetomanyRelationField(RelationField):
 
 
 class ManytomanyRelationField(RelationField):
+
+    def __init__(self, form, config, translate, sa_property):
+        super(ManytomanyRelationField, self).__init__(form, config, translate, sa_property)
+
+        # Only set default value if the current value of the form is not
+        # "empty"
+        if (self.value is None or
+           (isinstance(self.value, list) and len(self.value) == 0)):
+            self._set_default_value()
 
     def _to_python(self, value):
         from formbar.converters import to_manytomany, to_integer_list

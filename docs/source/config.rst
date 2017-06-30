@@ -709,6 +709,7 @@ filter          Expression which must evaluate to True if the option shoul be sh
 align           Alignment of the checkboxes. Can be "vertical" or "horizontal". Defaults to "horizontal".
 sort            If set to "true" than the options will be alphabetically sorted. Defaults to no sorting.
 sortorder       If set to "desc" the sorting will be descending (reversed) order. Default is ascending sorting.
+selected        If set the renderer will select the n-th entry from the options (0 ist first, -1 is las, etc). The entry will only be seleced if the entity does **not** have a value or a default value. Default is to not select an entry.
 =============== ===========
 
 See filtering section of the :ref:`dropdown` renderer.
