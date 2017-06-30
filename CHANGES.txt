@@ -2,6 +2,8 @@
 =====
 - Added "selected" config attribute to the radio renderer to preselect an entry from
   the option by its index.
+- Added FormDataprovider. A Formdataprovider can be used to fill the form with
+  (dynamic) values and options.
 
 1.0.2
 =====
