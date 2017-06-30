@@ -738,6 +738,9 @@ class SelectionField(CollectionField):
         elif isinstance(user_defined_options, str):
             for option in self._form.merged_data.get(user_defined_options):
                 options.append((option[0], option[1], True))
+        elif self._form._item and hasattr(self._form._item, "get_options"):
+            for option in self._form._item.get_options(self.name):
+                options.append((option[0], option[1], True))
         return self.sort_options(options)
 
     def _from_python(self, value):
