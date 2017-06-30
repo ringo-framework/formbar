@@ -9,7 +9,8 @@ selected = field.get_value()
 if not selected and field.renderer.selected:
   selected_idx = int(field.renderer.selected)
   if len(options) >= abs(selected_idx):
-    selected = options[selected_idx][1]
+    selected_value = options[selected_idx][1]
+    selected = selected_value
 
 if isinstance(selected, list):
   if len(selected) > 1:
