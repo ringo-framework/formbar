@@ -1,3 +1,25 @@
+1.1.0
+=====
+- Added "selected" config attribute to the radio renderer to preselect an entry from
+  the option by its index.
+
+1.0.2
+=====
+Maintenance release.
+
+- Updated translations
+- Ringo specific: Added optimized option loading.
+
+1.0.1
+=====
+Bugfix release.
+
+- Added more supported datatypes (interval, text) for fields. Type has already
+  been supported but has not been detected properly.
+- Fixed setting default values.
+- Fixed some rendering issues.
+- Fixed detection of empty checkboxes ([""]) is JS code.
+
 1.0
 ===
 LARGE REFACTORING AND CODE CLEANUP.
