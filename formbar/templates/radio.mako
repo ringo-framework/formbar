@@ -1,6 +1,16 @@
 <%
 readonly = (field.readonly and "disabled") or ""
 selected = field.get_value()
+
+# Preselect an entry.
+# In case there is not already a selected value (eiter because the entity
+# actually does have a value or the default value is set) and the renderer is
+# configured to preselect an entry from the options.
+if not selected and field.renderer.selected:
+  selected_idx = int(field.renderer.selected)
+  if len(options) >= abs(selected_idx):
+    selected = options[selected_idx][1]
+
 if isinstance(selected, list):
   if len(selected) > 1:
     raise TypeError("There can not be multiple selected values in a radio renderer!")
@@ -22,7 +32,7 @@ else:
   ## option will be visible or hidden
   % if option[2]:
     <label class="radio-inline">
-      % if option[1] == selected:
+      % if str(option[1]) == str(selected):
         <input type="radio" id="${field.id}-${num}" datatype="${get_field_type(field)}" name="${field.name}" value="${option[1]}" checked="checked" ${readonly}/>
         ## Render a hidden field for selected readonly values to make sure the
         ## value is actually submitted.
