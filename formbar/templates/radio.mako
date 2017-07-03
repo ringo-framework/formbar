@@ -2,16 +2,6 @@
 readonly = (field.readonly and "disabled") or ""
 selected = field.get_value()
 
-# Preselect an entry.
-# In case there is not already a selected value (eiter because the entity
-# actually does have a value or the default value is set) and the renderer is
-# configured to preselect an entry from the options.
-if not selected and field.renderer.selected:
-  selected_idx = int(field.renderer.selected)
-  if len(options) >= abs(selected_idx):
-    selected_value = options[selected_idx][1]
-    selected = selected_value
-
 if isinstance(selected, list):
   if len(selected) > 1:
     raise TypeError("There can not be multiple selected values in a radio renderer!")
@@ -22,6 +12,17 @@ if isinstance(selected, list):
 
   ## Check if the selection value is among the filtered options. If not the 
 filterd_values = [str(o[1]) for o in options if o[2]]
+
+# Preselect an entry.
+# In case there is not already a selected value (eiter because the entity
+# actually does have a value or the default value is set) and the renderer is
+# configured to preselect an entry from the options.
+if not selected and field.renderer.selected:
+  selected_idx = int(field.renderer.selected)
+  if len(filterd_values) >= abs(selected_idx):
+    selected_value = filterd_values[selected_idx]
+    selected = selected_value
+
 if str(selected) in filterd_values:
   selected = str(selected)
 else:
