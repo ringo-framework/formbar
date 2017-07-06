@@ -201,7 +201,7 @@ class FormRenderer(Renderer):
                                      c=_('Save and return')))
 
             html.append(HTML.tag("button", type="submit",
-                                 name="_submit", value="",
+                                 name="_submit", value="stay",
                                  class_="btn btn-default hidden-print",
                                  title=_('Save and stay on this page'),
                                  c=_('Save')))
