@@ -19,7 +19,7 @@ filterd_values = [str(o[1]) for o in options if o[2]]
 # configured to preselect an entry from the options.
 if not selected and field.renderer.selected:
   selected_idx = int(field.renderer.selected)
-  if len(filterd_values) >= abs(selected_idx):
+  if 0 < len(filterd_values) >= abs(selected_idx):
     selected_value = filterd_values[selected_idx]
     selected = selected_value
 
