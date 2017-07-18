@@ -1,7 +1,19 @@
 1.1.0
 =====
-- Added "selected" config attribute to the radio renderer to preselect an entry from
-  the option by its index.
+Feature and bugfix release.
+
+New feature:
+- Added "selected" config attribute to the radio renderer to preselect an
+  entry from the option by its index.
+
+Bugfix:
+- Enable negativ value in integer and float fields.
+
+1.0.3
+=====
+Internal release only already includes most of the features from 1.1.0 but
+never has been released in the public.
+
 
 1.0.2
 =====
