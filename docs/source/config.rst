@@ -176,11 +176,10 @@ triggers    Flag which defines which type of message a the rule will trigger if 
 
 Validator
 ---------
-A validator defines an external validator. See :ref:`external_validator` for
-more details. Those validators are usally used if the validation become more
-complex or it is just not possible to express the rule with a :ref:`rule`
-You can define a validator in the form configuration in a similar way like
-defining rules for an entity::
+A validator defines an external validator. Those validators are usally
+used if the validation become more complex or it is just not possible to
+express the rule with a :ref:`rule` You can define a validator in the
+form configuration in a similar way like defining rules for an entity::
 
             <validator src="a.b.external_validator" msg="Error message"/>
 
@@ -190,6 +189,14 @@ Attribute   Description
 src         The *src* attribute is the modul path to the callable. The path is used to import the validator dynamically at runtime.
 msg         The message which is displayed if the evaluation of the validation fails.
 =========   ===========
+
+See :ref:`external_validator` for more details, how to write such a
+validator. The external validator will be called with the following
+params::
+
+    field   -> Name of the field the validator belongs to
+    data    -> Data of the form as a dictionary
+    context -> The current form instance. The form provides access to further resources like the request form._request or the current item form._item. See form model for more details.
 
 .. _help:
 
@@ -953,13 +960,14 @@ Write external validators
 =========================
 A external validator is a simple python callable of the following form::
 
-    def external_validator(field, data):
+    def external_validator(field, data, context=None):
         return 16 == data[field]
 
 The value 'data' is the converted value dictionary of the form and
 contains all values of the form. The value 'field' defines the name of
 the field for which this validation belongs to and also determines on
-which field the error message will be shown.
+which field the error message will be shown. The 'context' is optional
+and can be anything additional which is needed for the validation.
 
 The function should return True in case the validation succeeds or either
 return False or raise an exception in case of validation errors. If the method
