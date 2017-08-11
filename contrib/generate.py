@@ -39,6 +39,17 @@ def print_fieldnames(config, args):
     else:
         print "\n".join(out)
 
+
+def print_fields(config, args):
+    """Print infos on fields in CSV"""
+    fields = [field for field in _get_fields(config) if field.type is not "info" and filter_tag(field, args.tags)]
+    print "Name,Label,Number,Typ,Required,Desired".format(field.name, field.label)
+    for field in fields:
+        if (not args.filtertype
+            or field.type == args.filtertype):
+            print '"{}","{}","{}","{}",{},{}'.format(field.name, field.label, field.number, field.type, field.required, field.desired)
+
+
 def print_rules(config, args):
     elements = []
     elements.extend(config.get_elements('rules'))
@@ -96,6 +107,8 @@ def main(args):
         print_model(config_tree, args)
     elif args.action == "fieldnames":
         print_fieldnames(config_tree, args)
+    elif args.action == "fields":
+        print_fields(config_tree, args)
     elif args.action == "rules":
         print_rules(config_tree, args)
     elif args.action == "conditionals":
@@ -106,7 +119,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate various informations from a form configuration file')
-    parser.add_argument('action', choices=['model', 'fieldnames', 'rules', 'conditionals'], help='Output to generate')
+    parser.add_argument('action', choices=['model', 'fields', 'fieldnames', 'rules', 'conditionals'], help='Output to generate')
     parser.add_argument('config', metavar='config', type=file, help='A form configuration file')
     parser.add_argument('--filter-type', help='Only show fields with the given type.', dest='filtertype', default="")
     parser.add_argument('--print-type', dest='printtype', action="store_true")
