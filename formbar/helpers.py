@@ -3,7 +3,9 @@ from dateutil import tz
 from formbar import static_dir
 
 def get_css_files():
-    files = ['css/datepicker3.css', 'css/formbar.css']
+    files = ['css/datepicker3.css',
+             'css/bootstrap-datetimepicker.min.css',
+             'css/formbar.css']
     css = []
     values = {}
     for filename in files:
@@ -16,6 +18,7 @@ def get_css_files():
 def get_js_files():
     files = ['js/bootstrap-datepicker.js',
              'js/locales/bootstrap-datepicker.de.js',
+             'js/bootstrap-datetimepicker.js',
              'js/formbar.js', 'js/ace/ace.js',
              'js/ace/ext-language_tools.js', 'js/ace/mode-xml.js',
              'js/ace/snippets/xml.js', 'js/ace/snippets/text.js']

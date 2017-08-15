@@ -823,6 +823,21 @@ var formbar = function (form) {
 
     /**
      * @function 
+     * determines the datetimeformat based on te browserlanguage. Only german and
+     * ISO 8601 is supported.
+     *
+     */
+    var getDateTimeFormat = function getDateTimeFormat(browserLanguage) {
+        if (browserLanguage !== undefined) {
+            if (browserLanguage.search("de") > -1) {
+                return "DD.MM.YYYY HH:mm:ss"
+            }
+        }
+        return "YYYY-MM-DD HH:mm:ss"
+    };
+
+    /**
+     * @function 
      * handles listgroup-items
      * 
      * @param {Object} - the event-Object
@@ -898,6 +913,21 @@ var formbar = function (form) {
             todayBtn: "linked",
             showOnFocus: false,
             autoclose: true
+        });
+    };
+
+    /**
+     * @function
+     * 
+     * handles initialization of datetime-Picker
+     *
+     */
+    var initDateTimePicker = function () {
+        var browserLanguage = getBrowserLanguage();
+        var dateFormat = getDateTimeFormat(browserLanguage);
+        $('.formbar-datetimepicker').datetimepicker({
+            locale: browserLanguage,
+            format: dateFormat
         });
     };
 
@@ -981,6 +1011,7 @@ var formbar = function (form) {
         $('div.formbar-outline a').click(navigate);
         $('div.formbar-form form').not(".disable-double-submit-prevention").preventDoubleSubmission();
         initDatePicker();
+        initDateTimePicker();
         initSubmit();
         form.init();
     };
