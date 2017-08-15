@@ -2,9 +2,13 @@
 =====
 Feature Release
 
-New feature
+Improvements
+- Fixed typos in documentation.
 
+New feature
 - Added datetime picker widget. See https://github.com/Eonasdan/bootstrap-datetimepicker
+- Added new "fields" command to generate.py command (in contrib) to export the
+  entities of a given form as CSV.
 
 1.1.0
 =====
