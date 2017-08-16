@@ -4,6 +4,7 @@ Feature Release
 
 Improvements
 - Fixed typos in documentation.
+- Added optional timezone parameter to Form initialisation.
 
 New feature
 - Added datetime picker widget. See https://github.com/Eonasdan/bootstrap-datetimepicker

@@ -464,7 +464,8 @@ class DateTimeField(Field):
         if not value:
             return ""
         locale = self._form._locale
-        value = get_local_datetime(value)
+        timezone = self._form._timezone
+        value = get_local_datetime(value, timezone)
         if locale == "de":
             dateformat = "dd.MM.yyyy HH:mm:ss"
         else:
@@ -474,7 +475,8 @@ class DateTimeField(Field):
     def _to_python(self, value):
         from formbar.converters import to_datetime
         locale = self._form._locale
-        return to_datetime(value, locale)
+        timezone = self._form._timezone
+        return to_datetime(value, locale, timezone)
 
 
 class TimedeltaField(Field):

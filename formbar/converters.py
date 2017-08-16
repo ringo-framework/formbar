@@ -113,7 +113,7 @@ def _split_time(value):
     return int(h), int(M), int(s)
 
 
-def to_datetime(value, locale=None):
+def to_datetime(value, locale=None, timezone=None):
     """Will return a python datetime instance for the given value. The
     format of the value depends on the locale setting.
 
@@ -142,7 +142,7 @@ def to_datetime(value, locale=None):
         # datetimes if the date column isn't prepared. As
         # storing dates in UTC is a good idea anyway this is the
         # default.
-        converted = get_utc_datetime(converted)
+        converted = get_utc_datetime(converted, timezone)
         converted = converted.replace(tzinfo=None)
         return converted
     except:
@@ -312,6 +312,7 @@ def from_python(field, value):
 
     """
     locale = field._form._locale
+    timezone = field._form._timezone
     try:
         serialized = value
         if value is None:
@@ -330,7 +331,7 @@ def from_python(field, value):
                 elif isinstance(field, TimedeltaField):
                     serialized = from_timedelta(value)
                 elif isinstance(field, DateTimeField):
-                    value = get_local_datetime(value)
+                    value = get_local_datetime(value, timezone)
                     if locale == "de":
                         dateformat = "dd.MM.yyyy HH:mm:ss"
                     else:
