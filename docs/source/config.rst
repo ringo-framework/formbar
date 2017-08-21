@@ -69,7 +69,8 @@ id            Used to refer to this entity in the form. Requiered. Must be uniqu
 name          Used as name attribute in the rendered field. Defines the name of this attribute in the model. Name of the field must only contain characters which are valid in context of your database. So better stay with [a-zA-Z0-9_]
 label         The field will be rendered with this label.
 number        A small number which is rendered in front of the label.
-type          Defines the python datatype which will be used on deserialisation of the submitted value. Defines the datatype of the model. Possible values are ``string`` (default), ``text``, ``integer``, ``float``, ``date``, ``datetime``, ``email``, ``boolean``, ``time``, ``interval``.  css         Value will be rendered as class attribute in the rendered field.
+type          Defines the python datatype which will be used on deserialisation of the submitted value. Defines the datatype of the model. Possible values are ``string`` (default), ``text``, ``integer``, ``float``, ``date``, ``datetime``, ``email``, ``boolean``, ``time``, ``interval``, ``currency``.
+css           Value will be rendered as class attribute in the rendered field.
 expr          Expression which is used to calculate the value of the field.
 value         Default value of the field. Supports expressions. The default value might get overwritten on rendering.
 placeholder   Custom placeholder that overrides the default of a field. For now only usable for ``interval``.
@@ -804,6 +805,14 @@ labels, helptexts or error messages will be renderer. The hidden field will
 also take care on relations for SQLAlchemy mapped items::
 
         <renderer type="hidden"/>
+
+Currency
+--------
+The currency renderer renderer is used to render a currency field for
+the entity. The icon default to Euro (€), but can be changed by using a
+differend icon from the glyphicons icon set.::
+
+        <renderer type="currency" icon="glyphicons-euro"/>
 
 Html
 ----
