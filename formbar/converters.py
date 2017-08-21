@@ -5,9 +5,11 @@ python data type name. Convertes which serialize the value from python
 value into a string are named `from_<datatype>`."""
 
 import datetime
+import decimal
 import logging
 import re
 from datetime import timedelta
+from babel.numbers import format_currency, parse_decimal
 from babel.dates import format_datetime, format_date
 from formbar.helpers import get_local_datetime, get_utc_datetime
 from formbar.fields import TimeField, TimedeltaField, DateTimeField, DateField
@@ -233,6 +235,24 @@ def to_float(value):
     except ValueError:
         msg = _("%s is not a float value.")
         raise DeserializeException(msg, value)
+
+
+def to_currency(value, locale):
+    #  FIXME: For some reasone this method is called with a float, but a
+    #  string is expected. So make sure it is a string. (ti) <2017-08-21 13:50> 
+    value = str(value)
+    return parse_decimal(value, locale)
+    ##try:
+    ##except ValueError:
+    ##    msg = _("%s is not a currency value.")
+    ##    raise DeserializeException(msg, value)
+
+
+def from_currency(value, locale):
+    if value is None:
+        return ""
+    currency = format_currency(decimal.Decimal(value), "EUR", "#,##0.00", locale=locale)
+    return currency
 
 
 def to_email(value):

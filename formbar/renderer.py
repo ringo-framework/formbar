@@ -9,7 +9,8 @@ from formbar.rules import Rule
 from formbar.fields import (
         TimedeltaField, ManytooneRelationField,
         ManytomanyRelationField, OnetomanyRelationField, EmailField,
-        DateField, DateTimeField, FileField, TimeField, rules_to_string
+        DateField, DateTimeField, FileField, TimeField, CurrencyField,
+        rules_to_string
 )
 
 
@@ -71,6 +72,8 @@ def get_renderer(field, translate):
             return TextoptionFieldRenderer(field, translate)
         elif renderer.render_type == "formbareditor":
             return FormbarEditorRenderer(field, translate)
+        elif renderer.render_type == "currency":
+            return CurrencyFieldRenderer(field, translate)
     else:
         # Try to determine the datatype of the field and set approriate
         # renderer.
@@ -92,6 +95,8 @@ def get_renderer(field, translate):
             return TimeFieldRenderer(field, translate)
         if isinstance(field, EmailField):
             return EmailFieldRenderer(field, translate)
+        if isinstance(field, CurrencyField):
+            return CurrencyFieldRenderer(field, translate)
     return TextFieldRenderer(field, translate)
 
 
@@ -447,6 +452,14 @@ class TimeFieldRenderer(FieldRenderer):
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("timefield.mako")
+
+
+class CurrencyFieldRenderer(FieldRenderer):
+    """A Renderer to render simple currency fields"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("currency.mako")
 
 
 class EmailFieldRenderer(FieldRenderer):

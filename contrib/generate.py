@@ -79,6 +79,7 @@ def print_model(config, args):
             "date": "sa.Date",
             "datetime": "sa.DateTime",
             "interval": "sa.Interval",
+            "currency": "sa.Float",
             "float": "sa.Float",
             "number": "sa.Numeric",
             "decimal": "sa.Decimal",
