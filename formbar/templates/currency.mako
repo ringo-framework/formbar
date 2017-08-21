@@ -1,6 +1,6 @@
 % if field.readonly:
   <div class="readonlyfield" name="${field.name}">
-    ${field.get_value("")}
+    ${field.get_value("")}<span class="glyphicon ${renderer.icon or 'glyphicon-euro'}"></span>
   </div>
 % else:
   <div class="input-group">
