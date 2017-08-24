@@ -69,7 +69,8 @@ id            Used to refer to this entity in the form. Requiered. Must be uniqu
 name          Used as name attribute in the rendered field. Defines the name of this attribute in the model. Name of the field must only contain characters which are valid in context of your database. So better stay with [a-zA-Z0-9_]
 label         The field will be rendered with this label.
 number        A small number which is rendered in front of the label.
-type          Defines the python datatype which will be used on deserialisation of the submitted value. Defines the datatype of the model. Possible values are ``string`` (default), ``text``, ``integer``, ``float``, ``date``, ``datetime``, ``email``, ``boolean``, ``time``, ``interval``.  css         Value will be rendered as class attribute in the rendered field.
+type          Defines the python datatype which will be used on deserialisation of the submitted value. Defines the datatype of the model. Possible values are ``string`` (default), ``text``, ``integer``, ``float``, ``date``, ``datetime``, ``email``, ``boolean``, ``time``, ``interval``, ``currency``.
+css           Value will be rendered as class attribute in the rendered field.
 expr          Expression which is used to calculate the value of the field.
 value         Default value of the field. Supports expressions. The default value might get overwritten on rendering.
 placeholder   Custom placeholder that overrides the default of a field. For now only usable for ``interval``.
@@ -176,11 +177,10 @@ triggers    Flag which defines which type of message a the rule will trigger if 
 
 Validator
 ---------
-A validator defines an external validator. See :ref:`external_validator` for
-more details. Those validators are usally used if the validation become more
-complex or it is just not possible to express the rule with a :ref:`rule`
-You can define a validator in the form configuration in a similar way like
-defining rules for an entity::
+A validator defines an external validator. Those validators are usally
+used if the validation become more complex or it is just not possible to
+express the rule with a :ref:`rule` You can define a validator in the
+form configuration in a similar way like defining rules for an entity::
 
             <validator src="a.b.external_validator" msg="Error message"/>
 
@@ -190,6 +190,14 @@ Attribute   Description
 src         The *src* attribute is the modul path to the callable. The path is used to import the validator dynamically at runtime.
 msg         The message which is displayed if the evaluation of the validation fails.
 =========   ===========
+
+See :ref:`external_validator` for more details, how to write such a
+validator. The external validator will be called with the following
+params::
+
+    field   -> Name of the field the validator belongs to
+    data    -> Data of the form as a dictionary
+    context -> The current form instance. The form provides access to further resources like the request form._request or the current item form._item. See form model for more details.
 
 .. _help:
 
@@ -798,6 +806,14 @@ also take care on relations for SQLAlchemy mapped items::
 
         <renderer type="hidden"/>
 
+Currency
+--------
+The currency renderer renderer is used to render a currency field for
+the entity. The icon default to Euro (€), but can be changed by using a
+differend icon from the glyphicons icon set.::
+
+        <renderer type="currency" icon="glyphicons-euro"/>
+
 Html
 ----
 The html renderer is used to render custom html code. This is usefull if you
@@ -953,13 +969,14 @@ Write external validators
 =========================
 A external validator is a simple python callable of the following form::
 
-    def external_validator(field, data):
+    def external_validator(field, data, context=None):
         return 16 == data[field]
 
 The value 'data' is the converted value dictionary of the form and
 contains all values of the form. The value 'field' defines the name of
 the field for which this validation belongs to and also determines on
-which field the error message will be shown.
+which field the error message will be shown. The 'context' is optional
+and can be anything additional which is needed for the validation.
 
 The function should return True in case the validation succeeds or either
 return False or raise an exception in case of validation errors. If the method

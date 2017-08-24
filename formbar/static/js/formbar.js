@@ -216,6 +216,7 @@ var inputFilter = function () {
     var zero = "0".charCodeAt(0);
     var nine = "9".charCodeAt(0);
     var point = ".".charCodeAt(0);
+    var comma = ",".charCodeAt(0);
     var minus = "-".charCodeAt(0);
     var slash = "/".charCodeAt(0);
     var column = ":".charCodeAt(0);
@@ -251,6 +252,18 @@ var inputFilter = function () {
      * 
      * @param {string} key 
      * 
+     * results in true only for 0 - 9 . and -
+     *
+     */
+    var currency = function (key) {
+        return !(key.charCode !== 0 && key.charCode !== comma && key.charCode !== point && key.charCode !== minus && (key.charCode < zero || key.charCode > nine));
+    };
+
+    /**
+     * @function
+     * 
+     * @param {string} key 
+     * 
      * results in true only for 0 - 9, . and /
      *
      */
@@ -274,7 +287,8 @@ var inputFilter = function () {
         integer: integer,
         float: float,
         date: date,
-        datetime: datetime
+        datetime: datetime,
+        currency: currency
     };
 } ();
 
@@ -403,6 +417,7 @@ var form = function (inputFilter, ruleEngine) {
         $('div.formbar-form input.float').keypress(inputFilter.float);
         $('div.formbar-form input.date').keypress(inputFilter.date);
         $('div.formbar-form input.datetime').keypress(inputFilter.datetime);
+        $('div.formbar-form input.currency').keypress(inputFilter.currency);
     };
 
 
@@ -823,6 +838,21 @@ var formbar = function (form) {
 
     /**
      * @function 
+     * determines the datetimeformat based on te browserlanguage. Only german and
+     * ISO 8601 is supported.
+     *
+     */
+    var getDateTimeFormat = function getDateTimeFormat(browserLanguage) {
+        if (browserLanguage !== undefined) {
+            if (browserLanguage.search("de") > -1) {
+                return "DD.MM.YYYY HH:mm:ss"
+            }
+        }
+        return "YYYY-MM-DD HH:mm:ss"
+    };
+
+    /**
+     * @function 
      * handles listgroup-items
      * 
      * @param {Object} - the event-Object
@@ -898,6 +928,21 @@ var formbar = function (form) {
             todayBtn: "linked",
             showOnFocus: false,
             autoclose: true
+        });
+    };
+
+    /**
+     * @function
+     * 
+     * handles initialization of datetime-Picker
+     *
+     */
+    var initDateTimePicker = function () {
+        var browserLanguage = getBrowserLanguage();
+        var dateFormat = getDateTimeFormat(browserLanguage);
+        $('.formbar-datetimepicker').datetimepicker({
+            locale: browserLanguage,
+            format: dateFormat
         });
     };
 
@@ -981,6 +1026,7 @@ var formbar = function (form) {
         $('div.formbar-outline a').click(navigate);
         $('div.formbar-form form').not(".disable-double-submit-prevention").preventDoubleSubmission();
         initDatePicker();
+        initDateTimePicker();
         initSubmit();
         form.init();
     };

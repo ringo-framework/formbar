@@ -171,7 +171,7 @@ class Form(object):
     def __init__(self, config, item=None, dbsession=None, translate=None,
                  change_page_callback={}, renderers={}, request=None,
                  csrf_token=None, eval_url=None, url_prefix="", locale=None,
-                 values=None):
+                 values=None, timezone=None):
         """Initialize the form with ``Form`` configuration instance and
         optional an SQLAlchemy mapped object.
 
@@ -202,6 +202,8 @@ class Form(object):
         display of the date and number functions.
         :values: Dictionary with values to be prefilled/overwritten in
                  the rendered form.
+        :timezone: String of the timezone of the form. E.g.
+        Europe/Berlin. Used for proper display of the datetime.
         """
         self._config = config
         self._item = item
@@ -217,6 +219,8 @@ class Form(object):
             self._locale = locale
         else:
             self._locale = "en"
+
+        self._timezone = timezone
 
         if translate:
             self._translate = translate

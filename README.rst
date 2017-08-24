@@ -12,7 +12,7 @@ Formbar is the German word for "shapeable" and should emphasise the
 character of formbar which hopefully makes shaping your forms more easy.
 
 In contrast to many other form libraries forms with formbar are configured in XML
-files to separate the form definition form the implementation and handle it as
+files to separate the form definition from the implementation and handle it as
 configuration.
 
 Formbar is production ready and already used in applications with large forms.
@@ -23,7 +23,7 @@ Formbar is Free Software and licensed under GPL version >= 2.
 
 Documentation
 -------------
-Online documentation can be found `formbar.readthedocs.org <https://formbar.readthedocs.org>`_
+Online documentation can be found at `formbar.readthedocs.org <https://formbar.readthedocs.org>`_
 
 Features
 --------

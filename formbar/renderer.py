@@ -9,7 +9,8 @@ from formbar.rules import Rule
 from formbar.fields import (
         TimedeltaField, ManytooneRelationField,
         ManytomanyRelationField, OnetomanyRelationField, EmailField,
-        DateField, DateTimeField, FileField, TimeField, rules_to_string
+        DateField, DateTimeField, FileField, TimeField, CurrencyField,
+        rules_to_string
 )
 
 
@@ -71,6 +72,8 @@ def get_renderer(field, translate):
             return TextoptionFieldRenderer(field, translate)
         elif renderer.render_type == "formbareditor":
             return FormbarEditorRenderer(field, translate)
+        elif renderer.render_type == "currency":
+            return CurrencyFieldRenderer(field, translate)
     else:
         # Try to determine the datatype of the field and set approriate
         # renderer.
@@ -92,6 +95,8 @@ def get_renderer(field, translate):
             return TimeFieldRenderer(field, translate)
         if isinstance(field, EmailField):
             return EmailFieldRenderer(field, translate)
+        if isinstance(field, CurrencyField):
+            return CurrencyFieldRenderer(field, translate)
     return TextFieldRenderer(field, translate)
 
 
@@ -189,8 +194,10 @@ class FormRenderer(Renderer):
         # form.
         if len(self._form._config._buttons) == 0:
             # Ringo specific logic. If there is a backurl parameter in
-            # the URL render and additional submit button to return to
-            # the backurl. The backurl is used in Ringo to define the
+            # the URL we will render additional submit buttons with
+            # special values (return, stay) to indicate if the user want
+            # to return to the previous page or wants to stay in the
+            # current form. The backurl is used in Ringo to define the
             # target location to return to after the a successfull
             # submit.
             if self._form._request and "backurl" in self._form._request.params:
@@ -200,11 +207,18 @@ class FormRenderer(Renderer):
                                      title=_('Save and return to the parent item'),
                                      c=_('Save and return')))
 
-            html.append(HTML.tag("button", type="submit",
-                                 name="_submit", value="",
-                                 class_="btn btn-default hidden-print",
-                                 title=_('Save and stay on this page'),
-                                 c=_('Save')))
+                html.append(HTML.tag("button", type="submit",
+                                     name="_submit", value="stay",
+                                     class_="btn btn-default hidden-print",
+                                     title=_('Save and stay on this page'),
+                                     c=_('Save')))
+            else:
+                # Default button, Set no value for submit.
+                html.append(HTML.tag("button", type="submit",
+                                     name="_submit", value="",
+                                     class_="btn btn-default hidden-print",
+                                     title=_('Save and stay on this page'),
+                                     c=_('Save')))
             # If there is a next page than render and additional submit
             # button.
             if len(self._form.pages) > 1:
@@ -438,6 +452,14 @@ class TimeFieldRenderer(FieldRenderer):
     def __init__(self, field, translate):
         FieldRenderer.__init__(self, field, translate)
         self.template = template_lookup.get_template("timefield.mako")
+
+
+class CurrencyFieldRenderer(FieldRenderer):
+    """A Renderer to render simple currency fields"""
+
+    def __init__(self, field, translate):
+        FieldRenderer.__init__(self, field, translate)
+        self.template = template_lookup.get_template("currency.mako")
 
 
 class EmailFieldRenderer(FieldRenderer):

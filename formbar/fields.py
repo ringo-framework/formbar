@@ -79,6 +79,8 @@ class FieldFactory(object):
             dtype = "string"
         if dtype == "interval":
             dtype = "datetime"
+        if dtype == "currency":
+            dtype = "float"
         if dtype == "text" and sa_dtype == "string":
             dtype = "string"
         if sa_dtype != dtype and (sa_dtype is not None and dtype != "string"):
@@ -127,6 +129,7 @@ class FieldFactory(object):
             "text": self._create_string,
             "integer": self._create_integer,
             "float": self._create_float,
+            "currency": self._create_currency,
             "date": self._create_date,
             "datetime": self._create_datetime,
             "interval": self._create_timedelta,
@@ -166,6 +169,9 @@ class FieldFactory(object):
 
     def _create_float(self, fieldconfig, sa_property):
         return FloatField(self.form, fieldconfig, self.translate, sa_property)
+
+    def _create_currency(self, fieldconfig, sa_property):
+        return CurrencyField(self.form, fieldconfig, self.translate, sa_property)
 
     def _create_date(self, fieldconfig, sa_property):
         return DateField(self.form, fieldconfig, self.translate, sa_property)
@@ -432,6 +438,19 @@ class FloatField(Field):
         return to_float(value)
 
 
+class CurrencyField(Field):
+
+    def _to_python(self, value):
+        from formbar.converters import to_currency
+        locale = self._form._locale
+        return to_currency(value, locale)
+
+    def _from_python(self, value):
+        from formbar.converters import from_currency
+        locale = self._form._locale
+        return from_currency(value, locale)
+
+
 class BooleanField(Field):
 
     def _to_python(self, value):
@@ -464,7 +483,8 @@ class DateTimeField(Field):
         if not value:
             return ""
         locale = self._form._locale
-        value = get_local_datetime(value)
+        timezone = self._form._timezone
+        value = get_local_datetime(value, timezone)
         if locale == "de":
             dateformat = "dd.MM.yyyy HH:mm:ss"
         else:
@@ -474,7 +494,8 @@ class DateTimeField(Field):
     def _to_python(self, value):
         from formbar.converters import to_datetime
         locale = self._form._locale
-        return to_datetime(value, locale)
+        timezone = self._form._timezone
+        return to_datetime(value, locale, timezone)
 
 
 class TimedeltaField(Field):

@@ -1,9 +1,34 @@
-1.1.0
+1.2.0
 =====
-- Added "selected" config attribute to the radio renderer to preselect an entry from
-  the option by its index.
+Feature Release
+
+Improvements
+- Fixed typos in documentation.
+- Added optional timezone parameter to Form initialisation.
+
+New feature
 - Added FormDataprovider. A Formdataprovider can be used to fill the form with
   (dynamic) values and options.
+- Added datetime picker widget. See https://github.com/Eonasdan/bootstrap-datetimepicker
+- Added currency widget.
+- Added new "fields" command to generate.py command (in contrib) to export the
+  entities of a given form as CSV.
+
+1.1.0
+=====
+Feature and bugfix release.
+
+New feature:
+- Added "selected" config attribute to the radio renderer to preselect an
+  entry from the option by its index.
+
+Bugfix:
+- Enable negativ value in integer and float fields.
+
+1.0.3
+=====
+Internal release only already includes most of the features from 1.1.0 but
+never has been released in the public.
 
 1.0.2
 =====
