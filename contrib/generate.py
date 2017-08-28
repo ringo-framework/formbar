@@ -59,8 +59,14 @@ def _render_rules(field):
         out.append(u"{},{},{}".format(r._expression, r.msg, r.triggers))
     return u" | ".join(out)
 
-def _render_conditions(field):
-    return ""
+def _render_conditions(config, field):
+    out = []
+    for cond in config.get_elements('if'):
+        for cond_field in cond.findall('field'):
+            if cond_field.attrib.get("ref") == field.id:
+                out.append(cond.attrib.get("expr"))
+    return u" | ".join(out)
+
 
 def print_fields(config, args):
     """Print infos on fields in CSV"""
@@ -82,7 +88,7 @@ def print_fields(config, args):
                 _render_renderer(field),
                 _render_options(field.options),
                 _render_rules(field),
-                _render_conditions(field)
+                _render_conditions(config, field)
             )
         )
     if args.out:
