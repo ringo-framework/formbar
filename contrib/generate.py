@@ -40,16 +40,19 @@ def print_fieldnames(config, args):
     else:
         print "\n".join(out)
 
+
 def _render_options(options):
     out = []
     for o in options:
         out.append(u"{}) {}".format(o[1], o[0]))
-    return u' | '.join(out)
+    return u"\n".join(out)
+
 
 def _render_renderer(field):
     if field.renderer:
         return field.renderer.type
     return ""
+
 
 def _render_rules(field):
     out = []
@@ -57,7 +60,8 @@ def _render_rules(field):
         if r.required or r.desired:
             continue
         out.append(u"{},{},{}".format(r._expression, r.msg, r.triggers))
-    return u" | ".join(out)
+    return u"\n".join(out)
+
 
 def _render_conditions(config, field):
     out = []
@@ -65,7 +69,7 @@ def _render_conditions(config, field):
         for cond_field in cond.findall('field'):
             if cond_field.attrib.get("ref") == field.id:
                 out.append(cond.attrib.get("expr"))
-    return u" | ".join(out)
+    return u"\n".join(out)
 
 
 def print_fields(config, args):
