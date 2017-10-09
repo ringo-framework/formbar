@@ -75,12 +75,12 @@ class ValidationException(Exception):
 
 
 class FormDataprovider(object):
-    """Dummy class which can be used to provided dynamic data to the
+    """Dummy class which can be used to provide dynamic data to the
     form. It can be provided as item on the form init to provide
     dynamically loaded options and values.
 
     As said the dataprovider can be user to provide `options` and `values`.
-    Both are provided by defining propertys.
+    Both are provided by defining properties.
 
     1. Value
     The function should simply return the pythonic value of the field:
