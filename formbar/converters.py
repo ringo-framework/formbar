@@ -208,7 +208,7 @@ def to_integer(value):
     """Converts a given string value into a 4 byte integer value. If
     the given value is larger the a 4 byte integer a OverflowError is
     raised."""
-    if value == "":
+    if value == "" or value is None:
         return None
     try:
         value = int(value)

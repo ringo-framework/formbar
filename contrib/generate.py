@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import logging
 from formbar.config import Config, Field, parse
 import sys, argparse
@@ -40,14 +41,64 @@ def print_fieldnames(config, args):
         print "\n".join(out)
 
 
+def _render_options(options):
+    out = []
+    for o in options:
+        out.append(u"{}) {}".format(o[1], o[0]))
+    return u"\n".join(out)
+
+
+def _render_renderer(field):
+    if field.renderer:
+        return field.renderer.type
+    return ""
+
+
+def _render_rules(field):
+    out = []
+    for r in field.get_rules():
+        if r.required or r.desired:
+            continue
+        out.append(u"{},{},{}".format(r._expression, r.msg, r.triggers))
+    return u"\n".join(out)
+
+
+def _render_conditions(config, field):
+    out = []
+    for cond in config.get_elements('if'):
+        for cond_field in cond.findall('field'):
+            if cond_field.attrib.get("ref") == field.id:
+                out.append(cond.attrib.get("expr"))
+    return u"\n".join(out)
+
+
 def print_fields(config, args):
     """Print infos on fields in CSV"""
     fields = [field for field in _get_fields(config) if field.type is not "info" and filter_tag(field, args.tags)]
-    print "Name,Label,Number,Typ,Required,Desired".format(field.name, field.label)
+    out = []
+    out.append('"ID","Name","Label","Number","Typ","Required","Desired","Help","Renderer","Options","Rules","Conditions","Comment"')
     for field in fields:
         if (not args.filtertype
             or field.type == args.filtertype):
-            print '"{}","{}","{}","{}",{},{}'.format(field.name, field.label, field.number, field.type, field.required, field.desired)
+            out.append(u'"{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}",""'.format(
+                field.id,
+                field.name,
+                field.label,
+                field.number,
+                field.type or "string",
+                field.required,
+                field.desired,
+                field.help or "",
+                _render_renderer(field),
+                _render_options(field.options),
+                _render_rules(field),
+                _render_conditions(config, field)
+            )
+        )
+    if args.out:
+        args.out.write("\n".join(out).encode("UTF8"))
+    else:
+        print "\n".join(out)
 
 
 def print_rules(config, args):
@@ -126,6 +177,7 @@ if __name__ == '__main__':
     parser.add_argument('--print-type', dest='printtype', action="store_true")
     parser.add_argument('--tags', metavar='tags', help='Only choose fields with given tags. If empty all fields are returned.', default="")
     parser.add_argument('--aslist', dest='aslist', action="store_true")
+    parser.add_argument('--out', metavar='out', type=argparse.FileType('w'), help='Output')
     args = parser.parse_args()
     main(args)
     sys.exit(0)

@@ -664,6 +664,7 @@ class Field(Config):
             expr = "bool($%s)" % self.name
             mode = "pre"
             rule = Rule(expr, required_msg, mode)
+            rule.required = True
             rules.append(rule)
 
     def desired_rule(self, rules):
@@ -672,6 +673,7 @@ class Field(Config):
             mode = "pre"
             triggers = "warning"
             rule = Rule(expr, desired_msg, mode, triggers)
+            rule.desired = True
             rules.append(rule)
 
     def get_rules(self):

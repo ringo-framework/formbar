@@ -58,7 +58,14 @@
     % elif child.tag == "page":
       ${self.render_outline_element(form, child)}
     % elif child.tag == "if" and child[0].tag == "page" and child.attrib.get("static") != "true":
-      <div id="${id(child)}" class="formbar-conditional ${child.attrib.get('type')}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
+      <% 
+        is_active = Rule(child.attrib.get("expr")).evaluate(form.merged_data) 
+        if is_active:
+          css_class = "active"
+        else:
+          css_class = "inactive {} {}".format(child.attrib.get('type'), '' if is_readonly else 'hidden')
+      %>
+      <div id="${id(child)}" class="formbar-conditional ${css_class}" reset-value="${child.attrib.get('reset-value', 'false')}" expr="${child.attrib.get('expr')}">
     % endif
     % if child.attrib.get("static") != "true" or Rule(child.attrib.get("expr")).evaluate(form.merged_data):
       ${self.render_recursive_outline(form, child)}
