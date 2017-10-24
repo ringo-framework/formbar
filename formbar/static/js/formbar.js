@@ -124,11 +124,15 @@ var ruleEngine = function () {
             case 'intselection':
                 // "" in Checkboxes is a hack to simulate an empty
                 // selection. For rule evaluation we can/must remove it.
-                var i = currentValue.value.indexOf("");
-                if(i != -1) {
-                    currentValue.value.splice(i, 1);
+                if (Array.isArray(currentValue.value)) {
+                    var i = currentValue.value.indexOf("");
+                    if(i != -1) {
+                        currentValue.value.splice(i, 1);
+                    }
+                    return currentValue.value.map(Number) || "None";
+                } else {
+                    return Number(currentValue.value);
                 }
-                return currentValue.value.map(Number) || "None";
             default:
                 return currentValue.value || "None";
         }
