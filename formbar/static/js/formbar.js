@@ -121,6 +121,14 @@ var ruleEngine = function () {
             case 'stringselection':
             case 'string':
                 return (!stringContainsArray(v))?"'"+v.replace(/\n/g,'').replace(/'/g,'\\\'')+"'":v;
+            case 'intselection':
+                // "" in Checkboxes is a hack to simulate an empty
+                // selection. For rule evaluation we can/must remove it.
+                var i = currentValue.value.indexOf("");
+                if(i != -1) {
+                    currentValue.value.splice(i, 1);
+                }
+                return currentValue.value.map(Number) || "None";
             default:
                 return currentValue.value || "None";
         }
