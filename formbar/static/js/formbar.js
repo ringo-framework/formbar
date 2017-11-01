@@ -473,14 +473,18 @@ var form = function (inputFilter, ruleEngine) {
                 var required = x.getAttribute("required");
                 var datatype = (element)?element.getAttribute("datatype"):undefined;
                 var rules = getRules(x);
+                var dirtyable = !$(element).attr("no-dirtyable") && !$(element).closest("form").hasClass("no-dirtyable") && !$(element).closest("form").attr("no-dirtyable") ;
                 o[name] = {
                     'name': name,
                     'state': state,
+                    'initialstate': state,
                     'value': value,
+                    'initialvalue': value,
                     'desired': desired,
                     'required': required,
                     'datatype': datatype,
-                    'rules': rules
+                    'rules': rules,
+                    'dirtyable':dirtyable,
                 };
             }
             return o;
@@ -802,7 +806,20 @@ var form = function (inputFilter, ruleEngine) {
         ruleEngine.init();
     };
     return {
-        init: init
+        init: init,
+        getFormFields: function(){
+                return formFields;
+            },
+        isDirty: function(){
+            var keys = Object.keys(formFields);
+            for (k in keys){
+                var field = keys[k];
+                if (formFields[field].dirtyable && formFields[field].value !== formFields[field].initialvalue){
+                    return true;
+                };
+            }
+            return false;
+        }
     };
 } (inputFilter, ruleEngine);
 
