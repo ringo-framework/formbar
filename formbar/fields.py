@@ -775,20 +775,18 @@ class SelectionField(CollectionField):
         # '2']" will be converted into the _string_ "{1,2,''}". In
         # this case we need to convert the value back into a list.
         serialized = []
-        if value.startswith("{") and value.endswith("}"):
-            value = value.strip("{").strip("}")
-        elif value.startswith("[") and value.endswith("]"):
-            value = value.strip("[").strip("]")
-
-        for v in value.split(","):
-            if isinstance(self, IntSelectionField):
-                value = int(v)
-            elif isinstance(self, BooleanSelectionField):
-                value = bool(v)
-            else:
-                value = unicode(v)
-            serialized.append(value)
-        value = serialized
+        if ((value.startswith("{") and value.endswith("}")) or
+           (value.startswith("[") and value.endswith("]"))):
+            value = value.strip("[").strip("]").strip("{").strip("}")
+            for v in value.split(","):
+                if isinstance(self, IntSelectionField):
+                    value = int(v)
+                elif isinstance(self, BooleanSelectionField):
+                    value = bool(v)
+                else:
+                    value = unicode(v)
+                serialized.append(value)
+            value = serialized
         return value
 
     def _to_python(self, value):
