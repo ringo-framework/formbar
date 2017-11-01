@@ -755,7 +755,13 @@ class SelectionField(CollectionField):
         if isinstance(user_defined_options, list) and \
            len(user_defined_options) > 0:
             for option in self.filter_options(user_defined_options):
-                options.append((option[0], option[1], option[2]))
+                if option[1] == '':
+                    value = ''
+                elif isinstance(self, IntSelectionField):
+                    value = int(option[1])
+                elif isinstance(self, BooleanSelectionField):
+                    value = bool(option[1])
+                options.append((option[0], value, option[2]))
         elif isinstance(user_defined_options, str):
             for option in self._form.merged_data.get(user_defined_options):
                 options.append((option[0], option[1], True))
@@ -768,17 +774,21 @@ class SelectionField(CollectionField):
         # SQLAalchemy automatically. eg the python value "['1',
         # '2']" will be converted into the _string_ "{1,2,''}". In
         # this case we need to convert the value back into a list.
+        serialized = []
         if value.startswith("{") and value.endswith("}"):
-            serialized = []
-            for v in value.strip("{").strip("}").split(","):
-                if isinstance(self, IntSelectionField):
-                    value = int(v)
-                elif isinstance(self, BooleanSelectionField):
-                    value = bool(v)
-                else:
-                    value = unicode(v)
-                serialized.append(value)
-            value = serialized
+            value = value.strip("{").strip("}")
+        elif value.startswith("[") and value.endswith("]"):
+            value = value.strip("[").strip("]")
+
+        for v in value.split(","):
+            if isinstance(self, IntSelectionField):
+                value = int(v)
+            elif isinstance(self, BooleanSelectionField):
+                value = bool(v)
+            else:
+                value = unicode(v)
+            serialized.append(value)
+        value = serialized
         return value
 
     def _to_python(self, value):
