@@ -761,6 +761,8 @@ class SelectionField(CollectionField):
                     value = int(option[1])
                 elif isinstance(self, BooleanSelectionField):
                     value = bool(option[1])
+                else:
+                    value = option[1]
                 options.append((option[0], value, option[2]))
         elif isinstance(user_defined_options, str):
             for option in self._form.merged_data.get(user_defined_options):
