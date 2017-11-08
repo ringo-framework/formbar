@@ -13,6 +13,8 @@ Changes:
   of integers.
 
 New feature
+- Added FormDataprovider. A Formdataprovider can be used to fill the form with
+  (dynamic) values and options.
 - Added datetime picker widget. See https://github.com/Eonasdan/bootstrap-datetimepicker
 - Added currency widget.
 - Added new "fields" command to generate.py command (in contrib) to export the
@@ -33,7 +35,6 @@ Bugfix:
 =====
 Internal release only already includes most of the features from 1.1.0 but
 never has been released in the public.
-
 
 1.0.2
 =====

@@ -74,6 +74,42 @@ class ValidationException(Exception):
     pass
 
 
+class FormDataprovider(object):
+    """Dummy class which can be used to provided dynamic data to the
+    form. It can be provided as item on the form init to provide
+    dynamically loaded options and values.
+
+    As said the dataprovider can be user to provide `options` and `values`.
+    Both are provided by defining propertys.
+
+    1. Value
+    The function should simply return the pythonic value of the field:
+
+        @property
+        def foo(self):
+            return "1"
+
+    1. Options
+    The function should return a list of tuples. The first value of the
+    tuple is the displayed label and the second value is the value of
+    the option:
+
+        @property
+        def foo_options(self):
+            return [("Foo", "1"), ("Bar", "2")]
+
+    or you can use the helper method `get_options(fieldname)`
+    """
+
+    def __init__(self, ctx):
+        self.ctx = ctx
+        """Can be anything. E.g db connection, request. It depends on the context."""
+
+    def get_options(self, name):
+        if hasattr(self, name+"_options"):
+            return getattr(self, name+"_options")
+        return []
+
 class Validator(object):
     """Validator class for external validators. External validators can
     be used to implement more complicated validations on the converted
