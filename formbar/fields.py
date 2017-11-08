@@ -780,15 +780,17 @@ class SelectionField(CollectionField):
         if ((value.startswith("{") and value.endswith("}")) or
            (value.startswith("[") and value.endswith("]"))):
             value = value.strip("[").strip("]").strip("{").strip("}")
-            for v in value.split(","):
-                if isinstance(self, IntSelectionField):
-                    value = int(v)
-                elif isinstance(self, BooleanSelectionField):
-                    value = bool(v)
-                else:
-                    value = unicode(v)
-                serialized.append(value)
-            value = serialized
+        for v in value.split(","):
+            if not value:
+                continue
+            if isinstance(self, IntSelectionField):
+                value = int(v)
+            elif isinstance(self, BooleanSelectionField):
+                value = bool(v)
+            else:
+                value = unicode(v)
+            serialized.append(value)
+        value = serialized
         return value
 
     def _to_python(self, value):
