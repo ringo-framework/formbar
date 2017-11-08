@@ -1,10 +1,16 @@
 1.2.0
 =====
-Feature Release
+Feature Release, Requires a new formbar.
 
 Improvements
 - Fixed typos in documentation.
 - Added optional timezone parameter to Form initialisation.
+
+Changes:
+- Change client site type conversion of "selection" values in forms. Convert according to
+  datatype of field. Attention: This may require changes in rule definitions
+  as rules like "'1' in $foo" may not work anymore as $foo is now a real list
+  of integers.
 
 New feature
 - Added datetime picker widget. See https://github.com/Eonasdan/bootstrap-datetimepicker
