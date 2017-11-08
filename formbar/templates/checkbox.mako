@@ -11,14 +11,14 @@ selected = field.get_value() or []
   % if option[2]:
     <label class="checkbox-inline">
       % if option[1] in selected:
-        <input type="checkbox" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" checked="checked" ${readonly}/>
+        <input type="checkbox" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" checked="checked" ${readonly} datatype="${get_field_type(field)}"/>
         ## Render a hidden field for selected readonly values to make sure the
         ## value is actually submitted.
         % if readonly:
-          <input type="hidden" id="${field.id}-${num}" name="${field.name}" value="${option[1]}"/>
+          <input type="hidden" id="${field.id}-${num}" name="${field.name}" value="${option[1]} datatype="${get_field_type(field)}""/>
         % endif
       % else:
-        <input type="checkbox" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" ${readonly}/>
+        <input type="checkbox" id="${field.id}-${num}" name="${field.name}" value="${option[1]}" ${readonly} datatype="${get_field_type(field)}"/>
       % endif
       ${_(option[0])}
     </label>
@@ -29,10 +29,10 @@ selected = field.get_value() or []
     ## filtered for some reason than render a hidden input element with the
     ## value except the user explicit sets the "remove_filtered" config var.
   % elif not field.renderer.remove_filtered == "true" and option[1] in selected:
-    <input type="hidden" id="${field.id}" name="${field.name}" value="${option[1]}"/>
+    <input type="hidden" id="${field.id}" name="${field.name}" value="${option[1]} datatype="${get_field_type(field)}""/>
   % endif
 % endfor
 ## Hack! Empyt value to allow deselecting all options.
 % if not field.readonly:
-  <input style="display:none" type="checkbox" name="${field.name}" value="" checked="checked"/>
+  <input style="display:none" type="checkbox" name="${field.name}" value="" checked="checked" datatype="${get_field_type(field)}"/>
 % endif

@@ -118,9 +118,22 @@ var ruleEngine = function () {
         switch(currentValue.datatype){
             case 'date':
             case 'text':
-            case 'stringselection':
             case 'string':
                 return (!stringContainsArray(v))?"'"+v.replace(/\n/g,'').replace(/'/g,'\\\'')+"'":v;
+            case 'stringselection':
+                return currentValue.value || "None";
+            case 'intselection':
+                // "" in Checkboxes is a hack to simulate an empty
+                // selection. For rule evaluation we can/must remove it.
+                if (Array.isArray(currentValue.value)) {
+                    var i = currentValue.value.indexOf("");
+                    if(i != -1) {
+                        currentValue.value.splice(i, 1);
+                    }
+                    return currentValue.value.map(Number) || "None";
+                } else {
+                    return Number(currentValue.value);
+                }
             default:
                 return currentValue.value || "None";
         }
@@ -461,14 +474,18 @@ var form = function (inputFilter, ruleEngine) {
                 var required = x.getAttribute("required");
                 var datatype = (element)?element.getAttribute("datatype"):undefined;
                 var rules = getRules(x);
+                var dirtyable = !$(element).attr("no-dirtyable") && !$(element).closest("form").hasClass("no-dirtyable") && !$(element).closest("form").attr("no-dirtyable") ;
                 o[name] = {
                     'name': name,
                     'state': state,
+                    'initialstate': state,
                     'value': value,
+                    'initialvalue': value,
                     'desired': desired,
                     'required': required,
                     'datatype': datatype,
-                    'rules': rules
+                    'rules': rules,
+                    'dirtyable':dirtyable,
                 };
             }
             return o;
@@ -776,6 +793,11 @@ var form = function (inputFilter, ruleEngine) {
                 case 'SELECT':
                 case 'TEXTAREA':
                     changeEvent(e);
+                    if (form.isDirty()) {
+                        $("div.formbar-form").trigger("dirty");
+                    } else {
+                        $("div.formbar-form").trigger("clean");
+                    }
                     break;
                 default:
                     break;
@@ -790,7 +812,20 @@ var form = function (inputFilter, ruleEngine) {
         ruleEngine.init();
     };
     return {
-        init: init
+        init: init,
+        getFormFields: function(){
+                return formFields;
+            },
+        isDirty: function(){
+            var keys = Object.keys(formFields);
+            for (k in keys){
+                var field = keys[k];
+                if (formFields[field].dirtyable && formFields[field].value !== formFields[field].initialvalue){
+                    return true;
+                };
+            }
+            return false;
+        }
     };
 } (inputFilter, ruleEngine);
 

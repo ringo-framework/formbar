@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 import logging
 from formbar.config import Config, Field, parse
-import sys, argparse
+import sys
+import argparse
 
 log = logging.getLogger(name="formbar.contrib.generate")
 
@@ -17,6 +18,7 @@ def _get_fields(config):
         fields.append(Field(en))
     return fields
 
+
 def filter_tag(field, tags):
     if tags == "":
         return True
@@ -24,6 +26,7 @@ def filter_tag(field, tags):
         if tag in field.tags:
             return True
     return False
+
 
 def print_fieldnames(config, args):
     fields = [field for field in _get_fields(config) if field.type is not "info" and filter_tag(field, args.tags)]
