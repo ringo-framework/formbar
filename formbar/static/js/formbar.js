@@ -792,6 +792,11 @@ var form = function (inputFilter, ruleEngine) {
                 case 'SELECT':
                 case 'TEXTAREA':
                     changeEvent(e);
+                    if (form.isDirty()) {
+                        $("div.formbar-form").trigger("dirty");
+                    } else {
+                        $("div.formbar-form").trigger("clean");
+                    }
                     break;
                 default:
                     break;
