@@ -118,9 +118,10 @@ var ruleEngine = function () {
         switch(currentValue.datatype){
             case 'date':
             case 'text':
-            case 'stringselection':
             case 'string':
                 return (!stringContainsArray(v))?"'"+v.replace(/\n/g,'').replace(/'/g,'\\\'')+"'":v;
+            case 'stringselection':
+                return currentValue.value || "None";
             case 'intselection':
                 // "" in Checkboxes is a hack to simulate an empty
                 // selection. For rule evaluation we can/must remove it.
