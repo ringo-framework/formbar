@@ -1,6 +1,6 @@
 1.2.0
 =====
-Feature Release, Requires a new formbar.
+Feature Release
 
 Improvements
 - Fixed typos in documentation.
@@ -19,6 +19,9 @@ New feature
 - Added currency widget.
 - Added new "fields" command to generate.py command (in contrib) to export the
   entities of a given form as CSV.
+- Global JS "form" variable now avaible. This variable can be used to check if
+  a form is dirty (form.isDirty()) and check fields form (form.getFormFields()) 
+- $("div.formbar-form") now triggers "dirty" and clean events.
 
 1.1.0
 =====
