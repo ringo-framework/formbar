@@ -818,9 +818,23 @@ var form = function (inputFilter, ruleEngine) {
             },
         isDirty: function(){
             var keys = Object.keys(formFields);
+            var isModified = function(field){
+                if (Array.isArray(field.value)){
+                    if (field.value.length != field.initialvalue.length){
+                        return true;
+                    }
+                    for(var i=0; i<field.value.length; i+=1){
+                       if (field.value[i] !== field.initialvalue[i]){
+                           return true;
+                       } 
+                    }
+                    return false;
+                }
+                return field.value !== field.initialvalue;
+            }
             for (k in keys){
-                var field = keys[k];
-                if (formFields[field].dirtyable && formFields[field].value !== formFields[field].initialvalue){
+                var field = formFields[keys[k]];
+                if (field.dirtyable && isModified(field)){
                     return true;
                 };
             }
