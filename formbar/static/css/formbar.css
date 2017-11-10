@@ -48,6 +48,11 @@ button {
   margin: 10px 0px;
 }
 
+.button-pane div.formbar-conditional {
+    width: auto;
+    float: left;
+}
+
 
 /****************************************************************************
  *                                  Fields                                  *

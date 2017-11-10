@@ -178,6 +178,11 @@ class FormRenderer(Renderer):
         return literal(self.template.render(**values))
 
     def _render_form_buttons(self):
+        # Render default buttons if no buttons have been defined for the
+        # form.
+        if len(self._form._config._buttons) > 0:
+            return ""
+
         _ = self.translate
         html = []
         html.append(HTML.tag("div", _closed=False, class_="row row-fluid"))
@@ -190,56 +195,40 @@ class FormRenderer(Renderer):
             html.append(HTML.tag("div", _closed=False,
                         class_="col-sm-12 span12 button-pane well-small"))
 
-        # Render default buttons if no buttons have been defined for the
-        # form.
-        if len(self._form._config._buttons) == 0:
-            # Ringo specific logic. If there is a backurl parameter in
-            # the URL we will render additional submit buttons with
-            # special values (return, stay) to indicate if the user want
-            # to return to the previous page or wants to stay in the
-            # current form. The backurl is used in Ringo to define the
-            # target location to return to after the a successfull
-            # submit.
-            if self._form._request and "backurl" in self._form._request.params:
-                html.append(HTML.tag("button", type="submit",
-                                     name="_submit", value="return",
-                                     class_="btn btn-default hidden-print",
-                                     title=_('Save and return to the parent item'),
-                                     c=_('Save and return')))
+        # Ringo specific logic. If there is a backurl parameter in
+        # the URL we will render additional submit buttons with
+        # special values (return, stay) to indicate if the user want
+        # to return to the previous page or wants to stay in the
+        # current form. The backurl is used in Ringo to define the
+        # target location to return to after the a successfull
+        # submit.
+        if self._form._request and "backurl" in self._form._request.params:
+            html.append(HTML.tag("button", type="submit",
+                                 name="_submit", value="return",
+                                 class_="btn btn-default hidden-print",
+                                 title=_('Save and return to the parent item'),
+                                 c=_('Save and return')))
 
-                html.append(HTML.tag("button", type="submit",
-                                     name="_submit", value="stay",
-                                     class_="btn btn-default hidden-print",
-                                     title=_('Save and stay on this page'),
-                                     c=_('Save')))
-            else:
-                # Default button, Set no value for submit.
-                html.append(HTML.tag("button", type="submit",
-                                     name="_submit", value="",
-                                     class_="btn btn-default hidden-print",
-                                     title=_('Save and stay on this page'),
-                                     c=_('Save')))
-            # If there is a next page than render and additional submit
-            # button.
-            if len(self._form.pages) > 1:
-                html.append(HTML.tag("button", type="submit",
-                                     name="_submit", value="nextpage",
-                                     class_="btn btn-default hidden-print",
-                                     title=_('Save and proceed to the next page'),
-                                     c=_('Save and proceed')))
+            html.append(HTML.tag("button", type="submit",
+                                 name="_submit", value="stay",
+                                 class_="btn btn-default hidden-print",
+                                 title=_('Save and stay on this page'),
+                                 c=_('Save')))
         else:
-            for b in self._form._config._buttons:
-                if b.attrib.get("ignore"):
-                    continue
-                html.append(HTML.tag("button", _closed=False,
-                            type=b.attrib.get("type") or "submit",
-                            name="_%s" % b.attrib.get("type") or "submit",
-                            value=b.attrib.get("value") or "",
-                            class_=b.attrib.get("class") or "btn btn-default hidden-print"))
-                if b.attrib.get("icon"):
-                    html.append(HTML.tag("i", class_=b.attrib.get("icon"),
-                                         c=_(b.text)))
-                html.append(_(b.text))
+            # Default button, Set no value for submit.
+            html.append(HTML.tag("button", type="submit",
+                                 name="_submit", value="",
+                                 class_="btn btn-default hidden-print",
+                                 title=_('Save and stay on this page'),
+                                 c=_('Save')))
+        # If there is a next page than render and additional submit
+        # button.
+        if len(self._form.pages) > 1:
+            html.append(HTML.tag("button", type="submit",
+                                 name="_submit", value="nextpage",
+                                 class_="btn btn-default hidden-print",
+                                 title=_('Save and proceed to the next page'),
+                                 c=_('Save and proceed')))
         html.append(HTML.tag("/div", _closed=False))
         html.append(HTML.tag("/div", _closed=False))
         return literal("").join(html)

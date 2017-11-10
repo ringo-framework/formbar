@@ -99,6 +99,8 @@
         <h3 class="section">${_(child.attrib.get('label'))}</h3>
       % elif child.tag == "subsubsection":
         <h4 class="section">${_(child.attrib.get('label'))}</h4>
+      % elif child.tag == "buttons":
+        <div class="button-pane">
       % elif child.tag == "row":
         <div class="row row-fluid">
       % elif child.tag == "col":
@@ -140,6 +142,8 @@
       % endif
       % if child.tag == "fieldset":
         </fieldset>
+      % elif child.tag == "buttons":
+        </div>
       % elif child.tag == "col":
         </div>
       % elif child.tag == "row":
@@ -165,6 +169,17 @@
             field.readonly = True
         %>
         ${field.render(active) | n}
+      % elif child.tag == "button" and not child.attrib.get("ignore"):
+        <button
+          type="${child.attrib.get("type") or "submit"}"
+          value="${child.attrib.get("value") or ""}"
+          name="_${child.attrib.get("type") or "submit"}"
+          class="${child.attrib.get("class") or "btn btn-default hidden-print"}">
+          % if child.attrib.get("icon"):
+            <i class="${child.attrib.get("icon")}">${_(child.text)}</i>
+          % endif
+          ${_(child.text)}
+        </button>
       % elif child.tag == "snippet":
         <% ref = child.attrib.get('ref') %>
         % if ref:
