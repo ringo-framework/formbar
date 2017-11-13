@@ -435,6 +435,8 @@ class Form(Config):
         :returns: yields field elements
 
         """
+        if root is None:
+            root = self._tree
         for child in root:
             if len(child) > 0:
                 if child.tag == "if":
