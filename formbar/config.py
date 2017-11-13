@@ -456,7 +456,8 @@ class Form(Config):
                     for elem in self.walk(child, values,
                                           evaluate, include_layout):
                         yield elem
-                elif include_layout and child.tag in ["section",
+                elif include_layout and child.tag in ["page",
+                                                      "section",
                                                       "subsection"]:
                     yield child
                     for elem in self.walk(child, values,

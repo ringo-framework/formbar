@@ -273,6 +273,8 @@ def render_spec(config, title, form):
 def get_fields(config, node):
     elements = []
     for element in config.walk(node, {}, include_layout=True):
+        if element.tag == "page":
+            continue
         if element.tag == "field":
             ref = element.attrib.get('ref')
             element = config._parent.get_element('entity', ref)
