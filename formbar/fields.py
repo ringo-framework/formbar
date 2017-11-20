@@ -760,7 +760,8 @@ class SelectionField(CollectionField):
                 elif isinstance(self, IntSelectionField):
                     value = int(option[1])
                 elif isinstance(self, BooleanSelectionField):
-                    value = bool(option[1])
+                    from formbar.converters import to_boolean
+                    value = to_boolean(option[1])
                 else:
                     value = option[1]
                 options.append((option[0], value, option[2]))
