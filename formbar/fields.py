@@ -558,13 +558,17 @@ class CollectionField(Field):
                     ex_values.append("%s" % opt[0])
         return ", ".join(ex_values)
 
-    def get_previous_value(self, default="", expand=False):
+    def get_previous_value(self, default=None, expand=False):
+        if default is None:
+            default = []
         value = super(CollectionField, self).get_previous_value(default)
         if expand:
             return self.expand_value(value)
         return value
 
-    def get_value(self, default="", expand=False):
+    def get_value(self, default=None, expand=False):
+        if default is None:
+            default = []
         value = super(CollectionField, self).get_value(default)
         if expand:
             return self.expand_value(value)
