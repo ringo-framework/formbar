@@ -12,12 +12,12 @@
       ## Depending if the options has passed the configured filter the
       ## option will be visible or hidden
       % if option[2]:
-        % if option[1] in field.get_value():
+        % if str(option[1]) == str(field.get_value()):
           <option value="${option[1]}" selected="selected">${_(option[0])}</option>
         % else:
           <option value="${option[1]}">${_(option[0])}</option>
         % endif
-      % elif option[1] in field.get_value() and not field.renderer.remove_filtered == "true":
+      % elif unicode(option[1]) == unicode(field.get_value()) and not field.renderer.remove_filtered == "true":
         <option value="${option[1]}" class="hidden">${_(option[0])}</option>
       % endif
     % endfor
